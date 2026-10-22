@@ -41,7 +41,12 @@ try:
   check("G4 his account on your browser: the app refuses to upload your journal into it", (iph.evaluate("sbStat"),cloud('petar@test.bg')),
         ('Дневникът на този телефон е свързан с друг профил — не го качвам.',['Кос','Сойка','Щиглец']))
   check("G5 ...and nothing of his lands in your local journal", names(iph), ['Сврака'])
-  check('G6 no page errors', iph.errs+plap.errs+pph.errs, [])
+  # new sign-ups switched off in Supabase: a newcomer gets a plain Bulgarian message, not the raw English error
+  nd=device([]);nd.context.route(SB+'/auth/v1/signup*',lambda r:r.fulfill(status=422,content_type='application/json',
+     body=json.dumps({'code':422,'error_code':'signup_disabled','msg':'Signups not allowed for this instance'})))
+  nd.fill('#sb-name','Непознат');nd.fill('#sb-mail','new@test.bg');nd.fill('#sb-pw','птица123');nd.click('[data-sb="up"]');nd.wait_for_selector('.fr .msg')
+  check('G6 with new sign-ups switched off, a newcomer is told so in Bulgarian', nd.inner_text('.fr .msg'), 'Засега не се приемат нови профили.')
+  check('G7 no page errors', iph.errs+plap.errs+pph.errs+nd.errs, [])
   b.close()
 finally: srv.terminate();st.stop()
 print('FAILURES:',fails)

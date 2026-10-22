@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-204 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+205 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -26,7 +26,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_sql.py | 24 | database access rules, as three users |
 | test_share.py | 24 | two people end to end: sign-up, codes, sync, comparison, offline, second phone |
 | test_twoway.py | 14 | one account on phone and laptop: merges, deletions, outings, photos, a write race |
-| test_guard.py | 6 | a friend's two devices; someone signing in on another person's browser |
+| test_guard.py | 7 | a friend's two devices; someone signing in on another person's browser; the message when sign-ups are off |
 | test_sil.py | 6 | family silhouettes in the life list, species page and share card |
 | test_season.py | 7 | the seasonal header: months to seasons, each season's details, theme switch, season-coloured cards |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |

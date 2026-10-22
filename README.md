@@ -8,7 +8,7 @@ Everything sits in this one folder, and Netlify publishes it as it is (`netlify.
 
 - The app: `index.html` is the whole app, `sw.js` keeps it working offline, and `manifest.webmanifest` with the three icons makes it installable.
 - The database: `setup.sql` sets up sharing and sync. Safe to re-run in the Supabase SQL editor.
-- The tests: `prepare.sh`, `setup.sh`, `run_all.sh`, `sbstack.py`, `sun.js`, `sun_check.py`, `tap_test.py`, the `test_*.py` files and two test photos. 204 automated checks and a sunrise check, built to run in a Claude sandbox; see `TESTS.md`.
+- The tests: `prepare.sh`, `setup.sh`, `run_all.sh`, `sbstack.py`, `sun.js`, `sun_check.py`, `tap_test.py`, the `test_*.py` files and two test photos. 205 automated checks and a sunrise check, built to run in a Claude sandbox; see `TESTS.md`.
 
 The Supabase key in `index.html` is the publishable key, meant to sit in a browser. What each person can read or change is enforced by the database rules in `setup.sql`.
 

@@ -1392,7 +1392,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-22.7';
+const VER='2026-10-22.8';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -1432,6 +1432,7 @@ function errMsg(e){const m=String(e&&(e.message||e.error_description||e.msg)||e)
   if(/not confirmed/i.test(m))return 'Адресът още не е потвърден — отвори писмото от Supabase.';
   if(/already registered|already been registered/i.test(m))return 'Има профил с този имейл — влез с него.';
   if(/at least 6|Password should/i.test(m))return 'Паролата трябва да е поне 6 знака.';
+  if(/signups? not allowed|signup_disabled/i.test(m))return 'Засега не се приемат нови профили.';   // нови профили изключени в Supabase
   if(/offline|Failed to fetch|NetworkError|Load failed|fetch/i.test(m))return 'Няма връзка със сървъра (или проектът в Supabase е заспал).';
   return m;}
 function footNote(){document.getElementById('priv').textContent=ME?'Записите ти са на този телефон и в профила ти; виждат ги само хората, на които си дал кода си.':
