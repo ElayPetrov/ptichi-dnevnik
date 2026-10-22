@@ -1,39 +1,23 @@
-# Птичи дневник — tests
+# Птичи дневник
 
-204 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+A bird field-observation journal: one HTML file with a Bulgarian interface. It installs on a phone, works offline, and can share and sync journals between friends through Supabase.
 
-## Run
+## What's here
 
-1. From a clone of this repo, `bash tests/prepare.sh`. It copies the tests, `site/` and `supabase/setup.sql` into `/home/claude`, where the tests expect them. Run the next two steps there.
-2. `bash setup.sh` — Python packages, Postgres, PostgREST 12.2.12, supabase-js 2.117.3 from npm.
-3. `bash run_all.sh` — every suite should end with `FAILURES: 0`.
+Everything sits in this one folder, and Netlify publishes it as it is (`netlify.toml`, no build step).
 
-Postgres stops between sandbox sessions; `run_all.sh` starts it again.
-The sandbox can't reach supabase.co, so sharing is tested against a stand-in (`sbstack.py`):
-real Postgres and PostgREST running the real `supabase-setup.sql`, the real supabase-js bundle,
-and imitation sign-in and file storage that enforce the same storage policies.
+- The app: `index.html` is the whole app, `sw.js` keeps it working offline, and `manifest.webmanifest` with the three icons makes it installable.
+- The database: `setup.sql` sets up sharing and sync. Safe to re-run in the Supabase SQL editor.
+- The tests: `prepare.sh`, `setup.sh`, `run_all.sh`, `sbstack.py`, `sun.js`, `sun_check.py`, `tap_test.py`, the `test_*.py` files and two test photos. 204 automated checks and a sunrise check, built to run in a Claude sandbox; see `TESTS.md`.
 
-## Suites
+The Supabase key in `index.html` is the publishable key, meant to sit in a browser. What each person can read or change is enforced by the database rules in `setup.sql`.
 
-| File | Checks | Covers |
-| --- | --- | --- |
-| test_autofill.py | 19 | name and place autofill, never overwriting typed values |
-| test_fixes.py | 25 | species merging, outing banner, stale outing prompt, photo staging |
-| test_modes.py | 13 | live versus write-up outing defaults |
-| test_pwa.py | 23 | installability, offline opening, updates, backups, arrivals, install hints |
-| test_outings.py | 25 | unsure records, outings as events, backups v4/v5/v6 |
-| test_views.py | 14 | sun times, species page, year curve, share cards |
-| test_sql.py | 24 | database access rules, as three users |
-| test_share.py | 24 | two people end to end: sign-up, codes, sync, comparison, offline, second phone |
-| test_twoway.py | 14 | one account on phone and laptop: merges, deletions, outings, photos, a write race |
-| test_guard.py | 6 | a friend's two devices; someone signing in on another person's browser |
-| test_sil.py | 6 | family silhouettes in the life list, species page and share card |
-| test_season.py | 7 | the seasonal header: months to seasons, each season's details, theme switch, season-coloured cards |
-| tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
-| sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
+## Releasing a new version
 
-## Files
+1. Bump `VER` in `index.html`. The app shows it at the bottom as „версия …“.
+2. Run the tests. Every suite must end with `FAILURES: 0`.
+3. If `setup.sql` changed, run it in Supabase first.
+4. On the repo's main page, Add file → Upload files, and drop the changed files. A file with the same name replaces the old one. Netlify deploys every commit to `main` within a minute or two.
+5. Open the app once with signal on each device so it picks up the new version.
 
-In `/home/claude`, `prepare.sh` puts the app at `ptichi-dnevnik.html` and in `netlify/` (both copies of `site/`), and the database setup at `supabase-setup.sql`.
-After changing the app there, copy `ptichi-dnevnik.html` back to `site/index.html` in the repo.
-`a.jpg` and `b.jpg` are plain generated test photos.
+Change the cache name `V` in `sw.js` only when `sw.js` itself changes.
