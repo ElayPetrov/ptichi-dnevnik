@@ -1,0 +1,16 @@
+{
+  "name": "Птичи дневник",
+  "short_name": "Дневник",
+  "description": "Полеви наблюдения на птици. Записите остават на устройството.",
+  "lang": "bg",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1e9d4",
+  "theme_color": "#f1e9d4",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
