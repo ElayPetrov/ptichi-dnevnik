@@ -41,7 +41,7 @@ try:
     newform(); pick('#f-bg','Сврака')
     check('T1 pick bg fills en (one hop), la, fam', N(vals()), dict(bg='Сврака',en='Eurasian Magpie',la='Pica pica',fam='Вранови'))
     pick('#f-bg','Сойка')
-    check('T2 switching species swaps auto names, clears en', N(vals()), dict(bg='Сойка',en='',la='Garrulus glandarius',fam='Вранови'))
+    check('T2 switching species swaps the auto-filled names (English, which your records lack, now from the built-in list)', N(vals()), dict(bg='Сойка',en='Eurasian jay',la='Garrulus glandarius',fam='Вранови'))
     typein('#f-bg','Червен ангел')
     check('T3 brand-new name clears auto-filled names', N(vals()), dict(bg='Червен ангел',en='',la='',fam=''))
 

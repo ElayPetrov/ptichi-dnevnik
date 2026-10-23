@@ -278,6 +278,12 @@ table.ph2 tr:hover td.sp1{color:var(--accent)}
 .note2{font-size:11.5px;color:var(--mut);max-width:330px}
 dialog{border:none;border-radius:14px;padding:0;background:transparent;max-width:94vw}
 dialog::backdrop{background:rgba(0,0,0,.84)}
+.pickdlg{width:min(760px,96vw);height:min(680px,88vh);background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.pickdlg[open]{display:flex;flex-direction:column}
+.pickhead{padding:11px 14px;font-weight:600}
+#pickMap{flex:1;min-height:240px;background:var(--bg2)}
+.pickfoot{display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap}
+#pickTxt{margin-right:auto;color:var(--mut);font-size:13px}
 dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 /* първи срещи / очаквай скоро */
 .arr{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:4px 15px 6px;margin-bottom:12px}
@@ -386,6 +392,12 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <div class="fg"><label>Брой</label><input id="f-count" inputmode="numeric" placeholder="1"></div>
   </div>
   <datalist id="places"></datalist>
+  <div class="fg"><label>Координати (по избор)</label>
+    <div class="geo"><input id="f-geo" placeholder="42.61985, 25.39560 — или залепи връзка от Google Maps" style="flex:1;min-width:200px">
+      <button type="button" class="btn" id="geoBtn">GPS</button>
+      <button type="button" class="btn" id="geoMap">на картата</button>
+      <button type="button" class="btn" id="geoClr">изчисти</button></div>
+    <div id="geoHint" class="note2" style="margin-top:5px;max-width:none"></div></div>
   <div class="fg"><label>Българско име</label><input id="f-bg" list="bgnames" placeholder="Черна червеноопашка"></div>
   <datalist id="bgnames"></datalist>
   <div class="g2">
@@ -406,11 +418,6 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <button type="button" class="behedit" id="behEdit">редактирай</button></div>
     <div class="beh" id="beh"></div></div>
   <div class="fg"><label>Бележка</label><textarea id="f-note" placeholder="перушина, време, с кого, какво правеше…"></textarea></div>
-  <div class="fg"><label>Координати (по избор)</label>
-    <div class="geo"><input id="f-geo" placeholder="42.61985, 25.39560 — или залепи връзка от Google Maps" style="flex:1;min-width:200px">
-      <button type="button" class="btn" id="geoBtn">GPS</button>
-      <button type="button" class="btn" id="geoClr">изчисти</button></div>
-    <div id="geoHint" class="note2" style="margin-top:5px;max-width:none"></div></div>
   <div class="fg"><label>Снимка (по избор)</label>
     <div class="pho"><input type="file" id="f-photo" accept="image/*" style="flex:1;min-width:170px">
       <img id="prev" style="display:none" alt=""><button type="button" class="btn" id="rmph" style="display:none">махни</button></div></div>
@@ -447,6 +454,13 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 <input type="file" id="impf" accept="application/json,text/plain,.json,.txt" style="display:none">
 </div>
 <dialog id="lb"><img id="lbimg" alt=""></dialog>
+<dialog id="pickDlg" class="pickdlg" aria-label="Посочи мястото на картата">
+  <div class="pickhead">Пипни там, където беше птицата</div>
+  <div id="pickMap"></div>
+  <div class="pickfoot"><span id="pickTxt"></span>
+    <button type="button" class="btn" id="pickCancel">Отказ</button>
+    <button type="button" class="btn pri" id="pickOk" disabled>Готово</button></div>
+</dialog>
 <dialog id="cardDlg"><img id="cardImg" alt="Карта за споделяне">
   <div class="fbtns"><button type="button" class="btn pri" id="cardShare">Сподели</button>
     <button type="button" class="btn" id="cardSave">Изтегли</button><button type="button" class="btn" id="cardClose">Затвори</button></div></dialog>
@@ -542,7 +556,17 @@ function spKeys(){const P=new Map(),m=new WeakMap();
   const T=OBS.map(tk);
   for(const t of T){for(const x of t)if(!P.has(x))P.set(x,x);
     for(let i=1;i<t.length;i++){const a=f(t[0]),b=f(t[i]);if(a!==b)P.set(b,a);}}
+  linkList(P,f);
   OBS.forEach((o,i)=>m.set(o,T[i].length?f(T[i][0]):''));return m;}
+// Имената, които вграденият списък знае за един вид — второто българско име и старото латинско при БДЗП,
+// сегашното латинско, английското — се броят заедно („Боров синигер“ и „Черен синигер“ са един вид).
+// Само при броенето: записите не се променят. Свързват се само имена, които вече са в записите.
+let SPLL=null;
+function linkList(P,f){
+  if(!SPLL)SPLL=SPL.map(s=>[['bg',s[0]],['bg',s[5]],['la',s[1]],['la',s[4]],['en',s[2]]]
+    .filter(([,v])=>v).map(([k,v])=>k+'|'+String(v).trim().toLowerCase()));
+  for(const g of SPLL){const h=g.filter(x=>P.has(x));
+    for(let i=1;i<h.length;i++){const a=f(h[0]),b=f(h[i]);if(a!==b)P.set(b,a);}}}
 const key=o=>{if(!SPK||!SPK.has(o))SPK=spKeys();return SPK.get(o)||'';};
 const SURE=()=>OBS.filter(o=>!o.u);   // несигурните записи се виждат в Дневника, но не се броят никъде
 const human=d=>{const p=d.split('-');return (+p[2])+' '+MN[+p[1]-1]+' '+p[0];};
@@ -1142,8 +1166,9 @@ async function loadPhotos(){for(const d of document.querySelectorAll('[data-ph]'
   const b=await getPhoto(d.dataset.ph);if(b)phImg(d,b,false);else{d.classList.add('bad');d.innerHTML='<span class="phmsg">'+PH_MISS+'</span>';}}}
 function fillLists(){
   const set=(id,v)=>document.getElementById(id).innerHTML=v.map(x=>'<option value="'+esc(x)+'">').join('');
-  set('places',uniq(OBS.map(o=>o.place)));set('bgnames',uniq(OBS.map(o=>o.bg)));
-  set('ennames',uniq(OBS.map(o=>o.en)));set('lanames',uniq(OBS.map(o=>o.la)));}
+  const plus=(own,extra)=>{const seen=new Set(own.filter(Boolean).map(nrm));return uniq([...own,...extra.filter(x=>x&&!seen.has(nrm(x)))]);};
+  set('places',uniq(OBS.map(o=>o.place)));set('bgnames',plus(OBS.map(o=>o.bg),SPL.flatMap(x=>[x[0],x[5]])));
+  set('ennames',plus(OBS.map(o=>o.en),SPL.map(x=>x[2])));set('lanames',plus(OBS.map(o=>o.la),SPL.map(x=>x[1])));}
 
 document.getElementById('f-fam').innerHTML='<option value=""></option>'+FAMS.map(f=>'<option>'+f+'</option>').join('');
 function drawBeh(){
@@ -1173,6 +1198,15 @@ function hint(t){const h=document.getElementById('geoHint');if(h)h.textContent=t
 // Пипа само празни полета или стойности от предишен избор / от редактирания запис.
 // Каквото си написал сам или взел с GPS, не се пипа.
 const NM=['bg','en','la'], SPF=['bg','en','la','fam'];
+// ---- вграден списък на видовете ----
+// 268 вида от „Определител“ на БДЗП (bspb.org): българско и латинско име. Латинското е проверено в Wikipedia,
+// „List of birds of Bulgaria“ (IOC 9.2) — оттам са и английското име, и семейството, свързано с групите в FAMS.
+// Полета: [българско, латинско (сегашно), английско, група (индекс във FAMS), латинско при БДЗП ако е друго, второ българско име].
+// Само подсказва и попълва празни полета; собствените ти записи винаги имат предимство. Записите не се променят.
+const SPL=[["Белоглав лешояд","Gyps fulvus","Griffon vulture",0,"",""],["Белоопашат мишелов","Buteo rufinus","Long-legged buzzard",0,"",""],["Белошипа ветрушка","Falco naumanni","Lesser kestrel",0,"",""],["Голям ястреб","Accipiter gentilis","Northern goshawk",0,"",""],["Далматински сокол","Falco biarmicus","Lanner falcon",0,"",""],["Египетски лешояд","Neophron percnopterus","Egyptian vulture",0,"",""],["Късопръст ястреб","Accipiter brevipes","Levant sparrowhawk",0,"",""],["Ливаден блатар","Circus pygargus","Montagu's harrier",0,"",""],["Ловен сокол","Falco cherrug","Saker falcon",0,"",""],["Малък креслив орел","Clanga pomarina","Lesser spotted eagle",0,"Aquila pomarina",""],["Малък орел","Hieraaetus pennatus","Booted eagle",0,"",""],["Малък ястреб","Accipiter nisus","Eurasian sparrowhawk",0,"",""],["Морски орел","Haliaeetus albicilla","White-tailed eagle",0,"",""],["Обикновен мишелов","Buteo buteo","Common buzzard",0,"",""],["Орел змияр","Circaetus gallicus","Short-toed snake eagle",0,"",""],["Орел рибар","Pandion haliaetus","Osprey",0,"",""],["Осояд","Pernis apivorus","European honey buzzard",0,"",""],["Полски блатар","Circus cyaneus","Hen harrier",0,"",""],["Скален орел","Aquila chrysaetos","Golden eagle",0,"",""],["Сокол орко","Falco subbuteo","Eurasian hobby",0,"",""],["Сокол скитник","Falco peregrinus","Peregrine falcon",0,"",""],["Средиземноморски сокол","Falco eleonorae","Eleonora's falcon",0,"",""],["Тръстиков блатар","Circus aeruginosus","Western marsh harrier",0,"",""],["Царски орел","Aquila heliaca","Eastern imperial eagle",0,"",""],["Червенонога ветрушка","Falco vespertinus","Red-footed falcon",0,"","Вечерна ветрушка"],["Черен лешояд","Aegypius monachus","Eurasian black vulture",0,"",""],["Черна каня","Milvus migrans","Black kite",0,"",""],["Черношипа ветрушка","Falco tinnunculus","Eurasian kestrel",0,"","Керкенез"],["Ястребов орел","Aquila fasciata","Bonelli's eagle",0,"Hieraaetus fasciatus",""],["Блатна сова","Asio flammeus","Short-eared owl",1,"",""],["Бухал","Bubo bubo","Eurasian eagle-owl",1,"",""],["Врабчова кукумявка","Glaucidium passerinum","Eurasian pygmy owl",1,"",""],["Горска улулица","Strix aluco","Tawny owl",1,"",""],["Горска ушата сова","Asio otus","Long-eared owl",1,"",""],["Забулена сова","Tyto alba","Western barn owl",1,"",""],["Обикновена кукумявка","Athene noctua","Little owl",1,"",""],["Пернатонога кукумявка","Aegolius funereus","Boreal owl",1,"",""],["Уралска улулица","Strix uralensis","Ural owl",1,"",""],["Чухал","Otus scops","Eurasian scops owl",1,"",""],["Биволска чапла","Bubulcus ibis","Cattle egret",2,"",""],["Блестящ ибис","Plegadis falcinellus","Glossy ibis",2,"",""],["Бял щъркел","Ciconia ciconia","White stork",2,"",""],["Голям воден бик","Botaurus stellaris","Great bittern",2,"",""],["Голяма бяла чапла","Ardea alba","Great egret",2,"Egretta alba",""],["Гривеста чапла","Ardeola ralloides","Squacco heron",2,"",""],["Лопатарка","Platalea leucorodia","Eurasian spoonbill",2,"",""],["Малка бяла чапла","Egretta garzetta","Little egret",2,"",""],["Малък воден бик","Ixobrychus minutus","Little bittern",2,"",""],["Нощна чапла","Nycticorax nycticorax","Black-crowned night heron",2,"",""],["Сива чапла","Ardea cinerea","Grey heron",2,"",""],["Червена чапла","Ardea purpurea","Purple heron",2,"",""],["Черен щъркел","Ciconia nigra","Black stork",2,"",""],["Белоока потапница","Aythya nyroca","Ferruginous duck",3,"",""],["Бял ангъч","Tadorna tadorna","Common shelduck",3,"",""],["Зеленоглава патица","Anas platyrhynchos","Mallard",3,"",""],["Зимно бърне","Anas crecca","Eurasian teal",3,"",""],["Кафявоглава потапница","Aythya ferina","Common pochard",3,"",""],["Клопач","Spatula clypeata","Northern shoveler",3,"Anas clypeata",""],["Лятно бърне","Spatula querquedula","Garganey",3,"Anas querquedula",""],["Ням лебед","Cygnus olor","Mute swan",3,"",""],["Обикновена гага","Somateria mollissima","Common eider",3,"",""],["Сива гъска","Anser anser","Greylag goose",3,"",""],["Сива патица","Mareca strepera","Gadwall",3,"Anas strepera",""],["Фиш","Mareca penelope","Eurasian wigeon",3,"Anas penelope",""],["Червен ангъч","Tadorna ferruginea","Ruddy shelduck",3,"",""],["Червеноклюна потапница","Netta rufina","Red-crested pochard",3,"",""],["Черна качулата потапница","Aythya fuligula","Tufted duck",3,"",""],["Шилоопашата патица","Anas acuta","Northern pintail",3,"",""],["Голям гмурец","Podiceps cristatus","Great crested grebe",4,"",""],["Голям корморан","Phalacrocorax carbo","Great cormorant",4,"",""],["Малък гмурец","Tachybaptus ruficollis","Little grebe",4,"",""],["Малък корморан","Microcarbo pygmeus","Pygmy cormorant",4,"Phalacrocorax pygmeus",""],["Среден корморан","Gulosus aristotelis","European shag",4,"Phalacrocorax aristotelis","Качулат корморан"],["Червеноврат гмурец","Podiceps grisegena","Red-necked grebe",4,"",""],["Черноврат гмурец","Podiceps nigricollis","Black-necked grebe",4,"",""],["Голям горски водобегач","Tringa ochropus","Green sandpiper",5,"",""],["Горски бекас","Scolopax rusticola","Eurasian woodcock",5,"",""],["Калугерица","Vanellus vanellus","Northern lapwing",5,"",""],["Кафявокрил огърличник","Glareola pratincola","Collared pratincole",5,"",""],["Кокилобегач","Himantopus himantopus","Black-winged stilt",5,"",""],["Късокрил кюкавец","Actitis hypoleucos","Common sandpiper",5,"",""],["Малък червеноног водобегач","Tringa totanus","Common redshank",5,"",""],["Морски дъждосвирец","Charadrius alexandrinus","Kentish plover",5,"",""],["Речен дъждосвирец","Charadrius dubius","Little ringed plover",5,"",""],["Саблеклюн","Recurvirostra avosetta","Pied avocet",5,"",""],["Средна бекасина","Gallinago gallinago","Common snipe",5,"",""],["Стридояд","Haematopus ostralegus","Eurasian oystercatcher",5,"",""],["Турилик","Burhinus oedicnemus","Eurasian stone-curlew",5,"",""],["Чернокрил огърличник","Glareola nordmanni","Black-winged pratincole",5,"",""],["Белобуза рибарка","Chlidonias hybrida","Whiskered tern",6,"",""],["Белокрила рибарка","Chlidonias leucopterus","White-winged tern",6,"",""],["Белочела рибарка","Sternula albifrons","Little tern",6,"",""],["Гривеста рибарка","Thalasseus sandvicensis","Sandwich tern",6,"Sterna sandvicensis",""],["Дебелоклюна рибарка","Gelochelidon nilotica","Gull-billed tern",6,"",""],["Каспийска жълтонога чайка","Larus cachinnans","Caspian gull",6,"",""],["Малка черноглава чайка","Ichthyaetus melanocephalus","Mediterranean gull",6,"Larus melanocephalus",""],["Речна рибарка","Sterna hirundo","Common tern",6,"",""],["Речна чайка","Chroicocephalus ridibundus","Black-headed gull",6,"Larus ridibundus",""],["Средиземноморска жълтонога чайка","Larus michahellis","Yellow-legged gull",6,"",""],["Тънкоклюна чайка","Chroicocephalus genei","Slender-billed gull",6,"",""],["Черна рибарка","Chlidonias niger","Black tern",6,"",""],["Глухар","Tetrao urogallus","Western capercaillie",7,"",""],["Колхидски фазан","Phasianus colchicus","Common pheasant",7,"",""],["Лещарка","Tetrastes bonasia","Hazel grouse",7,"",""],["Планински кеклик","Alectoris graeca","Rock partridge",7,"",""],["Полска яребица","Perdix perdix","Grey partridge",7,"",""],["Пъдпъдък","Coturnix coturnix","Common quail",7,"",""],["Тракийски кеклик","Alectoris chukar","Chukar partridge",7,"",""],["Гривяк","Columba palumbus","Common wood pigeon",8,"",""],["Гугутка","Streptopelia decaocto","Eurasian collared dove",8,"",""],["Обикновена гургулица","Streptopelia turtur","European turtle dove",8,"",""],["Скален гълъб","Columba livia","Rock dove",8,"",""],["Хралупар","Columba oenas","Stock dove",8,"",""],["Европейски козодой","Caprimulgus europaeus","European nightjar",9,"",""],["Качулата кукувица","Clamator glandarius","Great spotted cuckoo",9,"",""],["Обикновена кукувица","Cuculus canorus","Common cuckoo",9,"",""],["Алпийски бързолет","Tachymarptis melba","Alpine swift",10,"",""],["Блед бързолет","Apus pallidus","Pallid swift",10,"",""],["Брегова лястовица","Riparia riparia","Sand martin",10,"",""],["Градска лястовица","Delichon urbicum","Common house martin",10,"",""],["Селска лястовица","Hirundo rustica","Barn swallow",10,"",""],["Скална лястовица","Ptyonoprogne rupestris","Eurasian crag martin",10,"",""],["Червенокръста лястовица","Cecropis rufula","European red-rumped swallow",10,"Cecropis daurica",""],["Черен бързолет","Apus apus","Common swift",10,"",""],["Обикновен пчелояд","Merops apiaster","European bee-eater",11,"",""],["Обикновено земеродно рибарче","Alcedo atthis","Common kingfisher",11,"",""],["Папуняк","Upupa epops","Eurasian hoopoe",11,"",""],["Синявица","Coracias garrulus","European roller",11,"",""],["Белогърб кълвач","Dendrocopos leucotos","White-backed woodpecker",12,"",""],["Въртошийка","Jynx torquilla","Eurasian wryneck",12,"",""],["Голям пъстър кълвач","Dendrocopos major","Great spotted woodpecker",12,"",""],["Зелен кълвач","Picus viridis","European green woodpecker",12,"",""],["Малък пъстър кълвач","Dryobates minor","Lesser spotted woodpecker",12,"Dendrocopos minor",""],["Сив кълвач","Picus canus","Grey-headed woodpecker",12,"",""],["Сирийски пъстър кълвач","Dendrocopos syriacus","Syrian woodpecker",12,"",""],["Среден пъстър кълвач","Dendrocoptes medius","Middle spotted woodpecker",12,"Dendrocopos medius",""],["Трипръст кълвач","Picoides tridactylus","Eurasian three-toed woodpecker",12,"",""],["Черен кълвач","Dryocopus martius","Black woodpecker",12,"",""],["Алпийска чучулига","Eremophila alpestris","Horned lark",13,"",""],["Горска чучулига","Lullula arborea","Wood lark",13,"",""],["Дебелоклюна чучулига","Melanocorypha calandra","Calandra lark",13,"",""],["Качулата чучулига","Galerida cristata","Crested lark",13,"",""],["Полска чучулига","Alauda arvensis","Eurasian skylark",13,"",""],["Сива чучулига","Alaudala rufescens","Mediterranean short-toed lark",13,"Calandrella rufescens",""],["Бяла стърчиопашка","Motacilla alba","White wagtail",14,"",""],["Водна бъбрица","Anthus spinoletta","Water pipit",14,"",""],["Горска бъбрица","Anthus trivialis","Tree pipit",14,"",""],["Жълта стърчиопашка","Motacilla flava","Western yellow wagtail",14,"",""],["Планинска стърчиопашка","Motacilla cinerea","Grey wagtail",14,"",""],["Полска бъбрица","Anthus campestris","Tawny pipit",14,"",""],["Жълтоглаво кралче","Regulus regulus","Goldcrest",15,"",""],["Орехче","Troglodytes troglodytes","Eurasian wren",15,"",""],["Червеноглаво кралче","Regulus ignicapillus","Common firecrest",15,"Regulus ignicapilla",""],["Белогуш дрозд","Turdus torquatus","Ring ouzel",16,"",""],["Имелов дрозд","Turdus viscivorus","Mistle thrush",16,"",""],["Кос","Turdus merula","Common blackbird",16,"",""],["Поен дрозд","Turdus philomelos","Song thrush",16,"",""],["Пъстър скален дрозд","Monticola saxatilis","Common rock thrush",16,"",""],["Син скален дрозд","Monticola solitarius","Blue rock thrush",16,"",""],["Хвойнов дрозд","Turdus pilaris","Fieldfare",16,"",""],["Градинска червеноопашка","Phoenicurus phoenicurus","Common redstart",17,"",""],["Домашна червеноопашка","Phoenicurus ochruros","Black redstart",17,"",""],["Европейско черногушо ливадарче","Saxicola rubicola","European stonechat",17,"",""],["Испанско каменарче","Oenanthe melanoleuca","Eastern black-eared wheatear",17,"Oenanthe hispanica",""],["Ориенталско каменарче","Oenanthe isabellina","Isabelline wheatear",17,"",""],["Ръждивогушо ливадарче","Saxicola rubetra","Whinchat",17,"",""],["Северен славей","Luscinia luscinia","Thrush nightingale",17,"",""],["Сиво каменарче","Oenanthe oenanthe","Northern wheatear",17,"",""],["Трънковче","Cercotrichas galactotes","Rufous-tailed scrub robin",17,"",""],["Червеногръдка","Erithacus rubecula","European robin",17,"",""],["Черногърбо каменарче","Oenanthe pleschanka","Pied wheatear",17,"",""],["Южен славей","Luscinia megarhynchos","Common nightingale",17,"",""],["Блатно шаварче","Acrocephalus scirpaceus","Eurasian reed warbler",18,"",""],["Брезов певец","Phylloscopus trochilus","Willow warbler",18,"",""],["Буков певец","Phylloscopus sibilatrix","Wood warbler",18,"",""],["Голям маслинов присмехулник","Hippolais olivetorum","Olive-tree warbler",18,"",""],["Голямо белогушо коприварче","Curruca communis","Common whitethroat",18,"Sylvia communis",""],["Голямо черноглаво коприварче","Sylvia atricapilla","Eurasian blackcap",18,"",""],["Градински присмехулник","Hippolais icterina","Icterine warbler",18,"",""],["Градинско коприварче","Sylvia borin","Garden warbler",18,"",""],["Елов певец","Phylloscopus collybita","Common chiffchaff",18,"",""],["Източен планински певец","Phylloscopus orientalis","Eastern Bonelli's warbler",18,"",""],["Източно орфеево коприварче","Curruca crassirostris","Eastern Orphean warbler",18,"Sylvia crassirostris",""],["Индийско шаварче","Acrocephalus agricola","Paddyfield warbler",18,"",""],["Крайбрежно шаварче","Acrocephalus schoenobaenus","Sedge warbler",18,"",""],["Малко белогушо коприварче","Curruca curruca","Lesser whitethroat",18,"Sylvia curruca",""],["Малко черноглаво коприварче","Curruca melanocephala","Sardinian warbler",18,"Sylvia melanocephala",""],["Малък маслинов присмехулник","Iduna pallida","Eastern olivaceous warbler",18,"Hippolais pallida",""],["Мочурно шаварче","Acrocephalus palustris","Marsh warbler",18,"",""],["Мустакато шаварче","Acrocephalus melanopogon","Moustached warbler",18,"",""],["Полски цвъркач","Locustella naevia","Common grasshopper warbler",18,"",""],["Речен цвъркач","Locustella fluviatilis","River warbler",18,"",""],["Свилено шаварче","Cettia cetti","Cetti's warbler",18,"",""],["Тръстиков цвъркач","Locustella luscinioides","Savi's warbler",18,"",""],["Тръстиково шаварче","Acrocephalus arundinaceus","Great reed warbler",18,"",""],["Червеногушо коприварче","Curruca cantillans","Eastern subalpine warbler",18,"Sylvia cantillans",""],["Ястребогушо коприварче","Curruca nisoria","Barred warbler",18,"Sylvia nisoria",""],["Беловрата мухоловка","Ficedula albicollis","Collared flycatcher",19,"",""],["Жалобна мухоловка","Ficedula hypoleuca","European pied flycatcher",19,"",""],["Полубеловрата мухоловка","Ficedula semitorquata","Semicollared flycatcher",19,"",""],["Сива мухоловка","Muscicapa striata","Spotted flycatcher",19,"",""],["Червеногуша мухоловка","Ficedula parva","Red-breasted flycatcher",19,"",""],["Голям синигер","Parus major","Great tit",20,"",""],["Дългоопашат синигер","Aegithalos caudatus","Long-tailed tit",20,"",""],["Жалобен синигер","Poecile lugubris","Sombre tit",20,"",""],["Качулат синигер","Lophophanes cristatus","Crested tit",20,"",""],["Лъскавоглав синигер","Poecile palustris","Marsh tit",20,"",""],["Матовоглав синигер","Poecile montana","Willow tit",20,"",""],["Мустакато тръстикарче","Panurus biarmicus","Bearded reedling",20,"",""],["Син синигер","Cyanistes caeruleus","Eurasian blue tit",20,"",""],["Торбогнезден синигер","Remiz pendulinus","Eurasian penduline tit",20,"",""],["Черен синигер","Periparus ater","Coal tit",20,"","Боров синигер"],["Горска дърволазка","Certhia familiaris","Eurasian treecreeper",21,"",""],["Горска зидарка","Sitta europaea","Eurasian nuthatch",21,"",""],["Градинска дърволазка","Certhia brachydactyla","Short-toed treecreeper",21,"",""],["Западна скална зидарка","Sitta neumayer","Western rock nuthatch",21,"",""],["Скалолазка","Tichodroma muraria","Wallcreeper",21,"",""],["Белочела сврачка","Lanius nubicus","Masked shrike",22,"",""],["Сива сврачка","Lanius excubitor","Great grey shrike",22,"",""],["Червеноглава сврачка","Lanius senator","Woodchat shrike",22,"",""],["Червеногърба сврачка","Lanius collurio","Red-backed shrike",22,"",""],["Черночела сврачка","Lanius minor","Lesser grey shrike",22,"",""],["Гарван","Corvus corax","Common raven",23,"",""],["Жълтоклюна гарга","Pyrrhocorax graculus","Alpine chough",23,"",""],["Посевна врана","Corvus frugilegus","Rook",23,"",""],["Сврака","Pica pica","Eurasian magpie",23,"",""],["Сива врана","Corvus cornix","Hooded crow",23,"",""],["Сойка","Garrulus glandarius","Eurasian jay",23,"",""],["Сокерица","Nucifraga caryocatactes","Northern nutcracker",23,"",""],["Чавка","Corvus monedula","Western jackdaw",23,"","Гарга"],["Обикновен скорец","Sturnus vulgaris","Common starling",24,"",""],["Розов скорец","Pastor roseus","Rosy starling",24,"Sturnus roseus",""],["Домашно врабче","Passer domesticus","House sparrow",25,"",""],["Испанско врабче","Passer hispaniolensis","Spanish sparrow",25,"",""],["Италианско врабче","Passer italiae","Italian sparrow",25,"",""],["Полско врабче","Passer montanus","Eurasian tree sparrow",25,"",""],["Скално врабче","Petronia petronia","Rock sparrow",25,"",""],["Европейско канарче","Serinus serinus","European serin",26,"",""],["Елшова скатия","Spinus spinus","Eurasian siskin",26,"Carduelis spinus",""],["Зеленика","Chloris chloris","European greenfinch",26,"Carduelis chloris",""],["Обикновена кръсточовка","Loxia curvirostra","Red crossbill",26,"",""],["Обикновена чинка","Fringilla coelebs","Common chaffinch",26,"",""],["Обикновено конопарче","Linaria cannabina","Common linnet",26,"Carduelis cannabina",""],["Червена чинка","Carpodacus erythrinus","Common rosefinch",26,"",""],["Червенушка","Pyrrhula pyrrhula","Eurasian bullfinch",26,"",""],["Черешарка","Coccothraustes coccothraustes","Hawfinch",26,"",""],["Щиглец","Carduelis carduelis","European goldfinch",26,"",""],["Градинска овесарка","Emberiza hortulana","Ortolan bunting",27,"",""],["Жълта овесарка","Emberiza citrinella","Yellowhammer",27,"",""],["Зеленогуша овесарка","Emberiza cirlus","Cirl bunting",27,"",""],["Сива овесарка","Emberiza calandra","Corn bunting",27,"",""],["Сивоглава овесарка","Emberiza cia","Rock bunting",27,"",""],["Тръстикова овесарка","Emberiza schoeniclus","Reed bunting",27,"",""],["Черноглава овесарка","Emberiza melanocephala","Black-headed bunting",27,"",""],["Авлига","Oriolus oriolus","Eurasian golden oriole",28,"",""],["Голяма пъструшка","Porzana porzana","Spotted crake",28,"",""],["Гурлю","Cinclus cinclus","White-throated dipper",28,"","Воден кос"],["Зеленоножка","Gallinula chloropus","Eurasian moorhen",28,"","Зеленонога водна кокошка"],["Крещалец","Rallus aquaticus","Water rail",28,"","Воден дърдавец"],["Къдроглав пеликан","Pelecanus crispus","Dalmatian pelican",28,"",""],["Ливаден дърдавец","Crex crex","Corn crake",28,"",""],["Лиска","Fulica atra","Eurasian coot",28,"","Белочела водна кокошка"],["Малка пъструшка","Zapornia pusilla","Baillon's crake",28,"Porzana pusilla",""],["Пъстрогуша завирушка","Prunella collaris","Alpine accentor",28,"",""],["Розов пеликан","Pelecanus onocrotalus","Great white pelican",28,"",""],["Сивогуша завирушка","Prunella modularis","Dunnock",28,"",""],["Средиземноморски буревестник","Puffinus yelkouan","Yelkouan shearwater",28,"",""],["Средна пъструшка","Zapornia parva","Little crake",28,"Porzana parva",""]];
+function listFind(f,v){const n=nrm(v);if(!n)return null;
+  const e=SPL.find(s=>f==='bg'?(nrm(s[0])===n||nrm(s[5])===n):f==='la'?(nrm(s[1])===n||nrm(s[4])===n):f==='en'?nrm(s[2])===n:false);
+  return e?{bg:e[0],la:e[1],en:e[2],fam:FAMS[e[3]]}:null;}
 const fld=k=>document.getElementById('f-'+k);
 const nrm=s=>String(s==null?'':s).trim().toLowerCase();
 const newest=(a,b)=>a.date===b.date?b.id-a.id:b.date.localeCompare(a.date);
@@ -1183,13 +1217,15 @@ function initAuto(){fo={};fsrc={};fc={};
   for(const k of [...NM,'place'])fc[k]=fld(k).value;}
 function speciesFrom(f,v){const n=nrm(v);if(!n)return null;
   const R=[...OBS].sort(newest), hit=R.filter(o=>nrm(o[f])===n);
-  if(!hit.length)return null;
+  if(!hit.length)return listFind(f,v);   // непознат за дневника ти — от вградения списък
   const pick=(rs,k)=>{const o=rs.find(o=>nrm(o[k]));return o?String(o[k]).trim():'';};
   const out={};for(const k of SPF)out[k]=pick(hit,k);
   // липсващо поле (напр. английско) — от записи, които делят някое от имената
   const ids=new Set(NM.filter(k=>out[k]).map(k=>k+'|'+nrm(out[k])));
   const lnk=R.filter(o=>NM.some(k=>ids.has(k+'|'+nrm(o[k]))));
   for(const k of SPF)if(!out[k])out[k]=pick(lnk,k);
+  const L=listFind(f,v)||NM.map(k=>out[k]&&listFind(k,out[k])).find(Boolean);   // липсващото — от списъка
+  if(L)for(const k of SPF)if(!out[k])out[k]=L[k];
   return out;}
 function commitName(f){const v=fld(f).value;
   if(nrm(v)===nrm(fc[f]))return;fc[f]=v;
@@ -1271,6 +1307,32 @@ document.getElementById('geoBtn').onclick=()=>{
       hint(why);},
     {enableHighAccuracy:true,timeout:15000,maximumAge:60000});};
 document.getElementById('geoClr').onclick=()=>{setGeo(null);hint('');fo.geo='';};
+// ---- посочи на картата: пин там, където беше птицата (за записи, писани по-късно, когато GPS би дал дома) ----
+// Започва от координатите в записа, иначе от последния излет или запис с координати, иначе от Казанлък.
+let pickM=null,pickPin=null,pickAt=null;
+const PIN={radius:9,color:'#ffffff',weight:3,fillColor:'#c0392b',fillOpacity:.95};
+function pickSet(ll){pickAt=[+ll[0],+ll[1]];
+  if(pickPin)pickPin.setLatLng(pickAt);else pickPin=L.circleMarker(pickAt,PIN).addTo(pickM);
+  document.getElementById('pickOk').disabled=false;
+  document.getElementById('pickTxt').textContent=pickAt[0].toFixed(5)+', '+pickAt[1].toFixed(5);}
+document.getElementById('geoMap').onclick=async()=>{
+  const d=document.getElementById('pickDlg'),tx=document.getElementById('pickTxt');
+  pickAt=null;document.getElementById('pickOk').disabled=true;tx.textContent='зарежда картата…';d.showModal();
+  if(!await loadLeaflet()){tx.textContent='Картата иска връзка с интернет.';return;}
+  tx.textContent='';
+  if(!pickM){pickM=L.map('pickMap');pickM.on('click',e=>pickSet([e.latlng.lat,e.latlng.lng]));}
+  const T=TILES[tileKey]||TILES.sat;
+  if(pickM.__tk!==tileKey){if(pickM.__tl)pickM.removeLayer(pickM.__tl);
+    const o={maxZoom:T.max,attribution:T.attr,crossOrigin:true};if(T.sub)o.subdomains=T.sub;
+    pickM.__tl=L.tileLayer(T.url,o).addTo(pickM);pickM.__tk=tileKey;}
+  if(pickPin){pickM.removeLayer(pickPin);pickPin=null;}
+  const own=parseGeo(fld('geo').value),from=own||(SESS&&SESS.geo)||(([...OBS].sort(newest).find(o=>o.geo)||{}).geo)||null,
+    at=from?String(from).split(',').map(Number):[42.6194,25.3956];
+  pickM.setView(at,from?15:11);setTimeout(()=>pickM.invalidateSize(),80);
+  if(own)pickSet(at);};
+document.getElementById('pickCancel').onclick=()=>document.getElementById('pickDlg').close();
+document.getElementById('pickOk').onclick=()=>{if(!pickAt)return;
+  setGeo(pickAt[0].toFixed(5)+','+pickAt[1].toFixed(5));fo.geo='user';hint('посочено на картата');document.getElementById('pickDlg').close();};
 // Снимките се трият едва при „Запиши": старата — ако е махната или сменена; новите, които не са
 // влезли в записа — при запис или отказ. „махни" + „Отказ" оставя записа със снимката му.
 let phNew=[];
@@ -1456,7 +1518,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-23.4';
+const VER='2026-10-23.6';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -1609,6 +1671,7 @@ function ufKeyer(list){   // вид = записи с поне едно общо
   const P=new Map(),f=x=>{while(P.get(x)!==x){P.set(x,P.get(P.get(x)));x=P.get(x);}return x;};
   const tk=o=>['la','bg','en'].map(k=>{const v=nrm(o[k]);return v?k+'|'+v:'';}).filter(Boolean);
   for(const o of list){const t=tk(o);for(const x of t)if(!P.has(x))P.set(x,x);for(let i=1;i<t.length;i++){const p=f(t[0]),q=f(t[i]);if(p!==q)P.set(q,p);}}
+  linkList(P,f);   // и при сравнение с приятел: „Гарга“ при единия и „Чавка“ при другия са един вид
   return o=>{const t=tk(o);return t.length?f(t[0]):'';};}
 const spCount=list=>{const kk=ufKeyer(list);return new Set(list.map(kk).filter(Boolean)).size;};
 function friendRows(F){return F.fol.length?F.fol.map(f=>{const d=f.data||{},ob=(d.obs||[]).filter(o=>!o.u);
