@@ -19,8 +19,14 @@ try:
     pg.add_init_script("localStorage.setItem('bird-journal-v3',%s)"%json.dumps(json.dumps(data,ensure_ascii=False)))
     pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(250);return pg
   pg=page()
-  order=pg.evaluate("(()=>{const ids=[...document.querySelectorAll('#form input,#form select,#form textarea')].map(e=>e.id);return [ids.indexOf('f-place'),ids.indexOf('f-geo'),ids.indexOf('f-bg')];})()")
-  check('K1 the coordinates come right after Място and Брой, before the names', (order[0]<order[1]<order[2], order[1]-order[0]), (True,2))
+  order=pg.evaluate("""(()=>{const f=document.getElementById('form'),q=s=>f.querySelector(s);
+    const ids=[...f.querySelectorAll('input,select,textarea')].map(e=>e.id);
+    const seq=['#f-fam','.sts','#f-unsure','#beh','#f-date'].map(q),before=(a,b)=>!!(a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING);
+    return [ids,seq.every((e,i)=>i===0||before(seq[i-1],e))];})()""")
+  check('K1 the form runs: count and name, Latin, English, family, heard/saw/photographed, unsure, behaviour, date and time, place, coordinates, note, photo',
+    order, [['f-count','f-bg','f-la','f-en','f-fam','f-date','f-time','f-place','f-geo','f-note','f-photo'],True])
+  pg.click('#toggle');row=pg.evaluate("(()=>{const r=e=>document.getElementById(e).getBoundingClientRect();return [Math.abs(r('f-count').top-r('f-bg').top)<2,Math.abs(r('f-date').top-r('f-time').top)<2,r('f-count').width<r('f-bg').width/3,document.activeElement.id];})()");pg.click('#cancel')
+  check('K1b on a phone: count beside the name (narrow), date beside time, the cursor in the name', row, [True,True,True,'f-bg'])
   pg.click('#toggle');pg.fill('#f-bg','Кос');pg.click('#geoMap')
   pg.wait_for_function("(typeof pickM!=='undefined')&&pickM&&document.querySelector('#pickMap .leaflet-tile-loaded')",timeout=6000)
   c=pg.evaluate("[pickM.getCenter().lat.toFixed(4),pickM.getCenter().lng.toFixed(4),pickM.getZoom()]")

@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-254 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+255 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -33,7 +33,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_photos.py | 9 | missing or unreadable photos say so; an unreadable pick (e.g. HEIC) warns at once; normal photos still show; Запиши waits for a photo in progress; a failed save says why |
 | test_days.py | 9 | Дневник days fold: newest open, counts, photos load on opening, remembered, search opens matches, saving opens the day |
 | test_species.py | 14 | the built-in list fills new species, finds BSPB's older Latin and second Bulgarian names, never overrides your own names or records; names it links count as one species, also against a friend's journal |
-| test_pick.py | 9 | coordinates under Място, the map pin: where it opens, tapping, Готово, the place not moving the pin, saving, no signal |
+| test_pick.py | 10 | the form's field order (count and name first, the usually pre-filled date, time, place and coordinates lower), the map pin: where it opens, tapping, Готово, the place not moving the pin, saving, no signal |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

@@ -166,6 +166,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 textarea{resize:vertical;min-height:54px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .g4{display:grid;grid-template-columns:1.1fr .9fr 1.4fr .7fr;gap:9px}
+.gcn{display:grid;grid-template-columns:4.6em 1fr;gap:9px}   /* Брой | Българско име — един ред и на телефон */
+.gdt{display:grid;grid-template-columns:1fr 1fr;gap:9px}     /* Дата | Час */
 .sts{display:flex;gap:8px;margin:12px 0}
 .sb{flex:1;padding:11px 6px;border:1px solid var(--line);border-radius:11px;background:transparent;
   color:var(--mut);font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.12s}
@@ -385,24 +387,15 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 </div>
 
 <form class="form" id="form" autocomplete="off">
-  <div class="g4">
-    <div class="fg"><label>Дата</label><input type="date" id="f-date" required></div>
-    <div class="fg"><label>Час</label><input type="time" id="f-time"></div>
-    <div class="fg"><label>Място</label><input id="f-place" list="places" placeholder="Розариум, Казанлък"></div>
+  <!-- редът следва наблюдението: птицата (колко, коя, сигурно ли, какво правеше), после кога и къде (обикновено попълнени), бележка и снимка -->
+  <div class="gcn">
     <div class="fg"><label>Брой</label><input id="f-count" inputmode="numeric" placeholder="1"></div>
+    <div class="fg"><label>Българско име</label><input id="f-bg" list="bgnames" placeholder="Черна червеноопашка"></div>
   </div>
-  <datalist id="places"></datalist>
-  <div class="fg"><label>Координати (по избор)</label>
-    <div class="geo"><input id="f-geo" placeholder="42.61985, 25.39560 — или залепи връзка от Google Maps" style="flex:1;min-width:200px">
-      <button type="button" class="btn" id="geoBtn">GPS</button>
-      <button type="button" class="btn" id="geoMap">на картата</button>
-      <button type="button" class="btn" id="geoClr">изчисти</button></div>
-    <div id="geoHint" class="note2" style="margin-top:5px;max-width:none"></div></div>
-  <div class="fg"><label>Българско име</label><input id="f-bg" list="bgnames" placeholder="Черна червеноопашка"></div>
   <datalist id="bgnames"></datalist>
   <div class="g2">
-    <div class="fg"><label>English</label><input id="f-en" list="ennames" placeholder="Black Redstart"></div>
     <div class="fg"><label>Latin</label><input id="f-la" list="lanames" placeholder="Phoenicurus ochruros"></div>
+    <div class="fg"><label>English</label><input id="f-en" list="ennames" placeholder="Black Redstart"></div>
   </div>
   <datalist id="ennames"></datalist><datalist id="lanames"></datalist>
   <div class="fg"><label>Семейство / група</label><select id="f-fam"></select></div>
@@ -417,6 +410,18 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="fg"><div class="behrow"><label style="margin-bottom:4px">Поведение</label>
     <button type="button" class="behedit" id="behEdit">редактирай</button></div>
     <div class="beh" id="beh"></div></div>
+  <div class="gdt">
+    <div class="fg"><label>Дата</label><input type="date" id="f-date" required></div>
+    <div class="fg"><label>Час</label><input type="time" id="f-time"></div>
+  </div>
+  <div class="fg"><label>Място</label><input id="f-place" list="places" placeholder="Розариум, Казанлък"></div>
+  <datalist id="places"></datalist>
+  <div class="fg"><label>Координати (по избор)</label>
+    <div class="geo"><input id="f-geo" placeholder="42.61985, 25.39560 — или залепи връзка от Google Maps" style="flex:1;min-width:200px">
+      <button type="button" class="btn" id="geoBtn">GPS</button>
+      <button type="button" class="btn" id="geoMap">на картата</button>
+      <button type="button" class="btn" id="geoClr">изчисти</button></div>
+    <div id="geoHint" class="note2" style="margin-top:5px;max-width:none"></div></div>
   <div class="fg"><label>Бележка</label><textarea id="f-note" placeholder="перушина, време, с кого, какво правеше…"></textarea></div>
   <div class="fg"><label>Снимка (по избор)</label>
     <div class="pho"><input type="file" id="f-photo" accept="image/*" style="flex:1;min-width:170px">
@@ -1518,7 +1523,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-23.6';
+const VER='2026-10-23.7';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
