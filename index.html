@@ -1052,6 +1052,7 @@ function showCluster(i){
     '<div class="sl">'+arr.map(r=>'<span class="v'+r.L+'">'+esc(r.nm)+(r.n>1?' ·'+r.n:'')+'</span>').join('')+'</div>'+
     (()=>{const ph=c.obs.filter(o=>o.photo).slice(-8);
       return ph.length?'<div class="thstrip">'+ph.map(o=>'<div class="th" data-th="'+o.photo+'"></div>').join('')+'</div>':'';})();
+  loadThumbs();   // без това квадратчетата за снимки остават празни
   for(const g of document.querySelectorAll('.pt'))g.classList.toggle('sel',g.dataset.c==String(i));
   if(window.__map&&window.__C&&window.__C[i]){
     const c=window.__C[i];
@@ -1455,7 +1456,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-23.3';
+const VER='2026-10-23.4';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
