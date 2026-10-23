@@ -1,6 +1,6 @@
 #!/bin/bash
 # Prepares a Claude sandbox (Ubuntu, Python 3, Node) for the Птичи дневник tests.
-# Unzip the kit into /home/claude first: the tests use paths under /home/claude.
+# Run it in /home/claude (prepare.sh puts everything there): the tests use paths under /home/claude.
 set -e
 cd "$(dirname "$0")"
 pip install -q --break-system-packages psycopg2-binary astral pillow >/dev/null 2>&1 || true
@@ -14,4 +14,5 @@ chmod 644 /tmp/role.sql && su postgres -c "psql -q -f /tmp/role.sql"
 mkdir -p sb && cd sb
 [ -x postgrest ] || { curl -sSL -o pg.tar.xz https://github.com/PostgREST/postgrest/releases/download/v12.2.12/postgrest-v12.2.12-linux-static-x86-64.tar.xz && tar xJf pg.tar.xz; }
 [ -f package/dist/umd/supabase.js ] || { npm pack @supabase/supabase-js@2.117.3 >/dev/null 2>&1 && tar xzf supabase-supabase-js-2.117.3.tgz; }
+[ -f leaflet/leaflet.js ] || { mkdir -p leaflet && cd leaflet && npm pack leaflet@1.9.4 >/dev/null 2>&1 && tar xzf leaflet-1.9.4.tgz && cp package/dist/leaflet.js . && cd ..; }   # the map tests serve this in place of cdnjs
 echo "ready: run bash run_all.sh"

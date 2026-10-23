@@ -221,6 +221,9 @@ textarea{resize:vertical;min-height:54px}
 .th img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
 .th.none svg{width:30px;height:auto;fill:var(--line2);opacity:.75}
 .th.none svg.sil{width:42px}
+.th.bad,.ph.bad{border:1.5px dashed var(--line2);color:var(--mut);display:flex;align-items:center;justify-content:center;font-weight:600}
+.ph.bad{min-height:44px;padding:8px 12px;margin-top:8px;border-radius:10px;justify-content:flex-start}
+.phmsg{font-size:13px;font-weight:500}
 .thstrip{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
 .thstrip .th{width:62px;height:62px}
 .cnt{font-family:Fraunces,Georgia,serif;font-size:19px;color:var(--mut);flex:0 0 auto;text-align:right}
@@ -830,10 +833,25 @@ function clusters(){
     const [la,lo]=o.geo.split(',').map(Number);
     if(!isFinite(la)||!isFinite(lo))continue;
     const name=(o.place||'').trim()||la.toFixed(3)+', '+lo.toFixed(3);
-    if(!g[name])g[name]={name,lat:0,lon:0,n:0,obs:[]};
+    if(!g[name])g[name]={name,named:!!(o.place||'').trim(),lat:0,lon:0,n:0,obs:[]};
     g[name].lat+=la;g[name].lon+=lo;g[name].n++;g[name].obs.push(o);
   }
   return Object.values(g).map(c=>({...c,lat:c.lat/c.n,lon:c.lon/c.n}));
+}
+// Точки, които на екрана биха стояли по-близо от gap пиксела, се сливат в една: най-голямата (с най-много
+// записи) поема съседите си. В „Схема“ — по целия обхват; в „Истинска карта“ — наново при всяко приближаване,
+// така че отблизо пак се разделят. Записите не се променят: сливането е само в картината.
+function mergeNear(C,P,gap){
+  const out=[];
+  for(const c of [...C].sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name,'bg'))){
+    const [x,y]=P(c), t=out.find(m=>Math.hypot(m.x-x,m.y-y)<gap);
+    if(!t){out.push({...c,x,y,parts:[c]});continue;}
+    const w=t.n+c.n;t.parts.push(c);t.obs=t.obs.concat(c.obs);
+    t.lat=(t.lat*t.n+c.lat*c.n)/w;t.lon=(t.lon*t.n+c.lon*c.n)/w;t.x=(t.x*t.n+x*c.n)/w;t.y=(t.y*t.n+y*c.n)/w;t.n=w;}
+  for(const m of out){const lead=m.parts.find(p=>p.named);
+    m.name=lead?lead.name:m.lat.toFixed(3)+', '+m.lon.toFixed(3);
+    m.label=m.name+(m.parts.length>1?' +'+(m.parts.length-1):'');}
+  return out;
 }
 function bounds(C){
   const lats=C.map(c=>c.lat),lons=C.map(c=>c.lon);
@@ -874,12 +892,14 @@ function renderMap(el){
   // ---- grid ----
   const B=bounds(C), W=900, H=Math.max(340,Math.min(680,Math.round(W*B.spanY/B.spanX)));
   const X=lo=>((lo-B.n1)*B.kx)/B.spanX*W, Y=la=>H-((la-B.m1)/B.spanY*H);
-  const maxSp=Math.max(...C.map(c=>new Set(c.obs.map(key)).size));
+  const dw=Math.max(280,el.clientWidth||W), M=mergeNear(C,c=>[X(c.lon),Y(c.lat)],34*W/dw);   // ~34 пиксела на екрана
+  window.__C=M;
+  const maxSp=Math.max(...M.map(c=>new Set(c.obs.map(key)).size));
   let g='';
   for(let i=1;i<6;i++){g+='<line class="gridln" x1="0" y1="'+(H*i/6)+'" x2="'+W+'" y2="'+(H*i/6)+'"/>';
     g+='<line class="gridln" x1="'+(W*i/6)+'" y1="0" x2="'+(W*i/6)+'" y2="'+H+'"/>';}
   let pts='';
-  C.forEach((c,i)=>{
+  M.forEach((c,i)=>{
     const sp=new Set(c.obs.map(key)).size;
     const r=9+Math.sqrt(sp/Math.max(1,maxSp))*21;
     const x=X(c.lon).toFixed(1), y=Y(c.lat).toFixed(1);
@@ -887,7 +907,7 @@ function renderMap(el){
       '<circle class="halo" cx="'+x+'" cy="'+y+'" r="'+r.toFixed(1)+'"/>'+
       '<circle class="dot" cx="'+x+'" cy="'+y+'" r="6"/>'+
       '<text x="'+x+'" y="'+(+y+r+14).toFixed(1)+'" text-anchor="middle">'+
-        esc(c.name.length>26?c.name.slice(0,24)+'…':c.name)+'</text></g>';});
+        esc(c.label.length>26?c.label.slice(0,24)+'…':c.label)+'</text></g>';});
   const kmTotal=B.spanX*111.32, target=Math.max(.2,Math.round(kmTotal/4*10)/10), barPx=target/kmTotal*W;
   const sc='<g class="scale" transform="translate(18,'+(H-18)+')"><line x1="0" y1="0" x2="'+barPx.toFixed(1)+'" y2="0"/>'+
     '<line x1="0" y1="-5" x2="0" y2="5"/><line x1="'+barPx.toFixed(1)+'" y1="-5" x2="'+barPx.toFixed(1)+'" y2="5"/>'+
@@ -969,26 +989,29 @@ async function realMap(C){
   layer.addTo(map);
   setTimeout(()=>{if(!gotTile&&!dead){dead=true;mapMode='grid';render();
     msg('картата не се зареди навреме');}},9000);
-  const maxSp=Math.max(...C.map(c=>new Set(c.obs.map(key)).size));
-  const group=L.featureGroup();
-  C.forEach((c,i)=>{
-    const sp=new Set(c.obs.map(key)).size;
-    const r=9+Math.sqrt(sp/Math.max(1,maxSp))*17;
-    const m=L.circleMarker([c.lat,c.lon],{radius:r,color:'#ffffff',weight:2.5,
-      fillColor:(tileKey==='sat'?'#e8503a':'#4a7c4e'),fillOpacity:.8,interactive:true});
-    m.on('click',()=>showCluster(i));
-    m.bindTooltip(c.name+' · '+sp+' вида',{direction:'top',offset:[0,-r]});
-    group.addLayer(m);
-  });
-  group.addTo(map);
+  const group=L.featureGroup().addTo(map);
+  const draw=()=>{   // при всяко приближаване: сливане наново, в пиксели на екрана
+    group.clearLayers();
+    const M=mergeNear(C,c=>{const q=map.latLngToContainerPoint([c.lat,c.lon]);return [q.x,q.y];},34);
+    window.__C=M;
+    const maxSp=Math.max(...M.map(c=>new Set(c.obs.map(key)).size));
+    M.forEach((c,i)=>{
+      const sp=new Set(c.obs.map(key)).size;
+      const r=9+Math.sqrt(sp/Math.max(1,maxSp))*17;
+      const m=L.circleMarker([c.lat,c.lon],{radius:r,color:'#ffffff',weight:2.5,
+        fillColor:(tileKey==='sat'?'#e8503a':'#4a7c4e'),fillOpacity:.8,interactive:true});
+      m.on('click',()=>showCluster(i));
+      m.bindTooltip(c.label+' · '+sp+' вида',{direction:'top',offset:[0,-r]});
+      group.addLayer(m);});};
+  map.on('zoomend',draw);
   const fit=()=>{
     map.invalidateSize(false);
-    const b=group.getBounds();
+    const b=L.latLngBounds(C.map(c=>[c.lat,c.lon]));
     if(!b.isValid())return;
     if(C.length===1)map.setView([C[0].lat,C[0].lon],14);
     else map.fitBounds(b.pad(0.25),{animate:false});
   };
-  fit();
+  fit();draw();
   requestAnimationFrame(fit);
   setTimeout(fit,260);
   window.__map=map;
@@ -1001,7 +1024,11 @@ function showCluster(i){
     m[k].L=Math.max(m[k].L,lvl(o));m[k].n++;}
   const arr=Object.values(m).sort((a,b)=>b.L-a.L||String(a.nm).localeCompare(String(b.nm),'bg'));
   const ds=c.obs.map(o=>o.date).sort();
+  const pp=c.parts||[],named=pp.filter(p=>p.named).map(p=>esc(p.name)),un=pp.length-named.length,
+    unT=un?un+(un===1?' точка без име':' точки без име'):'';
   document.getElementById('mp').innerHTML='<h3>'+esc(c.name)+'</h3>'+
+    (pp.length>1?'<div class="meta">Събрани тук: '+(named.length&&unT?named.join(', ')+' и '+unT:named.length?named.slice(0,-1).join(', ')+(named.length>1?' и ':'')+named[named.length-1]:unT)+
+      '. Приближи „Истинска карта“, за да ги видиш поотделно.</div>':'')+
     '<div class="meta">'+arr.length+' вида · '+c.n+' наблюдения · '+human(ds[0])+
     (ds[0]!==ds[ds.length-1]?' – '+human(ds[ds.length-1]):'')+
     ' · <a href="https://www.google.com/maps?q='+c.lat.toFixed(5)+','+c.lon.toFixed(5)+'" target="_blank" rel="noopener" style="color:var(--mut)">в Google Maps</a></div>'+
@@ -1080,15 +1107,20 @@ beeeater:'<ellipse cx="52" cy="46" rx="9.5" ry="17" transform="rotate(18 52 46)"
 raptor:'<ellipse cx="50" cy="47" rx="7" ry="14"/> <circle cx="50" cy="31" r="5"/> <polygon points="45,40 16,33 6,33 2,37 8,38 2,41 8,42 3,45 9,46 5,49 12,50 44,54"/> <polygon points="55,40 84,33 94,33 98,37 92,38 98,41 92,42 97,45 91,46 95,49 88,50 56,54"/> <path d="M44,58 L56,58 L62,71 Q50,76 38,71 Z"/>'};
 const FAMSIL={'Грабливи':'raptor','Сови':'owl','Чапли и щъркели':'heron','Патици и гъски':'duck','Гмурци и корморани':'cormorant','Дъждосвирцови':'wader','Чайки и рибарки':'gull','Кокошови':'partridge','Гълъби':'pigeon','Кукувици и козодои':'cuckoo','Бързолети и лястовици':'swallow','Пчелояди и синявици':'beeeater','Кълвачи':'woodpecker','Зидарки и дърволазки':'nuthatch','Вранови':'crow','Сврачки':'shrike','Чучулиги':'lark','Стърчиопашки и бъбрици':'wagtail','Дроздове':'songbird','Червеноопашки и каменарчета':'songbird','Коприварчета и певци':'songbird','Мухоловки':'songbird','Синигери':'songbird','Орехчета и кралчета':'songbird','Скорци':'songbird','Врабчета':'songbird','Чинки':'finch','Овесарки':'finch'};
 const silFor=fam=>{const k=FAMSIL[fam];return k?'<svg class="sil" viewBox="0 0 100 100" aria-hidden="true">'+SIL[k]+'</svg>':BIRDGLYPH;};
+// Снимка, която я няма на устройството или не се отваря, се казва на глас, вместо да изчезне тихо.
+const PH_MISS='снимката я няма на това устройство', PH_BAD='снимката не се отваря';
+function phImg(d,b,small){const i=new Image();i.alt='';
+  i.onerror=()=>{d.classList.add('bad');d.title=PH_BAD;d.innerHTML=small?'!':'<span class="phmsg">'+PH_BAD+'</span>';};
+  i.src=URL.createObjectURL(b);d.innerHTML='';d.appendChild(i);}
 async function loadThumbs(){
   for(const d of document.querySelectorAll('[data-th]')){
     if(d.dataset.loaded)continue;
-    const b=await getPhoto(d.dataset.th);
-    if(b){d.innerHTML='<img src="'+URL.createObjectURL(b)+'" alt="">';d.dataset.loaded='1';d.classList.add('has');}
+    const b=await getPhoto(d.dataset.th);d.dataset.loaded='1';
+    if(b){phImg(d,b,true);d.classList.add('has');}else{d.classList.add('bad');d.title=PH_MISS;d.innerHTML='?';}
   }
 }
 async function loadPhotos(){for(const d of document.querySelectorAll('[data-ph]')){
-  const b=await getPhoto(d.dataset.ph);if(b)d.innerHTML='<img src="'+URL.createObjectURL(b)+'" alt="">';}}
+  const b=await getPhoto(d.dataset.ph);if(b)phImg(d,b,false);else{d.classList.add('bad');d.innerHTML='<span class="phmsg">'+PH_MISS+'</span>';}}}
 function fillLists(){
   const set=(id,v)=>document.getElementById(id).innerHTML=v.map(x=>'<option value="'+esc(x)+'">').join('');
   set('places',uniq(OBS.map(o=>o.place)));set('bgnames',uniq(OBS.map(o=>o.bg)));
@@ -1226,6 +1258,7 @@ let phNew=[];
 function dropNew(keep){for(const id of phNew)if(id!==keep)delPhoto(id);phNew=[];}
 document.getElementById('f-photo').onchange=async e=>{
   const f=e.target.files[0];if(!f)return;const blob=await shrink(f);
+  if(!blob){e.target.value='';alert('Тази снимка не може да се отвори в браузъра (вероятно е във формат HEIC). Избери друга или снимай в JPEG.');return;}
   const pid='ph'+Date.now()+Math.random().toString(36).slice(2,7);
   if(await putPhoto(pid,blob)){phNew.push(pid);photo=pid;const pv=document.getElementById('prev');
     pv.src=URL.createObjectURL(blob);pv.style.display='';document.getElementById('rmph').style.display='';}
@@ -1237,8 +1270,8 @@ function shrink(file){return new Promise(res=>{const img=new Image();
   img.onload=()=>{const M=1400;let w=img.width,h=img.height;
     if(w>M||h>M){const r=Math.min(M/w,M/h);w=Math.round(w*r);h=Math.round(h*r);}
     const c=document.createElement('canvas');c.width=w;c.height=h;
-    c.getContext('2d').drawImage(img,0,0,w,h);c.toBlob(b=>res(b||file),'image/jpeg',0.82);};
-  img.onerror=()=>res(file);img.src=URL.createObjectURL(file);});}
+    c.getContext('2d').drawImage(img,0,0,w,h);c.toBlob(b=>res(b||null),'image/jpeg',0.82);};
+  img.onerror=()=>res(null);img.src=URL.createObjectURL(file);});}   // неотваряема снимка не се пази мълчешком
 form.onsubmit=e=>{e.preventDefault();
   for(const f of NM)commitName(f);commitPlace();   // ако е изписано докрай и записано без излизане от полето
   const g=i=>document.getElementById('f-'+i).value.trim();
@@ -1392,7 +1425,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-22.8';
+const VER='2026-10-23.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

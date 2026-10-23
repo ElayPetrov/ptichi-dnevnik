@@ -17,5 +17,7 @@ run twoway   timeout 400 python3 test_twoway.py 8948
 run guard    timeout 300 python3 test_guard.py 8949
 run sil      python3 test_sil.py 8951
 run season   python3 test_season.py 8952
+run map      python3 test_map.py 8953
+run photos   python3 test_photos.py 8954
 printf '%-9s %s of 4 save taps landed\n' tap "$(python3 tap_test.py 8950 ptichi-dnevnik.html | grep -c "'saved'")"
 printf '%-9s ' sun; python3 sun_check.py | tail -1
