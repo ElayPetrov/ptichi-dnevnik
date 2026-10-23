@@ -3,6 +3,9 @@ import json,subprocess,sys,time,re
 sys.path.insert(0,'/home/claude')
 from sbstack import Stack
 from playwright.sync_api import sync_playwright
+def rec(pg,sel):   # Дневник shows only the newest day unfolded, so open the record's day before tapping its button
+  pg.evaluate("s=>{const b=document.querySelector(s);const g=b&&b.closest('.dayg.shut');if(g)g.querySelector('[data-dayt]').click();}",sel)
+  pg.click(sel)
 R=lambda **k:{**dict(id=0,date='',time='',place='',count='',bg='',en='',la='',fam='',note='',h=0,s=1,p=0,beh=[],geo=None,photo=None),**k}
 port=int(sys.argv[1]);fails=0;SB='https://test-proj.supabase.co'
 src=open('ptichi-dnevnik.html',encoding='utf-8').read()
@@ -43,10 +46,10 @@ try:
   ph.wait_for_timeout(5500);sync(lap);sync(ph)
   check('W4 records added on both devices end up on both', (names(ph),names(lap),srv_names()), (['Кос','Сврака','Сойка','Чапла','Щиглец'],)*3)
   # delete on the laptop: must not come back from the phone
-  lap.click('.tab[data-v="log"]');lap.click(f'[data-del="{3}"]');lap.wait_for_timeout(5500);sync(ph);sync(lap)
+  lap.click('.tab[data-v="log"]');rec(lap,f'[data-del="{3}"]');lap.wait_for_timeout(5500);sync(ph);sync(lap)
   check('W5 a record deleted on the laptop disappears on the phone and stays gone', ('Кос' in names(ph),'Кос' in names(lap),'Кос' in srv_names()), (False,False,False))
   # edit on the phone
-  ph.click('.tab[data-v="log"]');ph.click('[data-ed="1"]');ph.fill('#f-note','на покрива');ph.click('#savebtn');ph.wait_for_timeout(5500);sync(lap)
+  ph.click('.tab[data-v="log"]');rec(ph,'[data-ed="1"]');ph.fill('#f-note','на покрива');ph.click('#savebtn');ph.wait_for_timeout(5500);sync(lap)
   check('W6 an edit on the phone reaches the laptop', lap.evaluate("OBS.find(o=>o.id===1).note"), 'на покрива')
   # outings
   ph.click('#sessStart');ph.fill('#f-bg','Скорец');ph.click('#savebtn');ph.click('#sessEnd');ph.click('[data-done="1"]');ph.wait_for_timeout(5500);sync(lap)
@@ -55,10 +58,10 @@ try:
   lap.click('.tab[data-v="outs"]');lap.locator('.ou').first.click();lap.click('[data-odel]');lap.wait_for_timeout(5500);sync(ph)
   check('W8 ...deleted on the laptop, it goes from the phone too; its records stay', (ph.evaluate("OUTS.length"),'Скорец' in names(ph)), (0,True))
   # photos
-  ph.click('.tab[data-v="log"]');ph.click('[data-ed="2"]');ph.set_input_files('#f-photo','/home/claude/a.jpg');ph.wait_for_function("phNew.length===1");ph.click('#savebtn')
+  ph.click('.tab[data-v="log"]');rec(ph,'[data-ed="2"]');ph.set_input_files('#f-photo','/home/claude/a.jpg');ph.wait_for_function("phNew.length===1");ph.click('#savebtn')
   ph.wait_for_timeout(5500);pid=ph.evaluate("OBS.find(o=>o.id===2).photo");sync(lap)
   check("W9 a photo taken on the phone is pulled onto the laptop", lap.evaluate(f"getPhoto('{pid}').then(b=>!!b)"), True)
-  ph.click('[data-ed="2"]');ph.click('#rmph');ph.click('#savebtn');ph.wait_for_timeout(5500)
+  rec(ph,'[data-ed="2"]');ph.click('#rmph');ph.click('#savebtn');ph.wait_for_timeout(5500)
   uid=st.uid('ivan@test.bg');check('W10 removing it on the phone deletes the file from storage', (uid+'/'+pid+'.jpg') in st.files, False)
   # a race: another device writes between this device's download and its upload
   def other_device_writes():

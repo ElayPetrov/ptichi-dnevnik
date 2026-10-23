@@ -113,6 +113,12 @@ h1{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:clamp(28px,6vw,4
 .chips span{font-size:12.5px;padding:3px 9px;border-radius:8px;background:var(--bg2)}
 /* изгрев и залез */
 .day .sun{display:block;font-family:Inter,system-ui,sans-serif;font-size:12px;color:var(--mut);margin-top:1px}
+button.day{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;
+  padding:0 0 5px;cursor:pointer;font-family:Fraunces,Georgia,serif;font-size:17px;color:var(--mut);-webkit-tap-highlight-color:transparent}
+.dchev{display:inline-block;width:1em;margin-right:3px;text-align:center;transition:transform .15s;transform-origin:50% 58%}
+.dayg.shut .dchev{transform:rotate(-90deg)}
+.dayg.shut .dayb{display:none}
+.dcount{font-family:Inter,system-ui,sans-serif;font-size:13px;margin-left:8px}
 /* страница на вида */
 .spd{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 16px 14px;margin:10px 0 12px}
 .spd .big{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:26px;line-height:1.15}
@@ -592,13 +598,24 @@ function render(){
   if(view==='outs')return renderOuts(el);
   return renderPlaces(el);
 }
+// Дните в Дневник се свиват и разгъват. По подразбиране е отворен само най-новият ден; щом пипнеш ден,
+// изборът се помни на това устройство. При търсене или филтър всички дни с резултати са отворени.
+const KDAYS='bird-journal-days';
+let DAYS=(()=>{try{return JSON.parse(localStorage.getItem(KDAYS))||{};}catch(e){return {};}})();
+const dayOpen=(d,newest)=>q.trim()||filt!=='all'?true:(d in DAYS?DAYS[d]:d===newest);
+function setDay(d,open){DAYS[d]=open;try{localStorage.setItem(KDAYS,JSON.stringify(DAYS));}catch(e){}}
 function renderLog(el){
   const list=OBS.filter(pass).sort((a,b)=>a.date===b.date?b.id-a.id:b.date.localeCompare(a.date));
   if(!list.length){el.innerHTML='<div class="empty">Нищо не съвпада.</div>';return;}
   const F=firsts();let h='',cur='';
+  const byDay={};for(const o of list)(byDay[o.date]=byDay[o.date]||[]).push(o);
   for(const o of list){
-    if(o.date!==cur){cur=o.date;const S=sunFor(cur);
-      h+='<div class="day">'+human(cur)+(S&&S.rise!=null?'<span class="sun">зора '+fhm(S.dawn)+' · изгрев '+fhm(S.rise)+' · залез '+fhm(S.set)+'</span>':'')+'</div>';}
+    if(o.date!==cur){if(cur)h+='</div></div>';cur=o.date;const S=sunFor(cur),dl=byDay[cur],open=dayOpen(cur,list[0].date),
+        nsp=new Set(dl.filter(x=>!x.u).map(key).filter(Boolean)).size;
+      h+='<div class="dayg'+(open?'':' shut')+'"><button class="day" data-dayt="'+cur+'" aria-expanded="'+open+'">'+
+        '<span class="dchev" aria-hidden="true">▾</span>'+human(cur)+
+        '<span class="dcount">'+dl.length+(dl.length===1?' запис':' записа')+' · '+nsp+(nsp===1?' вид':' вида')+'</span>'+
+        (S&&S.rise!=null?'<span class="sun">зора '+fhm(S.dawn)+' · изгрев '+fhm(S.rise)+' · залез '+fhm(S.set)+'</span>':'')+'</button><div class="dayb">';}
     h+='<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
       '<div class="x"><button data-ed="'+o.id+'">промени</button><button data-del="'+o.id+'">×</button></div>'+
       '<div class="nm">'+esc(o.bg||o.en||o.la)+(o.count?' <span style="color:var(--mut);font-weight:400">· '+esc(o.count)+'</span>':'')+'</div>'+
@@ -612,7 +629,7 @@ function renderLog(el){
         (o.p?'<span class="tag p">снимах</span>':'')+
         (o.beh||[]).map(b=>'<span class="tag b">'+esc(b)+'</span>').join('')+'</div>'+
       '<button class="again" data-again="'+o.id+'">+ друг вид тук</button></div>';}
-  el.innerHTML=h;loadPhotos();}
+  el.innerHTML=h+'</div></div>';loadPhotos();}
 function renderLife(el){
   if(spSel)return renderSpecies(el,spSel);
   let arr=Object.values(speciesMap());const ql=q.trim().toLowerCase();
@@ -1120,6 +1137,7 @@ async function loadThumbs(){
   }
 }
 async function loadPhotos(){for(const d of document.querySelectorAll('[data-ph]')){
+  if(d.dataset.loaded||d.closest('.dayg.shut'))continue;d.dataset.loaded='1';   // свитите дни чакат да се отворят
   const b=await getPhoto(d.dataset.ph);if(b)phImg(d,b,false);else{d.classList.add('bad');d.innerHTML='<span class="phmsg">'+PH_MISS+'</span>';}}}
 function fillLists(){
   const set=(id,v)=>document.getElementById(id).innerHTML=v.map(x=>'<option value="'+esc(x)+'">').join('');
@@ -1256,13 +1274,18 @@ document.getElementById('geoClr').onclick=()=>{setGeo(null);hint('');fo.geo='';}
 // влезли в записа — при запис или отказ. „махни" + „Отказ" оставя записа със снимката му.
 let phNew=[];
 function dropNew(keep){for(const id of phNew)if(id!==keep)delPhoto(id);phNew=[];}
-document.getElementById('f-photo').onchange=async e=>{
+// Докато снимката се смалява и записва, „Запиши“ я изчаква — иначе бързо натискане записва без нея.
+let photoBusy=null;
+document.getElementById('f-photo').onchange=e=>{photoBusy=(async()=>{try{
   const f=e.target.files[0];if(!f)return;const blob=await shrink(f);
   if(!blob){e.target.value='';alert('Тази снимка не може да се отвори в браузъра (вероятно е във формат HEIC). Избери друга или снимай в JPEG.');return;}
   const pid='ph'+Date.now()+Math.random().toString(36).slice(2,7);
-  if(await putPhoto(pid,blob)){phNew.push(pid);photo=pid;const pv=document.getElementById('prev');
+  if(await putPhoto(pid,blob)){if(!form.classList.contains('on')){delPhoto(pid);return;}   // формата е затворена междувременно
+    phNew.push(pid);photo=pid;const pv=document.getElementById('prev');
     pv.src=URL.createObjectURL(blob);pv.style.display='';document.getElementById('rmph').style.display='';}
-  else alert('Снимката не можа да се запише в този браузър.');};
+  else{e.target.value='';alert('Снимката не можа да се запише в този браузър.');}
+  }catch(err){e.target.value='';alert('Снимката не се записа: '+(err&&err.message||err));}   // никога мълчешком
+  })().finally(()=>{photoBusy=null;});};
 document.getElementById('rmph').onclick=()=>{photo=null;
   document.getElementById('prev').style.display='none';document.getElementById('rmph').style.display='none';
   document.getElementById('f-photo').value='';};
@@ -1273,6 +1296,8 @@ function shrink(file){return new Promise(res=>{const img=new Image();
     c.getContext('2d').drawImage(img,0,0,w,h);c.toBlob(b=>res(b||null),'image/jpeg',0.82);};
   img.onerror=()=>res(null);img.src=URL.createObjectURL(file);});}   // неотваряема снимка не се пази мълчешком
 form.onsubmit=e=>{e.preventDefault();
+  if(photoBusy){const sb=document.getElementById('savebtn'),t0=sb.textContent;sb.disabled=true;sb.textContent='Снимката се записва…';
+    photoBusy.then(()=>{sb.disabled=false;sb.textContent=t0;form.requestSubmit?form.requestSubmit():form.onsubmit(new Event('submit'));});return;}
   for(const f of NM)commitName(f);commitPlace();   // ако е изписано докрай и записано без излизане от полето
   const g=i=>document.getElementById('f-'+i).value.trim();
   if(!g('bg')&&!g('en')&&!g('la')){alert('Впиши поне едно име.');return;}
@@ -1283,6 +1308,7 @@ form.onsubmit=e=>{e.preventDefault();
   if(SESS&&!edit)rec.sess=SESS.id;
   let ok=true;const old=edit?((OBS.find(o=>o.id===edit)||{}).photo||null):null;
   if(edit){const i=OBS.findIndex(o=>o.id===edit);if(i>=0)OBS[i]={...OBS[i],...rec};else ok=false;}else OBS.push(rec);
+  if(ok&&rec.date)setDay(rec.date,true);
   save();
   if(ok&&old&&old!==rec.photo){delPhoto(old);photoGone(old);}
   dropNew(ok?rec.photo:null);
@@ -1308,6 +1334,10 @@ document.getElementById('sess').addEventListener('click',e=>{const b=e.target.cl
 document.addEventListener('mouseover',e=>{const g=e.target.closest('.pt');if(g)showCluster(+g.dataset.c);});
 document.addEventListener('focusin',e=>{const g=e.target.closest&&e.target.closest('.pt');if(g)showCluster(+g.dataset.c);});
 document.addEventListener('click',e=>{
+  const dt=e.target.closest('[data-dayt]');
+  if(dt){const g=dt.closest('.dayg'),open=g.classList.contains('shut');g.classList.toggle('shut',!open);dt.setAttribute('aria-expanded',open);
+    if(!q.trim()&&filt==='all')setDay(dt.dataset.dayt,open);   // при търсене не се помни
+    if(open)loadPhotos();return;}
   const tk=e.target.closest('[data-tk]');
   if(tk){tileKey=tk.dataset.tk;try{localStorage.setItem('bird-journal-tiles',tileKey);}catch(x){}render();return;}
   const ocd=e.target.closest('[data-ocard]');
@@ -1425,7 +1455,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-23.1';
+const VER='2026-10-23.3';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

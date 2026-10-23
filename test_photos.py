@@ -11,6 +11,10 @@ try:
  with sync_playwright() as p:
   b=p.chromium.launch();pg=b.new_page();errs=[];alerts=[]
   pg.on('pageerror',lambda e:errs.append(str(e)));pg.on('dialog',lambda d:(alerts.append(d.message),d.accept()))
+  def shows(nm):   # waits for the record's photo to actually decode, instead of a fixed pause
+    try:
+      pg.wait_for_function("nm=>{const o=[...document.querySelectorAll('.o')].find(e=>e.textContent.includes(nm));const i=o&&o.querySelector('.ph img');return !!i&&i.complete&&i.naturalWidth>0;}",arg=nm,timeout=5000);return True
+    except Exception: return False
   pg.add_init_script("localStorage.setItem('bird-journal-v3',%s)"%json.dumps(json.dumps(data,ensure_ascii=False)))
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(250)
   pg.evaluate("""new Promise(r=>{const q=indexedDB.open('birdphotos',1);q.onsuccess=()=>{const t=q.result.transaction('p','readwrite');
@@ -27,9 +31,16 @@ try:
   check('P4 picking a photo the browser cannot open warns at once', len(alerts)==1 and 'HEIC' in alerts[0], True)
   check('P5 ...and attaches nothing', (pg.is_visible('#prev'),pg.evaluate("photo")), (False,None))
   pg.set_input_files('#f-photo','a.jpg');pg.wait_for_function("document.getElementById('prev').naturalWidth>0");pg.click('#savebtn');pg.wait_for_timeout(400)
-  ok=pg.evaluate("(()=>{const i=[...document.querySelectorAll('.o')].find(e=>e.textContent.includes('Кос')).querySelector('.ph img');return !!i&&i.naturalWidth>0;})()")
-  check('P6 a normal photo still saves and shows in Дневник', ok, True)
-  check('P7 no page errors', errs, [])
+  check('P6 a normal photo still saves and shows in Дневник', shows('Кос'), True)
+  pg.click('#toggle');pg.fill('#f-bg','Гугутка')
+  pg.set_input_files('#f-photo','b.jpg');pg.click('#savebtn');pg.wait_for_timeout(600)   # Запиши straight away, before the photo is processed
+  check('P7 Запиши tapped before the photo is processed: it waits, and the photo is saved and shows', shows('Гугутка'), True)
+  # if storing is impossible for any other reason, the reason is shown instead of nothing happening
+  n0=len(alerts);pg.click('#toggle');pg.fill('#f-bg','Щиглец')
+  pg.evaluate("(()=>{IDBObjectStore.prototype.put=function(){throw new DOMException('няма място (тест)','QuotaExceededError')};return 1;})()")
+  pg.set_input_files('#f-photo','a.jpg');pg.wait_for_timeout(600)
+  check('P8 a photo that cannot be stored says why, at once', (len(alerts)-n0, alerts[-1] if len(alerts)>n0 else ''), (1,'Снимката не се записа: няма място (тест)'))
+  check('P9 no page errors', errs, [])
   b.close()
 finally: srv.terminate()
 print('FAILURES:',fails)

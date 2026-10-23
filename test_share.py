@@ -5,6 +5,9 @@ from playwright.sync_api import sync_playwright
 R=lambda **k:{**dict(id=0,date='',time='',place='',count='',bg='',en='',la='',fam='',note='',h=0,s=1,p=0,beh=[],geo=None,photo=None),**k}
 port=int(sys.argv[1]);fails=0;SB='https://test-proj.supabase.co'
 import re
+def rec(pg,sel):   # Дневник shows only the newest day unfolded, so open the record's day before tapping its button
+  pg.evaluate("s=>{const b=document.querySelector(s);const g=b&&b.closest('.dayg.shut');if(g)g.querySelector('[data-dayt]').click();}",sel)
+  pg.click(sel)
 src=open('ptichi-dnevnik.html',encoding='utf-8').read();assert len(re.findall(r"const SB_URL='[^']*'",src))==1
 open('share-test.html','w',encoding='utf-8').write(re.sub(r"const SB_URL='[^']*'","const SB_URL='"+SB+"'",src))
 open('noconf-test.html','w',encoding='utf-8').write(re.sub(r"const SB_URL='[^']*'","const SB_URL=''",src))
@@ -26,7 +29,7 @@ try:
     ctx.route(SB+'/**',st.handle);ctx.route(CDN,lambda r:r.fulfill(path=UMD,headers={'access-control-allow-origin':'*','content-type':'application/javascript'}))
     pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
     pg.goto(f'http://localhost:{port}/{file}');pg.wait_for_timeout(300)
-    if photo: pg.click('[data-ed="2"]');pg.set_input_files('#f-photo','/home/claude/a.jpg');pg.wait_for_function("phNew.length===1");pg.click('#savebtn')
+    if photo: rec(pg,'[data-ed="2"]');pg.set_input_files('#f-photo','/home/claude/a.jpg');pg.wait_for_function("phNew.length===1");pg.click('#savebtn')
     pg.click('.tab[data-v="friends"]');return pg
   def join(pg,name,mail,pw='птица123'):
     pg.fill('#sb-name',name);pg.fill('#sb-mail',mail);pg.fill('#sb-pw',pw);pg.click('[data-sb="up"]');pg.wait_for_selector('.fr .msg')

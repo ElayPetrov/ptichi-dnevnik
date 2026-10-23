@@ -1,5 +1,8 @@
 import json,subprocess,sys,time,datetime
 from playwright.sync_api import sync_playwright
+def rec(pg,sel):   # Дневник shows only the newest day unfolded, so open the record's day before tapping its button
+  pg.evaluate("s=>{const b=document.querySelector(s);const g=b&&b.closest('.dayg.shut');if(g)g.querySelector('[data-dayt]').click();}",sel)
+  pg.click(sel)
 R=lambda **k:{**dict(id=0,date='',time='',place='',count='',bg='',en='',la='',fam='',note='',h=0,s=1,p=0,beh=[],geo=None,photo=None),**k}
 port=int(sys.argv[1]);fails=0;G='42.61985,25.39560'
 def check(n,got,exp):
@@ -52,7 +55,7 @@ try:
   png=pg.evaluate("(async()=>{const b=await cardFile.arrayBuffer();return btoa(String.fromCharCode(...new Uint8Array(b).slice(0,0)))})()")
   pg.evaluate("window.__card=null"); pg.click('#cardClose')
   # species card with a photo
-  pg.click('.tab[data-v="log"]'); pg.click('[data-ed="6"]'); pg.set_input_files('#f-photo','/home/claude/a.jpg'); pg.wait_for_function("phNew.length===1"); pg.click('#savebtn')
+  pg.click('.tab[data-v="log"]'); rec(pg,'[data-ed="6"]'); pg.set_input_files('#f-photo','/home/claude/a.jpg'); pg.wait_for_function("phNew.length===1"); pg.click('#savebtn')
   pg.click('.tab[data-v="life"]'); pg.locator('.sp',has_text='Пчелояд').click(); pg.click('[data-spcard]')
   pg.wait_for_function("document.getElementById('cardDlg').open&&document.getElementById('cardImg').naturalWidth>0")
   check('V13 species card uses your latest photo of it', pg.evaluate("cardFile.name"), 'ptichi-dnevnik-Merops-apiaster.png')
