@@ -286,6 +286,25 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 #pickMap{flex:1;min-height:240px;background:var(--bg2)}
 .pickfoot{display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap}
 #pickTxt{margin-right:auto;color:var(--mut);font-size:13px}
+/* „Честито, нов вид!“ — карта горе на екрана; не пречи да пишеш следващия запис и се скрива сама */
+.yay{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);z-index:900;
+  width:min(440px,calc(100vw - 24px));background:var(--card);color:var(--ink);border:1.5px solid var(--h);border-radius:16px;
+  box-shadow:0 12px 32px rgba(0,0,0,.28);padding:12px 14px;display:flex;gap:12px;align-items:center;overflow:hidden;cursor:pointer}
+.yay[hidden]{display:none}
+.yay.in{animation:yayIn .5s cubic-bezier(.2,1.4,.4,1) both}
+.yay.out{animation:yayOut .35s ease both}
+@keyframes yayIn{from{opacity:0;transform:translate(-50%,-18px) scale(.92)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+@keyframes yayOut{to{opacity:0;transform:translate(-50%,-12px) scale(.97)}}
+.yaypic{flex:0 0 64px;height:64px;border-radius:12px;background:var(--bg2);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;z-index:1}
+.yaypic svg{width:52px;height:52px;fill:var(--h)} .yaypic img{width:100%;height:100%;object-fit:cover}
+.yaytx{position:relative;z-index:1;min-width:0}
+.yayt{font-family:Fraunces,Georgia,serif;font-size:19px;font-weight:600;color:var(--h);line-height:1.2;text-shadow:0 0 3px var(--card),0 0 3px var(--card)}
+.yaynm{font-weight:600;margin-top:2px} .yayla{font-style:italic;font-weight:400;color:var(--mut);font-size:13px}
+.yayn{font-size:13px;color:var(--mut);margin-top:1px} .yaym{font-size:13px;font-weight:700;color:var(--accent);margin-top:1px}
+.yaycard{background:none;border:0;padding:0;margin-top:3px;color:var(--h);text-decoration:underline;font:inherit;font-size:13px;cursor:pointer}
+.yay i.cf{position:absolute;z-index:0;top:-12px;width:7px;height:11px;border-radius:2px;opacity:.85;animation:cf 1.7s ease-in forwards}
+@keyframes cf{to{transform:translateY(160px) rotate(var(--r));opacity:0}}
+@media (prefers-reduced-motion:reduce){.yay.in,.yay.out{animation:none}.yay i.cf{display:none}}
 dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 /* първи срещи / очаквай скоро */
 .arr{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:4px 15px 6px;margin-bottom:12px}
@@ -459,6 +478,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 <input type="file" id="impf" accept="application/json,text/plain,.json,.txt" style="display:none">
 </div>
 <dialog id="lb"><img id="lbimg" alt=""></dialog>
+<div id="yay" class="yay" role="status" aria-live="polite" hidden></div>
 <dialog id="pickDlg" class="pickdlg" aria-label="Посочи мястото на картата">
   <div class="pickhead">Пипни там, където беше птицата</div>
   <div id="pickMap"></div>
@@ -1374,10 +1394,13 @@ form.onsubmit=e=>{e.preventDefault();
     bg:g('bg'),en:g('en'),la:g('la'),fam:document.getElementById('f-fam').value,note:g('note'),
     h:st.h?1:0,s:st.s?1:0,p:st.p?1:0,u:unsure?1:0,beh:[...beh],geo:parseGeo(document.getElementById('f-geo').value)||null,photo:photo||null,upd:Date.now()};
   if(SESS&&!edit)rec.sess=SESS.id;
+  const nBefore=new Set(SURE().map(key).filter(Boolean)).size;   // за „Честито, нов вид!“
   let ok=true;const old=edit?((OBS.find(o=>o.id===edit)||{}).photo||null):null;
   if(edit){const i=OBS.findIndex(o=>o.id===edit);if(i>=0)OBS[i]={...OBS[i],...rec};else ok=false;}else OBS.push(rec);
   if(ok&&rec.date)setDay(rec.date,true);
   save();
+  const nAfter=new Set(SURE().map(key).filter(Boolean)).size,saved=edit?OBS.find(o=>o.id===edit):rec,
+    isNew=ok&&!rec.u&&nAfter>nBefore;
   if(ok&&old&&old!==rec.photo){delPhoto(old);photoGone(old);}
   dropNew(ok?rec.photo:null);
   if(SESS&&!edit){
@@ -1389,7 +1412,26 @@ form.onsubmit=e=>{e.preventDefault();
     if(SESS.live==null||near)SESS.live=near;
     saveSess();render();openForm(null);
     document.getElementById('f-bg').focus();
-  } else {closeForm();render();}};
+  } else {closeForm();render();}
+  if(isNew&&saved)celebrate(saved,nAfter);};
+// ---- „Честито, нов вид!“ ----
+// Когато запис добави вид към дневника ти (несигурните не броят, записите от синхронизиране — също не).
+// Показва вида, поредния му номер и кръгла бройка (10, 25, всеки 50); скрива се сама след 5 с или при докосване.
+let yayT=null;
+const MILE=n=>n===10||n===25||n%50===0;
+function yayHide(){const el=document.getElementById('yay');if(!el||el.hidden)return;clearTimeout(yayT);
+  el.classList.remove('in');el.classList.add('out');yayT=setTimeout(()=>{el.hidden=true;el.classList.remove('out');},350);}
+async function celebrate(o,n){const el=document.getElementById('yay');if(!el)return;clearTimeout(yayT);
+  const nm=o.bg||o.en||o.la,C=['#b07d18','#9c3a28','#5f7048','#c9b27a','#c4646a','#8a9668'];
+  el.innerHTML='<div class="yaypic">'+silFor(o.fam)+'</div><div class="yaytx"><div class="yayt">Честито, нов вид!</div>'+
+    '<div class="yaynm">'+esc(nm)+(o.la&&o.la!==nm?' <span class="yayla">'+esc(o.la)+'</span>':'')+'</div>'+
+    '<div class="yayn">Вид № '+n+' в дневника ти</div>'+(MILE(n)?'<div class="yaym">Кръгла бройка — '+n+' вида!</div>':'')+
+    '<button type="button" class="yaycard" data-yaycard="'+esc(key(o))+'">карта за споделяне</button></div>'+
+    Array.from({length:16},(_,i)=>'<i class="cf" style="left:'+(4+i*6)+'%;background:'+C[i%C.length]+';--r:'+(i%2?'':'-')+(140+i*23)+'deg;animation-delay:'+(i%5)*.09+'s"></i>').join('');
+  el.hidden=false;el.classList.remove('out','in');void el.offsetWidth;el.classList.add('in');
+  yayT=setTimeout(yayHide,5000);
+  if(o.photo){const b=await getPhoto(o.photo);if(b&&!el.hidden){const p=el.querySelector('.yaypic'),i=new Image();i.alt='';i.src=URL.createObjectURL(b);p.innerHTML='';p.appendChild(i);}}}
+document.getElementById('yay').addEventListener('click',e=>{const c=e.target.closest('[data-yaycard]');yayHide();if(c)spCard(c.dataset.yaycard);});
 document.getElementById('sessStart').onclick=()=>{
   SESS={id:'s'+Date.now(),date:today(),time:nowTime(),place:'',geo:null,at:Date.now(),live:null,t0:nowTime(),d0:today()};
   saveSess();sessUI();openForm(null);};
@@ -1523,7 +1565,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-23.7';
+const VER='2026-10-23.8';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
