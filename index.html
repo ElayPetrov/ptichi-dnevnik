@@ -304,6 +304,24 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .yaycard{background:none;border:0;padding:0;margin-top:3px;color:var(--h);text-decoration:underline;font:inherit;font-size:13px;cursor:pointer}
 .yay i.cf{position:absolute;z-index:0;top:-12px;width:7px;height:11px;border-radius:2px;opacity:.85;animation:cf 1.7s ease-in forwards}
 @keyframes cf{to{transform:translateY(160px) rotate(var(--r));opacity:0}}
+.yay.gold{border:2px solid #d4a017;background:linear-gradient(135deg,var(--card) 55%,rgba(212,160,23,.22))}
+.yay.gold .yayt{font-size:30px;letter-spacing:.04em;color:#c8950f}
+.yay.yr{border-color:#5f7048} .yay.yr .yayt{color:#5f7048;font-size:17px}
+.yay.badge .bdi{color:var(--h)} .yay.badge .yaypic svg{width:40px;height:40px;fill:none}
+.yay.trip .yayt{font-size:18px}
+.bdg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:2px 0 14px}
+.bd{border:1px solid var(--line);border-radius:12px;padding:9px 6px 8px;text-align:center;background:var(--card);color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px}
+.bd .bdi svg{width:30px;height:30px;display:block} .bd b{font-size:13px;color:var(--ink);font-weight:600} .bd small{font-size:11.5px;line-height:1.25}
+.bd:not(.on){opacity:.55} .bd.on{color:var(--h);border-color:var(--h)} .bd.on small{color:var(--mut)}
+@media(max-width:600px){.bdg{grid-template-columns:repeat(2,1fr)}}
+.otd{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 0 12px;font-size:13.5px}
+.otdt{color:var(--mut);margin-right:2px}
+.otdy{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--ink);cursor:pointer;font:inherit;font-size:13.5px}
+.hero .s-night{display:none} .hero[data-sky=night] .s-night{display:inline}
+.hero[data-sky=night] .sun,.hero[data-sky=night] .s-birds,.hero[data-sky=night] .s-swallows,.hero[data-sky=night] .s-swifts,.hero[data-sky=night] .s-cranes{display:none}
+.hero .sun{transition:transform 1s}
+.hero[data-sky=night] h1,.hero[data-sky=night] .sub{color:#efe7d2;text-shadow:0 1px 8px rgba(0,0,0,.55)}   /* нощем заглавието е светло и в светлата тема */
+.hero[data-sky=dawn] .sun,.hero[data-sky=dusk] .sun{transform:translateY(64px);fill:#e08a4a;opacity:.6}
 @media (prefers-reduced-motion:reduce){.yay.in,.yay.out{animation:none}.yay i.cf{display:none}}
 dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 /* първи срещи / очаквай скоро */
@@ -339,7 +357,10 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   </defs>
   <!-- сезонът (зима, пролет, рози, лято, есен) се избира по месеца в applySeason(); всяка група се вижда само в своя сезон -->
   <rect width="1200" height="300" fill="url(#sky)"/>
-  <circle cx="930" cy="150" r="42" fill="var(--h)" style="opacity:var(--sunop,.30)"/>
+  <circle class="sun" cx="930" cy="150" r="42" fill="var(--h)" style="opacity:var(--sunop,.30)"/>
+  <g class="s-night"><g fill="#f4efe1" id="stars"></g>
+    <mask id="moonmask"><rect x="880" y="54" width="100" height="100" fill="#fff"/><circle class="moonsh" cx="930" cy="104" r="24.6" fill="#000"/></mask>
+    <g class="moon"><circle cx="930" cy="104" r="24" fill="#f1e9cf" mask="url(#moonmask)"/></g></g>
   <g class="s-birds" fill="var(--hill4)" opacity=".55"><g transform="translate(168,74) scale(1.15)"><path d="M-30 3 C-22 -8 -13 -12 -6 -4 L0 0 L6 -4 C13 -12 22 -8 30 3 C21 -1 13 -1 7 4 L0 8 L-7 4 C-13 -1 -21 -1 -30 3 Z"/></g><g transform="translate(246,110) scale(.8) rotate(-7)"><path d="M-30 3 C-22 -8 -13 -12 -6 -4 L0 0 L6 -4 C13 -12 22 -8 30 3 C21 -1 13 -1 7 4 L0 8 L-7 4 C-13 -1 -21 -1 -30 3 Z"/></g><g transform="translate(112,126) scale(.58) rotate(5)"><path d="M-30 3 C-22 -8 -13 -12 -6 -4 L0 0 L6 -4 C13 -12 22 -8 30 3 C21 -1 13 -1 7 4 L0 8 L-7 4 C-13 -1 -21 -1 -30 3 Z"/></g><g transform="translate(1032,92) scale(.92) rotate(-4)"><path d="M-30 3 C-22 -8 -13 -12 -6 -4 L0 0 L6 -4 C13 -12 22 -8 30 3 C21 -1 13 -1 7 4 L0 8 L-7 4 C-13 -1 -21 -1 -30 3 Z"/></g><g transform="translate(972,136) scale(.62) rotate(8)"><path d="M-30 3 C-22 -8 -13 -12 -6 -4 L0 0 L6 -4 C13 -12 22 -8 30 3 C21 -1 13 -1 7 4 L0 8 L-7 4 C-13 -1 -21 -1 -30 3 Z"/></g></g>
   <g class="s-swallows" fill="var(--hill4)" opacity=".6"><g transform="translate(170,78) scale(1.0) rotate(-62)"><path d="M0 -12 Q4 -10 4 -4 L32 4 L34 8 L6 2 L5 10 L9 26 L2 14 L0 12 L-2 14 L-9 26 L-5 10 L-6 2 L-34 8 L-32 4 L-4 -4 Q-4 -10 0 -12 Z"/></g><g transform="translate(250,118) scale(0.7) rotate(-48)"><path d="M0 -12 Q4 -10 4 -4 L32 4 L34 8 L6 2 L5 10 L9 26 L2 14 L0 12 L-2 14 L-9 26 L-5 10 L-6 2 L-34 8 L-32 4 L-4 -4 Q-4 -10 0 -12 Z"/></g><g transform="translate(96,128) scale(0.55) rotate(-70)"><path d="M0 -12 Q4 -10 4 -4 L32 4 L34 8 L6 2 L5 10 L9 26 L2 14 L0 12 L-2 14 L-9 26 L-5 10 L-6 2 L-34 8 L-32 4 L-4 -4 Q-4 -10 0 -12 Z"/></g><g transform="translate(1046,96) scale(0.85) rotate(-58)"><path d="M0 -12 Q4 -10 4 -4 L32 4 L34 8 L6 2 L5 10 L9 26 L2 14 L0 12 L-2 14 L-9 26 L-5 10 L-6 2 L-34 8 L-32 4 L-4 -4 Q-4 -10 0 -12 Z"/></g><g transform="translate(988,138) scale(0.55) rotate(-40)"><path d="M0 -12 Q4 -10 4 -4 L32 4 L34 8 L6 2 L5 10 L9 26 L2 14 L0 12 L-2 14 L-9 26 L-5 10 L-6 2 L-34 8 L-32 4 L-4 -4 Q-4 -10 0 -12 Z"/></g></g>
   <g class="s-swifts" fill="var(--hill4)" opacity=".55"><g transform="translate(150,80) scale(0.9) rotate(-8)"><path d="M-34 6 Q-18 -6 -3 -1 L0 2 L3 -1 Q18 -6 34 6 Q18 -2 3 3 L0 6 L-3 3 Q-18 -2 -34 6 Z"/></g><g transform="translate(255,112) scale(0.6) rotate(10)"><path d="M-34 6 Q-18 -6 -3 -1 L0 2 L3 -1 Q18 -6 34 6 Q18 -2 3 3 L0 6 L-3 3 Q-18 -2 -34 6 Z"/></g><g transform="translate(105,130) scale(0.5) rotate(-4)"><path d="M-34 6 Q-18 -6 -3 -1 L0 2 L3 -1 Q18 -6 34 6 Q18 -2 3 3 L0 6 L-3 3 Q-18 -2 -34 6 Z"/></g><g transform="translate(1035,88) scale(0.8) rotate(6)"><path d="M-34 6 Q-18 -6 -3 -1 L0 2 L3 -1 Q18 -6 34 6 Q18 -2 3 3 L0 6 L-3 3 Q-18 -2 -34 6 Z"/></g><g transform="translate(975,132) scale(0.55) rotate(-10)"><path d="M-34 6 Q-18 -6 -3 -1 L0 2 L3 -1 Q18 -6 34 6 Q18 -2 3 3 L0 6 L-3 3 Q-18 -2 -34 6 Z"/></g></g>
@@ -526,10 +547,11 @@ function outDefaults(stale){
   return {rs,date:f?f.date:SESS.date,place:(f&&f.place)||SESS.place||'',
     start:(live&&SESS.t0&&(!f||SESS.d0===f.date)?SESS.t0:(f&&f.time))||SESS.t0||'',
     end:(live&&!stale?nowTime():(l&&l.time))||''};}
-function endOuting(complete,stale){if(!SESS)return;const d=outDefaults(stale);
+function endOuting(complete,stale){if(!SESS)return;const d=outDefaults(stale),sid=SESS.id;
   if(d.rs.length)putOut({id:SESS.id,date:d.date,place:d.place,complete,
     start:stale?d.start:(document.getElementById('se-start').value||d.start),end:stale?d.end:(document.getElementById('se-end').value||d.end)});
-  SESS=null;saveSess();sessUI();closeForm();render();}
+  SESS=null;saveSess();sessUI();closeForm();render();
+  if(!stale&&d.rs.length)yayPush(outingCard(sid));}   // обобщение на излета (забравен излет — без)
 function sessUI(){
   const b=document.getElementById('sess');if(!b)return;
   if(SESS){b.classList.add('on');
@@ -653,6 +675,13 @@ const KDAYS='bird-journal-days';
 let DAYS=(()=>{try{return JSON.parse(localStorage.getItem(KDAYS))||{};}catch(e){return {};}})();
 const dayOpen=(d,newest)=>q.trim()||filt!=='all'?true:(d in DAYS?DAYS[d]:d===newest);
 function setDay(d,open){DAYS[d]=open;try{localStorage.setItem(KDAYS,JSON.stringify(DAYS));}catch(e){}}
+// „На днешна дата“: тих ред най-горе в Дневника, само в дни, когато в предишни години има записи. Нищо не изскача
+// и нищо не се затваря; утре изчезва сам. Докосване отваря онзи ден.
+function onThisDay(){if(q.trim()||filt!=='all')return '';const t=today(),md=t.slice(5),y=+t.slice(0,4),by={};
+  for(const o of OBS)if(o.date.slice(5)===md&&+o.date.slice(0,4)<y)(by[o.date]=by[o.date]||[]).push(o);
+  const ds=Object.keys(by).sort().reverse();if(!ds.length)return '';
+  return '<div class="otd"><span class="otdt">На днешна дата:</span>'+ds.map(d=>{const ns=[...new Set(by[d].map(o=>o.bg||o.en||o.la))];
+    return '<button type="button" class="otdy" data-otd="'+d+'"><b>'+d.slice(0,4)+'</b> '+esc(ns.slice(0,3).join(', '))+(ns.length>3?' и още '+(ns.length-3):'')+'</button>';}).join('')+'</div>';}
 function renderLog(el){
   const list=OBS.filter(pass).sort((a,b)=>a.date===b.date?b.id-a.id:b.date.localeCompare(a.date));
   if(!list.length){el.innerHTML='<div class="empty">Нищо не съвпада.</div>';return;}
@@ -678,7 +707,7 @@ function renderLog(el){
         (o.p?'<span class="tag p">снимах</span>':'')+
         (o.beh||[]).map(b=>'<span class="tag b">'+esc(b)+'</span>').join('')+'</div>'+
       '<button class="again" data-again="'+o.id+'">+ друг вид тук</button></div>';}
-  el.innerHTML=h+'</div></div>';loadPhotos();}
+  el.innerHTML=onThisDay()+h+'</div></div>';loadPhotos();}
 function renderLife(el){
   if(spSel)return renderSpecies(el,spSel);
   let arr=Object.values(speciesMap());const ql=q.trim().toLowerCase();
@@ -694,7 +723,7 @@ function renderLife(el){
   for(const o of OBS)if(o.u&&key(o)&&!sm.has(key(o))&&(!ql||(o.bg+' '+o.en+' '+o.la).toLowerCase().includes(ql)))un.set(key(o),o.bg||o.en||o.la);
   const unH=un.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с несигурни записи (не се броят): '+[...un.values()].map(esc).join(' · ')+'</div>':'';
   if(!arr.length){el.innerHTML=(unH||'<div class="empty">Нищо не съвпада.</div>');return;}
-  el.innerHTML=arr.map(r=>'<div class="sp l'+r.L+'" data-k="'+esc(r.k)+'" style="cursor:pointer">'+
+  el.innerHTML=(ql||filt!=='all'?'':badgeStrip())+arr.map(r=>'<div class="sp l'+r.L+'" data-k="'+esc(r.k)+'" style="cursor:pointer">'+
     (r.photo?'<div class="th" data-th="'+r.photo+'"></div>':'<div class="th none">'+silFor(r.fam)+'</div>')+
     '<div style="flex:1;min-width:0">'+
     '<div class="nm">'+esc(r.bg||r.en||r.la)+'</div>'+
@@ -1394,13 +1423,14 @@ form.onsubmit=e=>{e.preventDefault();
     bg:g('bg'),en:g('en'),la:g('la'),fam:document.getElementById('f-fam').value,note:g('note'),
     h:st.h?1:0,s:st.s?1:0,p:st.p?1:0,u:unsure?1:0,beh:[...beh],geo:parseGeo(document.getElementById('f-geo').value)||null,photo:photo||null,upd:Date.now()};
   if(SESS&&!edit)rec.sess=SESS.id;
-  const nBefore=new Set(SURE().map(key).filter(Boolean)).size;   // за „Честито, нов вид!“
+  const nBefore=new Set(SURE().map(key).filter(Boolean)).size,bBefore=badgesNow();   // за поздравленията
   let ok=true;const old=edit?((OBS.find(o=>o.id===edit)||{}).photo||null):null;
   if(edit){const i=OBS.findIndex(o=>o.id===edit);if(i>=0)OBS[i]={...OBS[i],...rec};else ok=false;}else OBS.push(rec);
   if(ok&&rec.date)setDay(rec.date,true);
   save();
   const nAfter=new Set(SURE().map(key).filter(Boolean)).size,saved=edit?OBS.find(o=>o.id===edit):rec,
-    isNew=ok&&!rec.u&&nAfter>nBefore;
+    isNew=ok&&!rec.u&&nAfter>nBefore,
+    yearFirst=ok&&!edit&&!rec.u&&!isNew&&saved&&!SURE().some(o=>o!==saved&&key(o)===key(saved)&&o.date.slice(0,4)===saved.date.slice(0,4));
   if(ok&&old&&old!==rec.photo){delPhoto(old);photoGone(old);}
   dropNew(ok?rec.photo:null);
   if(SESS&&!edit){
@@ -1413,25 +1443,80 @@ form.onsubmit=e=>{e.preventDefault();
     saveSess();render();openForm(null);
     document.getElementById('f-bg').focus();
   } else {closeForm();render();}
-  if(isNew&&saved)celebrate(saved,nAfter);};
-// ---- „Честито, нов вид!“ ----
-// Когато запис добави вид към дневника ти (несигурните не броят, записите от синхронизиране — също не).
-// Показва вида, поредния му номер и кръгла бройка (10, 25, всеки 50); скрива се сама след 5 с или при докосване.
-let yayT=null;
+  if(isNew&&saved)yayPush(yayNew(saved,nAfter));else if(yearFirst)yayPush(yayYear(saved));
+  if(ok&&!rec.u){const bAfter=badgesNow();for(const b of BADGES)if(bAfter[b.id]&&!bBefore[b.id])yayPush(yayBadge(b));}};
+// ---- карти-поздравления горе на екрана: нов вид, „СТО!“, първа среща за годината, значка, край на излета ----
+// Показват се една по една, всяка се скрива сама (или при докосване) и никога не взема курсора — по време на
+// излет пишеш следващата птица спокойно. Без звук и вибрация. Записите от синхронизиране не ги задействат.
+let yayT=null,yayQ=[],yayOn=false;
+const YC=['#b07d18','#9c3a28','#5f7048','#c9b27a','#c4646a','#8a9668'];
+const confetti=n=>Array.from({length:n},(_,i)=>'<i class="cf" style="left:'+((4+i*97/n)%100).toFixed(1)+'%;background:'+YC[i%YC.length]+
+  ';--r:'+(i%2?'':'-')+(140+i*23)+'deg;animation-delay:'+((i%5)*.09).toFixed(2)+'s"></i>').join('');
+function yayPush(c){if(!c)return;yayQ.push(c);if(!yayOn)yayNext();}
+function yayNext(){const el=document.getElementById('yay'),c=yayQ.shift();if(!el||!c){yayOn=false;return;}
+  yayOn=true;clearTimeout(yayT);el.className='yay'+(c.cls?' '+c.cls:'');el.innerHTML=c.html+(c.cf?confetti(c.cf):'');
+  el.hidden=false;void el.offsetWidth;el.classList.add('in');yayT=setTimeout(yayHide,c.ms||5000);if(c.after)c.after(el);}
+function yayHide(){const el=document.getElementById('yay');clearTimeout(yayT);if(!el||el.hidden){yayOn=false;yayNext();return;}
+  el.classList.remove('in');el.classList.add('out');yayT=setTimeout(()=>{el.hidden=true;el.classList.remove('out');yayOn=false;yayNext();},350);}
+const yayPic=(el,o)=>{if(!o.photo)return;getPhoto(o.photo).then(b=>{const p=el.querySelector('.yaypic');if(!b||!p||el.hidden)return;
+  const i=new Image();i.alt='';i.src=URL.createObjectURL(b);p.innerHTML='';p.appendChild(i);});};
+const yayName=o=>{const nm=o.bg||o.en||o.la;return '<div class="yaynm">'+esc(nm)+(o.la&&o.la!==nm?' <span class="yayla">'+esc(o.la)+'</span>':'')+'</div>';};
 const MILE=n=>n===10||n===25||n%50===0;
-function yayHide(){const el=document.getElementById('yay');if(!el||el.hidden)return;clearTimeout(yayT);
-  el.classList.remove('in');el.classList.add('out');yayT=setTimeout(()=>{el.hidden=true;el.classList.remove('out');},350);}
-async function celebrate(o,n){const el=document.getElementById('yay');if(!el)return;clearTimeout(yayT);
-  const nm=o.bg||o.en||o.la,C=['#b07d18','#9c3a28','#5f7048','#c9b27a','#c4646a','#8a9668'];
-  el.innerHTML='<div class="yaypic">'+silFor(o.fam)+'</div><div class="yaytx"><div class="yayt">Честито, нов вид!</div>'+
-    '<div class="yaynm">'+esc(nm)+(o.la&&o.la!==nm?' <span class="yayla">'+esc(o.la)+'</span>':'')+'</div>'+
-    '<div class="yayn">Вид № '+n+' в дневника ти</div>'+(MILE(n)?'<div class="yaym">Кръгла бройка — '+n+' вида!</div>':'')+
-    '<button type="button" class="yaycard" data-yaycard="'+esc(key(o))+'">карта за споделяне</button></div>'+
-    Array.from({length:16},(_,i)=>'<i class="cf" style="left:'+(4+i*6)+'%;background:'+C[i%C.length]+';--r:'+(i%2?'':'-')+(140+i*23)+'deg;animation-delay:'+(i%5)*.09+'s"></i>').join('');
-  el.hidden=false;el.classList.remove('out','in');void el.offsetWidth;el.classList.add('in');
-  yayT=setTimeout(yayHide,5000);
-  if(o.photo){const b=await getPhoto(o.photo);if(b&&!el.hidden){const p=el.querySelector('.yaypic'),i=new Image();i.alt='';i.src=URL.createObjectURL(b);p.innerHTML='';p.appendChild(i);}}}
-document.getElementById('yay').addEventListener('click',e=>{const c=e.target.closest('[data-yaycard]');yayHide();if(c)spCard(c.dataset.yaycard);});
+function yayNew(o,n){const sto=n===100;   // вид № 100 е „СТО!“
+  return {cls:sto?'gold':'',cf:sto?30:16,ms:sto?7000:5000,after:el=>yayPic(el,o),
+    html:'<div class="yaypic">'+silFor(o.fam)+'</div><div class="yaytx"><div class="yayt">'+(sto?'СТО!':'Честито, нов вид!')+'</div>'+yayName(o)+
+      '<div class="yayn">Вид № '+n+' в дневника ти</div>'+(!sto&&MILE(n)?'<div class="yaym">Кръгла бройка — '+n+' вида!</div>':'')+
+      '<button type="button" class="yaycard" data-yaycard="'+esc(key(o))+'">карта за споделяне</button></div>'};}
+function yayYear(o){const k=key(o),y=+o.date.slice(0,4);   // първа среща с вида за годината; при прелетните — спрямо миналата
+  const last=SURE().filter(x=>key(x)===k&&+x.date.slice(0,4)===y-1).map(x=>x.date).sort()[0];
+  let cmp='';if(last){const d=doy(o.date)-doy(last),a=Math.abs(d);
+    cmp=d===0?'в същия ден като миналата година':a+(a===1?' ден ':' дни ')+(d<0?'по-рано':'по-късно')+' от миналата година';}
+  return {cls:'yr',cf:0,ms:4500,after:el=>yayPic(el,o),
+    html:'<div class="yaypic">'+silFor(o.fam)+'</div><div class="yaytx"><div class="yayt">Първа среща за '+y+'</div>'+yayName(o)+
+      (cmp?'<div class="yayn">'+cmp+'</div>':'')+'</div>'};}
+function yayBadge(b){return {cls:'badge',cf:14,ms:5500,
+  html:'<div class="yaypic bdi">'+b.icon+'</div><div class="yaytx"><div class="yayt">Нова значка!</div><div class="yaynm">'+b.name+'</div><div class="yayn">'+b.how+'</div></div>'};}
+function outingCard(id){const byDT=(a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''));
+  const rs=SURE().filter(o=>o.sess===id).sort(byDT);if(!rs.length)return null;
+  const ks=[...new Set(rs.map(key).filter(Boolean))],F=firsts(),mine=new Set(rs.map(o=>o.id));
+  const nNew=ks.filter(k=>mine.has(F[k])).length;
+  const nYr=ks.filter(k=>{if(mine.has(F[k]))return false;const r0=rs.find(o=>key(o)===k),y=r0.date.slice(0,4);
+    const f=SURE().filter(o=>key(o)===k&&o.date.slice(0,4)===y).sort(byDT)[0];return f&&mine.has(f.id);}).length;
+  const t=rs.find(o=>o.time),bits=[nNew?nNew+(nNew===1?' нов':' нови')+' за дневника':'',nYr?nYr+(nYr===1?' първа среща':' първи срещи')+' за годината':''].filter(Boolean);
+  return {cls:'trip',cf:nNew?20:0,ms:9000,
+    html:'<div class="yaypic">'+silFor((rs.find(o=>mine.has(F[key(o)]))||rs[0]).fam)+'</div><div class="yaytx"><div class="yayt">Край на излета</div>'+
+      '<div class="yaynm">'+ks.length+(ks.length===1?' вид':' вида')+' · '+rs.length+(rs.length===1?' запис':' записа')+'</div>'+
+      (bits.length?'<div class="yaym">'+bits.join(' · ')+'</div>':'')+
+      (t?'<div class="yayn">първа птица: '+esc(t.bg||t.en||t.la)+' в '+esc(t.time)+'</div>':'')+
+      '<button type="button" class="yaycard" data-yayout="'+esc(id)+'">карта за споделяне</button></div>'};}
+document.getElementById('yay').addEventListener('click',e=>{const c=e.target.closest('[data-yaycard]'),t=e.target.closest('[data-yayout]');
+  yayHide();if(c)spCard(c.dataset.yaycard);if(t)outCard(t.dataset.yayout);});
+
+// ---- значки: изчисляват се от записите (нищо не се пази отделно, синхронизирането не ги обърква) ----
+// Нова идея за значка = нов ред тук. Несигурните записи не броят.
+const KZ=[42.6194,25.3956];   // Казанлък, когато в дневника още няма координати
+const tmin=t=>{const m=/^(\d{1,2}):(\d{2})/.exec(t||'');return m?(+m[1])*60+(+m[2]):null;};
+const sunOf=d=>sunFor(d,dayGeo(d)||KZ);
+const SEAS4=m=>m===12||m<=2?0:m<=5?1:m<=8?2:3;   // зима, пролет, лято, есен
+const BADGES=[
+ {id:'early',name:'Ранобудник',how:'птица, записана преди изгрева',
+  icon:'<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 23h26" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M9 23a7 7 0 0 1 14 0z" fill="currentColor"/><path d="M16 9v4M7.5 13.5l2.5 2.5M24.5 13.5L22 16M4 18.5h3M25 18.5h3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  hit:o=>{const t=tmin(o.time),S=t!=null&&sunOf(o.date);return !!(S&&S.rise!=null&&t<S.rise);}},
+ {id:'night',name:'Нощна смяна',how:'сова, записана в тъмното',
+  icon:'<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M21 4.5a11 11 0 1 0 6.5 18.8A9 9 0 0 1 21 4.5z" fill="currentColor"/><circle cx="8" cy="7" r="1.6" fill="currentColor"/><circle cx="12.5" cy="3.8" r="1.1" fill="currentColor"/></svg>',
+  hit:o=>{if(o.fam!=='Сови')return false;const t=tmin(o.time),S=t!=null&&sunOf(o.date);return !!(S&&S.set!=null&&(t>=S.set+30||t<S.dawn));}},
+ {id:'seasons',name:'Четири сезона',how:'един вид и в четирите сезона',
+  icon:'<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 16V3a13 13 0 0 1 13 13z" fill="currentColor"/><path d="M16 16h13a13 13 0 0 1-13 13z" fill="currentColor" opacity=".7"/><path d="M16 16v13A13 13 0 0 1 3 16z" fill="currentColor" opacity=".45"/><path d="M16 16H3A13 13 0 0 1 16 3z" fill="currentColor" opacity=".25"/></svg>',
+  all:R=>{const m={};for(const o of R){const k=key(o);if(k)(m[k]=m[k]||new Set()).add(SEAS4(+o.date.slice(5,7)));}return Object.values(m).some(x=>x.size===4);}},
+ {id:'photo',name:'Фотограф',how:'50 вида с твоя снимка',goal:50,
+  icon:'<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 10h5l2-3h8l2 3h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V12a2 2 0 0 1 2-2z" fill="currentColor"/><circle cx="16" cy="18" r="5" fill="var(--card)"/><circle cx="16" cy="18" r="3" fill="currentColor"/></svg>',
+  count:R=>new Set(R.filter(o=>o.photo).map(key).filter(Boolean)).size}];
+function badgeState(b,R){if(b.goal){const n=b.count(R);return {on:n>=b.goal,n};}
+  if(b.all)return {on:b.all(R)};const o=R.filter(b.hit).sort((x,y)=>(x.date+(x.time||'')).localeCompare(y.date+(y.time||'')))[0];return {on:!!o,first:o&&o.date};}
+const badgesNow=()=>{const R=SURE(),out={};for(const b of BADGES)out[b.id]=badgeState(b,R).on;return out;};
+function badgeStrip(){const R=SURE();return '<div class="bdg">'+BADGES.map(b=>{const st=badgeState(b,R);
+  return '<div class="bd'+(st.on?' on':'')+'" title="'+esc(b.how)+'"><span class="bdi">'+b.icon+'</span><b>'+b.name+'</b><small>'+
+    (st.on?(st.first?'от '+human(st.first):'спечелена'):(b.goal?st.n+' от '+b.goal:b.how))+'</small></div>';}).join('')+'</div>';}
 document.getElementById('sessStart').onclick=()=>{
   SESS={id:'s'+Date.now(),date:today(),time:nowTime(),place:'',geo:null,at:Date.now(),live:null,t0:nowTime(),d0:today()};
   saveSess();sessUI();openForm(null);};
@@ -1444,6 +1529,8 @@ document.getElementById('sess').addEventListener('click',e=>{const b=e.target.cl
 document.addEventListener('mouseover',e=>{const g=e.target.closest('.pt');if(g)showCluster(+g.dataset.c);});
 document.addEventListener('focusin',e=>{const g=e.target.closest&&e.target.closest('.pt');if(g)showCluster(+g.dataset.c);});
 document.addEventListener('click',e=>{
+  const otdB=e.target.closest('[data-otd]');
+  if(otdB){const d=otdB.dataset.otd;setDay(d,true);render();const hh=document.querySelector('[data-dayt="'+d+'"]');if(hh)hh.scrollIntoView({behavior:'smooth',block:'start'});return;}
   const dt=e.target.closest('[data-dayt]');
   if(dt){const g=dt.closest('.dayg'),open=g.classList.contains('shut');g.classList.toggle('shut',!open);dt.setAttribute('aria-expanded',open);
     if(!q.trim()&&filt==='all')setDay(dt.dataset.dayt,open);   // при търсене не се помни
@@ -1554,7 +1641,30 @@ const SEASONS={
 const seasonOf=d=>{const m=d.getMonth();return m===11||m<=1?'winter':m<=3?'spring':m<=5?'roses':m<=7?'summer':'autumn';};
 const isDark=()=>{const t=document.documentElement.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;};
 function applySeason(s){const h=document.querySelector('.hero');if(!h)return;s=SEASONS[s]?s:seasonOf(new Date());h.dataset.season=s;
-  const v=SEASONS[s][isDark()?'d':'l'];for(const k of ['sky1','sky2','hill1','hill2','hill3','hill4','snow','crown','rose','sunop'])h.style.setProperty('--'+k,v[k]||'');}
+  const v=SEASONS[s][isDark()?'d':'l'];for(const k of ['sky1','sky2','hill1','hill2','hill3','hill4','snow','crown','rose','sunop'])h.style.setProperty('--'+k,v[k]||'');
+  applySky();}
+// ---- небето следва часа: зора, ден, здрач, нощ (звезди, луната в истинската ѝ фаза, сова на дървото) ----
+// По изгрева и залеза за мястото ти днес (иначе Казанлък). Нощем хълмовете са в тъмните цветове и в светлата тема.
+let skyAt=null;   // за проверки: фиксиран момент вместо „сега“
+const SKY={dawn:{l:['#f2dccd','#f1c08e'],d:['#2a2431','#5a3b2b']},dusk:{l:['#e9d0c6','#e8a265'],d:['#2b2131','#5d3524']},
+  night:{l:['#131a2c','#28314d'],d:['#0c111e','#1b2137']}};
+function skyPhase(now){const d=ymd(now.getTime()),S=sunOf(d);if(!S||S.rise==null)return 'day';
+  const m=now.getHours()*60+now.getMinutes();
+  return m<S.dawn||m>=S.set+35?'night':m<S.rise+40?'dawn':m>=S.set-45?'dusk':'day';}
+function moonPhase(now){return (((now-Date.UTC(2000,0,6,18,14))/864e5/29.530588853)%1+1)%1;}   // 0 = новолуние, .5 = пълнолуние
+function applySky(){const h=document.querySelector('.hero');if(!h)return;const now=skyAt||new Date(),p=skyPhase(now);h.dataset.sky=p;
+  const c=SKY[p];if(!c)return;const k=isDark()?'d':'l';h.style.setProperty('--sky1',c[k][0]);h.style.setProperty('--sky2',c[k][1]);
+  if(p!=='night')return;
+  const v=(SEASONS[h.dataset.season]||SEASONS.autumn).d;for(const x of ['hill1','hill2','hill3','hill4','crown','rose','snow'])if(v[x])h.style.setProperty('--'+x,v[x]);
+  const st=document.getElementById('stars');
+  if(st&&!st.childNodes.length){let r=7,out='';for(let i=0;i<34;i++){r=(r*9301+49297)%233280;const x=r/233280*1200;r=(r*9301+49297)%233280;const y=10+r/233280*150;
+      out+='<circle cx="'+x.toFixed(0)+'" cy="'+y.toFixed(0)+'" r="'+(i%5?1.4:2.3)+'" opacity="'+(i%3?.75:.95)+'"/>';}st.innerHTML=out;}
+  if(!h.querySelector('.s-owl')){const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('class','s-night s-owl');
+    g.setAttribute('transform','translate(379 196) scale(.3)');g.setAttribute('fill','var(--hill4)');g.innerHTML=SIL.owl;h.querySelector('svg').appendChild(g);}
+  const ph=moonPhase(now),f=(1-Math.cos(2*Math.PI*ph))/2,sh=h.querySelector('.moonsh');   // освет. част → изместване на сянката
+  if(sh)sh.setAttribute('cx',(930+(ph<.5?-1:1)*48*f).toFixed(1));}
+setInterval(()=>{if(!document.hidden)applySeason(document.querySelector('.hero').dataset.season);},5*60*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)applySeason(document.querySelector('.hero').dataset.season);});
 function syncBar(){const m=document.querySelector('meta[name="theme-color"]');   // цветът на лентата горе = фонът
   if(m)m.content=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()||'#f1e9d4';}
 document.getElementById('theme').onclick=()=>{
@@ -1565,7 +1675,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-23.8';
+const VER='2026-10-23.9';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

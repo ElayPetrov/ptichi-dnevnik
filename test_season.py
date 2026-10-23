@@ -14,6 +14,7 @@ try:
   data=[dict(id=1,date='2026-10-04',time='08:00',place='Язовир Копринка',count='',bg='Голяма бяла чапла',en='',la='Ardea alba',fam='Чапли и щъркели',note='',h=0,s=1,p=0,beh=[],geo=None,photo=None,sess='s1')]
   pg.add_init_script("localStorage.setItem('bird-journal-v3',%s)"%json.dumps(json.dumps(data,ensure_ascii=False)))
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(300)
+  pg.evaluate("skyAt=new Date(new Date().setHours(12,0,0,0));applySeason(document.querySelector('.hero').dataset.season)")   # these checks are about daytime; the night sky has its own suite
   dates=['2026-01-15','2026-02-28','2026-03-01','2026-04-30','2026-05-01','2026-06-30','2026-07-01','2026-08-31','2026-09-01','2026-11-30','2026-12-01']
   check('S1 months map to seasons (Dec–Feb winter, Mar–Apr spring, May–Jun roses, Jul–Aug summer, Sep–Nov autumn)',
     pg.evaluate("ds=>ds.map(d=>seasonOf(new Date(d+'T12:00')))",dates),
