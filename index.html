@@ -76,6 +76,9 @@ h1{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:clamp(28px,6vw,4
 .tab{flex:1 0 auto;padding:9px 14px;border:none;background:none;color:var(--mut);font:inherit;
   font-size:14px;font-weight:500;border-radius:9px;cursor:pointer;white-space:nowrap}
 .tab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+/* на телефон всичките 8 раздела се виждат наведнъж — два реда по четири, без скрити вдясно */
+@media(max-width:700px){.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;overflow:visible}
+  .tab{padding:8px 3px;font-size:13px;white-space:normal;line-height:1.15;min-width:0}}
 
 .sess{display:none;background:var(--sb);border:1px solid var(--s);border-radius:12px;
   padding:9px 13px;margin-bottom:8px;font-size:13.5px;color:var(--s)}
@@ -94,8 +97,8 @@ h1{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:clamp(28px,6vw,4
 /* излети */
 .ou{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 15px;margin-bottom:9px;cursor:pointer}
 .ou .tags{margin-top:7px}
-.ou .sl{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.ou .sl span{font-size:12.5px;padding:3px 9px;border-radius:8px;background:var(--bg2);color:var(--ink)}
+.ou .sl,.pld .sl{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ou .sl span,.pld .sl span{font-size:12.5px;padding:3px 9px;border-radius:8px;background:var(--bg2);color:var(--ink)}
 .ou .sl span.v1{background:var(--hb);color:var(--h)} .ou .sl span.v2{background:var(--sb);color:var(--s)} .ou .sl span.v3{background:var(--pb);color:var(--p)}
 .ou .ed{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);cursor:default}
 .ou .ed .fg{margin:0;flex:1 1 90px} .ou .ed .btn{flex:0 0 auto}
@@ -223,7 +226,10 @@ textarea{resize:vertical;min-height:54px}
 .x{position:absolute;top:10px;right:11px;display:flex;gap:3px}
 .x button{border:none;background:none;color:var(--mut);cursor:pointer;font-size:12px;padding:3px 5px;font:inherit}
 .x button:hover{color:var(--accent)}
-.sp,.pl{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sp,.pl{display:block} .plh{display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer}
+.pl.unnamed .nm{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;letter-spacing:-.01em}
+.pld{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
+.plmap{height:170px;border-radius:12px;overflow:hidden;margin-bottom:6px;background:var(--bg2)}
 .th{flex:0 0 auto;width:54px;height:54px;border-radius:11px;overflow:hidden;background:var(--bg2);
   border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
 .th img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
@@ -234,12 +240,18 @@ textarea{resize:vertical;min-height:54px}
 .phmsg{font-size:13px;font-weight:500}
 .thstrip{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
 .thstrip .th{width:62px;height:62px}
+.phcount{color:var(--mut);font-size:12.5px;margin:11px 0 5px}
+.phstrip{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+.phstrip figure{flex:0 0 84px;margin:0;scroll-snap-align:start;min-width:0}
+.phstrip .th{width:84px;height:84px}
+.phstrip figcaption{font-size:11.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
 .cnt{font-family:Fraunces,Georgia,serif;font-size:19px;color:var(--mut);flex:0 0 auto;text-align:right}
 .cnt small{display:block;font-family:Inter,sans-serif;font-size:10.5px;letter-spacing:.05em}
 
 /* map */
 :root{--dummy:0}
-.mapbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}   /* на тесен телефон бутоните минават на нов ред */
+.mapbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
+.mapbar.tiles{margin:-2px 0 10px 14px}   /* стиловете на истинската карта — под нея, не до нея */   /* на тесен телефон бутоните минават на нов ред */
 @media(max-width:420px){.chip{padding:6px 11px;font-size:12.5px}}
 
 .mapwrap{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;position:relative}
@@ -322,6 +334,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .yay.badge .bdi{color:var(--h)} .yay.badge .yaypic svg{width:40px;height:40px;fill:none}
 .yay.trip .yayt{font-size:18px}
 .bdg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:2px 0 14px}
+.bdintro{color:var(--mut);font-size:13.5px;margin:0 0 10px}
 .bd{border:1px solid var(--line);border-radius:12px;padding:9px 6px 8px;text-align:center;background:var(--card);color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px}
 .bd .bdi svg{width:30px;height:30px;display:block} .bd b{font-size:13px;color:var(--ink);font-weight:600} .bd small{font-size:11.5px;line-height:1.25}
 .bd:not(.on){opacity:.55} .bd.on{color:var(--h);border-color:var(--h)} .bd.on small{color:var(--mut)}
@@ -409,10 +422,11 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 <div class="tabs" role="tablist">
   <button class="tab" role="tab" data-v="log" aria-selected="true">Дневник</button>
   <button class="tab" role="tab" data-v="life" aria-selected="false">Моите видове</button>
-  <button class="tab" role="tab" data-v="phen" aria-selected="false">Фенология</button>
   <button class="tab" role="tab" data-v="outs" aria-selected="false">Излети</button>
-  <button class="tab" role="tab" data-v="places" aria-selected="false">Места</button>
   <button class="tab" role="tab" data-v="map" aria-selected="false">Карта</button>
+  <button class="tab" role="tab" data-v="places" aria-selected="false">Места</button>
+  <button class="tab" role="tab" data-v="phen" aria-selected="false">Фенология</button>
+  <button class="tab" role="tab" data-v="badges" aria-selected="false">Значки</button>
   <button class="tab" role="tab" data-v="friends" aria-selected="false">Приятели</button>
 </div>
 
@@ -685,6 +699,7 @@ function render(){
   const el=document.getElementById('view');
   document.getElementById('filters').style.display=(view==='log'||(view==='life'&&!spSel))?'':'none';
   if(view==='friends')return renderFriends(el);   // работи и с празен дневник: нов телефон, нов приятел
+  if(view==='badges')return renderBadges(el);     // и значките — новият човек вижда какво може да спечели
   if(!OBS.length){const ih=instHTML();el.innerHTML='<div class="empty"><div class="emptybird">'+BIRDGLYPH+'</div>'+
     'Още няма записи.<br>Натисни <b>+ Ново наблюдение</b> и впиши първата птица.'+
     (ih?'<div class="inst" style="margin-top:20px">'+ih+'</div>':'')+'</div>';return;}
@@ -767,7 +782,7 @@ function renderLife(el){
   for(const o of OBS)if(o.u&&key(o)&&!sm.has(key(o))&&(!ql||(o.bg+' '+o.en+' '+o.la).toLowerCase().includes(ql)))un.set(key(o),o.bg||o.en||o.la);
   const unH=un.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с несигурни записи (не се броят): '+[...un.values()].map(esc).join(' · ')+'</div>':'';
   if(!arr.length){el.innerHTML=(unH||'<div class="empty">Нищо не съвпада.</div>');return;}
-  el.innerHTML=(ql||filt!=='all'?'':badgeStrip())+arr.map(r=>'<div class="sp l'+r.L+'" data-k="'+esc(r.k)+'" style="cursor:pointer">'+
+  el.innerHTML=arr.map(r=>'<div class="sp l'+r.L+'" data-k="'+esc(r.k)+'" style="cursor:pointer">'+
     (r.photo?'<div class="th" data-th="'+r.photo+'"></div>':'<div class="th none">'+silFor(r.fam)+'</div>')+
     '<div style="flex:1;min-width:0">'+
     '<div class="nm">'+esc(r.bg||r.en||r.la)+'</div>'+
@@ -1011,11 +1026,11 @@ function renderMap(el){
       (noGeo?'<br><span style="opacity:.7">'+noGeo+' записа са без координати.</span>':'')+'</div>';
     return;}
   const bar='<div class="mapbar">'+
-    '<button class="chip" data-mm="grid"'+(mapMode==='grid'?' aria-pressed="true"':'')+'>Схема</button>'+
     '<button class="chip" data-mm="real"'+(mapMode==='real'?' aria-pressed="true"':'')+'>Истинска карта</button>'+
-    (mapMode==='real'?Object.keys(TILES).map(k=>'<button class="chip" data-tk="'+k+'"'+
-      (tileKey===k?' aria-pressed="true"':'')+'>'+TILES[k].name+'</button>').join(''):'')+
-    '<span class="note2" id="mapmsg" style="align-self:center;max-width:none"></span></div>';
+    '<button class="chip" data-mm="grid"'+(mapMode==='grid'?' aria-pressed="true"':'')+'>Схема</button>'+
+    '<span class="note2" id="mapmsg" style="align-self:center;max-width:none"></span></div>'+
+    (mapMode==='real'?'<div class="mapbar tiles">'+Object.keys(TILES).map(k=>'<button class="chip" data-tk="'+k+'"'+
+      (tileKey===k?' aria-pressed="true"':'')+'>'+TILES[k].name+'</button>').join('')+'</div>':'');
   const panel='<div class="mappanel" id="mp"><div style="color:var(--mut);font-size:13.5px">'+
     'Пипни или посочи кръг, за да видиш какво си намерил там. Големината е брой различни видове.</div></div>'+
     (noGeo?'<div class="note2" style="margin-top:9px;max-width:none">'+noGeo+' записа са без координати и не се показват.</div>':'');
@@ -1172,8 +1187,9 @@ function showCluster(i){
     (ds[0]!==ds[ds.length-1]?' – '+human(ds[ds.length-1]):'')+
     ' · <a href="https://www.google.com/maps?q='+c.lat.toFixed(5)+','+c.lon.toFixed(5)+'" target="_blank" rel="noopener" style="color:var(--mut)">в Google Maps</a></div>'+
     '<div class="sl">'+arr.map(r=>'<span class="v'+r.L+'">'+esc(r.nm)+(r.n>1?' ·'+r.n:'')+'</span>').join('')+'</div>'+
-    (()=>{const ph=c.obs.filter(o=>o.photo).slice(-8);
-      return ph.length?'<div class="thstrip">'+ph.map(o=>'<div class="th" data-th="'+o.photo+'"></div>').join('')+'</div>':'';})();
+    (()=>{const ph=c.obs.filter(o=>o.photo).sort(newest);   // всички снимки от точката, най-новите първи
+      return ph.length?'<div class="phcount">'+ph.length+(ph.length===1?' снимка':' снимки')+(ph.length>3?' — плъзни настрани':'')+'</div>'+
+        '<div class="phstrip">'+ph.map(o=>'<figure><div class="th" data-th="'+o.photo+'"></div><figcaption>'+esc(o.bg||o.en||o.la)+'</figcaption></figure>').join('')+'</div>':'';})();
   loadThumbs();   // без това квадратчетата за снимки остават празни
   for(const g of document.querySelectorAll('.pt'))g.classList.toggle('sel',g.dataset.c==String(i));
   if(window.__map&&window.__C&&window.__C[i]){
@@ -1240,17 +1256,36 @@ function renderOuts(el){const L=outings();
       '<button type="button" class="btn" data-ocard>карта</button></div>';}
     h+='</div>';}
   el.innerHTML=h;}
-function renderPlaces(el){
-  const m={};
-  for(const o of SURE()){const p=(o.place||'').trim()||'(без място)';
-    if(!m[p])m[p]={n:0,sp:new Set(),first:o.date,last:o.date};
-    const r=m[p];r.n++;const k=key(o);if(k)r.sp.add(k);
-    if(o.date<r.first)r.first=o.date;if(o.date>r.last)r.last=o.date;}
-  const arr=Object.entries(m).sort((a,b)=>b[1].sp.size-a[1].sp.size);
-  el.innerHTML=arr.map(([p,r])=>'<div class="pl"><div>'+
-    '<div class="nm">'+esc(p)+'</div><div class="meta">'+human(r.first)+
-    (r.first!==r.last?' – '+human(r.last):'')+' · '+r.n+' наблюдения</div></div>'+
-    '<div class="cnt">'+r.sp.size+'<small>вида</small></div></div>').join('');}
+// Места: всяко място се отваря — малка карта с точките му, видовете и всички записи. Записите без име на място
+// се групират по координатите си (~100 м) и носят тях за име, за да не се слеят в едно „без място“.
+let openPl=null,plMap=null;
+function placeKey(o){const p=(o.place||'').trim();if(p)return {k:'n:'+p,name:p,named:true};
+  const g=(o.geo||'').split(',').map(Number);
+  if(g.length===2&&isFinite(g[0])&&isFinite(g[1])){const t=g[0].toFixed(3)+', '+g[1].toFixed(3);return {k:'g:'+t,name:t,named:false};}
+  return {k:'x',name:'без място и координати',named:false,none:true};}
+function placesList(){const m={};
+  for(const o of SURE()){const pk=placeKey(o),r=m[pk.k]||(m[pk.k]={...pk,rs:[],sp:new Set(),first:o.date,last:o.date});
+    r.rs.push(o);const k=key(o);if(k)r.sp.add(k);if(o.date<r.first)r.first=o.date;if(o.date>r.last)r.last=o.date;}
+  return Object.values(m).sort((a,b)=>(b.named-a.named)||(!!a.none-!!b.none)||(b.sp.size-a.sp.size)||a.name.localeCompare(b.name,'bg'));}
+function placeDetail(r){const sp={};for(const o of r.rs){const k=key(o);if(!k)continue;(sp[k]=sp[k]||{nm:o.bg||o.en||o.la,n:0}).n++;}
+  const rs=[...r.rs].sort((a,b)=>(b.date+(b.time||'')).localeCompare(a.date+(a.time||'')));
+  return '<div class="pld">'+(r.rs.some(o=>o.geo)?'<div class="plmap" id="plmap"></div><div class="note2" id="plmsg" style="max-width:none"></div>':'')+
+    '<div class="sl">'+Object.values(sp).sort((a,b)=>b.n-a.n||a.nm.localeCompare(b.nm,'bg')).map(x=>'<span>'+esc(x.nm)+(x.n>1?' ·'+x.n:'')+'</span>').join('')+'</div>'+
+    '<div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(human(o.date).replace(/ \d{4}$/,''))+(o.time?' '+esc(o.time):'')+'</span><span class="n">'+
+      esc(o.bg||o.en||o.la)+(o.count?' · '+esc(o.count):'')+'</span><button type="button" data-ed="'+o.id+'">промени</button></div>').join('')+'</div></div>';}
+function renderPlaces(el){const arr=placesList();if(plMap){try{plMap.remove();}catch(e){}plMap=null;}
+  el.innerHTML=arr.map(r=>'<div class="pl'+(openPl===r.k?' on':'')+(r.named?'':' unnamed')+'"><div class="plh" data-pl="'+esc(r.k)+'"><div>'+
+    '<div class="nm">'+esc(r.name)+'</div><div class="meta">'+(r.named?'':r.none?'':'<span class="tag h">без име</span> ')+human(r.first)+
+    (r.first!==r.last?' – '+human(r.last):'')+' · '+r.rs.length+' наблюдения</div></div>'+
+    '<div class="cnt">'+r.sp.size+'<small>вида</small></div></div>'+(openPl===r.k?placeDetail(r):'')+'</div>').join('');
+  const r=openPl&&arr.find(x=>x.k===openPl);if(r&&r.rs.some(o=>o.geo))placeMap(r);}
+async function placeMap(r){const el=document.getElementById('plmap'),msg=document.getElementById('plmsg');if(!el)return;
+  if(!await loadLeaflet()){el.remove();if(msg)msg.textContent='Картата иска връзка с интернет.';return;}
+  if(!document.body.contains(el))return;
+  const pts=[...new Set(r.rs.filter(o=>o.geo).map(o=>o.geo))].map(g=>g.split(',').map(Number));
+  plMap=L.map(el,{scrollWheelZoom:false,attributionControl:false});const T=TILES[tileKey]||TILES.sat,o={maxZoom:T.max,crossOrigin:true};if(T.sub)o.subdomains=T.sub;
+  L.tileLayer(T.url,o).addTo(plMap);for(const q of pts)L.circleMarker(q,PIN).addTo(plMap);
+  plMap.fitBounds(L.latLngBounds(pts),{maxZoom:16,padding:[24,24]});setTimeout(()=>plMap&&plMap.invalidateSize(),60);}
 const BIRDGLYPH='<svg viewBox="-34 -14 68 28" aria-hidden="true"><path d="M-30 3 C-22 -8 -13 -12 -6 -4 L0 0 L6 -4 C13 -12 22 -8 30 3 C21 -1 13 -1 7 4 L0 8 L-7 4 C-13 -1 -21 -1 -30 3 Z"/></svg>';
 // ---- силуети по семейства ----
 // Всеки силует: SVG форми върху платно 100×100, птицата гледа надясно, без собствен цвят (оцветява го CSS).
@@ -1591,6 +1626,7 @@ const BADGES=[
 function badgeState(b,R){if(b.goal){const n=b.count(R);return {on:n>=b.goal,n};}
   if(b.all)return {on:b.all(R)};const o=R.filter(b.hit).sort((x,y)=>(x.date+(x.time||'')).localeCompare(y.date+(y.time||'')))[0];return {on:!!o,first:o&&o.date};}
 const badgesNow=()=>{const R=SURE(),out={};for(const b of BADGES)out[b.id]=badgeState(b,R).on;return out;};
+function renderBadges(el){el.innerHTML='<div class="bdintro">Значките идват сами от записите ти — нищо не трябва да отбелязваш.</div>'+badgeStrip();}
 function badgeStrip(){const R=SURE();return '<div class="bdg">'+BADGES.map(b=>{const st=badgeState(b,R);
   return '<div class="bd'+(st.on?' on':'')+'" title="'+esc(b.how)+'"><span class="bdi">'+b.icon+'</span><b>'+b.name+'</b><small>'+
     (st.on?(st.first?'от '+human(st.first):'спечелена'):(b.goal?st.n+' от '+b.goal:b.how))+'</small></div>';}).join('')+'</div>';}
@@ -1620,6 +1656,8 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-spback]')){spSel=null;render();return;}
   const spc=e.target.closest('.sp[data-k]');
   if(spc&&!e.target.closest('.th img')){spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
+  const plh=e.target.closest('[data-pl]');
+  if(plh){openPl=openPl===plh.dataset.pl?null:plh.dataset.pl;render();if(openPl){const c=document.querySelector('.pl.on');if(c)c.scrollIntoView({block:'nearest'});}return;}
   const ogt=e.target.closest('[data-ogt]');
   if(ogt){const g=ogt.closest('.og'),open=g.classList.contains('shut');g.classList.toggle('shut',!open);ogt.setAttribute('aria-expanded',open);
     if(!q.trim()&&filt==='all')setDay('o:'+ogt.dataset.ogt,open);if(open)loadPhotos();return;}
@@ -1752,7 +1790,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-24.1';
+const VER='2026-10-24.2';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -1888,19 +1926,20 @@ function renderFriends(el){
       '<div class="fg"><label>Парола (поне 6 знака)</label><input id="sb-pw" type="password" autocomplete="current-password" value="'+esc(sbForm.pw)+'"></div>'+
       (sbMsg?'<div class="msg">'+esc(sbMsg)+'</div>':'')+
       '<div class="fbtns"><button type="button" class="btn pri" data-sb="in">Вход</button><button type="button" class="btn" data-sb="up">Нов профил</button></div></div>';return;}
-  const F=FR||{fol:[],fans:[]};
-  el.innerHTML='<div class="arr fr"><h3>Ти</h3><div class="ar"><div><b>'+esc(MYNAME||ME.email)+'</b><small>'+esc(ME.email||'')+' · <span id="sbStat">'+esc(sbStat)+'</span></small></div>'+
-      '<span><button type="button" class="btn" data-sb="out">изход</button></span></div>'+
+  const F=FR||{fol:[],fans:[]};   // първо приятелите; профилът и изходът — най-долу
+  el.innerHTML='<div class="arr fr">'+
+    '<h3>Дневници на приятели</h3>'+friendRows(F)+
+    '<div class="fbtns"><button type="button" class="btn" data-sb="refresh">Обнови</button></div>'+
+    '<h3>Добави приятел</h3><div class="geo"><input id="fr-code" placeholder="кодът, който ти е дал" style="flex:1;min-width:160px;margin:0"><button type="button" class="btn pri" data-sb="add" style="flex:0 0 auto">Добави</button></div>'+
+    (sbMsg?'<div class="msg">'+esc(sbMsg)+'</div>':'')+
     '<h3>Твоят код</h3><div class="ar"><div><b class="code">'+esc((MYCODE.match(/.{1,4}/g)||[]).join('-'))+'</b>'+
       '<small>С него приятел вижда дневника и снимките ти, без да може да ги променя. Дай го само на хора, на които вярваш.</small></div></div>'+
     '<div class="fbtns"><button type="button" class="btn" data-sb="copy">Копирай</button>'+(navigator.share?'<button type="button" class="btn" data-sb="send">Изпрати</button>':'')+
       '<button type="button" class="btn" data-sb="newcode">Нов код</button></div>'+
-    '<h3>Добави приятел</h3><div class="geo"><input id="fr-code" placeholder="кодът, който ти е дал" style="flex:1;min-width:160px;margin:0"><button type="button" class="btn pri" data-sb="add" style="flex:0 0 auto">Добави</button></div>'+
-    (sbMsg?'<div class="msg">'+esc(sbMsg)+'</div>':'')+
-    '<h3>Дневници на приятели</h3>'+friendRows(F)+
     '<h3>Виждат твоя дневник</h3>'+(F.fans.length?F.fans.map(f=>'<div class="ar"><div><b>'+esc(f.name)+'</b></div><span><button type="button" class="btn" data-unfan="'+esc(f.id)+'">махни</button></span></div>').join('')
       :'<div class="note2">Никой засега.</div>')+
-    '<div class="fbtns"><button type="button" class="btn" data-sb="refresh">Обнови</button></div></div>';}
+    '<h3>Ти</h3><div class="ar"><div><b>'+esc(MYNAME||ME.email)+'</b><small>'+esc(ME.email||'')+' · <span id="sbStat">'+esc(sbStat)+'</span></small></div>'+
+      '<span><button type="button" class="btn" data-sb="out">изход</button></span></div>'+'</div>';}
 function ufKeyer(list){   // вид = записи с поне едно общо име (бг, en, лат.) — както в Моите видове, но за всеки списък
   const P=new Map(),f=x=>{while(P.get(x)!==x){P.set(x,P.get(P.get(x)));x=P.get(x);}return x;};
   const tk=o=>['la','bg','en'].map(k=>{const v=nrm(o[k]);return v?k+'|'+v:'';}).filter(Boolean);

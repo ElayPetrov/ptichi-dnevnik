@@ -34,7 +34,7 @@ try:
   check('M4 tapping a merged point lists what it gathers, and all its species', ('Събрани тук:' in t,'точки без име' in t,f'{k} вида' in t), (True,True,True))
   j=ph.evaluate("window.__C.findIndex(c=>c.name==='Язовир Копринка')");ph.locator(f'svg .pt[data-c="{j}"]').click()
   try:
-    ph.wait_for_function("(()=>{const i=document.querySelector('#mp .thstrip .th img');return !!i&&i.complete&&i.naturalWidth>0;})()",timeout=4000);shown=True
+    ph.wait_for_function("(()=>{const i=document.querySelector('#mp .phstrip .th img');return !!i&&i.complete&&i.naturalWidth>0;})()",timeout=4000);shown=True
   except Exception: shown=False
   check('M5 a tapped point shows its photos, not blank squares', shown, True)
   dk=open_map(1000);nd=dk.locator('svg .pt').count()

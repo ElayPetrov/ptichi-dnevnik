@@ -40,7 +40,7 @@ try:
   iv=person(IVAN,photo=True)
   check('F1 signing up asks to confirm the address first', join(iv,'Иван','ivan@test.bg').startswith('Готово. Отвори писмото'), True)
   code=iv.evaluate("MYCODE");uI=st.uid('ivan@test.bg')
-  check('F2 signed in: name, a 12-character code shown in groups, synced', (iv.inner_text('.fr b').strip(),len(code),iv.inner_text('.fr .code')), ('Иван',12,'-'.join([code[:4],code[4:8],code[8:]])))
+  check('F2 signed in: name, a 12-character code shown in groups, synced', (iv.evaluate("[...document.querySelectorAll('.fr h3')].find(h=>h.textContent==='Ти').nextElementSibling.querySelector('b').textContent").strip(),len(code),iv.inner_text('.fr .code')), ('Иван',12,'-'.join([code[:4],code[4:8],code[8:]])))
   j=st.journal(uI);check('F3 his journal is in the cloud copy, with all records and outings', (len(j['obs']),j['v'],'outs' in j), (4,6,True))
   ph=iv.evaluate("OBS.find(o=>o.id===2).photo");check('F4 ...and his photo is uploaded into his own folder', (uI+'/'+ph+'.jpg') in st.files, True)
   check('F5 footer now says who can see the records', 'само хората, на които си дал кода си' in iv.inner_text('#priv'), True)
