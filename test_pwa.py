@@ -63,7 +63,7 @@ try:
         R(id=5,date=f'{Y-1}-06-01',bg='Червеногърба сврачка',la='Lanius collurio'),
         R(id=6,date=f'{Y-1}-01-05',bg='Кос',la='Turdus merula'),R(id=7,date=f'{Y}-01-03',bg='Кос',la='Turdus merula'),
         R(id=8,date=f'{Y}-03-10',bg='Сврака')]
-  pg=page(data); pg.click('.tab[data-v="phen"]')
+  pg=page(data); pg.click('.tab[data-v="phen"]'); pg.click('[data-pm="arr"]')   # По месеци is the default view now
   rows=lambda i:pg.evaluate(f"[...document.querySelectorAll('.arr')][{i-1}].querySelectorAll('.ar')",None) and pg.evaluate(f"[...[...document.querySelectorAll('.arr')][{i-1}].querySelectorAll('.ar')].map(e=>[e.querySelector('b').textContent,(e.querySelector('small')||{{}}).textContent||'',e.querySelector(':scope>span').textContent])")
   check('A1 expect soon: overdue first, then upcoming; out-of-window species left out', rows(1),
         [['Голям корморан',f'{Y-1}: '+pg.evaluate(f"sd('{D(-12).replace(year=Y-1).isoformat()}')"),'закъснява с 12 дни'],
@@ -71,7 +71,7 @@ try:
   check('A2 first dates this year, in order, compared with last year', rows(2),
         [['Кос',f'2 дни по-рано от {Y-1}','3 яну'],['Сврака','','10 мар'],['Пчелояд',f'5 дни по-рано от {Y-1}','23 апр']])
   pg.click('[data-pm="grid"]'); check('A3 month grid still one click away', pg.locator('table.ph2 tbody tr').count(), 6)
-  pg=page([R(id=1,date=T.isoformat(),bg='Сврака')]); pg.click('.tab[data-v="phen"]')
+  pg=page([R(id=1,date=T.isoformat(),bg='Сврака')]); pg.click('.tab[data-v="phen"]'); pg.click('[data-pm="arr"]')
   check('A4 first year: explains what "expect soon" will do', 'След първата година' in pg.inner_text('.arr'), True)
   # ---------- install hints, status bar ----------
   pg=page([],**p.devices['iPhone 13'])

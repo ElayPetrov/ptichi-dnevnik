@@ -5,8 +5,8 @@ from playwright.sync_api import sync_playwright
 R=lambda **k:{**dict(id=0,date='',time='',place='',count='',bg='',en='',la='',fam='',note='',h=0,s=1,p=0,beh=[],geo=None,photo=None),**k}
 port=int(sys.argv[1]);fails=0;SB='https://test-proj.supabase.co'
 import re
-def rec(pg,sel):   # Дневник shows only the newest day unfolded, so open the record's day before tapping its button
-  pg.evaluate("s=>{const b=document.querySelector(s);const g=b&&b.closest('.dayg.shut');if(g)g.querySelector('[data-dayt]').click();}",sel)
+def rec(pg,sel):   # Дневник unfolds only the newest day (and month, year), so open the record's ones before tapping its button
+  pg.evaluate("s=>{const b=document.querySelector(s);if(!b)return;for(const g of [b.closest('.yg.shut'),b.closest('.mg.shut'),b.closest('.dayg.shut')])if(g)g.querySelector(':scope>[data-ymt],:scope>[data-dayt]').click();}",sel)
   pg.click(sel)
 src=open('ptichi-dnevnik.html',encoding='utf-8').read();assert len(re.findall(r"const SB_URL='[^']*'",src))==1
 open('share-test.html','w',encoding='utf-8').write(re.sub(r"const SB_URL='[^']*'","const SB_URL='"+SB+"'",src))

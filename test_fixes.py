@@ -37,7 +37,7 @@ try:
   sv=[c for c in cards if c[0]=='Сврака'][0]
   check('1d bg-only + bg/la + en/la records join', (sv[1][0],sv[2]), ('Eurasian Magpie · Pica pica','3×'))
   check('1e Latin-only species gets a title', any(c[0]=='Larus michahellis' for c in cards), True)
-  pg.click('#filters .chip[data-f="year"]'); check('1f "this year" filter keys by species', pg.locator('.sp').count(), 4)
+  pg.click('#filters .chip[data-f="ylist"]'); check('1f the year-list filter keys by species', pg.locator('.sp').count(), 4)
   tab(pg,'phen'); pg.click('[data-pm="grid"]'); check('1g phenology rows', pg.locator('table.ph2 tbody tr').count(), 4)
   tab(pg,'places'); pl=dict(pg.eval_on_selector_all('.pl',"els=>els.map(e=>[e.querySelector('.nm').textContent,e.querySelector('.cnt').firstChild.textContent])"))
   check('1h places count merged species', pl, {'Копринка':'2','Розариум':'1','Язовир':'1'})

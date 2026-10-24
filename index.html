@@ -122,6 +122,12 @@ button.day{display:block;width:100%;text-align:left;background:none;border:0;bor
 .dayg.shut .dchev{transform:rotate(-90deg)}
 .dayg.shut .dayb{display:none}
 .dcount{font-family:Inter,system-ui,sans-serif;font-size:13px;margin-left:8px}
+/* година и месец: тънки, приглушени редове над дните */
+.ymh{display:flex;align-items:baseline;gap:6px;width:100%;background:none;border:0;border-bottom:1px dashed var(--line);border-radius:0;
+  padding:10px 0 5px;margin:6px 0 2px;font:inherit;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);cursor:pointer;text-align:left}
+.yg>.ymh{font-size:13.5px;letter-spacing:.04em;color:var(--ink);font-weight:600;border-bottom-style:solid}
+.ymh .dcount{text-transform:none;letter-spacing:0;font-size:12px;font-weight:400;margin-left:auto;color:var(--mut)}
+.yg.shut>.ymb,.mg.shut>.ymb{display:none} .yg.shut>.ymh .dchev,.mg.shut>.ymh .dchev{transform:rotate(-90deg)}
 /* страница на вида */
 .spd{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 16px 14px;margin:10px 0 12px}
 .spd .big{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:26px;line-height:1.15}
@@ -200,7 +206,11 @@ textarea{resize:vertical;min-height:54px}
 .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;flex:1}
 .btn:hover{border-color:var(--accent)}
 
-.filt{display:flex;gap:7px;overflow-x:auto;padding:2px 0 11px;scrollbar-width:none}
+.filt{display:flex;flex-wrap:wrap;gap:7px;padding:2px 0 11px}
+/* иконите са с линия като останалите в приложението; избраният бутон показва и думата си */
+.filt .chip.ic{display:inline-flex;align-items:center;gap:6px;padding:6px 11px}
+.filt .chip.ic svg{width:19px;height:19px;flex:0 0 auto}
+.filt .chip.ic .lbl{display:none} .filt .chip.ic[aria-pressed="true"] .lbl{display:inline}
 .filt::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);
   color:var(--mut);font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
@@ -285,6 +295,13 @@ table.ph2 td.sp1{text-align:left;position:sticky;left:0;background:var(--card);w
 .cell{width:19px;height:19px;border-radius:5px;background:var(--bg2);display:inline-block}
 .cell.on{background:var(--s)} .cell.v1{opacity:.42} .cell.v2{opacity:.7} .cell.v3{opacity:1}
 table.ph2 tr:hover td.sp1{color:var(--accent)}
+/* на тесен екран всичките 12 месеца в един ред: имената се съкращават, клетките се смаляват */
+@media(max-width:520px){.phen{padding:8px;overflow-x:visible}
+  table.ph2{table-layout:fixed}
+  table.ph2 th.sp1,table.ph2 td.sp1{width:30%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+  table.ph2 th,table.ph2 td{padding:2px 1px}
+  table.ph2 th:last-child,table.ph2 td:last-child{width:9%;font-size:11px}
+  table.ph2 .cell{width:100%;max-width:15px;height:14px;border-radius:3px;vertical-align:middle}}
 
 .emptybird{margin:0 auto 14px;width:84px}
 .emptybird svg{width:100%;height:auto;fill:var(--line2);opacity:.8}
@@ -309,7 +326,12 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .og.live .ogt b::after{content:' ●';color:var(--accent)}
 .ogx{display:flex;gap:6px;padding-top:3px} .ogx button,.orr button{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font:inherit;font-size:12.5px;color:var(--ink);cursor:pointer}
 .og.shut .ogb{display:none} .og.shut .ogt .dchev{transform:rotate(-90deg)}
-.orl{margin:4px 0 10px} .orr{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.orl{margin:4px 0 10px}
+.ouh{display:flex;gap:12px;align-items:flex-start} .out{flex:1;min-width:0}
+.oumap{flex:0 0 96px;height:72px;border-radius:10px;overflow:hidden;position:relative;background:var(--bg2);border:1px solid var(--line)}
+.oumap img{position:absolute;width:256px;height:256px;max-width:none}
+.oumap i{position:absolute;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:#c0392b;border:1.5px solid #fff;box-shadow:0 0 2px rgba(0,0,0,.45)}
+.ouph{display:flex;gap:5px;overflow-x:auto;margin-top:9px;padding-bottom:3px} .ouph .th{flex:0 0 46px;width:46px;height:46px} .orr{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
 .orr .t{color:var(--mut);min-width:3em;font-size:13px} .orr .n{flex:1;min-width:0} .orr .n.u{color:var(--mut);font-style:italic}
 /* „Честито, нов вид!“ — карта горе на екрана; не пречи да пишеш следващия запис и се скрива сама */
 .yay{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);z-index:900;
@@ -502,11 +524,10 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 
 <div class="filt" id="filters">
   <button class="chip" data-f="all" aria-pressed="true">Всички</button>
-  <button class="chip" data-f="h">Само чути</button>
-  <button class="chip" data-f="s">Видени</button>
-  <button class="chip" data-f="p">Снимани</button>
-  <button class="chip" data-f="year">Тази година</button>
-  <button class="chip" data-f="ylist">Годишен списък</button>
+  <button class="chip ic" data-f="h" aria-label="Само чути" title="Само чути"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9.5a5.5 5.5 0 0 1 11 0c0 3.2-2.4 4.2-3.4 5.8-.9 1.4-.9 3.2-2.6 4.1-1.6.8-3.6.1-4-1.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10.5 9.8a2 2 0 0 1 4 0c0 1.3-1.1 1.8-1.8 2.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Само чути</span></button>
+  <button class="chip ic" data-f="s" aria-label="Видени" title="Видени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="currentColor"/></svg><span class="lbl">Видени</span></button>
+  <button class="chip ic" data-f="p" aria-label="Снимани" title="Снимани"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13.2" r="3.3" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="lbl">Снимани</span></button>
+  <button class="chip ic" data-f="ylist" aria-label="Годишен списък" title="Годишен списък"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 9.6h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8.6 14.6l2.2 2.2 4.6-4.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Годишен списък</span></button>
 </div>
 <div class="fg" style="margin-bottom:12px"><input id="q" placeholder="Търси вид, място или бележка…"></div>
 
@@ -686,7 +707,6 @@ function pass(o){const ql=q.trim().toLowerCase();
   if(filt==='h'&&!(o.h&&!o.s&&!o.p))return false;
   if(filt==='s'&&lvl(o)<2)return false;
   if(filt==='p'&&lvl(o)<3)return false;
-  if(filt==='year'&&o.date.slice(0,4)!==String(new Date().getFullYear()))return false;
   if(filt==='ylist'){const y=String(new Date().getFullYear());
     if(o.date.slice(0,4)!==y)return false;
     if(yearFirsts()[key(o)]!==o.id)return false;}
@@ -730,10 +750,23 @@ function renderLog(el){
   const tk=o=>{const m=tmin(o.time);if(m!=null)return m;const d=new Date(o.id);return d.getHours()*60+d.getMinutes();};
   const list=OBS.filter(pass).sort((a,b)=>a.date===b.date?(tk(b)-tk(a)||b.id-a.id):b.date.localeCompare(a.date));
   if(!list.length){el.innerHTML='<div class="empty">Нищо не съвпада.</div>';return;}
-  const F=firsts();let h='',cur='';const seen=new Set();
+  const F=firsts();let h='',cur='',curM='',curY='';const seen=new Set();
   const byDay={};for(const o of list)(byDay[o.date]=byDay[o.date]||[]).push(o);
+  // месеци и години се появяват само когато има повече от един — дотогава Дневникът изглежда както досега
+  const multiY=new Set(list.map(o=>o.date.slice(0,4))).size>1,multiM=new Set(list.map(o=>o.date.slice(0,7))).size>1,
+    nY=list[0].date.slice(0,4),nM=list[0].date.slice(0,7),
+    ymOpen=k=>q.trim()||filt!=='all'?true:(k in DAYS?DAYS[k]:(k==='y:'+nY||k==='m:'+nM)),
+    ymHead=(k,lbl,cls)=>{const rs=list.filter(o=>o.date.startsWith(k.slice(2))),n=rs.length,sp=new Set(rs.filter(x=>!x.u).map(key).filter(Boolean)).size,op=ymOpen(k);
+      return '<div class="'+cls+(op?'':' shut')+'"><button type="button" class="ymh" data-ymt="'+k+'" aria-expanded="'+op+'"><span class="dchev" aria-hidden="true">▾</span>'+lbl+
+        '<span class="dcount">'+n+(n===1?' запис':' записа')+' · '+sp+(sp===1?' вид':' вида')+'</span></button><div class="ymb">';};
   for(const o of list){
-    if(o.date!==cur){if(cur)h+='</div></div>';cur=o.date;const S=sunFor(cur),dl=byDay[cur],open=dayOpen(cur,list[0].date),
+    if(o.date!==cur){const y=o.date.slice(0,4),mo=o.date.slice(0,7);
+      if(cur)h+='</div></div>';
+      if(multiM&&curM&&mo!==curM)h+='</div></div>';
+      if(multiY&&curY&&y!==curY)h+='</div></div>';
+      if(multiY&&y!==curY)h+=ymHead('y:'+y,y,'yg');
+      if(multiM&&mo!==curM){const mn=MN[+mo.slice(5,7)-1];h+=ymHead('m:'+mo,mn[0].toUpperCase()+mn.slice(1)+(multiY?'':' '+y),'mg');}
+      curY=y;curM=mo;cur=o.date;const S=sunFor(cur),dl=byDay[cur],open=dayOpen(cur,list[0].date),
         nsp=new Set(dl.filter(x=>!x.u).map(key).filter(Boolean)).size;
       h+='<div class="dayg'+(open?'':' shut')+'"><button class="day" data-dayt="'+cur+'" aria-expanded="'+open+'">'+
         '<span class="dchev" aria-hidden="true">▾</span>'+human(cur)+
@@ -742,7 +775,7 @@ function renderLog(el){
     if(o.sess){const k=o.date+'|'+o.sess;if(seen.has(k))continue;seen.add(k);   // излетът стои там, където е първият му запис в деня
       h+=outBlock(o.sess,byDay[o.date].filter(x=>x.sess===o.sess),F);continue;}
     h+=recHTML(o,F);}
-  el.innerHTML=onThisDay()+h+'</div></div>';loadPhotos();}
+  el.innerHTML=onThisDay()+h+'</div></div>'+(multiM?'</div></div>':'')+(multiY?'</div></div>':'');loadPhotos();}
 function recHTML(o,F){
     return '<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
       '<div class="x"><button data-ed="'+o.id+'">промени</button><button data-del="'+o.id+'">×</button></div>'+
@@ -775,7 +808,7 @@ function renderLife(el){
   if(filt==='h')arr=arr.filter(r=>r.L===1);
   if(filt==='s')arr=arr.filter(r=>r.L>=2);
   if(filt==='p')arr=arr.filter(r=>r.L===3);
-  if(filt==='year'||filt==='ylist'){const y=String(new Date().getFullYear());
+  if(filt==='ylist'){const y=String(new Date().getFullYear());
     const seen=new Set(SURE().filter(o=>o.date.slice(0,4)===y).map(key));
     arr=arr.filter(r=>seen.has(r.k));}
   arr.sort((a,b)=>String(a.bg||a.la).localeCompare(String(b.bg||b.la),'bg'));
@@ -907,7 +940,7 @@ document.getElementById('cardShare').onclick=async()=>{try{await navigator.share
 document.getElementById('cardSave').onclick=()=>{const u=URL.createObjectURL(cardFile),a=document.createElement('a');a.href=u;a.download=cardFile.name;
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3e4);};
 document.getElementById('cardClose').onclick=()=>document.getElementById('cardDlg').close();
-let phenMode='arr';
+let phenMode='grid';
 const MSH=['яну','фев','мар','апр','май','юни','юли','авг','сеп','окт','ное','дек'];
 const sd=d=>{const p=d.split('-');return (+p[2])+' '+MSH[+p[1]-1];};
 const doy=d=>{const p=d.split('-');return Math.round((Date.UTC(2001,+p[1]-1,+p[2])-Date.UTC(2001,0,1))/864e5);};   // ден от годината, без високосния
@@ -961,7 +994,7 @@ function renderArrivals(arr){
     h+='<div class="ar"><div><b>'+nm(x.r)+'</b>'+c+'</div><span>'+sd(x.d)+'</span></div>';}
   return h+'<div class="note2">Първата дата зависи и от това колко често излизаш, така че сравнението е най-честно за места, където ходиш редовно.</div></div>';}
 function renderPhen(el){
-  const bar='<div class="mapbar">'+[['arr','Първи срещи'],['grid','По месеци'],['curve','Годишна крива']].map(([k,t])=>
+  const bar='<div class="mapbar">'+[['grid','По месеци'],['curve','Годишна крива'],['arr','Първи срещи']].map(([k,t])=>
     '<button class="chip" data-pm="'+k+'"'+(phenMode===k?' aria-pressed="true"':'')+'>'+t+'</button>').join('')+'</div>';
   const m=speciesMap();
   let arr=Object.values(m);const ql=q.trim().toLowerCase();
@@ -1239,6 +1272,16 @@ function sessOptions(cur){const d=fld('date').value,L=outings().filter(x=>x.date
   sel.innerHTML='<option value="">— без излет —</option>'+L.map(x=>'<option value="'+esc(x.id)+'">'+esc(outLabel(x))+'</option>').join('');
   sel.value=cur&&L.some(x=>x.id===cur)?cur:'';document.getElementById('f-sess-row').style.display=L.length?'':'none';}
 document.getElementById('f-date').addEventListener('change',()=>sessOptions(document.getElementById('f-sess').value));
+// Малка карта без библиотека: плочките на подходящото приближение и точките върху тях. Без мрежа остават само точките.
+function staticMap(el,pts){if(!pts.length){el.remove();return;}const W=el.clientWidth||96,H=el.clientHeight||72,T=TILES[tileKey]||TILES.sat;
+  const px=(la,lo,z)=>{const n=256*2**z,s=Math.sin(la*Math.PI/180);return [(lo+180)/360*n,(.5-Math.log((1+s)/(1-s))/(4*Math.PI))*n];};
+  let z=15,P;for(;z>3;z--){P=pts.map(p=>px(p[0],p[1],z));const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]);if(Math.max(...xs)-Math.min(...xs)<=W-16&&Math.max(...ys)-Math.min(...ys)<=H-16)break;}
+  P=pts.map(p=>px(p[0],p[1],z));const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),L0=(Math.min(...xs)+Math.max(...xs))/2-W/2,T0=(Math.min(...ys)+Math.max(...ys))/2-H/2;let h='';
+  for(let tx=Math.floor(L0/256);tx<=Math.floor((L0+W)/256);tx++)for(let ty=Math.floor(T0/256);ty<=Math.floor((T0+H)/256);ty++)
+    h+='<img alt="" loading="lazy" src="'+T.url.replace('{z}',z).replace('{x}',tx).replace('{y}',ty).replace('{s}',(T.sub||'a')[0]).replace('{r}','')+
+      '" style="left:'+(tx*256-L0).toFixed(0)+'px;top:'+(ty*256-T0).toFixed(0)+'px" onerror="this.remove()">';
+  for(const p of P)h+='<i style="left:'+(p[0]-L0).toFixed(1)+'px;top:'+(p[1]-T0).toFixed(1)+'px"></i>';
+  el.innerHTML=h;}
 function renderOuts(el){const L=outings();
   if(!L.length){el.innerHTML='<div class="empty">Още няма излети.<br>Натисни <b>Излет</b>, когато тръгваш, и <b>приключи</b>, когато свършиш.</div>';return;}
   const tot=L.reduce((s,x)=>s+(mins(x.start,x.end)||0),0);
@@ -1246,9 +1289,11 @@ function renderOuts(el){const L=outings();
   for(const x of L){const m={};
     for(const o of x.rs){if(o.u)continue;const k=key(o);if(!k)continue;if(!m[k])m[k]={nm:o.bg||o.en||o.la,L:0};m[k].L=Math.max(m[k].L,lvl(o));}
     const sp=Object.values(m).sort((a,b)=>b.L-a.L||String(a.nm).localeCompare(String(b.nm),'bg'));
-    h+='<div class="ou" data-out="'+esc(x.id)+'"><div class="nm">'+human(x.date)+(x.place?' · '+esc(x.place):'')+'</div>'+
+    const pics=x.rs.filter(o=>o.photo).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
+    h+='<div class="ou" data-out="'+esc(x.id)+'"><div class="ouh"><div class="oumap" data-omap="'+esc(x.id)+'"></div><div class="out"><div class="nm">'+human(x.date)+(x.place?' · '+esc(x.place):'')+'</div>'+
       '<div class="meta">'+[x.start&&x.end?esc(x.start)+'–'+esc(x.end):'',dur(mins(x.start,x.end)),sp.length+(sp.length===1?' вид':' вида')].filter(Boolean).join(' · ')+'</div>'+
-      '<div class="tags">'+(x.complete===true?'<span class="tag s">пълен списък</span>':x.complete===false?'<span class="tag b">частичен списък</span>':'<span class="tag h">пълнотата не е отбелязана</span>')+'</div>';
+      '<div class="tags">'+(x.complete===true?'<span class="tag s">пълен списък</span>':x.complete===false?'<span class="tag b">частичен списък</span>':'<span class="tag h">пълнотата не е отбелязана</span>')+'</div></div></div>'+
+      (pics.length?'<div class="ouph">'+pics.map(o=>'<div class="th" data-th="'+o.photo+'" title="'+esc(o.bg||o.en||o.la)+'"></div>').join('')+'</div>':'');
     if(openOut===x.id){const rs=[...x.rs].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
       h+='<div class="sl">'+sp.map(r=>'<span class="v'+r.L+'">'+esc(r.nm)+'</span>').join('')+'</div>'+
       '<div class="ed"><div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(o.time||'')+'</span><span class="n'+(o.u?' u':'')+'">'+esc(o.bg||o.en||o.la)+
@@ -1256,7 +1301,10 @@ function renderOuts(el){const L=outings();
       '<button type="button" class="btn" data-oadd="'+esc(x.id)+'">+ птица</button><button type="button" class="btn" data-oedit="'+esc(x.id)+'">промени излета</button>'+
       '<button type="button" class="btn" data-ocard>карта</button></div>';}
     h+='</div>';}
-  el.innerHTML=h;}
+  el.innerHTML=h;
+  for(const m of el.querySelectorAll('[data-omap]')){const x=L.find(y=>y.id===m.dataset.omap);
+    staticMap(m,x?[...new Set(x.rs.filter(o=>o.geo).map(o=>o.geo))].map(g=>g.split(',').map(Number)):[]);}
+  loadThumbs();}
 // Места: всяко място се отваря — малка карта с точките му, видовете и всички записи. Записите без име на място
 // се групират по координатите си (~100 м) и носят тях за име, за да не се слеят в едно „без място“.
 let openPl=null,plMap=null;
@@ -1340,7 +1388,7 @@ async function loadThumbs(){
   }
 }
 async function loadPhotos(){for(const d of document.querySelectorAll('[data-ph]')){
-  if(d.dataset.loaded||d.closest('.dayg.shut,.og.shut'))continue;d.dataset.loaded='1';   // свитите дни и излети чакат да се отворят
+  if(d.dataset.loaded||d.closest('.dayg.shut,.og.shut,.mg.shut,.yg.shut'))continue;d.dataset.loaded='1';   // свитите дни и излети чакат да се отворят
   const b=await getPhoto(d.dataset.ph);if(b)phImg(d,b,false);else{d.classList.add('bad');d.innerHTML='<span class="phmsg">'+PH_MISS+'</span>';}}}
 function fillLists(){
   const set=(id,v)=>document.getElementById(id).innerHTML=v.map(x=>'<option value="'+esc(x)+'">').join('');
@@ -1551,7 +1599,7 @@ form.onsubmit=e=>{e.preventDefault();
   const nBefore=new Set(SURE().map(key).filter(Boolean)).size,bBefore=badgesNow();   // за поздравленията
   let ok=true;const old=edit?((OBS.find(o=>o.id===edit)||{}).photo||null):null;
   if(edit){const i=OBS.findIndex(o=>o.id===edit);if(i>=0)OBS[i]={...OBS[i],...rec};else ok=false;}else OBS.push(rec);
-  if(ok&&rec.date)setDay(rec.date,true);
+  if(ok&&rec.date){setDay(rec.date,true);setDay('m:'+rec.date.slice(0,7),true);setDay('y:'+rec.date.slice(0,4),true);}
   save();
   const nAfter=new Set(SURE().map(key).filter(Boolean)).size,saved=edit?OBS.find(o=>o.id===edit):rec,
     isNew=ok&&!rec.u&&nAfter>nBefore,
@@ -1656,7 +1704,7 @@ document.addEventListener('mouseover',e=>{const g=e.target.closest('.pt');if(g)s
 document.addEventListener('focusin',e=>{const g=e.target.closest&&e.target.closest('.pt');if(g)showCluster(+g.dataset.c);});
 document.addEventListener('click',e=>{
   const otdB=e.target.closest('[data-otd]');
-  if(otdB){const d=otdB.dataset.otd;setDay(d,true);render();const hh=document.querySelector('[data-dayt="'+d+'"]');if(hh)hh.scrollIntoView({behavior:'smooth',block:'start'});return;}
+  if(otdB){const d=otdB.dataset.otd;setDay(d,true);setDay('m:'+d.slice(0,7),true);setDay('y:'+d.slice(0,4),true);render();const hh=document.querySelector('[data-dayt="'+d+'"]');if(hh)hh.scrollIntoView({behavior:'smooth',block:'start'});return;}
   const dt=e.target.closest('[data-dayt]');
   if(dt){const g=dt.closest('.dayg'),open=g.classList.contains('shut');g.classList.toggle('shut',!open);dt.setAttribute('aria-expanded',open);
     if(!q.trim()&&filt==='all')setDay(dt.dataset.dayt,open);   // при търсене не се помни
@@ -1673,6 +1721,9 @@ document.addEventListener('click',e=>{
   if(plr){renamePlace(plr.dataset.plren,document.getElementById('pl-name').value);return;}
   const plh=e.target.closest('[data-pl]');
   if(plh){openPl=openPl===plh.dataset.pl?null:plh.dataset.pl;render();if(openPl){const c=document.querySelector('.pl.on');if(c)c.scrollIntoView({block:'nearest'});}return;}
+  const ymt=e.target.closest('[data-ymt]');
+  if(ymt){const g=ymt.parentElement,open=g.classList.contains('shut');g.classList.toggle('shut',!open);ymt.setAttribute('aria-expanded',open);
+    if(!q.trim()&&filt==='all')setDay(ymt.dataset.ymt,open);if(open)loadPhotos();return;}
   const ogt=e.target.closest('[data-ogt]');
   if(ogt){const g=ogt.closest('.og'),open=g.classList.contains('shut');g.classList.toggle('shut',!open);ogt.setAttribute('aria-expanded',open);
     if(!q.trim()&&filt==='all')setDay('o:'+ogt.dataset.ogt,open);if(open)loadPhotos();return;}
@@ -1683,7 +1734,7 @@ document.addEventListener('click',e=>{
   if(red){const o=OBS.find(x=>x.id==red.dataset.ed);if(o){openForm(o);window.scrollTo({top:0,behavior:'smooth'});}return;}
   if(e.target.closest('.ou .ed'))return;   // полетата в редактора не затварят картата
   const oc=e.target.closest('[data-out]');
-  if(oc){openOut=openOut===oc.dataset.out?null:oc.dataset.out;render();return;}
+  if(oc&&!e.target.closest('.th')){openOut=openOut===oc.dataset.out?null:oc.dataset.out;render();return;}   // снимка в картата се отваря, вместо да отваря излета
   const pm=e.target.closest('[data-pm]');
   if(pm){phenMode=pm.dataset.pm;render();return;}
   const ib=e.target.closest('[data-inst]');
@@ -1805,7 +1856,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-24.3';
+const VER='2026-10-24.4';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
