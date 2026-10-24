@@ -291,17 +291,22 @@ table.ph2 th{font-weight:500;color:var(--mut);font-size:10.5px;padding:4px 2px;t
 table.ph2 th.sp1{text-align:left;position:sticky;left:0;background:var(--card);min-width:150px;z-index:1}
 table.ph2 td{padding:3px 2px;text-align:center}
 table.ph2 td.sp1{text-align:left;position:sticky;left:0;background:var(--card);white-space:nowrap;
-  max-width:170px;overflow:hidden;text-overflow:ellipsis;padding-right:8px;z-index:1}
+  padding-right:8px;z-index:1}
 .cell{width:19px;height:19px;border-radius:5px;background:var(--bg2);display:inline-block}
 .cell.on{background:var(--s)} .cell.v1{opacity:.42} .cell.v2{opacity:.7} .cell.v3{opacity:1}
 table.ph2 tr:hover td.sp1{color:var(--accent)}
-/* на тесен екран всичките 12 месеца в един ред: имената се съкращават, клетките се смаляват */
-@media(max-width:520px){.phen{padding:8px;overflow-x:visible}
-  table.ph2{table-layout:fixed}
-  table.ph2 th.sp1,table.ph2 td.sp1{width:30%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
-  table.ph2 th,table.ph2 td{padding:2px 1px}
-  table.ph2 th:last-child,table.ph2 td:last-child{width:9%;font-size:11px}
-  table.ph2 .cell{width:100%;max-width:15px;height:14px;border-radius:3px;vertical-align:middle}}
+/* на телефон: всеки вид на свой ред с цялото си име, а под него 12-те месеца на цялата ширина — нищо не се съкращава,
+   имената не се пренасят, квадратчетата са по-едри и месеците остават закачени горе, докато превърташ */
+@media(max-width:520px){.phen{padding:8px 10px;overflow-x:visible}
+  table.ph2,table.ph2 thead,table.ph2 tbody{display:block}
+  table.ph2 tr{display:grid;grid-template-columns:repeat(12,1fr) 2.1em;column-gap:3px;row-gap:3px;align-items:center}
+  table.ph2 thead{position:sticky;top:0;z-index:2;background:var(--card);padding:4px 0 5px;border-bottom:1px solid var(--line)}
+  table.ph2 thead th.sp1{display:none}
+  table.ph2 th:last-child,table.ph2 td:last-child{grid-column:13;grid-row:1;text-align:right;font-size:11px}
+  table.ph2 td.sp1{grid-column:1 / 13;grid-row:1;position:static;min-width:0;max-width:none;overflow:visible;white-space:nowrap;font-size:13px;padding:0;text-align:left}
+  table.ph2 tbody tr{padding:6px 0 7px;border-bottom:1px solid var(--line)}
+  table.ph2 th,table.ph2 td{padding:0}
+  table.ph2 .cell{width:100%;height:15px;border-radius:4px;display:block}}
 
 .emptybird{margin:0 auto 14px;width:84px}
 .emptybird svg{width:100%;height:auto;fill:var(--line2);opacity:.8}
@@ -1856,7 +1861,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-24.4';
+const VER='2026-10-24.5';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

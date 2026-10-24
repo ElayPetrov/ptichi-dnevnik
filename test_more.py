@@ -53,6 +53,16 @@ try:
   check('Q10 Фенология: По месеци (shown first), Годишна крива, Първи срещи', (pg.evaluate("[...document.querySelectorAll('[data-pm]')].map(c=>c.textContent)"),pg.locator('table.ph2').count()), (['По месеци','Годишна крива','Първи срещи'],1))
   w=pg.evaluate("(()=>{const p=document.querySelector('.phen'),t=document.querySelector('table.ph2 thead tr').getBoundingClientRect();return [p.scrollWidth<=p.clientWidth,document.documentElement.scrollWidth<=document.documentElement.clientWidth,t.right<=document.documentElement.clientWidth];})()")
   check('Q11 ...all twelve months fit a 360 px screen in one row, no sideways scrolling', w, [True,True,True])
+  g=pg.evaluate("""(()=>{const tr=document.querySelector('table.ph2 tbody tr'),n=tr.querySelector('td.sp1'),cells=[...tr.querySelectorAll('td')].slice(1,13),
+      hd=[...document.querySelectorAll('table.ph2 thead th')].slice(1,13);
+    const one=n.getBoundingClientRect().height<26,full=n.scrollWidth<=n.clientWidth+1&&getComputedStyle(n).textOverflow!=='ellipsis',
+      row=new Set(cells.map(c=>Math.round(c.getBoundingClientRect().top))).size===1,
+      lined=cells.every((c,i)=>Math.abs(c.getBoundingClientRect().left-hd[i].getBoundingClientRect().left)<1.5),
+      below=cells[0].getBoundingClientRect().top>n.getBoundingClientRect().bottom-1,
+      sticky=getComputedStyle(document.querySelector('table.ph2 thead')).position==='sticky';
+    return [n.textContent,one,full,row,lined,below,sticky];})()""")
+  check('Q11b ...each bird\'s full name on one line, its twelve months beneath it, lined up under the month letters that stay pinned on top',
+    g, ['Голям синигер',True,True,True,True,True,True])
   check('Q12 no page errors', errs, [])
   b.close()
 finally: srv.terminate()
