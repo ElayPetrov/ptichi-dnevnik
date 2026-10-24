@@ -55,7 +55,7 @@ try:
   ph.click('#sessStart');ph.fill('#f-bg','Скорец');ph.click('#savebtn');ph.click('#sessEnd');ph.click('[data-done="1"]');ph.wait_for_timeout(5500);sync(lap)
   oid=ph.evaluate("OUTS[0].id")
   check('W7 an outing ended on the phone appears on the laptop', lap.evaluate(f"OUTS.some(x=>x.id==='{oid}'&&x.complete===true)"), True)
-  lap.click('.tab[data-v="outs"]');lap.locator('.ou').first.click();lap.click('[data-odel]');lap.wait_for_timeout(5500);sync(ph)
+  lap.click('.tab[data-v="outs"]');lap.locator('.ou').first.click();lap.click('.ou [data-oedit]');lap.click('#od-del');lap.wait_for_timeout(5500);sync(ph)
   check('W8 ...deleted on the laptop, it goes from the phone too; its records stay', (ph.evaluate("OUTS.length"),'Скорец' in names(ph)), (0,True))
   # photos
   ph.click('.tab[data-v="log"]');rec(ph,'[data-ed="2"]');ph.set_input_files('#f-photo','/home/claude/a.jpg');ph.wait_for_function("phNew.length===1");ph.click('#savebtn')

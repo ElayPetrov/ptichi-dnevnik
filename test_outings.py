@@ -68,10 +68,11 @@ try:
   check('O6 Излети lists newest first with time, duration, species and completeness',
         (cards[1],pg.inner_text('.outsum').split(' · ')[0]), (['18 октомври 2026','06:15–08:00 · 1 ч 45 мин · 2 вида','частичен списък'],'2 излета'))
   pg.locator('.ou').nth(1).click()
-  check('O7 tapping a card shows its species and an editor', (pg.locator('.ou .sl span').count(),pg.is_visible('#oe-comp')), (2,True))
-  pg.select_option('#oe-comp',''); pg.click('[data-osave]')
-  check('O8 completeness can be changed back to "not marked"', pg.evaluate("OUTS.find(x=>x.date==='2026-10-18').complete"), None)
-  pg.locator('.ou').nth(1).click(); pg.click('[data-odel]')
+  check('O7 tapping a card shows its species, its records with „промени“, and „+ птица“ / „промени излета“',
+    (pg.locator('.ou .sl span').count(),pg.locator('.ou .orr').count(),pg.is_visible('.ou [data-oadd]'),pg.is_visible('.ou [data-oedit]')), (2,2,True,True))
+  pg.click('.ou [data-oedit]'); pg.select_option('#od-comp',''); pg.click('#od-save')
+  check('O8 completeness can be changed back to "not marked" in the outing editor', pg.evaluate("OUTS.find(x=>x.date==='2026-10-18').complete"), None)
+  pg.click('.ou [data-oedit]'); pg.click('#od-del')   # the card stays open after saving the editor
   check('O9 deleting an outing keeps its records, loose', (len(pg.evaluate("OUTS")),pg.evaluate("OBS.filter(o=>o.date==='2026-10-18'&&!o.sess).length"),pg.locator('.ou').count()), (1,2,1))
   with pg.expect_download() as dl: pg.click('#bak')
   body=json.load(open(dl.value.path(),encoding='utf-8'))

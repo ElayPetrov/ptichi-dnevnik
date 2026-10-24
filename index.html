@@ -239,7 +239,8 @@ textarea{resize:vertical;min-height:54px}
 
 /* map */
 :root{--dummy:0}
-.mapbar{display:flex;gap:7px;margin-bottom:9px}
+.mapbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}   /* на тесен телефон бутоните минават на нов ред */
+@media(max-width:420px){.chip{padding:6px 11px;font-size:12.5px}}
 
 .mapwrap{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;position:relative}
 .mapwrap > svg{display:block;width:100%;height:auto;touch-action:manipulation}
@@ -286,6 +287,17 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 #pickMap{flex:1;min-height:240px;background:var(--bg2)}
 .pickfoot{display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap}
 #pickTxt{margin-right:auto;color:var(--mut);font-size:13px}
+.outdlg{height:auto;max-height:92vh} .odb{padding:4px 14px 0;overflow:auto}
+/* излет вътре в деня в Дневник: отличен с лента отляво, свива се като деня */
+.og{border-left:3px solid var(--s);background:color-mix(in srgb,var(--s) 7%,transparent);border-radius:0 12px 12px 0;padding:4px 0 2px 10px;margin:8px 0 12px}
+.ogh{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.ogt{flex:1;min-width:0;text-align:left;background:none;border:0;padding:5px 0;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ogt b{color:var(--s)} .ogt .dcount{display:block;margin:2px 0 0 1.3em}
+.og.live .ogt b::after{content:' ●';color:var(--accent)}
+.ogx{display:flex;gap:6px;padding-top:3px} .ogx button,.orr button{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font:inherit;font-size:12.5px;color:var(--ink);cursor:pointer}
+.og.shut .ogb{display:none} .og.shut .ogt .dchev{transform:rotate(-90deg)}
+.orl{margin:4px 0 10px} .orr{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.orr .t{color:var(--mut);min-width:3em;font-size:13px} .orr .n{flex:1;min-width:0} .orr .n.u{color:var(--mut);font-style:italic}
 /* „Честито, нов вид!“ — карта горе на екрана; не пречи да пишеш следващия запис и се скрива сама */
 .yay{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);z-index:900;
   width:min(440px,calc(100vw - 24px));background:var(--card);color:var(--ink);border:1.5px solid var(--h);border-radius:16px;
@@ -462,6 +474,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
       <button type="button" class="btn" id="geoMap">на картата</button>
       <button type="button" class="btn" id="geoClr">изчисти</button></div>
     <div id="geoHint" class="note2" style="margin-top:5px;max-width:none"></div></div>
+  <div class="fg" id="f-sess-row" style="display:none"><label>Излет</label><select id="f-sess"></select></div>
   <div class="fg"><label>Бележка</label><textarea id="f-note" placeholder="перушина, време, с кого, какво правеше…"></textarea></div>
   <div class="fg"><label>Снимка (по избор)</label>
     <div class="pho"><input type="file" id="f-photo" accept="image/*" style="flex:1;min-width:170px">
@@ -500,6 +513,19 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 </div>
 <dialog id="lb"><img id="lbimg" alt=""></dialog>
 <div id="yay" class="yay" role="status" aria-live="polite" hidden></div>
+<dialog id="outDlg" class="pickdlg outdlg" aria-label="Излет">
+  <div class="pickhead">Излет</div>
+  <div class="odb">
+    <div class="gdt"><div class="fg"><label>Дата</label><input type="date" id="od-date"></div>
+      <div class="fg"><label>Място</label><input id="od-place" list="places"></div></div>
+    <div class="gdt"><div class="fg"><label>Начало</label><input type="time" id="od-start"></div>
+      <div class="fg"><label>Край</label><input type="time" id="od-end"></div></div>
+    <div class="fg"><label>Записа ли всички видове?</label><select id="od-comp"><option value="1">да, всички</option><option value="0">не, само някои</option><option value="">не е отбелязано</option></select></div>
+    <div class="note2" id="od-info" style="max-width:none"></div>
+  </div>
+  <div class="pickfoot"><button type="button" class="btn" id="od-del">изтрий излета</button><span id="od-sp" style="flex:1"></span>
+    <button type="button" class="btn" id="od-cancel">Отказ</button><button type="button" class="btn pri" id="od-save">Запази</button></div>
+</dialog>
 <dialog id="pickDlg" class="pickdlg" aria-label="Посочи мястото на картата">
   <div class="pickhead">Пипни там, където беше птицата</div>
   <div id="pickMap"></div>
@@ -683,9 +709,12 @@ function onThisDay(){if(q.trim()||filt!=='all')return '';const t=today(),md=t.sl
   return '<div class="otd"><span class="otdt">На днешна дата:</span>'+ds.map(d=>{const ns=[...new Set(by[d].map(o=>o.bg||o.en||o.la))];
     return '<button type="button" class="otdy" data-otd="'+d+'"><b>'+d.slice(0,4)+'</b> '+esc(ns.slice(0,3).join(', '))+(ns.length>3?' и още '+(ns.length-3):'')+'</button>';}).join('')+'</div>';}
 function renderLog(el){
-  const list=OBS.filter(pass).sort((a,b)=>a.date===b.date?b.id-a.id:b.date.localeCompare(a.date));
+  // в деня — по час, най-късното горе (без час — по кога е записано); така и излетът стои на мястото си във времето,
+  // дори ако после му добавиш забравена птица
+  const tk=o=>{const m=tmin(o.time);if(m!=null)return m;const d=new Date(o.id);return d.getHours()*60+d.getMinutes();};
+  const list=OBS.filter(pass).sort((a,b)=>a.date===b.date?(tk(b)-tk(a)||b.id-a.id):b.date.localeCompare(a.date));
   if(!list.length){el.innerHTML='<div class="empty">Нищо не съвпада.</div>';return;}
-  const F=firsts();let h='',cur='';
+  const F=firsts();let h='',cur='';const seen=new Set();
   const byDay={};for(const o of list)(byDay[o.date]=byDay[o.date]||[]).push(o);
   for(const o of list){
     if(o.date!==cur){if(cur)h+='</div></div>';cur=o.date;const S=sunFor(cur),dl=byDay[cur],open=dayOpen(cur,list[0].date),
@@ -694,7 +723,12 @@ function renderLog(el){
         '<span class="dchev" aria-hidden="true">▾</span>'+human(cur)+
         '<span class="dcount">'+dl.length+(dl.length===1?' запис':' записа')+' · '+nsp+(nsp===1?' вид':' вида')+'</span>'+
         (S&&S.rise!=null?'<span class="sun">зора '+fhm(S.dawn)+' · изгрев '+fhm(S.rise)+' · залез '+fhm(S.set)+'</span>':'')+'</button><div class="dayb">';}
-    h+='<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
+    if(o.sess){const k=o.date+'|'+o.sess;if(seen.has(k))continue;seen.add(k);   // излетът стои там, където е първият му запис в деня
+      h+=outBlock(o.sess,byDay[o.date].filter(x=>x.sess===o.sess),F);continue;}
+    h+=recHTML(o,F);}
+  el.innerHTML=onThisDay()+h+'</div></div>';loadPhotos();}
+function recHTML(o,F){
+    return '<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
       '<div class="x"><button data-ed="'+o.id+'">промени</button><button data-del="'+o.id+'">×</button></div>'+
       '<div class="nm">'+esc(o.bg||o.en||o.la)+(o.count?' <span style="color:var(--mut);font-weight:400">· '+esc(o.count)+'</span>':'')+'</div>'+
       '<div class="meta">'+[o.en?esc(o.en):'',o.la?'<span class="la">'+esc(o.la)+'</span>':''].filter(Boolean).join(' · ')+'</div>'+
@@ -707,7 +741,17 @@ function renderLog(el){
         (o.p?'<span class="tag p">снимах</span>':'')+
         (o.beh||[]).map(b=>'<span class="tag b">'+esc(b)+'</span>').join('')+'</div>'+
       '<button class="again" data-again="'+o.id+'">+ друг вид тук</button></div>';}
-  el.innerHTML=onThisDay()+h+'</div></div>';loadPhotos();}
+// Излет в Дневник: заглавие с часовете, мястото и броя, „+ птица“ и „промени“; свива се и изборът се помни.
+function outBlock(id,grp,F){const live=!!(SESS&&SESS.id===id),x=live?null:outings().find(y=>y.id===id),
+    byT=[...grp].sort((a,b)=>(a.time||'').localeCompare(b.time||'')),
+    t=live?'от '+(SESS.t0||(byT[0]&&byT[0].time)||''):x&&x.start&&x.end?x.start+'–'+x.end:'',
+    pl=(live?SESS.place:x&&x.place)||(byT[0]&&byT[0].place)||'',nsp=new Set(grp.filter(o=>!o.u).map(key).filter(Boolean)).size,
+    k='o:'+id,open=q.trim()||filt!=='all'?true:(k in DAYS?DAYS[k]:true);
+  return '<div class="og'+(open?'':' shut')+(live?' live':'')+'"><div class="ogh"><button type="button" class="ogt" data-ogt="'+esc(id)+'" aria-expanded="'+open+'">'+
+    '<span class="dchev" aria-hidden="true">▾</span><b>Излет'+(live?' · сега':'')+'</b>'+(t?' · '+esc(t):'')+(pl?' · '+esc(pl):'')+
+    '<span class="dcount">'+grp.length+(grp.length===1?' запис':' записа')+' · '+nsp+(nsp===1?' вид':' вида')+(x&&x.complete===true?' · пълен списък':'')+'</span></button>'+
+    (live?'':'<span class="ogx"><button type="button" data-oadd="'+esc(id)+'">+ птица</button><button type="button" data-oedit="'+esc(id)+'">промени</button></span>')+
+    '</div><div class="ogb">'+grp.map(o=>recHTML(o,F)).join('')+'</div></div>';}
 function renderLife(el){
   if(spSel)return renderSpecies(el,spSel);
   let arr=Object.values(speciesMap());const ql=q.trim().toLowerCase();
@@ -1146,6 +1190,38 @@ function outings(){const by={};   // записаните излети + так�
   for(const id in by)if(!OUTS.some(x=>x.id===id)){const rs=by[id].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
     list.push({id,date:rs[0].date,start:rs[0].time||'',end:rs[rs.length-1].time||'',place:rs[0].place||'',complete:null,rs});}
   return list.sort((a,b)=>(b.date+(b.start||'')).localeCompare(a.date+(a.start||'')));}
+// „+ птица“ към излет: датата, мястото и координатите му, часът — краят му (или последният запис); записът влиза в излета.
+function outCtx(id){const x=outings().find(y=>y.id===id);if(!x)return null;
+  const rs=[...x.rs].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''))),l=rs[rs.length-1]||{};
+  return {date:x.date,time:x.end||l.time||'',place:x.place||l.place||'',geo:([...rs].reverse().find(o=>o.geo)||{}).geo||null,sess:id};}
+// Един редактор за излета, отварян и от Дневник, и от Излети — промяната се вижда и на двете места (едни и същи данни).
+// Смяна на датата мести и записите му от онзи ден.
+let odId=null;const odF=k=>document.getElementById('od-'+k);
+function openOutDlg(id){const x=outings().find(y=>y.id===id);if(!x)return;odId=id;
+  odF('date').value=x.date;odF('place').value=x.place||'';odF('start').value=x.start||'';odF('end').value=x.end||'';
+  odF('comp').value=x.complete===true?'1':x.complete===false?'0':'';
+  const n=new Set(x.rs.filter(o=>!o.u).map(key).filter(Boolean)).size;
+  odF('info').textContent=x.rs.length+(x.rs.length===1?' запис':' записа')+' · '+n+(n===1?' вид':' вида')+'. Птиците се добавят с „+ птица“, а се променят или махат от излета с „промени“ на всяка от тях.';
+  document.getElementById('outDlg').showModal();}
+function delOuting(id){if(!confirm('Изтриване на излета? Записите му остават в Дневника.'))return false;
+  tomb('outs',id);OUTS=OUTS.filter(y=>y.id!==id);saveOuts();
+  OBS=OBS.map(o=>o.sess===id?(({sess,...r})=>({...r,upd:Date.now()}))(o):o);save();openOut=null;render();return true;}
+odF('cancel').onclick=()=>document.getElementById('outDlg').close();
+odF('del').onclick=()=>{if(odId&&delOuting(odId))document.getElementById('outDlg').close();};
+odF('save').onclick=()=>{const x=outings().find(y=>y.id===odId);if(!x)return document.getElementById('outDlg').close();
+  const nd=odF('date').value||x.date,v=odF('comp').value;
+  if(nd!==x.date){OBS=OBS.map(o=>o.sess===odId&&o.date===x.date?{...o,date:nd,upd:Date.now()}:o);save();setDay(nd,true);}
+  putOut({id:odId,date:nd,place:odF('place').value.trim(),start:odF('start').value,end:odF('end').value,complete:v==='1'?true:v==='0'?false:null});
+  document.getElementById('outDlg').close();render();};
+// Полето „Излет“ във формата: излетите от датата на записа (и текущият), за да се добави или махне запис от излет по-късно.
+const outLabel=x=>(x.live?'текущият излет':'излет')+(x.start?' · '+x.start+(x.end?'–'+x.end:''):'')+(x.place?' · '+x.place:'');
+function sessOptions(cur){const d=fld('date').value,L=outings().filter(x=>x.date===d);
+  if(SESS&&(SESS.date||today())===d)L.unshift({id:SESS.id,date:d,start:SESS.t0,place:SESS.place,live:1});
+  if(cur&&!L.some(x=>x.id===cur)){const x=SESS&&SESS.id===cur?{id:cur,start:SESS.t0,place:SESS.place,live:1}:outings().find(y=>y.id===cur);if(x)L.push(x);}
+  const sel=document.getElementById('f-sess');
+  sel.innerHTML='<option value="">— без излет —</option>'+L.map(x=>'<option value="'+esc(x.id)+'">'+esc(outLabel(x))+'</option>').join('');
+  sel.value=cur&&L.some(x=>x.id===cur)?cur:'';document.getElementById('f-sess-row').style.display=L.length?'':'none';}
+document.getElementById('f-date').addEventListener('change',()=>sessOptions(document.getElementById('f-sess').value));
 function renderOuts(el){const L=outings();
   if(!L.length){el.innerHTML='<div class="empty">Още няма излети.<br>Натисни <b>Излет</b>, когато тръгваш, и <b>приключи</b>, когато свършиш.</div>';return;}
   const tot=L.reduce((s,x)=>s+(mins(x.start,x.end)||0),0);
@@ -1156,12 +1232,12 @@ function renderOuts(el){const L=outings();
     h+='<div class="ou" data-out="'+esc(x.id)+'"><div class="nm">'+human(x.date)+(x.place?' · '+esc(x.place):'')+'</div>'+
       '<div class="meta">'+[x.start&&x.end?esc(x.start)+'–'+esc(x.end):'',dur(mins(x.start,x.end)),sp.length+(sp.length===1?' вид':' вида')].filter(Boolean).join(' · ')+'</div>'+
       '<div class="tags">'+(x.complete===true?'<span class="tag s">пълен списък</span>':x.complete===false?'<span class="tag b">частичен списък</span>':'<span class="tag h">пълнотата не е отбелязана</span>')+'</div>';
-    if(openOut===x.id)h+='<div class="sl">'+sp.map(r=>'<span class="v'+r.L+'">'+esc(r.nm)+'</span>').join('')+'</div>'+
-      '<div class="ed"><div class="fg"><label>Начало</label><input type="time" id="oe-start" value="'+esc(x.start||'')+'"></div>'+
-      '<div class="fg"><label>Край</label><input type="time" id="oe-end" value="'+esc(x.end||'')+'"></div>'+
-      '<div class="fg"><label>Всички видове?</label><select id="oe-comp"><option value="1"'+(x.complete===true?' selected':'')+'>да</option>'+
-        '<option value="0"'+(x.complete===false?' selected':'')+'>не</option><option value=""'+(x.complete==null?' selected':'')+'>не е отбелязано</option></select></div>'+
-      '<button type="button" class="btn" data-osave>запази</button><button type="button" class="btn" data-ocard>карта</button><button type="button" class="btn" data-odel>изтрий излета</button></div>';
+    if(openOut===x.id){const rs=[...x.rs].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
+      h+='<div class="sl">'+sp.map(r=>'<span class="v'+r.L+'">'+esc(r.nm)+'</span>').join('')+'</div>'+
+      '<div class="ed"><div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(o.time||'')+'</span><span class="n'+(o.u?' u':'')+'">'+esc(o.bg||o.en||o.la)+
+        (o.count?' · '+esc(o.count):'')+'</span><button type="button" data-ed="'+o.id+'">промени</button></div>').join('')+'</div>'+
+      '<button type="button" class="btn" data-oadd="'+esc(x.id)+'">+ птица</button><button type="button" class="btn" data-oedit="'+esc(x.id)+'">промени излета</button>'+
+      '<button type="button" class="btn" data-ocard>карта</button></div>';}
     h+='</div>';}
   el.innerHTML=h;}
 function renderPlaces(el){
@@ -1216,7 +1292,7 @@ async function loadThumbs(){
   }
 }
 async function loadPhotos(){for(const d of document.querySelectorAll('[data-ph]')){
-  if(d.dataset.loaded||d.closest('.dayg.shut'))continue;d.dataset.loaded='1';   // свитите дни чакат да се отворят
+  if(d.dataset.loaded||d.closest('.dayg.shut,.og.shut'))continue;d.dataset.loaded='1';   // свитите дни и излети чакат да се отворят
   const b=await getPhoto(d.dataset.ph);if(b)phImg(d,b,false);else{d.classList.add('bad');d.innerHTML='<span class="phmsg">'+PH_MISS+'</span>';}}}
 function fillLists(){
   const set=(id,v)=>document.getElementById(id).innerHTML=v.map(x=>'<option value="'+esc(x)+'">').join('');
@@ -1316,6 +1392,7 @@ function openForm(o,seed){
   document.getElementById('f-photo').value='';
   if(o&&o.photo){photo=o.photo;getPhoto(o.photo).then(b=>{if(b){pv.src=URL.createObjectURL(b);pv.style.display='';rm.style.display='';}});}
   else{pv.style.display='none';rm.style.display='none';}
+  sessOptions(o?(o.sess||''):seed?(seed.sess||''):(SESS?SESS.id:''));
   document.getElementById('savebtn').textContent=o?'Запази промените':'Запиши';
   form.classList.add('on');document.getElementById('toggle').textContent='− Скрий формата';
   document.getElementById('f-bg').focus();}
@@ -1422,7 +1499,7 @@ form.onsubmit=e=>{e.preventDefault();
   const rec={id:edit||Date.now(),date:g('date')||today(),time:g('time'),place:g('place'),count:g('count'),
     bg:g('bg'),en:g('en'),la:g('la'),fam:document.getElementById('f-fam').value,note:g('note'),
     h:st.h?1:0,s:st.s?1:0,p:st.p?1:0,u:unsure?1:0,beh:[...beh],geo:parseGeo(document.getElementById('f-geo').value)||null,photo:photo||null,upd:Date.now()};
-  if(SESS&&!edit)rec.sess=SESS.id;
+  rec.sess=document.getElementById('f-sess').value||undefined;   // излетът се избира във формата (и после)
   const nBefore=new Set(SURE().map(key).filter(Boolean)).size,bBefore=badgesNow();   // за поздравленията
   let ok=true;const old=edit?((OBS.find(o=>o.id===edit)||{}).photo||null):null;
   if(edit){const i=OBS.findIndex(o=>o.id===edit);if(i>=0)OBS[i]={...OBS[i],...rec};else ok=false;}else OBS.push(rec);
@@ -1433,7 +1510,7 @@ form.onsubmit=e=>{e.preventDefault();
     yearFirst=ok&&!edit&&!rec.u&&!isNew&&saved&&!SURE().some(o=>o!==saved&&key(o)===key(saved)&&o.date.slice(0,4)===saved.date.slice(0,4));
   if(ok&&old&&old!==rec.photo){delPhoto(old);photoGone(old);}
   dropNew(ok?rec.photo:null);
-  if(SESS&&!edit){
+  if(SESS&&!edit&&rec.sess===SESS.id){
     SESS.place=rec.place||SESS.place;SESS.date=rec.date;SESS.time=rec.time||SESS.time;SESS.geo=rec.geo||SESS.geo;SESS.at=Date.now();
     // На живо или след излета? Първият запис решава: час до 30 мин от сега = на живо (следващите са „сега"),
     // иначе пишеш след излета (следващият продължава от датата и часа на този). Догонен по-стар запис
@@ -1543,14 +1620,14 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-spback]')){spSel=null;render();return;}
   const spc=e.target.closest('.sp[data-k]');
   if(spc&&!e.target.closest('.th img')){spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
-  const os=e.target.closest('[data-osave]');
-  if(os){const id=os.closest('[data-out]').dataset.out, x=outings().find(y=>y.id===id), v=document.getElementById('oe-comp').value;
-    putOut({id,date:x.date,place:x.place,start:document.getElementById('oe-start').value,end:document.getElementById('oe-end').value,complete:v==='1'?true:v==='0'?false:null});
-    openOut=null;render();return;}
-  const od=e.target.closest('[data-odel]');
-  if(od){const id=od.closest('[data-out]').dataset.out;
-    if(confirm('Изтриване на излета? Записите му остават в Дневника.')){tomb('outs',id);OUTS=OUTS.filter(y=>y.id!==id);saveOuts();
-      OBS=OBS.map(o=>o.sess===id?(({sess,...r})=>({...r,upd:Date.now()}))(o):o);save();openOut=null;render();}return;}
+  const ogt=e.target.closest('[data-ogt]');
+  if(ogt){const g=ogt.closest('.og'),open=g.classList.contains('shut');g.classList.toggle('shut',!open);ogt.setAttribute('aria-expanded',open);
+    if(!q.trim()&&filt==='all')setDay('o:'+ogt.dataset.ogt,open);if(open)loadPhotos();return;}
+  const oad=e.target.closest('[data-oadd]');
+  if(oad){const c=outCtx(oad.dataset.oadd);if(c){openForm(null,c);window.scrollTo({top:0,behavior:'smooth'});}return;}
+  const oed=e.target.closest('[data-oedit]');if(oed){openOutDlg(oed.dataset.oedit);return;}
+  const red=e.target.closest('.ou [data-ed]');
+  if(red){const o=OBS.find(x=>x.id==red.dataset.ed);if(o){openForm(o);window.scrollTo({top:0,behavior:'smooth'});}return;}
   if(e.target.closest('.ou .ed'))return;   // полетата в редактора не затварят картата
   const oc=e.target.closest('[data-out]');
   if(oc){openOut=openOut===oc.dataset.out?null:oc.dataset.out;render();return;}
@@ -1564,7 +1641,7 @@ document.addEventListener('click',e=>{
   if(mp){showCluster(+mp.dataset.c);return;}
   const ag=e.target.closest('[data-again]');
   if(ag){const o=OBS.find(x=>x.id==ag.dataset.again);
-    if(o){openForm(null,{date:o.date,time:o.time,place:o.place,geo:o.geo});
+    if(o){openForm(null,{date:o.date,time:o.time,place:o.place,geo:o.geo,sess:o.sess||''});
       window.scrollTo({top:0,behavior:'smooth'});}return;}
   const ed=e.target.closest('[data-ed]');
   if(ed){const o=OBS.find(x=>x.id==ed.dataset.ed);if(o){openForm(o);window.scrollTo({top:0,behavior:'smooth'});}return;}
@@ -1675,7 +1752,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-23.9';
+const VER='2026-10-24.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

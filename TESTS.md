@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-284 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+299 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -36,6 +36,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_pick.py | 10 | the form's field order (count and name first, the usually pre-filled date, time, place and coordinates lower), the map pin: where it opens, tapping, Готово, the place not moving the pin, saving, no signal |
 | test_yay.py | 12 | „Честито, нов вид!“: only for a species new to the journal (not repeats, not unsure), its number and round numbers, silhouette or photo, hides by itself or on a tap, opens the share card, never blocks typing during an outing |
 | test_treats.py | 17 | first meeting of the year (with last year's date), badges (pop-up once, the strip in Моите видове), „СТО!“ at 100, the end-of-outing summary and its card, „На днешна дата“, the sky through the day (night: stars, moon phase, owl, dark hills) |
+| test_outedit.py | 15 | outings inside their day in Дневник (placed by time, foldable), „+ птица“ for forgotten birds, moving records in and out with the form's Излет field, one editor from Дневник and Излети, moving an outing's date, live outings, search, Фенология and Карта fitting a 360 px phone |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 
