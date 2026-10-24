@@ -230,6 +230,7 @@ textarea{resize:vertical;min-height:54px}
 .pl.unnamed .nm{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;letter-spacing:-.01em}
 .pld{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
 .plmap{height:170px;border-radius:12px;overflow:hidden;margin-bottom:6px;background:var(--bg2)}
+.plren{display:flex;gap:8px;margin-bottom:10px} .plren input{flex:1;min-width:0;margin:0}
 .th{flex:0 0 auto;width:54px;height:54px;border-radius:11px;overflow:hidden;background:var(--bg2);
   border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
 .th img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
@@ -1269,7 +1270,9 @@ function placesList(){const m={};
   return Object.values(m).sort((a,b)=>(b.named-a.named)||(!!a.none-!!b.none)||(b.sp.size-a.sp.size)||a.name.localeCompare(b.name,'bg'));}
 function placeDetail(r){const sp={};for(const o of r.rs){const k=key(o);if(!k)continue;(sp[k]=sp[k]||{nm:o.bg||o.en||o.la,n:0}).n++;}
   const rs=[...r.rs].sort((a,b)=>(b.date+(b.time||'')).localeCompare(a.date+(a.time||'')));
-  return '<div class="pld">'+(r.rs.some(o=>o.geo)?'<div class="plmap" id="plmap"></div><div class="note2" id="plmsg" style="max-width:none"></div>':'')+
+  const ren=r.none?'':'<div class="plren"><input id="pl-name" list="places" value="'+(r.named?esc(r.name):'')+'" placeholder="'+(r.named?'ново име':'дай име на това място')+'">'+
+    '<button type="button" class="btn" data-plren="'+esc(r.k)+'">'+(r.named?'Преименувай':'Дай име')+'</button></div>';
+  return '<div class="pld">'+ren+(r.rs.some(o=>o.geo)?'<div class="plmap" id="plmap"></div><div class="note2" id="plmsg" style="max-width:none"></div>':'')+
     '<div class="sl">'+Object.values(sp).sort((a,b)=>b.n-a.n||a.nm.localeCompare(b.nm,'bg')).map(x=>'<span>'+esc(x.nm)+(x.n>1?' ·'+x.n:'')+'</span>').join('')+'</div>'+
     '<div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(human(o.date).replace(/ \d{4}$/,''))+(o.time?' '+esc(o.time):'')+'</span><span class="n">'+
       esc(o.bg||o.en||o.la)+(o.count?' · '+esc(o.count):'')+'</span><button type="button" data-ed="'+o.id+'">промени</button></div>').join('')+'</div></div>';}
@@ -1279,6 +1282,16 @@ function renderPlaces(el){const arr=placesList();if(plMap){try{plMap.remove();}c
     (r.first!==r.last?' – '+human(r.last):'')+' · '+r.rs.length+' наблюдения</div></div>'+
     '<div class="cnt">'+r.sp.size+'<small>вида</small></div></div>'+(openPl===r.k?placeDetail(r):'')+'</div>').join('');
   const r=openPl&&arr.find(x=>x.k===openPl);if(r&&r.rs.some(o=>o.geo))placeMap(r);}
+// Ново име на място — за всички записи там (и несигурните), за излетите със същото място и за текущия излет.
+// Име, което вече съществува, слива двете места. Мястото „без място и координати“ не се преименува.
+function renamePlace(k,nm){nm=(nm||'').trim();const r=placesList().find(x=>x.k===k)||(()=>{const all=OBS.filter(o=>placeKey(o).k===k);return all.length?{k,...placeKey(all[0])}:null;})();
+  if(!r||r.none||!nm||(r.named&&nm===r.name))return;
+  const hit=o=>placeKey(o).k===k,n=OBS.filter(hit).length,merge=OBS.some(o=>(o.place||'').trim()===nm&&!hit(o));
+  if(!n||!confirm('„'+nm+'“ ще стане мястото на '+n+(n===1?' запис':' записа')+(merge?' — място с това име вече има и двете ще се слеят':'')+'.'))return;
+  const now=Date.now();OBS=OBS.map(o=>hit(o)?{...o,place:nm,upd:now}:o);save();
+  if(r.named){for(const x of OUTS.filter(y=>(y.place||'').trim()===r.name))putOut({...x,place:nm});
+    if(SESS&&(SESS.place||'').trim()===r.name){SESS.place=nm;saveSess();}}
+  openPl='n:'+nm;render();}
 async function placeMap(r){const el=document.getElementById('plmap'),msg=document.getElementById('plmsg');if(!el)return;
   if(!await loadLeaflet()){el.remove();if(msg)msg.textContent='Картата иска връзка с интернет.';return;}
   if(!document.body.contains(el))return;
@@ -1656,6 +1669,8 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-spback]')){spSel=null;render();return;}
   const spc=e.target.closest('.sp[data-k]');
   if(spc&&!e.target.closest('.th img')){spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
+  const plr=e.target.closest('[data-plren]');
+  if(plr){renamePlace(plr.dataset.plren,document.getElementById('pl-name').value);return;}
   const plh=e.target.closest('[data-pl]');
   if(plh){openPl=openPl===plh.dataset.pl?null:plh.dataset.pl;render();if(openPl){const c=document.querySelector('.pl.on');if(c)c.scrollIntoView({block:'nearest'});}return;}
   const ogt=e.target.closest('[data-ogt]');
@@ -1790,7 +1805,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-24.2';
+const VER='2026-10-24.3';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

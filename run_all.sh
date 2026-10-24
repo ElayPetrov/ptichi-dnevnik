@@ -26,5 +26,6 @@ run yay      python3 test_yay.py 8959
 run treats   python3 test_treats.py 8960
 run outedit  python3 test_outedit.py 8962
 run layout   python3 test_layout.py 8963
+run places   python3 test_places.py 8964
 printf '%-9s %s of 4 save taps landed\n' tap "$(python3 tap_test.py 8950 ptichi-dnevnik.html | grep -c "'saved'")"
 printf '%-9s ' sun; python3 sun_check.py | tail -1
