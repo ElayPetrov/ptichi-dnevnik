@@ -236,6 +236,10 @@ textarea{resize:vertical;min-height:54px}
 .x{position:absolute;top:10px;right:11px;display:flex;gap:3px}
 .x button{border:none;background:none;color:var(--mut);cursor:pointer;font-size:12px;padding:3px 5px;font:inherit}
 .x button:hover{color:var(--accent)}
+.oh{display:flex;align-items:flex-start;gap:8px} .oh .nm{flex:1;min-width:0;overflow-wrap:anywhere}
+.o .oh .x{position:static;flex:0 0 auto;margin:-2px -6px 0 0;align-items:center}
+.o .oh .x button{font-size:19px;line-height:1;padding:3px 6px} .o .oh .x svg{width:17px;height:17px;display:block}   /* молив вместо „промени“ — повече място за името */
+.oh .nm{hyphens:auto}
 .sp,.pl{display:block} .plh{display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer}
 .pl.unnamed .nm{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;letter-spacing:-.01em}
 .pld{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
@@ -330,7 +334,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .altc{display:inline-flex;align-items:center;gap:4px;background:var(--bg2);border:1px dashed var(--line2);border-radius:999px;padding:4px 6px 4px 11px;font-size:13.5px;font-style:italic}
 .altc button{background:none;border:0;color:var(--mut);font-size:16px;line-height:1;padding:0 4px;cursor:pointer}
 .altsug{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:7px} .altsug:empty{display:none}
-.altnm{font-weight:400;font-style:italic;color:var(--mut);font-size:.88em}
+.altnm{font-weight:400;font-style:italic;color:var(--mut);font-size:14px;margin:1px 0 2px}
 .impr input{width:20px;height:20px;flex:0 0 auto;margin:0;accent-color:var(--s)} .impr small{color:var(--mut)} .impr .u{color:var(--mut);font-style:italic}
 /* излет вътре в деня в Дневник: отличен с лента отляво, свива се като деня */
 .og{border-left:3px solid var(--s);background:color-mix(in srgb,var(--s) 7%,transparent);border-radius:0 12px 12px 0;padding:4px 0 2px 10px;margin:8px 0 12px}
@@ -807,8 +811,10 @@ function renderLog(el){
   el.innerHTML=inviteBanner()+onThisDay()+h+'</div></div>'+(multiM?'</div></div>':'')+(multiY?'</div></div>':'');loadPhotos();}
 function recHTML(o,F){
     return '<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
-      '<div class="x"><button data-ed="'+o.id+'">промени</button><button data-del="'+o.id+'">×</button></div>'+
-      '<div class="nm">'+esc(o.bg||o.en||o.la)+(o.u&&o.alt&&o.alt.length?' <span class="altnm">или '+o.alt.map(esc).join(' или ')+'</span>':'')+(o.count?' <span style="color:var(--mut);font-weight:400">· '+esc(o.count)+'</span>':'')+'</div>'+
+      // името и бройката заемат свободното място и се пренасят; „промени“ и „×“ стоят вдясно и не се застъпват с тях
+      '<div class="oh"><div class="nm">'+esc(o.bg||o.en||o.la)+(o.count?' <span style="color:var(--mut);font-weight:400">· '+esc(o.count)+'</span>':'')+'</div>'+
+      '<div class="x"><button data-ed="'+o.id+'" aria-label="промени" title="промени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5 17v3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14.6 7.4l3 3" stroke="currentColor" stroke-width="2"/></svg></button><button data-del="'+o.id+'" aria-label="изтрий" title="изтрий">×</button></div></div>'+
+      (o.u&&o.alt&&o.alt.length?'<div class="altnm">или '+o.alt.map(esc).join(' или ')+'</div>':'')+   // другите възможни видове — на свой ред
       '<div class="meta">'+[o.en?esc(o.en):'',o.la?'<span class="la">'+esc(o.la)+'</span>':''].filter(Boolean).join(' · ')+'</div>'+
       '<div class="meta">'+[o.time?'🕐 '+esc(o.time)+((r=>r?' ('+r+')':'')(sunRel(o))):'',o.fam?esc(o.fam):'',o.place?'📍 '+esc(o.place):'',
         o.geo?'<a href="https://www.google.com/maps?q='+o.geo+'" target="_blank" rel="noopener" style="color:var(--mut)">коорд.</a>':''].filter(Boolean).join(' · ')+'</div>'+
@@ -1962,7 +1968,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-25.2';
+const VER='2026-10-25.3';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

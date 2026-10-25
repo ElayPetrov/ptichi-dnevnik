@@ -37,6 +37,12 @@ try:
   pg.click('#toggle');pg.fill('#f-bg','Матовоглав синигер');pg.locator('#f-bg').dispatch_event('change');pg.click('#f-unsure')
   check('A12 Willow tit suggests the other two Poecile tits', pg.evaluate("[...document.querySelectorAll('[data-alts]')].map(b=>b.dataset.alts).sort()"), ['Жалобен синигер','Лъскавоглав синигер'])
   pg.click('#cancel')
+  narrow=b.new_page(viewport={'width':340,'height':800});narrow.on('pageerror',lambda e:errs.append(str(e)))
+  narrow.add_init_script("localStorage.setItem('bird-journal-v3',%s)"%json.dumps(json.dumps([R(id=5,bg='Средиземноморска чайка',count='12',u=1,alt=['Жълтокрака чайка','Белоглава чайка'])],ensure_ascii=False)))
+  narrow.goto(f'http://localhost:{port}/ptichi-dnevnik.html');narrow.wait_for_timeout(300)
+  lay=narrow.evaluate("""(()=>{const o=document.querySelector('.o'),n=o.querySelector('.oh .nm').getBoundingClientRect(),x=o.querySelector('.oh .x').getBoundingClientRect(),a=o.querySelector('.altnm').getBoundingClientRect(),c=o.getBoundingClientRect();
+    return [n.right<=x.left+0.5,x.right<=c.right+0.5,a.top>=n.bottom-1];})()""")
+  check('A14 a long name with a count never runs under „промени ×“, and the alternatives sit on their own line below', lay, [True,True,True])
   check('A13 no page errors', errs, [])
   b.close()
 finally: srv.terminate()
