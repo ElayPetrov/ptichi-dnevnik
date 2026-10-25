@@ -323,6 +323,10 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .pickfoot{display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap}
 #pickTxt{margin-right:auto;color:var(--mut);font-size:13px}
 .outdlg{height:auto;max-height:92vh} .odb{padding:4px 14px 0;overflow:auto}
+.invb{display:flex;gap:10px;align-items:center;background:color-mix(in srgb,var(--s) 10%,var(--card));border:1px solid var(--s);border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:14px}
+.invb span{flex:1;min-width:0}
+.impr{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.impr input{width:20px;height:20px;flex:0 0 auto;margin:0;accent-color:var(--s)} .impr small{color:var(--mut)} .impr .u{color:var(--mut);font-style:italic}
 /* излет вътре в деня в Дневник: отличен с лента отляво, свива се като деня */
 .og{border-left:3px solid var(--s);background:color-mix(in srgb,var(--s) 7%,transparent);border-radius:0 12px 12px 0;padding:4px 0 2px 10px;margin:8px 0 12px}
 .ogh{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap}
@@ -554,6 +558,17 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 </div>
 <dialog id="lb"><img id="lbimg" alt=""></dialog>
 <div id="yay" class="yay" role="status" aria-live="polite" hidden></div>
+<dialog id="invDlg" class="pickdlg outdlg" aria-label="Покани в излета">
+  <div class="pickhead">Покани в излета</div>
+  <div class="odb"><div class="note2" id="inv-note" style="max-width:none"></div><div id="inv-list"></div></div>
+  <div class="pickfoot"><span style="flex:1"></span><button type="button" class="btn" id="inv-cancel">Отказ</button><button type="button" class="btn pri" id="inv-ok">Покани</button></div>
+</dialog>
+<dialog id="impDlg" class="pickdlg outdlg" aria-label="Покана за излет">
+  <div class="pickhead" id="imp-h"></div>
+  <div class="odb"><div class="note2" id="imp-note" style="max-width:none"></div><div id="imp-list"></div></div>
+  <div class="pickfoot"><button type="button" class="btn" id="imp-no">Откажи поканата</button><span style="flex:1"></span>
+    <button type="button" class="btn" id="imp-later">По-късно</button><button type="button" class="btn pri" id="imp-ok">Добави избраните</button></div>
+</dialog>
 <dialog id="outDlg" class="pickdlg outdlg" aria-label="Излет">
   <div class="pickhead">Излет</div>
   <div class="odb">
@@ -726,7 +741,7 @@ function render(){
   document.getElementById('filters').style.display=(view==='log'||(view==='life'&&!spSel))?'':'none';
   if(view==='friends')return renderFriends(el);   // работи и с празен дневник: нов телефон, нов приятел
   if(view==='badges')return renderBadges(el);     // и значките — новият човек вижда какво може да спечели
-  if(!OBS.length){const ih=instHTML();el.innerHTML='<div class="empty"><div class="emptybird">'+BIRDGLYPH+'</div>'+
+  if(!OBS.length){const ih=instHTML();el.innerHTML=(view==='log'?inviteBanner():'')+'<div class="empty"><div class="emptybird">'+BIRDGLYPH+'</div>'+
     'Още няма записи.<br>Натисни <b>+ Ново наблюдение</b> и впиши първата птица.'+
     (ih?'<div class="inst" style="margin-top:20px">'+ih+'</div>':'')+'</div>';return;}
   if(view==='log')return renderLog(el);
@@ -780,7 +795,7 @@ function renderLog(el){
     if(o.sess){const k=o.date+'|'+o.sess;if(seen.has(k))continue;seen.add(k);   // излетът стои там, където е първият му запис в деня
       h+=outBlock(o.sess,byDay[o.date].filter(x=>x.sess===o.sess),F);continue;}
     h+=recHTML(o,F);}
-  el.innerHTML=onThisDay()+h+'</div></div>'+(multiM?'</div></div>':'')+(multiY?'</div></div>':'');loadPhotos();}
+  el.innerHTML=inviteBanner()+onThisDay()+h+'</div></div>'+(multiM?'</div></div>':'')+(multiY?'</div></div>':'');loadPhotos();}
 function recHTML(o,F){
     return '<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
       '<div class="x"><button data-ed="'+o.id+'">промени</button><button data-del="'+o.id+'">×</button></div>'+
@@ -802,9 +817,9 @@ function outBlock(id,grp,F){const live=!!(SESS&&SESS.id===id),x=live?null:outing
     pl=(live?SESS.place:x&&x.place)||(byT[0]&&byT[0].place)||'',nsp=new Set(grp.filter(o=>!o.u).map(key).filter(Boolean)).size,
     k='o:'+id,open=q.trim()||filt!=='all'?true:(k in DAYS?DAYS[k]:true);
   return '<div class="og'+(open?'':' shut')+(live?' live':'')+'"><div class="ogh"><button type="button" class="ogt" data-ogt="'+esc(id)+'" aria-expanded="'+open+'">'+
-    '<span class="dchev" aria-hidden="true">▾</span><b>Излет'+(live?' · сега':'')+'</b>'+(t?' · '+esc(t):'')+(pl?' · '+esc(pl):'')+
+    '<span class="dchev" aria-hidden="true">▾</span><b>Излет'+(live?' · сега':'')+'</b>'+(t?' · '+esc(t):'')+(pl?' · '+esc(pl):'')+(x&&x.with?' · с '+esc(x.with):'')+
     '<span class="dcount">'+grp.length+(grp.length===1?' запис':' записа')+' · '+nsp+(nsp===1?' вид':' вида')+(x&&x.complete===true?' · пълен списък':'')+'</span></button>'+
-    (live?'':'<span class="ogx"><button type="button" data-oadd="'+esc(id)+'">+ птица</button><button type="button" data-oedit="'+esc(id)+'">промени</button></span>')+
+    (live?'':'<span class="ogx"><button type="button" data-oadd="'+esc(id)+'">+ птица</button><button type="button" data-oedit="'+esc(id)+'">промени</button><button type="button" data-oinv="'+esc(id)+'">покани</button></span>')+
     '</div><div class="ogb">'+grp.map(o=>recHTML(o,F)).join('')+'</div></div>';}
 function renderLife(el){
   if(spSel)return renderSpecies(el,spSel);
@@ -1287,6 +1302,63 @@ function staticMap(el,pts){if(!pts.length){el.remove();return;}const W=el.client
       '" style="left:'+(tx*256-L0).toFixed(0)+'px;top:'+(ty*256-T0).toFixed(0)+'px" onerror="this.remove()">';
   for(const p of P)h+='<i style="left:'+(p[0]-L0).toFixed(1)+'px;top:'+(p[1]-T0).toFixed(1)+'px"></i>';
   el.innerHTML=h;}
+// ---- покани за излет ----
+// Каниш хора, които виждат дневника ти. Поканата пътува в собствения ти дневник (out.inv[техен id] = кога), който те
+// и без това теглят; техният отговор се пази в техния дневник (ANS), за да не ги пита пак другото им устройство.
+// Приемането копира избраните птици като нови, отделни записи (без снимки и бележки, „снимах“ отпада) в излет „с <име>“,
+// свързан с оригинала (orig). После всеки си променя своя — нищо не се пренася обратно.
+const KANS='bird-journal-answers';let ANS=lsGet(KANS,{})||{},curInv=null,invOut=null;
+function saveAns(){lsSet(KANS,ANS);queueSync();}
+const nmKey=r=>[r.bg,r.en,r.la].filter(Boolean).map(nrm);
+function invites(){if(!ME||!FR)return [];const out=[];
+  for(const f of FR.fol||[]){const d=f.data||{};
+    for(const o of d.outs||[]){const t=o.inv&&o.inv[ME.id];if(!t)continue;const k=f.id+':'+o.id+':'+t;if(ANS[k])continue;
+      const rs=(d.obs||[]).filter(r=>r.sess===o.id);if(rs.length)out.push({k,f,o,rs});}}
+  return out;}
+function inviteBanner(){return invites().map(v=>{const n=new Set(v.rs.filter(r=>!r.u).map(r=>nmKey(r)[0])).size;
+  return '<div class="invb"><span><b>'+esc(v.f.name)+'</b> те покани в излета си от '+human(v.o.date)+(v.o.place?' · '+esc(v.o.place):'')+' · '+n+(n===1?' вид':' вида')+'</span>'+
+    '<button type="button" class="btn pri" data-inv="'+esc(v.k)+'">Прегледай</button></div>';}).join('');}
+function openImport(k){const v=invites().find(x=>x.k===k);if(!v)return;curInv=v;
+  const done=new Set(OBS.filter(o=>o.src&&o.src.u===v.f.id).map(o=>String(o.src.id))),rs=v.rs.filter(r=>!done.has(String(r.id))).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  document.getElementById('imp-h').textContent='Излет на '+v.f.name+' · '+human(v.o.date)+(v.o.place?' · '+v.o.place:'');
+  document.getElementById('imp-note').textContent=rs.length?'Отметни птиците, които и ти видя или чу. Снимките и бележките не се копират; после можеш да промениш излета в Дневника си.':'Всичко от този излет вече е в дневника ти.';
+  document.getElementById('imp-list').innerHTML=rs.map(r=>{const ns=nmKey(r),have=OBS.some(m=>!m.u&&m.date===r.date&&nmKey(m).some(x=>ns.includes(x)));
+    return '<label class="impr"><input type="checkbox" data-rid="'+esc(String(r.id))+'"'+(have?'':' checked')+'><span><b class="'+(r.u?'u':'')+'">'+esc(r.bg||r.en||r.la)+(r.u?' ?':'')+'</b>'+
+      (r.count?' · '+esc(r.count):'')+(r.time?' · '+esc(r.time):'')+(have?' <small>вече е в дневника ти</small>':'')+'</span></label>';}).join('');
+  const ok=document.getElementById('imp-ok'),upd=()=>{const n=document.querySelectorAll('#imp-list input:checked').length;ok.textContent=rs.length?'Добави избраните ('+n+')':'Добре';};
+  document.getElementById('imp-list').onchange=upd;upd();document.getElementById('impDlg').showModal();}
+document.getElementById('imp-later').onclick=()=>document.getElementById('impDlg').close();
+document.getElementById('imp-no').onclick=()=>{if(!curInv)return;ANS[curInv.k]={a:'d',t:Date.now()};saveAns();document.getElementById('impDlg').close();render();};
+document.getElementById('imp-ok').onclick=()=>{const v=curInv;if(!v)return;
+  const ids=new Set([...document.querySelectorAll('#imp-list input:checked')].map(i=>i.dataset.rid)),now=Date.now(),o=v.o;
+  const mine=OUTS.find(y=>y.orig&&y.orig.u===v.f.id&&y.orig.o===o.id),oid=mine?mine.id:'s'+now;   // пак поканен → добавя към същия излет
+  const nBefore=new Set(SURE().map(key).filter(Boolean)).size;let n=0;
+  for(const r of v.rs)if(ids.has(String(r.id))){const hs=r.h||r.s?{h:r.h?1:0,s:r.s?1:0}:{h:0,s:1};
+    OBS.push({id:now+(n++),date:r.date,time:r.time||'',place:r.place||'',count:r.count||'',bg:r.bg||'',en:r.en||'',la:r.la||'',fam:r.fam||'',note:'',...hs,p:0,u:r.u?1:0,
+      beh:[...(r.beh||[])],geo:r.geo||null,photo:null,sess:oid,src:{u:v.f.id,n:v.f.name,id:r.id},upd:now});}
+  if(n&&!mine)putOut({id:oid,date:o.date,place:o.place||'',start:o.start||'',end:o.end||'',complete:o.complete===undefined?null:o.complete,with:v.f.name,orig:{u:v.f.id,o:o.id}});
+  ANS[v.k]={a:'a',t:now};saveAns();if(n){save();setDay(o.date,true);setDay('m:'+o.date.slice(0,7),true);setDay('y:'+o.date.slice(0,4),true);}
+  document.getElementById('impDlg').close();render();
+  if(n){const nw=new Set(SURE().map(key).filter(Boolean)).size-nBefore,sp=new Set(OBS.filter(x=>x.sess===oid&&!x.u).map(key).filter(Boolean)).size;
+    yayPush({cls:'trip',cf:nw?16:0,ms:7000,html:'<div class="yaypic">'+silFor((v.rs.find(r=>ids.has(String(r.id)))||{}).fam)+'</div><div class="yaytx"><div class="yayt">Добавен излет с '+esc(v.f.name)+'</div>'+
+      '<div class="yaynm">'+sp+(sp===1?' вид':' вида')+' · '+n+(n===1?' запис':' записа')+'</div>'+(nw?'<div class="yaym">'+nw+(nw===1?' нов':' нови')+' за дневника ти</div>':'')+'</div>'});}};
+function openInvite(id){invOut=id;const x=outings().find(y=>y.id===id),list=document.getElementById('inv-list'),note=document.getElementById('inv-note'),ok=document.getElementById('inv-ok');
+  const fans=ME&&FR?(FR.fans||[]):[];list.innerHTML='';ok.disabled=true;
+  if(!ME)note.textContent='Влез в „Приятели“, за да каниш приятели в излетите си.';
+  else if(!fans.length)note.textContent='Още никой не вижда дневника ти. Дай кода си на приятел („Приятели“ → „Твоят код“) и после го покани.';
+  else{note.textContent='Каниш хората, които виждат дневника ти. Ако приемат, излетът се копира при тях без снимките и бележките; после всеки си променя своя.';
+    list.innerHTML=fans.map(f=>{const t=x&&x.inv&&x.inv[f.id],fr=(FR.fol||[]).find(y=>y.id===f.id),a=t&&fr&&fr.data&&fr.data.ans&&fr.data.ans[ME.id+':'+id+':'+t];
+      return '<label class="impr"><input type="checkbox" data-uid="'+esc(f.id)+'"><span><b>'+esc(f.name)+'</b>'+(t?' <small>'+(a?(a.a==='a'?'прие':'отказа'):'поканен на '+human(new Date(t).toISOString().slice(0,10)).replace(/ \d{4}$/,''))+'</small>':'')+'</span></label>';}).join('');
+    list.onchange=()=>{ok.disabled=!list.querySelector('input:checked');};}
+  document.getElementById('invDlg').showModal();}
+document.getElementById('inv-cancel').onclick=()=>document.getElementById('invDlg').close();
+document.getElementById('inv-ok').onclick=()=>{const x=outings().find(y=>y.id===invOut),now=Date.now();if(!x)return;
+  const who=[...document.querySelectorAll('#inv-list input:checked')].map(i=>i.dataset.uid);if(!who.length)return;
+  const inv={...(x.inv||{})};for(const u of who)inv[u]=now;
+  const base=OUTS.find(y=>y.id===invOut)||{id:x.id,date:x.date,place:x.place||'',start:x.start||'',end:x.end||'',complete:x.complete===undefined?null:x.complete};
+  putOut({...base,inv});document.getElementById('invDlg').close();render();
+  const names=(FR.fans||[]).filter(f=>who.includes(f.id)).map(f=>f.name).join(', ');
+  yayPush({cls:'yr',cf:0,ms:3500,html:'<div class="yaypic">'+silFor('')+'</div><div class="yaytx"><div class="yayt">Поканата е изпратена</div><div class="yayn">на '+esc(names)+'</div></div>'});};
 function renderOuts(el){const L=outings();
   if(!L.length){el.innerHTML='<div class="empty">Още няма излети.<br>Натисни <b>Излет</b>, когато тръгваш, и <b>приключи</b>, когато свършиш.</div>';return;}
   const tot=L.reduce((s,x)=>s+(mins(x.start,x.end)||0),0);
@@ -1295,7 +1367,7 @@ function renderOuts(el){const L=outings();
     for(const o of x.rs){if(o.u)continue;const k=key(o);if(!k)continue;if(!m[k])m[k]={nm:o.bg||o.en||o.la,L:0};m[k].L=Math.max(m[k].L,lvl(o));}
     const sp=Object.values(m).sort((a,b)=>b.L-a.L||String(a.nm).localeCompare(String(b.nm),'bg'));
     const pics=x.rs.filter(o=>o.photo).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
-    h+='<div class="ou" data-out="'+esc(x.id)+'"><div class="ouh"><div class="oumap" data-omap="'+esc(x.id)+'"></div><div class="out"><div class="nm">'+human(x.date)+(x.place?' · '+esc(x.place):'')+'</div>'+
+    h+='<div class="ou" data-out="'+esc(x.id)+'"><div class="ouh"><div class="oumap" data-omap="'+esc(x.id)+'"></div><div class="out"><div class="nm">'+human(x.date)+(x.place?' · '+esc(x.place):'')+(x.with?' · с '+esc(x.with):'')+'</div>'+
       '<div class="meta">'+[x.start&&x.end?esc(x.start)+'–'+esc(x.end):'',dur(mins(x.start,x.end)),sp.length+(sp.length===1?' вид':' вида')].filter(Boolean).join(' · ')+'</div>'+
       '<div class="tags">'+(x.complete===true?'<span class="tag s">пълен списък</span>':x.complete===false?'<span class="tag b">частичен списък</span>':'<span class="tag h">пълнотата не е отбелязана</span>')+'</div></div></div>'+
       (pics.length?'<div class="ouph">'+pics.map(o=>'<div class="th" data-th="'+o.photo+'" title="'+esc(o.bg||o.en||o.la)+'"></div>').join('')+'</div>':'');
@@ -1304,7 +1376,7 @@ function renderOuts(el){const L=outings();
       '<div class="ed"><div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(o.time||'')+'</span><span class="n'+(o.u?' u':'')+'">'+esc(o.bg||o.en||o.la)+
         (o.count?' · '+esc(o.count):'')+'</span><button type="button" data-ed="'+o.id+'">промени</button></div>').join('')+'</div>'+
       '<button type="button" class="btn" data-oadd="'+esc(x.id)+'">+ птица</button><button type="button" class="btn" data-oedit="'+esc(x.id)+'">промени излета</button>'+
-      '<button type="button" class="btn" data-ocard>карта</button></div>';}
+      '<button type="button" class="btn" data-ocard>карта</button><button type="button" class="btn" data-oinv="'+esc(x.id)+'">покани</button></div>';}
     h+='</div>';}
   el.innerHTML=h;
   for(const m of el.querySelectorAll('[data-omap]')){const x=L.find(y=>y.id===m.dataset.omap);
@@ -1735,6 +1807,8 @@ document.addEventListener('click',e=>{
   const oad=e.target.closest('[data-oadd]');
   if(oad){const c=outCtx(oad.dataset.oadd);if(c){openForm(null,c);window.scrollTo({top:0,behavior:'smooth'});}return;}
   const oed=e.target.closest('[data-oedit]');if(oed){openOutDlg(oed.dataset.oedit);return;}
+  const oiv=e.target.closest('[data-oinv]');if(oiv){openInvite(oiv.dataset.oinv);return;}
+  const ivb=e.target.closest('[data-inv]');if(ivb){openImport(ivb.dataset.inv);return;}
   const red=e.target.closest('.ou [data-ed]');
   if(red){const o=OBS.find(x=>x.id==red.dataset.ed);if(o){openForm(o);window.scrollTo({top:0,behavior:'smooth'});}return;}
   if(e.target.closest('.ou .ed'))return;   // полетата в редактора не затварят картата
@@ -1861,7 +1935,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-24.5';
+const VER='2026-10-25.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -1932,6 +2006,7 @@ function mergeList(mine,theirs,dm,dt){   // по id: по-новата пром�
 function mergeIn(d){const had=new Set(OBS.map(o=>String(o.id))),dd=d.del||{};
   const a=mergeList(OBS,d.obs,DEL.obs,dd.obs),b=mergeList(OUTS,d.outs,DEL.outs,dd.outs),bh=[...BEH];
   for(const x of d.beh||[])if(!bh.includes(x))bh.push(x);
+  let na=0;for(const [k,v] of Object.entries(d.ans||{}))if(!ANS[k]||(v&&v.t>ANS[k].t)){ANS[k]=v;na++;}if(na){lsSet(KANS,ANS);render();}
   const ch=a.ch+b.ch+(bh.length-BEH.length);DEL={obs:a.del,outs:b.del};
   try{localStorage.setItem(KDEL,JSON.stringify(DEL));}catch(e){}
   if(ch){OBS=a.list;OUTS=b.list;BEH=bh;SPK=null;
@@ -1952,7 +2027,7 @@ async function syncNow(){
       if(base&&base!==lsGet(KSEEN,null)){   // друго устройство е писало: теглим и сливаме
         const r=await SB.from('journals').select('data,updated_at').eq('user_id',ME.id).single();if(r.error)throw r.error;
         base=r.data.updated_at;got+=mergeIn(r.data.data||{});lsSet(KSEEN,base);}
-      const payload={v:6,obs:OBS,beh:BEH,outs:OUTS,del:DEL},js=JSON.stringify(payload);let hh=0;for(let j=0;j<js.length;j++)hh=(hh*31+js.charCodeAt(j))|0;const h=js.length+':'+hh;
+      const payload={v:6,obs:OBS,beh:BEH,outs:OUTS,del:DEL,ans:ANS},js=JSON.stringify(payload);let hh=0;for(let j=0;j<js.length;j++)hh=(hh*31+js.charCodeAt(j))|0;const h=js.length+':'+hh;
       if(base&&h===lsGet(KHASH,null))break;   // нищо ново за качване
       const r=base?await SB.from('journals').update({data:payload}).eq('user_id',ME.id).eq('updated_at',base).select('updated_at')
                   :await SB.from('journals').insert({user_id:ME.id,data:payload}).select('updated_at');
@@ -1970,8 +2045,10 @@ async function syncNow(){
     if(pulled)render();
     sbStat='синхронизирано в '+nowTime()+(got?' · '+got+(got===1?' нов запис':' нови записа')+' от другото устройство':'');}
   catch(e){sbStat=errMsg(e);}
-  syncing=false;paintStat();}
-async function loadFriends(){if(!SB||!ME)return;
+  syncing=false;paintStat();
+  if(Date.now()-lastFr>5*60*1000)loadFriends();}   // поканите идват с дневниците на приятелите
+let lastFr=0;
+async function loadFriends(){if(!SB||!ME)return;lastFr=Date.now();
   try{const {data:links,error}=await SB.from('viewers').select('owner,viewer');if(error)throw error;
     const fol=links.filter(l=>l.viewer===ME.id).map(l=>l.owner),fans=links.filter(l=>l.owner===ME.id).map(l=>l.viewer),ids=[...new Set([...fol,...fans])];
     const pr=ids.length?(await SB.from('profiles').select('user_id,name').in('user_id',ids)).data||[]:[];
@@ -1979,7 +2056,7 @@ async function loadFriends(){if(!SB||!ME)return;
     const nm=id=>(pr.find(p=>p.user_id===id)||{}).name||'приятел';
     FR={fol:fol.map(id=>({id,name:nm(id),...(js.find(j=>j.user_id===id)||{})})),fans:fans.map(id=>({id,name:nm(id)}))};lsSet(KF,FR);}
   catch(e){sbMsg=errMsg(e);}
-  if(view==='friends')render();}
+  if(view==='friends'||view==='log')render();}
 // --- изглед ---
 function renderFriends(el){
   if(!sbOn()){el.innerHTML='<div class="empty">Споделянето още не е настроено.</div>';return;}
@@ -1998,7 +2075,7 @@ function renderFriends(el){
       (sbMsg?'<div class="msg">'+esc(sbMsg)+'</div>':'')+
       '<div class="fbtns"><button type="button" class="btn pri" data-sb="in">Вход</button><button type="button" class="btn" data-sb="up">Нов профил</button></div></div>';return;}
   const F=FR||{fol:[],fans:[]};   // първо приятелите; профилът и изходът — най-долу
-  el.innerHTML='<div class="arr fr">'+
+  el.innerHTML=inviteBanner()+'<div class="arr fr">'+
     '<h3>Дневници на приятели</h3>'+friendRows(F)+
     '<div class="fbtns"><button type="button" class="btn" data-sb="refresh">Обнови</button></div>'+
     '<h3>Добави приятел</h3><div class="geo"><input id="fr-code" placeholder="кодът, който ти е дал" style="flex:1;min-width:160px;margin:0"><button type="button" class="btn pri" data-sb="add" style="flex:0 0 auto">Добави</button></div>'+

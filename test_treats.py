@@ -66,7 +66,7 @@ try:
   p5=page([R(id=1,date='2026-10-01',bg='Кос')])
   check('T13 nothing from earlier years today: no line at all', p5.locator('.otd').count(), 0)
   # ---- the sky ----
-  ph=lambda pg,mins:pg.evaluate(f"(()=>{{const d=new Date();d.setHours(0,0,0,0);const S=sunOf(ymd(d.getTime()));skyAt=new Date(d.getTime()+(({mins})(S))*6e4);applySeason(document.querySelector('.hero').dataset.season);return document.querySelector('.hero').dataset.sky;}})()")
+  ph=lambda pg,mins:pg.evaluate(f"(()=>{{const d=new Date();d.setHours(0,0,0,0);const S=sunOf(ymd(d.getTime()));skyAt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,({mins})(S));applySeason(document.querySelector('.hero').dataset.season);return document.querySelector('.hero').dataset.sky;}})()")
   got=[ph(p5,"S=>S.dawn-20"),ph(p5,"S=>S.rise+10"),ph(p5,"S=>720"),ph(p5,"S=>S.set-10"),ph(p5,"S=>S.set+60")]
   check('T14 the sky follows the day: night, dawn, day, dusk, night', got, ['night','dawn','day','dusk','night'])
   night=p5.evaluate("(()=>{const h=document.querySelector('.hero'),vis=s=>getComputedStyle(h.querySelector(s)).display!=='none';return [vis('.s-night'),vis('.sun'),!!h.querySelector('.s-owl'),h.querySelectorAll('#stars circle').length>20,getComputedStyle(h).getPropertyValue('--hill2').trim()===SEASONS[h.dataset.season].d.hill2];})()")

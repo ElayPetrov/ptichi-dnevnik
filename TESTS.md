@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-333 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+346 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -40,6 +40,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_layout.py | 12 | tab order and all eight tabs on a 360 px phone, the Значки tab, Места (named first, unnamed points by coordinates, opening with a mini map and every record), Карта's style row under „Истинска карта“, every photo of a map point in a swipe strip, Приятели with friends first |
 | test_places.py | 9 | renaming a place or naming an unnamed point in Места: confirmation with the count, all records (unsure too) and outings updated, joining an existing place, „без място и координати“ left alone |
 | test_more.py | 13 | icon filters (no „Тази година“) fitting a 360 px phone, months and years folding in Дневник, an outing card's little map and photos, Фенология's order and its month grid fitting a phone with every name in full |
+| test_invite.py | 13 | outing invitations through the database stand-in: inviting someone who sees your journal, the banner and checklist, copying without photos or notes into „с …“, answers syncing, later edits staying separate, inviting again for forgotten birds, declining |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 
