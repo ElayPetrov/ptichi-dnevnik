@@ -326,6 +326,11 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .invb{display:flex;gap:10px;align-items:center;background:color-mix(in srgb,var(--s) 10%,var(--card));border:1px solid var(--s);border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:14px}
 .invb span{flex:1;min-width:0}
 .impr{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.altchips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 7px} .altchips:empty{display:none}
+.altc{display:inline-flex;align-items:center;gap:4px;background:var(--bg2);border:1px dashed var(--line2);border-radius:999px;padding:4px 6px 4px 11px;font-size:13.5px;font-style:italic}
+.altc button{background:none;border:0;color:var(--mut);font-size:16px;line-height:1;padding:0 4px;cursor:pointer}
+.altsug{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:7px} .altsug:empty{display:none}
+.altnm{font-weight:400;font-style:italic;color:var(--mut);font-size:.88em}
 .impr input{width:20px;height:20px;flex:0 0 auto;margin:0;accent-color:var(--s)} .impr small{color:var(--mut)} .impr .u{color:var(--mut);font-style:italic}
 /* излет вътре в деня в Дневник: отличен с лента отляво, свива се като деня */
 .og{border-left:3px solid var(--s);background:color-mix(in srgb,var(--s) 7%,transparent);border-radius:0 12px 12px 0;padding:4px 0 2px 10px;margin:8px 0 12px}
@@ -504,6 +509,10 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <button type="button" class="sb p" data-s="p">Снимах</button>
   </div>
   <div class="fg"><button type="button" class="bh" id="f-unsure" aria-pressed="false">? не съм сигурен — няма да се брои</button></div>
+  <div class="fg" id="f-alt-row" style="display:none"><label>Може да е и</label>
+    <div class="altchips" id="f-alt"></div>
+    <div class="geo"><input id="f-alt-in" list="bgnames" placeholder="друг вид, който може да е" style="flex:1;min-width:160px"><button type="button" class="btn" id="f-alt-add">+ добави</button></div>
+    <div class="altsug" id="f-alt-sug"></div></div>
 
   <div class="fg"><div class="behrow"><label style="margin-bottom:4px">Поведение</label>
     <button type="button" class="behedit" id="behEdit">редактирай</button></div>
@@ -723,7 +732,7 @@ function stats(){const m=speciesMap();const v=Object.values(m).map(r=>r.L);
   document.getElementById('n-s').textContent=v.filter(x=>x>=2).length;
   document.getElementById('n-p').textContent=v.filter(x=>x===3).length;}
 function pass(o){const ql=q.trim().toLowerCase();
-  if(ql&&!((o.bg+' '+o.en+' '+o.la+' '+(o.place||'')+' '+(o.note||'')).toLowerCase().includes(ql)))return false;
+  if(ql&&!((o.bg+' '+o.en+' '+o.la+' '+(o.place||'')+' '+(o.note||'')+' '+(o.alt||[]).join(' ')).toLowerCase().includes(ql)))return false;
   if(filt==='h'&&!(o.h&&!o.s&&!o.p))return false;
   if(filt==='s'&&lvl(o)<2)return false;
   if(filt==='p'&&lvl(o)<3)return false;
@@ -799,7 +808,7 @@ function renderLog(el){
 function recHTML(o,F){
     return '<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
       '<div class="x"><button data-ed="'+o.id+'">промени</button><button data-del="'+o.id+'">×</button></div>'+
-      '<div class="nm">'+esc(o.bg||o.en||o.la)+(o.count?' <span style="color:var(--mut);font-weight:400">· '+esc(o.count)+'</span>':'')+'</div>'+
+      '<div class="nm">'+esc(o.bg||o.en||o.la)+(o.u&&o.alt&&o.alt.length?' <span class="altnm">или '+o.alt.map(esc).join(' или ')+'</span>':'')+(o.count?' <span style="color:var(--mut);font-weight:400">· '+esc(o.count)+'</span>':'')+'</div>'+
       '<div class="meta">'+[o.en?esc(o.en):'',o.la?'<span class="la">'+esc(o.la)+'</span>':''].filter(Boolean).join(' · ')+'</div>'+
       '<div class="meta">'+[o.time?'🕐 '+esc(o.time)+((r=>r?' ('+r+')':'')(sunRel(o))):'',o.fam?esc(o.fam):'',o.place?'📍 '+esc(o.place):'',
         o.geo?'<a href="https://www.google.com/maps?q='+o.geo+'" target="_blank" rel="noopener" style="color:var(--mut)">коорд.</a>':''].filter(Boolean).join(' · ')+'</div>'+
@@ -833,7 +842,7 @@ function renderLife(el){
     arr=arr.filter(r=>seen.has(r.k));}
   arr.sort((a,b)=>String(a.bg||a.la).localeCompare(String(b.bg||b.la),'bg'));
   const sm=new Set(Object.keys(speciesMap())), un=new Map();
-  for(const o of OBS)if(o.u&&key(o)&&!sm.has(key(o))&&(!ql||(o.bg+' '+o.en+' '+o.la).toLowerCase().includes(ql)))un.set(key(o),o.bg||o.en||o.la);
+  for(const o of OBS)if(o.u&&key(o)&&!sm.has(key(o))&&(!ql||(o.bg+' '+o.en+' '+o.la).toLowerCase().includes(ql)))un.set(key(o),(o.bg||o.en||o.la)+(o.alt&&o.alt.length?' / '+o.alt.join(' / '):''));
   const unH=un.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с несигурни записи (не се броят): '+[...un.values()].map(esc).join(' · ')+'</div>':'';
   if(!arr.length){el.innerHTML=(unH||'<div class="empty">Нищо не съвпада.</div>');return;}
   el.innerHTML=arr.map(r=>'<div class="sp l'+r.L+'" data-k="'+esc(r.k)+'" style="cursor:pointer">'+
@@ -1335,7 +1344,7 @@ document.getElementById('imp-ok').onclick=()=>{const v=curInv;if(!v)return;
   const nBefore=new Set(SURE().map(key).filter(Boolean)).size;let n=0;
   for(const r of v.rs)if(ids.has(String(r.id))){const hs=r.h||r.s?{h:r.h?1:0,s:r.s?1:0}:{h:0,s:1};
     OBS.push({id:now+(n++),date:r.date,time:r.time||'',place:r.place||'',count:r.count||'',bg:r.bg||'',en:r.en||'',la:r.la||'',fam:r.fam||'',note:'',...hs,p:0,u:r.u?1:0,
-      beh:[...(r.beh||[])],geo:r.geo||null,photo:null,sess:oid,src:{u:v.f.id,n:v.f.name,id:r.id},upd:now});}
+      beh:[...(r.beh||[])],alt:r.alt?[...r.alt]:undefined,geo:r.geo||null,photo:null,sess:oid,src:{u:v.f.id,n:v.f.name,id:r.id},upd:now});}
   if(n&&!mine)putOut({id:oid,date:o.date,place:o.place||'',start:o.start||'',end:o.end||'',complete:o.complete===undefined?null:o.complete,with:v.f.name,orig:{u:v.f.id,o:o.id}});
   ANS[v.k]={a:'a',t:now};saveAns();if(n){save();setDay(o.date,true);setDay('m:'+o.date.slice(0,7),true);setDay('y:'+o.date.slice(0,4),true);}
   document.getElementById('impDlg').close();render();
@@ -1484,7 +1493,25 @@ function drawBeh(){
 }
 const form=document.getElementById('form');
 function syncSts(){for(const b of document.querySelectorAll('.sb'))b.classList.toggle('on',!!st[b.dataset.s]);}
-function syncUnsure(){const b=document.getElementById('f-unsure');b.classList.toggle('on',unsure);b.setAttribute('aria-pressed',unsure);}
+function syncUnsure(){const b=document.getElementById('f-unsure');b.classList.toggle('on',unsure);b.setAttribute('aria-pressed',unsure);
+  document.getElementById('f-alt-row').style.display=unsure?'':'none';drawAlts();}
+// „Може да е и“: при несигурен запис — другите видове, които може да е (като „Горска / Дългопръста дърволазка“).
+// Не броят и не се свързват с вида на записа (не са негови имена). Предлагат се видовете от същия род от списъка —
+// обикновено точно с тях се бъркат. Махне ли се „не съм сигурен“, при запис изчезват и те.
+let alts=[];
+function altSuggest(){const nm=(fld('la').value||'').trim()||((listFind('bg',fld('bg').value)||{}).la)||'',g=nm.split(/\s+/)[0];if(!g||!/^[A-Z]/.test(g))return [];
+  const have=new Set([fld('bg').value,...alts].map(nrm));
+  return SPL.filter(e=>e[1].split(' ')[0]===g&&nrm(e[1])!==nrm(nm)&&!have.has(nrm(e[0]))).map(e=>e[0]).slice(0,6);}
+function drawAlts(){const c=document.getElementById('f-alt');if(!c)return;
+  c.innerHTML=alts.map((a,i)=>'<span class="altc">'+esc(a)+'<button type="button" data-altx="'+i+'" aria-label="махни">×</button></span>').join('');
+  const sg=unsure?altSuggest():[];
+  document.getElementById('f-alt-sug').innerHTML=sg.length?'<span class="note2">от същия род:</span> '+sg.map(n=>'<button type="button" class="chip" data-alts="'+esc(n)+'">+ '+esc(n)+'</button>').join(''):'';}
+function addAlt(v){v=(v||'').trim();if(!v||nrm(v)===nrm(fld('bg').value)||alts.some(a=>nrm(a)===nrm(v)))return;alts.push(v);drawAlts();}
+document.getElementById('f-alt-add').onclick=()=>{const i=document.getElementById('f-alt-in');addAlt(i.value);i.value='';};
+document.getElementById('f-alt-in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addAlt(e.target.value);e.target.value='';}});
+document.getElementById('f-alt').addEventListener('click',e=>{const x=e.target.closest('[data-altx]');if(x){alts.splice(+x.dataset.altx,1);drawAlts();}});
+document.getElementById('f-alt-sug').addEventListener('click',e=>{const x=e.target.closest('[data-alts]');if(x)addAlt(x.dataset.alts);});
+for(const f of ['bg','la'])document.getElementById('f-'+f).addEventListener('change',()=>{if(unsure)drawAlts();});
 document.getElementById('f-unsure').onclick=()=>{unsure=!unsure;syncUnsure();};
 function syncBeh(){drawBeh();}
 function parseGeo(t){
@@ -1559,7 +1586,7 @@ function openForm(o,seed){
   for(const k of ['place','count','bg','en','la','note'])document.getElementById('f-'+k).value=o?(o[k]||''):'';
   if(!o&&ctx&&ctx.place)document.getElementById('f-place').value=ctx.place;
   document.getElementById('f-fam').value=o?(o.fam||''):'';
-  st=o?{h:o.h?1:0,s:o.s?1:0,p:o.p?1:0}:{h:0,s:1,p:0};unsure=!!(o&&o.u);syncUnsure();
+  st=o?{h:o.h?1:0,s:o.s?1:0,p:o.p?1:0}:{h:0,s:1,p:0};unsure=!!(o&&o.u);alts=o&&o.alt?[...o.alt]:[];syncUnsure();
   syncSts();syncBeh();setGeo(o?(o.geo||null):((!o&&ctx&&ctx.geo)?ctx.geo:null));initAuto();
   const pv=document.getElementById('prev'),rm=document.getElementById('rmph');
   document.getElementById('f-photo').value='';
@@ -1671,7 +1698,7 @@ form.onsubmit=e=>{e.preventDefault();
   if(!st.h&&!st.s&&!st.p){alert('Отбележи чух, видях или снимах.');return;}
   const rec={id:edit||Date.now(),date:g('date')||today(),time:g('time'),place:g('place'),count:g('count'),
     bg:g('bg'),en:g('en'),la:g('la'),fam:document.getElementById('f-fam').value,note:g('note'),
-    h:st.h?1:0,s:st.s?1:0,p:st.p?1:0,u:unsure?1:0,beh:[...beh],geo:parseGeo(document.getElementById('f-geo').value)||null,photo:photo||null,upd:Date.now()};
+    h:st.h?1:0,s:st.s?1:0,p:st.p?1:0,u:unsure?1:0,alt:unsure&&alts.length?[...alts]:undefined,beh:[...beh],geo:parseGeo(document.getElementById('f-geo').value)||null,photo:photo||null,upd:Date.now()};
   rec.sess=document.getElementById('f-sess').value||undefined;   // излетът се избира във формата (и после)
   const nBefore=new Set(SURE().map(key).filter(Boolean)).size,bBefore=badgesNow();   // за поздравленията
   let ok=true;const old=edit?((OBS.find(o=>o.id===edit)||{}).photo||null):null;
@@ -1935,7 +1962,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-25.1';
+const VER='2026-10-25.2';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

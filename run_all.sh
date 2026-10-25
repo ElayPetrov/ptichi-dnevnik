@@ -29,5 +29,6 @@ run layout   python3 test_layout.py 8963
 run places   python3 test_places.py 8964
 run more     python3 test_more.py 8965
 run invite   timeout 600 python3 test_invite.py 8966
+run alt      python3 test_alt.py 8967
 printf '%-9s %s of 4 save taps landed\n' tap "$(python3 tap_test.py 8950 ptichi-dnevnik.html | grep -c "'saved'")"
 printf '%-9s ' sun; python3 sun_check.py | tail -1
