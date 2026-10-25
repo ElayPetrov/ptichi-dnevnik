@@ -1968,7 +1968,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-25.3';
+const VER='2026-10-25.4';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -1988,7 +1988,7 @@ if(standalone()&&navigator.storage&&navigator.storage.persist)   // инстал
 // ================= Приятели: профил в Supabase, код, синхронизиране, дневниците на приятелите =================
 // Дневникът си остава на телефона и работи без мрежа. При връзка в профила ти се качва копие
 // (записи, излети, етикети, снимки). Който има твоя код, вижда дневника ти, но не може да го променя.
-const SB_URL='https://szyituwdlbwpqkfuklxq.supabase.co', SB_KEY='sb_publishable_B74aN3lH5shn4ECtrTYsTw_I4OAhL4M', SB_SITE='https://glittery-syrniki-becffe.netlify.app';
+const SB_URL='https://szyituwdlbwpqkfuklxq.supabase.co', SB_KEY='sb_publishable_B74aN3lH5shn4ECtrTYsTw_I4OAhL4M', SB_SITE=/^https?:$/.test(location.protocol)?location.origin+location.pathname.replace(/[^/]*$/,''):'https://elaypetrov.github.io/ptichi-dnevnik/';   // адресът, от който е отворено приложението (сега GitHub Pages) — за писмата за потвърждение и за „Изпрати“ на кода
 const SB_JS='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js';
 const KL='bird-journal-linked', KU='bird-journal-uploaded', KF='bird-journal-friends', KA='bird-journal-auth';
 let sbForm={name:'',mail:'',pw:''}, sbTried=false, SB=null, sbP=null, ME=null, MYNAME='', MYCODE='', FR=null, fsel=null, syncT=null, syncing=false, sbMsg='', sbStat='', sbBusy=false;

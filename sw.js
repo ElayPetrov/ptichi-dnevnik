@@ -1,7 +1,7 @@
 // Птичи дневник — service worker.
 // Пази копие на страницата, иконите и шрифтовете, за да се отваря и без интернет.
 // Записите и снимките НЕ са тук — те са в localStorage / IndexedDB на устройството.
-const V = 'pd-1';   // смени, ако промениш този файл; старият кеш се трие сам
+const V = 'pd-2';   // смени, ако промениш този файл; старият кеш се трие сам
 const SHELL = ['manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 const FONTS = /^https:\/\/fonts\.(googleapis|gstatic)\.com\//;
 
@@ -29,7 +29,9 @@ self.addEventListener('fetch', e => {
   if (r.mode === 'navigate') {
     // Страницата: първо мрежата, за да идват обновленията. Ако до 3 с няма отговор
     // (една чертичка обхват) или няма мрежа — запазеното копие. Късен отговор пак обновява копието.
-    const net = fetch(r).then(async res => {
+    // GitHub Pages казва на браузъра да пази страницата 10 минути; „no-cache“ все пак пита сървъра (евтино, с ETag),
+    // така че новата версия идва веднага, а не до 10 минути по-късно.
+    const net = fetch(new Request(r.url, { cache: 'no-cache', credentials: 'same-origin' })).then(async res => {
       if (res.ok) { const c = await caches.open(V); await c.put('index.html', await clean(res.clone())); }
       return res;
     });

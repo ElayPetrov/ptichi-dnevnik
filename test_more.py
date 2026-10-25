@@ -63,6 +63,7 @@ try:
     return [n.textContent,one,full,row,lined,below,sticky];})()""")
   check('Q11b ...each bird\'s full name on one line, its twelve months beneath it, lined up under the month letters that stay pinned on top',
     g, ['Голям синигер',True,True,True,True,True,True])
+  check('Q13 the code it shares and sign-up emails use the address the app was opened from (not the old Netlify one)', pg.evaluate("SB_SITE"), f'http://localhost:{port}/')
   check('Q12 no page errors', errs, [])
   b.close()
 finally: srv.terminate()
