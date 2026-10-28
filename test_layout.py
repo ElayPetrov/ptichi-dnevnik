@@ -20,7 +20,7 @@ try:
   pg.evaluate("""new Promise(r=>{const q=indexedDB.open('birdphotos',1);q.onsuccess=async()=>{const im=await (await fetch('a.jpg')).blob();
     const t=q.result.transaction('p','readwrite');for(let i=0;i<11;i++)t.objectStore('p').put(im,'p'+i);t.oncomplete=()=>r();};})""")
   tabs=pg.evaluate("[...document.querySelectorAll('.tab')].map(t=>t.textContent)")
-  check('L1 the tabs: Дневник, Моите видове, Излети, Карта, Места, Фенология, Значки, Приятели', tabs, ['Дневник','Моите видове','Излети','Карта','Места','Фенология','Значки','Приятели'])
+  check('L1 the tabs: Дневник, Приятели, Моите видове, Излети, Карта, Места, Фенология, Значки', tabs, ['Дневник','Приятели','Моите видове','Излети','Карта','Места','Фенология','Значки'])
   fit=pg.evaluate("(()=>{const W=document.documentElement.clientWidth,r=[...document.querySelectorAll('.tab')].map(t=>t.getBoundingClientRect());return [r.every(x=>x.left>=0&&x.right<=W),new Set(r.map(x=>Math.round(x.top))).size];})()")
   check('L2 on a 360 px phone all eight show at once, in two rows', fit, [True,2])
   pg.click('.tab[data-v="badges"]');pg.wait_for_timeout(150);nb=pg.locator('.bd').count()
@@ -46,8 +46,8 @@ try:
   sc=pg.evaluate("(()=>{const s=document.querySelector('#mp .phstrip');return [document.querySelectorAll('#mp .phstrip figure').length,s.scrollWidth>s.clientWidth,getComputedStyle(s).overflowX,document.querySelector('#mp .phcount').textContent];})()")
   check('L9 a point shows all 11 photos, not 8, in a strip that swipes sideways', sc, [11,True,'auto','11 снимки — плъзни настрани'])
   check('L10 nothing pushes the page sideways', pg.evaluate("document.documentElement.scrollWidth<=document.documentElement.clientWidth"), True)
-  pg.evaluate("ME={id:'u1',email:'ivan@test.bg'};MYNAME='Иван';MYCODE='ABCDEFGHJKLM';FR={fol:[],fans:[]};view='friends';render()")
-  check('L11 Приятели: friends first; your code, who sees you, and you with „изход“ further down',
+  pg.evaluate("ME={id:'u1',email:'ivan@test.bg'};MYNAME='Иван';MYCODE='ABCDEFGHJKLM';FR={fol:[],fans:[]};view='acct';render()")
+  check('L11 the account view: friends first; your code, who sees you, and you with „изход“ further down',
     pg.evaluate("[...document.querySelectorAll('.fr h3')].map(h=>h.textContent)"), ['Дневници на приятели','Добави приятел','Твоят код','Виждат твоя дневник','Ти'])
   check('L12 no page errors', errs, [])
   b.close()

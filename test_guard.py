@@ -19,7 +19,7 @@ try:
     ctx=b.new_context();pg=ctx.new_page();pg.errs=[];pg.on('pageerror',lambda e:pg.errs.append(str(e)));pg.on('dialog',lambda d:d.accept())
     ctx.route(SB+'/**',st.handle);ctx.route(CDN,lambda r:r.fulfill(path=UMD,headers={'access-control-allow-origin':'*','content-type':'application/javascript'}))
     pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
-    pg.goto(f'http://localhost:{port}/share-test.html');pg.wait_for_timeout(300);pg.click('.tab[data-v="friends"]');return pg
+    pg.goto(f'http://localhost:{port}/share-test.html');pg.wait_for_timeout(300);pg.click('#acct');return pg
   def synced(pg): pg.wait_for_function("!syncing&&sbStat.length>0&&sbStat!=='синхронизира…'",timeout=15000)
   def join(pg,name,mail):
     pg.fill('#sb-name',name);pg.fill('#sb-mail',mail);pg.fill('#sb-pw','птица123');pg.click('[data-sb="up"]');pg.wait_for_selector('.fr .msg');st.confirm(mail);pg.click('[data-sb="in"]');synced(pg)
@@ -36,7 +36,7 @@ try:
   code=pph.evaluate("MYCODE");iph.fill('#fr-code',code);iph.click('[data-sb="add"]');iph.wait_for_selector('.fr .ar.tap')
   check("G3 you see his merged journal, whichever device he logged on", iph.inner_text('.fr .ar.tap small').startswith('3 вида · 3 записа'), True)
   # Petar signs in to HIS account on Ivan's phone browser: the two journals must not mix
-  iph.click('.tab[data-v="friends"]');iph.click('[data-sb="out"]');iph.fill('#sb-mail','petar@test.bg');iph.fill('#sb-pw','птица123');iph.click('[data-sb="in"]')
+  iph.click('#acct');iph.click('[data-sb="out"]');iph.fill('#sb-mail','petar@test.bg');iph.fill('#sb-pw','птица123');iph.click('[data-sb="in"]')
   iph.wait_for_function("ME&&ME.email==='petar@test.bg'&&!syncing&&sbStat.length>0&&sbStat!=='синхронизира…'",timeout=15000)
   check("G4 his account on your browser: the app refuses to upload your journal into it", (iph.evaluate("sbStat"),cloud('petar@test.bg')),
         ('Дневникът на този телефон е свързан с друг профил — не го качвам.',['Кос','Сойка','Щиглец']))

@@ -30,7 +30,7 @@ try:
     pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
     pg.goto(f'http://localhost:{port}/{file}');pg.wait_for_timeout(300)
     if photo: rec(pg,'[data-ed="2"]');pg.set_input_files('#f-photo','/home/claude/a.jpg');pg.wait_for_function("phNew.length===1");pg.click('#savebtn')
-    pg.click('.tab[data-v="friends"]');return pg
+    pg.click('#acct');return pg
   def join(pg,name,mail,pw='птица123'):
     pg.fill('#sb-name',name);pg.fill('#sb-mail',mail);pg.fill('#sb-pw',pw);pg.click('[data-sb="up"]');pg.wait_for_selector('.fr .msg')
     msg=pg.inner_text('.fr .msg');st.confirm(mail)
@@ -55,6 +55,7 @@ try:
   pe.wait_for_selector('[data-fph] img',timeout=5000)
   check("F10 Ivan's photo loads for Petar", pe.locator('[data-fph] img').count(), 1)
   pe.fill('#q','') ; pe.click('[data-frback]')
+  pe.click('#acct')   # back to the account view (a friend's journal opens in Приятели)
   pe.fill('#fr-code','NOPE-NOPE-NOPE');pe.click('[data-sb="add"]');pe.wait_for_selector('.fr .msg')
   check('F11 a wrong code is refused politely', pe.inner_text('.fr .msg'), 'Няма такъв код.')
   pe.fill('#fr-code',pe.evaluate("MYCODE"));pe.click('[data-sb="add"]');pe.wait_for_timeout(500)
@@ -69,7 +70,7 @@ try:
   # ---- Petar offline: last download still readable ----
   # the test page has no offline worker, so emulate a fresh start with the network gone instead of reloading
   pe.ctx.unroute(SB+'/**');pe.ctx.unroute(CDN);pe.ctx.route(SB+'/**',lambda r:r.abort('internetdisconnected'));pe.ctx.route(CDN,lambda r:r.abort('internetdisconnected'))
-  pe.evaluate("SB=null;sbP=null;ME=null;sbTried=false;FR=null;fsel=null;document.querySelectorAll('script[src*=supabase]').forEach(s=>s.remove());delete window.supabase;view='friends';render()")
+  pe.evaluate("SB=null;sbP=null;ME=null;sbTried=false;FR=null;fsel=null;document.querySelectorAll('script[src*=supabase]').forEach(s=>s.remove());delete window.supabase;view='acct';render()")
   pe.wait_for_function("document.querySelector('.fr h3')&&document.querySelector('.fr h3').textContent==='Без връзка'",timeout=5000)
   check("F16 offline: Ivan's journal is still there from the last download", (pe.locator('.fr .ar.tap').count(),pe.inner_text('.fr h3')), (1,'Без връзка'))
   pe.click('.fr .ar.tap');check('F17 ...and opens', pe.locator('.cmp').count(), 1)
@@ -81,15 +82,15 @@ try:
   i2.wait_for_function(f"getPhoto({json.dumps(ph)}).then(b=>!!b)",timeout=5000)
   check('F19 ...including his photo', True, True)
   # ---- Ivan removes Petar ----
-  iv.click('.tab[data-v="friends"]');iv.wait_for_selector('[data-unfan]');iv.click('[data-unfan]');iv.wait_for_timeout(800)
-  pe.reload();pe.wait_for_timeout(500);pe.click('.tab[data-v="friends"]');pe.wait_for_selector('.fr h3');pe.wait_for_timeout(1500)
+  iv.click('#acct');iv.wait_for_selector('[data-unfan]');iv.click('[data-unfan]');iv.wait_for_timeout(800)
+  pe.reload();pe.wait_for_timeout(500);pe.click('#acct');pe.wait_for_selector('.fr h3');pe.wait_for_timeout(1500)
   check('F20 after Ivan removes him, Petar no longer sees the journal', pe.locator('.fr .ar.tap').count(), 0)
   iv.click('[data-sb="out"]');iv.wait_for_selector('#sb-mail')
   check('F21 signing out keeps the journal on the phone and restores the footer', (iv.evaluate("OBS.length"),iv.inner_text('#priv').startswith('Записите се пазят в този браузър')), (5,True))
   iv.fill('#sb-mail','ivan@test.bg');iv.fill('#sb-pw','грешна');iv.click('[data-sb="in"]');iv.wait_for_selector('.fr .msg')
   check('F22 wrong password says so', iv.inner_text('.fr .msg'), 'Грешен имейл или парола.')
   nc=person([],file='noconf-test.html')
-  check('F23 the build without a project address just says sharing is not set up', nc.inner_text('#view'), 'Споделянето още не е настроено.')
+  check('F23 the build without a project address just says sharing is not set up', nc.inner_text('#view').endswith('Споделянето още не е настроено.'), True)
   check('F24 no page errors anywhere', iv.errs+pe.errs+i2.errs+nc.errs, [])
   b.close()
 finally: srv.terminate();st.stop()

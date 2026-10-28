@@ -25,7 +25,7 @@ try:
     pg.on('pageerror',lambda e:pg.errs.append(str(e)));pg.on('dialog',lambda d:d.accept())
     ctx.route(SB+'/**',st.handle);ctx.route(CDN,lambda r:r.fulfill(path=UMD,headers={'access-control-allow-origin':'*','content-type':'application/javascript'}))
     pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
-    pg.goto(f'http://localhost:{port}/share-test.html');pg.wait_for_timeout(300);pg.click('.tab[data-v="friends"]');return pg
+    pg.goto(f'http://localhost:{port}/share-test.html');pg.wait_for_timeout(300);pg.click('#acct');return pg
   def signin(pg):
     pg.fill('#sb-mail','ivan@test.bg');pg.fill('#sb-pw','птица123');pg.click('[data-sb="in"]');synced(pg)
   def synced(pg): pg.wait_for_function("!syncing&&(sbStat.startsWith('синхронизирано')||sbStat.length>0)",timeout=15000)

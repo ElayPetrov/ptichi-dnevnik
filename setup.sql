@@ -149,3 +149,36 @@ create policy "photos: replace own" on storage.objects for update to authenticat
 drop policy if exists "photos: delete own" on storage.objects;
 create policy "photos: delete own" on storage.objects for delete to authenticated
   using (bucket_id = 'photos' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+-- 6. Приятели: „Браво“, коментари и „Бях там“ към излет ('o:<id>') или ден ('d:<дата>') на някого.
+--    Виждат ги всички, които виждат дневника му; пише всеки, който го вижда; трие авторът или собственикът.
+--    „Бях там“ е молба към собственика: ако я приеме, приложението му праща обикновена покана за излета.
+create table if not exists public.social (
+  id         uuid primary key default gen_random_uuid(),
+  owner      uuid not null references auth.users(id) on delete cascade,
+  item       text not null check (length(item) <= 200),
+  author     uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  kind       text not null check (kind in ('bravo', 'comment', 'there')),
+  body       text check (body is null or length(body) <= 1000),
+  created_at timestamptz not null default now()
+);
+create unique index if not exists social_once  on public.social (owner, item, author, kind) where kind in ('bravo', 'there');
+create index        if not exists social_owner on public.social (owner);
+alter table public.social enable row level security;
+drop policy if exists "social: read" on public.social;
+create policy "social: read" on public.social for select to authenticated
+  using (public.can_view(owner) or author = (select auth.uid()));
+drop policy if exists "social: write" on public.social;
+create policy "social: write" on public.social for insert to authenticated
+  with check (author = (select auth.uid()) and public.can_view(owner) and (kind <> 'there' or owner <> author));
+drop policy if exists "social: delete" on public.social;
+create policy "social: delete" on public.social for delete to authenticated
+  using (author = (select auth.uid()) or owner = (select auth.uid()));
+grant select, insert, delete on public.social to authenticated;
+-- Името на човек, който е оставил „Браво“ или коментар в дневник, който виждаш, също се вижда
+-- (иначе приятел на приятел би излизал като „приятел“). Затова правилото за профилите се допълва тук, след таблицата.
+drop policy if exists "profiles: read" on public.profiles;
+create policy "profiles: read" on public.profiles for select to authenticated
+  using (public.can_view(user_id)
+         or exists (select 1 from public.viewers v where v.viewer = profiles.user_id and v.owner = (select auth.uid()))
+         or exists (select 1 from public.social s where s.author = profiles.user_id and public.can_view(s.owner)));

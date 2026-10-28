@@ -30,7 +30,7 @@ try:
     pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
     pg.goto(f'http://localhost:{port}/{file}');pg.wait_for_timeout(300)
     if photo: rec(pg,'[data-ed="2"]');pg.set_input_files('#f-photo','/home/claude/a.jpg');pg.wait_for_function("phNew.length===1");pg.click('#savebtn')
-    pg.click('.tab[data-v="friends"]');return pg
+    pg.click('#acct');return pg
   def join(pg,name,mail,pw='птица123'):
     pg.fill('#sb-name',name);pg.fill('#sb-mail',mail);pg.fill('#sb-pw',pw);pg.click('[data-sb="up"]');pg.wait_for_selector('.fr .msg')
     msg=pg.inner_text('.fr .msg');st.confirm(mail)
