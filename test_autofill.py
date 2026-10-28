@@ -70,7 +70,7 @@ try:
     check('T8 typed coords are never replaced', vals()['geo'], '42.12345,25.12345')
 
     newform(); typein('#f-bg','Сврака',blur=False); pick('#f-place','Копринка'); pg.evaluate("form.requestSubmit()")
-    last=pg.evaluate("JSON.parse(localStorage.getItem('bird-journal-v3')).slice(-1)[0]")
+    last=pg.evaluate("JSON.parse(stGet(K)).slice(-1)[0]")   # the stored copy (now in IndexedDB)
     check('T9 typed-in-full name + save without leaving field', {k:last[k] for k in ('bg','en','la','fam','geo')},
           dict(bg='Сврака',en='Eurasian Magpie',la='Pica pica',fam='Вранови',geo='42.60100,25.30100'))
 

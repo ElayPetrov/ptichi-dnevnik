@@ -675,8 +675,8 @@ function loadSess(){try{const r=localStorage.getItem(KS);if(r)SESS=JSON.parse(r)
 function saveSess(){try{SESS?localStorage.setItem(KS,JSON.stringify(SESS)):localStorage.removeItem(KS);}catch(e){}}
 // Излетите като събития: дата, начало, край, място и „записа ли всички видове" (true / false / null = не е отбелязано)
 const KO='bird-journal-outings'; let OUTS=[], openOut=null;
-function loadOuts(){try{const r=localStorage.getItem(KO);if(r){const a=JSON.parse(r);if(Array.isArray(a))OUTS=a;}}catch(e){}}
-function saveOuts(){try{localStorage.setItem(KO,JSON.stringify(OUTS));}catch(e){}queueSync();}
+function loadOuts(){try{const r=stGet(KO);if(r){const a=JSON.parse(r);if(Array.isArray(a))OUTS=a;}}catch(e){}}
+function saveOuts(){try{stSet(KO,JSON.stringify(OUTS));}catch(e){}queueSync();}
 function putOut(x){x={...x,upd:Date.now()};const i=OUTS.findIndex(y=>y.id===x.id);if(i>=0)OUTS[i]={...OUTS[i],...x};else OUTS.push(x);saveOuts();}
 // Изтритото се помни (с часа), за да не го „върне“ другото устройство при синхронизиране
 const KDEL='bird-journal-deleted', KPD='bird-journal-photo-del';
@@ -709,10 +709,35 @@ function sessFresh(){if(!SESS||(SESS.at&&Date.now()-SESS.at<6*36e5))return;
   if(confirm('Излетът от '+human(SESS.date)+(SESS.place?' ('+SESS.place+')':'')+' още е отворен. Продължаваш ли го?\n\nАко не — приключвам го (часовете и пълнотата му се оправят в „Излети“), а новият запис е с днешна дата.')){SESS.at=Date.now();saveSess();}
   else endOuting(null,true);}
 
+// ---- голямото — дневник, излети, приятели, реакции — живее в IndexedDB ----
+// localStorage побира само ~5 MB на сайт (на някои телефони и по-малко), а IndexedDB — стотици пъти повече.
+// Тези ключове се пазят там (копие в паметта: KVC); дребното (настройки, видяно, сгънати дни) остава в localStorage.
+// При първото отваряне на тази версия всичко се пренася и старото копие се трие — но само след успешен запис.
+const KVBIG=['bird-journal-v3','bird-journal-outings','bird-journal-friends','bird-journal-social','bird-journal-seen-feed'];
+let kvdb=null,KVC={},kvWarned=false;
+function kvOpen(){return new Promise(res=>{try{const r=indexedDB.open('birdjournal',1);
+  r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('kv'))r.result.createObjectStore('kv');};
+  r.onsuccess=()=>res(r.result);r.onerror=()=>res(null);r.onblocked=()=>res(null);}catch(e){res(null);}});}
+function kvPut(k,v){return new Promise(res=>{try{const t=kvdb.transaction('kv','readwrite'),o=t.objectStore('kv');v==null?o.delete(k):o.put(v,k);
+  t.oncomplete=()=>res(true);t.onerror=t.onabort=()=>res(false);}catch(e){res(false);}});}
+async function kvLoad(){const db=await kvOpen();if(!db)return;   // без IndexedDB (рядко) всичко си остава в localStorage
+  const all=await new Promise(res=>{const out={};try{const q=db.transaction('kv','readonly').objectStore('kv').openCursor();
+    q.onsuccess=()=>{const c=q.result;if(c){out[c.key]=c.value;c.continue();}else res(out);};q.onerror=()=>res(out);}catch(e){res(out);}});
+  kvdb=db;
+  for(const k of KVBIG){
+    if(k in all){KVC[k]=all[k];try{localStorage.removeItem(k);}catch(e){}continue;}
+    let v=null;try{v=localStorage.getItem(k);}catch(e){}
+    if(v!=null){KVC[k]=v;if(await kvPut(k,v)){try{localStorage.removeItem(k);}catch(e){}}}}}
+const stBig=k=>!!kvdb&&KVBIG.includes(k);
+function stGet(k){if(stBig(k))return k in KVC?KVC[k]:null;try{return localStorage.getItem(k);}catch(e){return null;}}
+function stSet(k,v){
+  if(stBig(k)){if(v==null)delete KVC[k];else KVC[k]=v;
+    kvPut(k,v).then(ok=>{if(!ok&&!kvWarned){kvWarned=true;alert('Записът не можа да се запази в телефона. Ако има връзка, е в облака — направи и резервно копие от профила.');}});return;}
+  if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v);}
 function load(){
   // ако хранилището съществува — ползваме него, дори да е празно нарочно
   let have=false;
-  try{const r=localStorage.getItem(K);
+  try{const r=stGet(K);
     if(r!==null){const d=JSON.parse(r);OBS=Array.isArray(d)?d:[];have=true;}
   }catch(e){OBS=[];have=true;}
   if(have)return;
@@ -723,7 +748,7 @@ function load(){
   try{localStorage.removeItem('bird-journal-v2');}catch(e){}
   save();
 }
-function save(){SPK=null;queueSync();try{localStorage.setItem(K,JSON.stringify(OBS));}catch(e){alert('Няма място. Направи резервно копие и изтрий стари снимки.');}}
+function save(){SPK=null;queueSync();try{stSet(K,JSON.stringify(OBS));}catch(e){alert('Паметта на телефона за приложението е пълна. Направи резервно копие от профила; ако има връзка, записите са и в облака.');}}
 let idb=null;
 function openDB(){return new Promise(res=>{try{const r=indexedDB.open('birdphotos',1);
   r.onupgradeneeded=()=>r.result.createObjectStore('p');
@@ -2111,7 +2136,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-28.5';
+const VER='2026-10-28.6';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -2136,8 +2161,8 @@ const SB_JS='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd
 const KL='bird-journal-linked', KU='bird-journal-uploaded', KF='bird-journal-friends', KA='bird-journal-auth';
 let sbForm={name:'',mail:'',pw:''}, sbTried=false, SB=null, sbP=null, ME=null, MYNAME='', MYCODE='', FR=null, fsel=null, syncT=null, syncing=false, sbMsg='', sbStat='', sbBusy=false;
 const sbOn=()=>!!SB_URL;
-function lsGet(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
-function lsSet(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function lsGet(k,d){try{const v=stGet(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
+function lsSet(k,v){try{stSet(k,v==null?null:JSON.stringify(v));}catch(e){}}
 function sbClient(){
   if(SB)return Promise.resolve(SB);
   if(!sbOn())return Promise.reject(new Error('cfg'));
@@ -2187,7 +2212,7 @@ function mergeIn(d){const had=new Set(OBS.map(o=>String(o.id))),dd=d.del||{};
   const ch=a.ch+b.ch+(bh.length-BEH.length);DEL={obs:a.del,outs:b.del};
   try{localStorage.setItem(KDEL,JSON.stringify(DEL));}catch(e){}
   if(ch){OBS=a.list;OUTS=b.list;BEH=bh;SPK=null;
-    try{localStorage.setItem(K,JSON.stringify(OBS));localStorage.setItem(KO,JSON.stringify(OUTS));localStorage.setItem(KB,JSON.stringify(BEH));}catch(e){}
+    try{stSet(K,JSON.stringify(OBS));stSet(KO,JSON.stringify(OUTS));localStorage.setItem(KB,JSON.stringify(BEH));}catch(e){}
     render();}
   return OBS.filter(o=>!had.has(String(o.id))).length;}
 async function syncNow(){
@@ -2498,7 +2523,8 @@ document.addEventListener('click',async e=>{
 document.addEventListener('input',e=>{const k={'sb-name':'name','sb-mail':'mail','sb-pw':'pw'}[e.target.id];if(k)sbForm[k]=e.target.value;});
 addEventListener('online',()=>{if(ME)syncNow();else if(lsGet(KA,null))sbStart();});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&ME&&Date.now()-lastSync>20000)syncNow();});
-openDB().then(()=>{load();loadBeh();loadSess();loadOuts();drawBeh();render();if(sbOn()&&lsGet(KA,null))sbStart();});
+Promise.all([openDB(),kvLoad()]).then(()=>{SOC=lsGet(KSOC,[])||[];FSEEN=lsGet(KFSEEN,null);   // прочетени отново — вече от IndexedDB
+  load();loadBeh();loadSess();loadOuts();drawBeh();render();if(sbOn()&&lsGet(KA,null))sbStart();});
 </script>
 </body>
 </html>

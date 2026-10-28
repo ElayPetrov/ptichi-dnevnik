@@ -40,7 +40,7 @@ try:
   pg.evaluate("ME=null;FR=null;SOC=[];OUTS=[];")
   # launch: levels already reached show as one summary card, not a flood, and count as seen
   data=[{'id':j+1,'date':f'2026-10-{j+1:02d}','time':'06:00','place':'Тюлбето','count':'','bg':'Кос','en':'','la':'','fam':'','note':'','h':0,'s':1,'p':0,'beh':[],'geo':'42.62,25.39','photo':None} for j in range(5)]
-  l=ctx.new_page();l.on('pageerror',lambda e:errs.append(str(e)))
+  l=b.new_context(viewport={'width':390,'height':844},timezone_id='Europe/Sofia').new_page();l.on('pageerror',lambda e:errs.append(str(e)))   # its own storage
   l.add_init_script("if(!localStorage.getItem('t-once')){localStorage.clear();localStorage.setItem('t-once','1');localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-seen-badges','[\"early\"]');localStorage.setItem('bird-journal-days','{}');}"%json.dumps(json.dumps(data)))
   l.goto(f'http://localhost:{port}/ptichi-dnevnik.html');l.wait_for_timeout(400)
   check('B12 after the update: one card „Новите значки — вече имаш 1 бронзови“, and no dot for them', (l.evaluate("document.getElementById('yay').innerText.replace(/\\n/g,' | ')"),l.evaluate("document.querySelector('.tab[data-v=\"badges\"]').classList.contains('dot')")),
