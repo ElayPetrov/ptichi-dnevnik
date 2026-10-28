@@ -52,6 +52,7 @@ try:
   fresh(iv,pe,ma)
   check('X1 Приятели is the second tab', pe.evaluate("[...document.querySelectorAll('.tab')].map(t=>t.textContent)")[:2], ['Дневник','Приятели'])
   feed=lambda pg:(pg.click('.tab[data-v="friends"]'),pg.wait_for_timeout(250))
+  for pg in (iv,pe,ma):feed(pg);pg.click('.tab[data-v="log"]')   # look once, so everything so far counts as seen and cards keep date order
   feed(pe);cards=pe.evaluate("[...document.querySelectorAll('.fc')].map(c=>c.querySelector('.fchn b').textContent+' | '+c.querySelector('.fchn small').textContent)")
   check('X2 the feed: newest first, your own day and Ivan\'s outing', cards, ['Ти | 28 октомври 2026 · 10:00–10:20 · Розариум','Иван | излет · 27 октомври 2026 · 08:10–09:00 · Копринка'])
   ivcard='.fc:nth-of-type(2)'

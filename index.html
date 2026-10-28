@@ -330,7 +330,9 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .acct{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:5;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line2);
   background:color-mix(in srgb,var(--card) 88%,transparent);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.14)}
 .acct svg{width:22px;height:22px} .tab{position:relative}
-.acct.dot::after,.tab.dot::after{content:'';position:absolute;top:3px;right:3px;width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.acct.dot::after,.tab.dot::after{content:'';position:absolute;top:3px;right:3px;width:9px;height:9px;border-radius:50%;background:#e8822a;box-shadow:0 0 0 2px var(--bg)}
+.fc.new{border-color:#e8822a;box-shadow:0 0 0 1px #e8822a} .newtag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.03em;color:#fff;background:#e8822a;border-radius:999px;padding:1px 7px;margin-left:7px;vertical-align:2px}
+.bd.new{border-color:#e8822a;box-shadow:0 0 0 1px #e8822a}
 .acchd{display:flex;align-items:center;gap:10px;margin:0 0 10px} .acchd h2{font-family:Fraunces,Georgia,serif;font-size:20px;margin:0;font-weight:500}
 .fc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin:0 0 12px;cursor:pointer}
 .fc.me{border-left:3px solid var(--h)}
@@ -441,7 +443,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 <div class="w">
 
 <div class="hero">
-<button type="button" class="acct" id="acct" data-acct aria-label="Профил и приятели" title="Профил и приятели"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.4" r="4.2" fill="currentColor"/><path d="M3.8 21c.9-4.4 4.2-7 8.2-7s7.3 2.6 8.2 7z" fill="currentColor"/></svg></button>
+<button type="button" class="acct" id="acct" data-acct aria-label="Профил и приятели" title="Профил и приятели"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.8 22.2c.4-4 2.9-6.9 6.4-7.7h3.6c3.1.9 5.2 3.8 5.6 7.7z" fill="currentColor"/><circle cx="11.6" cy="9.4" r="5.1" fill="currentColor"/><path class="beak" d="M16.2 8.2l5.1 1.5-4.9 1.7z" fill="currentColor"/><path d="M9 4.9c.5-1.6 1.9-2.6 3.4-2.5-.7.6-1 1.5-.9 2.4z" fill="currentColor"/><circle cx="13.3" cy="8.4" r="1.1" fill="var(--card)"/></svg></button>
 <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true" style="max-height:230px">
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
@@ -781,7 +783,11 @@ function render(){
   const el=document.getElementById('view');
   document.getElementById('filters').style.display=(view==='log'||(view==='life'&&!spSel))?'':'none';
   document.getElementById('q').parentElement.style.display=(view==='friends'&&!fsel)||view==='acct'||view==='badges'?'none':'';   // търсенето не важи за лентата и профила
-  {const t=document.querySelector('.tab[data-v="friends"]');if(t)t.classList.toggle('dot',pendingSocial()>0);}
+  if(view!=='friends'&&feedVisit)seenCommit();   // излезе ли от лентата — видяното се помни
+  if(view!=='badges')badgeVisit=null;
+  seenSeed();
+  {const t=document.querySelector('.tab[data-v="friends"]');if(t)t.classList.toggle('dot',pendingSocial()>0||(view!=='friends'&&unseenFeed()>0));
+   const b=document.querySelector('.tab[data-v="badges"]');if(b)b.classList.toggle('dot',view!=='badges'&&newBadges().length>0);}
   if(view==='acct')return renderAcct(el);         // профил, код, добавяне на приятели — от кръгчето горе вдясно
   if(view==='friends')return renderFriends(el);   // работи и с празен дневник: нов телефон, нов приятел
   if(view==='badges')return renderBadges(el);     // и значките — новият човек вижда какво може да спечели
@@ -1828,9 +1834,10 @@ const BADGES=[
 function badgeState(b,R){if(b.goal){const n=b.count(R);return {on:n>=b.goal,n};}
   if(b.all)return {on:b.all(R)};const o=R.filter(b.hit).sort((x,y)=>(x.date+(x.time||'')).localeCompare(y.date+(y.time||'')))[0];return {on:!!o,first:o&&o.date};}
 const badgesNow=()=>{const R=SURE(),out={};for(const b of BADGES)out[b.id]=badgeState(b,R).on;return out;};
-function renderBadges(el){el.innerHTML='<div class="bdintro">Значките идват сами от записите ти — нищо не трябва да отбелязваш.</div>'+badgeStrip();}
-function badgeStrip(){const R=SURE();return '<div class="bdg">'+BADGES.map(b=>{const st=badgeState(b,R);
-  return '<div class="bd'+(st.on?' on':'')+'" title="'+esc(b.how)+'"><span class="bdi">'+b.icon+'</span><b>'+b.name+'</b><small>'+
+function renderBadges(el){if(badgeVisit===null){badgeVisit=new Set(newBadges());BSEEN=earnedKeys();lsSet(KBSEEN,BSEEN);}
+  el.innerHTML='<div class="bdintro">Значките идват сами от записите ти — нищо не трябва да отбелязваш.</div>'+badgeStrip(badgeVisit);}
+function badgeStrip(nw){const R=SURE();return '<div class="bdg">'+BADGES.map(b=>{const st=badgeState(b,R);
+  return '<div class="bd'+(st.on?' on':'')+(nw&&nw.has(b.id)?' new':'')+'" title="'+esc(b.how)+'"><span class="bdi">'+b.icon+'</span><b>'+b.name+(nw&&nw.has(b.id)?'<span class="newtag">ново</span>':'')+'</b><small>'+
     (st.on?(st.first?'от '+human(st.first):'спечелена'):(b.goal?st.n+' от '+b.goal:b.how))+'</small></div>';}).join('')+'</div>';}
 document.getElementById('sessStart').onclick=()=>{
   SESS={id:'s'+Date.now(),date:today(),time:nowTime(),place:'',geo:null,at:Date.now(),live:null,t0:nowTime(),d0:today()};
@@ -1999,7 +2006,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-28.1';
+const VER='2026-10-28.2';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -2197,12 +2204,12 @@ function fdRec(p,r){const F=fdMarks(p);
     (r.photo?(p.me?'<div class="ph" data-ph="'+r.photo+'"></div>':'<div class="ph" data-fph="'+esc(p.id+'/'+r.photo)+'"></div>'):'')+
     '<div class="tags">'+(F.first.has(r.id)?'<span class="tag nw">нов вид</span>':'')+(r.u?'<span class="tag u">'+(p.me?'? не съм сигурен':'? не е сигурно')+'</span>':'')+
       (r.h?'<span class="tag h">чух</span>':'')+(r.s?'<span class="tag s">видях</span>':'')+(r.p?'<span class="tag p">снимах</span>':'')+(r.beh||[]).map(b=>'<span class="tag b">'+esc(b)+'</span>').join('')+'</div></div>';}
-function fdCard(it){const p=it.p,m=fdMarks(p),k=p.id+'|'+it.key,sure=it.rs.filter(r=>!r.u),sp=[...new Map(sure.map(r=>[m.kk(r),r.bg||r.en||r.la])).values()],
+function fdCard(it,isNew){const p=it.p,m=fdMarks(p),k=p.id+'|'+it.key,sure=it.rs.filter(r=>!r.u),sp=[...new Map(sure.map(r=>[m.kk(r),r.bg||r.en||r.la])).values()],
     pts=[...new Set(it.rs.filter(r=>r.geo).map(r=>r.geo))],ph=[...it.rs].filter(r=>r.photo).sort(byDT),
     tm=it.kind==='o'&&it.o.start&&it.o.end?it.o.start+'–'+it.o.end:(minT(it.rs)&&maxT(it.rs)&&minT(it.rs)!==maxT(it.rs)?minT(it.rs)+'–'+maxT(it.rs):maxT(it.rs)),
     pl=it.o.place||(it.rs.find(r=>r.place)||{}).place||'',open=openFeed===k;FEEDPTS[k]=pts;
-  return '<div class="fc'+(p.me?' me':'')+'" data-fc="'+esc(k)+'"><div class="fch"><span class="av">'+esc((p.me?(MYNAME||'Т'):p.name||'?').slice(0,1).toUpperCase())+'</span>'+
-      '<div class="fchn"><b'+(p.me?'':' data-fr="'+esc(p.id)+'" class="fwho"')+'>'+esc(p.me?'Ти':p.name)+'</b><small>'+(it.kind==='o'?'излет · ':'')+human(it.date)+(tm?' · '+esc(tm):'')+(pl?' · '+esc(pl):'')+
+  return '<div class="fc'+(p.me?' me':'')+(isNew?' new':'')+'" data-fc="'+esc(k)+'"><div class="fch"><span class="av">'+esc((p.me?(MYNAME||'Т'):p.name||'?').slice(0,1).toUpperCase())+'</span>'+
+      '<div class="fchn"><b'+(p.me?'':' data-fr="'+esc(p.id)+'" class="fwho"')+'>'+esc(p.me?'Ти':p.name)+(isNew?'<span class="newtag">ново</span>':'')+'</b><small>'+(it.kind==='o'?'излет · ':'')+human(it.date)+(tm?' · '+esc(tm):'')+(pl?' · '+esc(pl):'')+
       (it.o.with?' · с '+esc(it.o.with):'')+'</small></div></div>'+
     '<div class="fcb">'+(pts.length?'<div class="oumap" data-fmap="'+esc(k)+'"></div>':'')+'<div class="fct"><div class="fcn">'+sp.length+(sp.length===1?' вид':' вида')+' · '+it.rs.length+(it.rs.length===1?' запис':' записа')+'</div>'+
       '<div class="fhl">'+fdHighlights(it)+'</div></div></div>'+
@@ -2210,8 +2217,11 @@ function fdCard(it){const p=it.p,m=fdMarks(p),k=p.id+'|'+it.key,sure=it.rs.filte
     (ph.length?'<div class="ouph">'+ph.map(r=>p.me?'<div class="th" data-th="'+r.photo+'" title="'+esc(r.bg||r.la||'')+'"></div>':'<div class="th" data-fph="'+esc(p.id+'/'+r.photo)+'" title="'+esc(r.bg||r.la||'')+'"></div>').join('')+'</div>':'')+
     fdCompare(it)+fdSocial(it)+
     (open?'<div class="fcr">'+[...it.rs].sort((a,b)=>byDT(b,a)).map(r=>fdRec(p,r)).join('')+'</div>':'<div class="fmore">докосни за записите</div>')+'</div>';}
-function renderFeed(el){const all=fdItems(),its=all.slice(0,FEEDN);for(const p of fdPeople())delete p._m;
-  el.innerHTML=inviteBanner()+(its.length?its.map(fdCard).join('')+(all.length>FEEDN?'<div class="fbtns"><button type="button" class="btn" data-feedmore>Покажи още</button></div>':''):
+function renderFeed(el){let all=fdItems();
+  if(feedVisit===null)feedVisit=new Set(all.filter(isNewItem).map(fdKey));   // редът не се мени, докато гледаш
+  all=[...all.filter(it=>feedVisit.has(fdKey(it))),...all.filter(it=>!feedVisit.has(fdKey(it)))];
+  const its=all.slice(0,FEEDN);
+  el.innerHTML=inviteBanner()+(its.length?its.map(it=>fdCard(it,feedVisit.has(fdKey(it)))).join('')+(all.length>FEEDN?'<div class="fbtns"><button type="button" class="btn" data-feedmore>Покажи още</button></div>':''):
     '<div class="empty">Тук ще се появяват излетите и записите на приятелите ти — и твоите. Добави приятел от кръгчето горе вдясно.</div>');
   for(const d of el.querySelectorAll('[data-fmap]'))staticMap(d,(FEEDPTS[d.dataset.fmap]||[]).map(g=>g.split(',').map(Number)));
   loadThumbs();loadPhotos();loadFriendPhotos();}
@@ -2226,6 +2236,23 @@ async function socAdd(owner,item,kind,body){if(!SB||!ME){alert('Нужни са 
 async function socDel(id){if(!SB||!ME)return;const r=await SB.from('social').delete().eq('id',id);if(r.error){alert(errMsg(r.error));return;}await loadSocial();render();}
 const fdSplit=k=>{const i=k.indexOf('|');return [k.slice(0,i),k.slice(i+1)];};
 const pendingSocial=()=>ME?SOC.filter(s=>s.kind==='there'&&s.owner===ME.id).length+invites().length:0;
+// ---- „ново“: оранжева точка на Приятели и Значки, докато не ги отвориш ----
+// Приятели: нов запис на приятел (нова карта или нова птица в стара) или „Браво“/коментар от друг на твой излет или ден.
+// При отваряне новото е най-отгоре с „ново“; щом излезеш от раздела, се помни като видяно и застава на мястото си.
+// Значки: нова спечелена значка. Ключът на значката (b.id) ще носи и нивото, когато дойдат бронз/сребро/злато.
+const KFSEEN='bird-journal-seen-feed',KBSEEN='bird-journal-seen-badges';let FSEEN=lsGet(KFSEEN,null),BSEEN=lsGet(KBSEEN,null),feedVisit=null,badgeVisit=null;
+const fdKey=it=>it.p.id+'|'+it.key;
+function fdSig(it){if(it.p.me){const o=SOC.filter(x=>x.owner===it.p.id&&x.item===it.key&&x.kind!=='there'&&ME&&x.author!==ME.id);
+    return o.length?o.length+'|'+o.map(x=>x.created_at).sort().pop():'';}
+  return it.rs.length+'|'+Math.max(...it.rs.map(r=>r.id));}
+const isNewItem=it=>{const g=fdSig(it);return !!g&&!!FSEEN&&FSEEN[fdKey(it)]!==g;};
+function seenSeed(){if(FSEEN===null&&ME&&FR){FSEEN={};for(const it of fdItems())FSEEN[fdKey(it)]=fdSig(it);lsSet(KFSEEN,FSEEN);}   // първия път всичко е видяно
+  if(BSEEN===null){BSEEN=earnedKeys();lsSet(KBSEEN,BSEEN);}}
+function seenCommit(){if(!FSEEN)return;for(const it of fdItems())FSEEN[fdKey(it)]=fdSig(it);lsSet(KFSEEN,FSEEN);feedVisit=null;}
+const unseenFeed=()=>ME&&FSEEN?fdItems().filter(isNewItem).length:0;
+const earnedKeys=()=>{const R=SURE();return BADGES.filter(b=>badgeState(b,R).on).map(b=>b.id);};
+const newBadges=()=>BSEEN?earnedKeys().filter(k=>!BSEEN.includes(k)):[];
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&view==='friends'&&feedVisit)seenCommit();});
 function renderFriends(el){
   if(!sbOn()){el.innerHTML='<div class="empty">Споделянето още не е настроено.</div>';return;}
   if(fsel)return renderFriend(el,fsel);

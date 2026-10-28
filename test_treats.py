@@ -43,7 +43,7 @@ try:
   clear(pg);add(pg,'Синигер за проба','2026-10-22','06:50')
   check('T5 a badge pops up only the first time', 'Нова значка' in ' '.join([card(pg)]+[ (pg.evaluate("yayHide()"),pg.wait_for_timeout(420),card(pg))[2] for _ in range(2)]), False)
   pg.click('.tab[data-v="badges"]');pg.wait_for_timeout(200)
-  st=pg.evaluate("[...document.querySelectorAll('.bd')].map(d=>[d.querySelector('b').textContent,d.classList.contains('on'),d.querySelector('small').textContent])")
+  st=pg.evaluate("[...document.querySelectorAll('.bd')].map(d=>[d.querySelector('b').firstChild.textContent,d.classList.contains('on'),d.querySelector('small').textContent])")
   check('T6 the Значки tab shows the four badges: earned ones with their date, the photo badge as progress',
     [(n,on) for n,on,_ in st], [('Ранобудник',True),('Нощна смяна',True),('Четири сезона',False),('Фотограф',False)])
   check('T7 ...„от 22 октомври 2026“ and „0 от 50“', (st[0][2],st[3][2]), ('от 22 октомври 2026','0 от 50'))
