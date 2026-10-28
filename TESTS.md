@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-426 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+428 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -29,7 +29,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_guard.py | 7 | a friend's two devices; someone signing in on another person's browser; the message when sign-ups are off |
 | test_sil.py | 6 | family silhouettes in the life list, species page and share card |
 | test_season.py | 7 | the seasonal header: months to seasons, each season's details, theme switch, season-coloured cards |
-| test_map.py | 8 | close points merge on the map, nothing lost, the merged point's list, its photos load, re-merging on zoom |
+| test_map.py | 10 | close points merge on the map, nothing lost, the merged point's list, its photos load, re-merging on zoom |
 | test_photos.py | 9 | missing or unreadable photos say so; an unreadable pick (e.g. HEIC) warns at once; normal photos still show; Запиши waits for a photo in progress; a failed save says why |
 | test_days.py | 9 | Дневник days fold: newest open, counts, photos load on opening, remembered, search opens matches, saving opens the day |
 | test_species.py | 14 | the built-in list fills new species, finds BSPB's older Latin and second Bulgarian names, never overrides your own names or records; names it links count as one species, also against a friend's journal |

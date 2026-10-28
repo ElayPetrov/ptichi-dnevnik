@@ -23,7 +23,9 @@ try:
     pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(250)
     pg.evaluate("""new Promise(r=>{const q=indexedDB.open('birdphotos',1);q.onsuccess=async()=>{const im=await (await fetch('a.jpg')).blob();
       const t=q.result.transaction('p','readwrite');t.objectStore('p').put(im,'phmap');t.oncomplete=()=>r();};})""")
-    pg.click('.tab[data-v="map"]');pg.wait_for_timeout(150);return pg
+    pg.click('.tab[data-v="map"]');pg.wait_for_timeout(150)
+    if vw==391:return pg   # left on what opening Карта shows
+    pg.click('[data-mm=grid]');pg.wait_for_timeout(150);return pg   # the walk checks below are on Схема
   ph=open_map(390)
   raw=ph.evaluate("clusters().length");n=ph.locator('svg .pt').count()
   check('M1 on a phone the walk no longer fills the map: '+str(raw)+' points drawn as '+str(n), (n<=4, n>=2), (True,True))
@@ -45,6 +47,12 @@ try:
   dk.evaluate("window.__map.setZoom(window.__map.getZoom()+5,{animate:false})");dk.wait_for_timeout(300);bb=cnt();allin=dk.evaluate("window.__C.reduce((a,c)=>a+c.n,0)")
   dk.evaluate(f"window.__map.setZoom({z0}-2,{{animate:false}})");dk.wait_for_timeout(300);c=cnt()
   check(f'M7 the real map re-merges on zoom: {a} points, {bb} zoomed in, {c} zoomed out', (bb>a, a>=c, bb==raw, allin), (True,True,True,len(data)))
+  dm=open_map(391);dm.wait_for_function("document.querySelector('#lmap .leaflet-tile-loaded')",timeout=8000)
+  check('M9 opening Карта shows the real map, satellite, not Схема', (dm.evaluate("mapMode"),dm.evaluate("tileKey"),dm.locator('#lmap').count()), ('real','sat',1))
+  off=b.new_page(viewport={'width':390,'height':900});off.on('pageerror',lambda e:errs.append(str(e)));off.route('https://cdnjs.cloudflare.com/**',lambda r:r.abort())
+  off.add_init_script("localStorage.setItem('bird-journal-v3',%s)"%json.dumps(json.dumps(data,ensure_ascii=False)))
+  off.goto(f'http://localhost:{port}/ptichi-dnevnik.html');off.wait_for_timeout(250);off.click('.tab[data-v=map]');off.wait_for_function("mapMode==='grid'&&document.querySelector('svg .pt')",timeout=8000)
+  check('M10 without internet it falls back to Схема by itself, with a note', (off.evaluate("mapMode"),'не се зареди' in off.inner_text('#mapmsg')), ('grid',True))
   check('M8 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

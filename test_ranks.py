@@ -31,7 +31,7 @@ try:
     (True,'Приятел 50 дни с вида · още 100 до „Познавач“',1))
   pg.click('.tab[data-v="badges"]');pg.wait_for_timeout(250)
   bd=pg.evaluate("(()=>{const c=document.querySelector('.bd2[data-bid=\"g:Кълвачи\"]');return [c.querySelector('.bdn').textContent,c.querySelector('.bdh').textContent,getComputedStyle(c.querySelector('.bdh')).fontStyle,getComputedStyle(c.querySelector('.bdn')).fontStyle];})()")
-  check('R9 badge cards: progress and description on separate lines in different styles, no list sizes', bd, ['0 / 4 до бронз','видове от групата','italic','normal'])
+  check('R9 badge cards: progress and description on separate lines in different styles, no list sizes', bd, ['0 / 3 до бронз','видове от групата','italic','normal'])
   check('R10 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

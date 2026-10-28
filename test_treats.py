@@ -46,7 +46,7 @@ try:
   pg.click('.tab[data-v="badges"]');pg.wait_for_timeout(200)
   st=pg.evaluate("Object.fromEntries([...document.querySelectorAll('.bd2')].map(d=>[d.querySelector('b').firstChild.textContent,[d.querySelector('.bdt').textContent,d.querySelector('.bdn').textContent]]))")
   check('T6 the Значки tab: bronze Нощна смяна for the owl after dark, bronze Ранобудник for five mornings', (st['Нощна смяна'][0],st['Ранобудник'][0]), ('Бронз','Бронз'))
-  check('T7 ...with progress „5 / 25 до сребро“ and Фотограф „0 / 25 до бронз“', (st['Ранобудник'][1],st['Фотограф'][1]), ('5 / 25 до сребро','0 / 25 до бронз'))
+  check('T7 ...with progress „5 / 25 до сребро“ and Фотограф „0 / 50 до бронз“', (st['Ранобудник'][1],st['Фотограф'][1]), ('5 / 25 до сребро','0 / 50 до бронз'))
   # ---- СТО! ----
   hundred=[R(id=1000+i,bg=f'Вид {i}') for i in range(99)]
   p2=page(hundred);add(p2,'Сврака');t=card(p2)

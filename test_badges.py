@@ -19,7 +19,7 @@ try:
     val("[...Array(10)].map((_,j)=>({bg:'Кос',geo:(42.62+j*0.0009).toFixed(4)+',25.39'})).concat([...Array(5)].map((_,j)=>({bg:'Кос',geo:(42.7+j*0.045).toFixed(4)+',25.39'})))",['places'])[0][0]<=7, True)
   check('B3 Моят участък: 30 days at one spot is bronze (25)', val("[...Array(30)].map((_,j)=>({bg:'Кос',geo:'42.6210,25.3920',date:"+"'2026-'+String(Math.floor(j/28)+1).padStart(2,'0')+'-'+String(j%28+1).padStart(2,'0')}))",['patch']), [[30,1]])
   check('B4 Постоянство: the best 365-day stretch counts, so a quiet year doesn\'t erase a busy one',
-    val("[...Array(60)].map((_,j)=>({bg:'Кос',date:'2024-'+String(Math.floor(j/28)+1).padStart(2,'0')+'-'+String(j%28+1).padStart(2,'0')})).concat([{bg:'Кос',date:'2026-05-05'}])",['steady']), [[60,1]])
+    val("[...Array(120)].map((_,j)=>({bg:'Кос',date:'2024-'+String(Math.floor(j/28)+1).padStart(2,'0')+'-'+String(j%28+1).padStart(2,'0')})).concat([{bg:'Кос',date:'2026-05-05'}])",['steady']), [[120,1]])
   sp26=json.dumps(['Сврака','Сойка','Кос','Чинка','Голям синигер','Син синигер','Гугутка','Щиглец','Врабче','Зеленика','Голям пъстър кълвач','Сив кълвач','Сирийски пъстър кълвач','Малък пъстър кълвач','Червеногръдка','Дрозд певец','Скорец','Сива врана','Гарван','Чучулига','Бяла стърчиопашка','Полска врабчица','Испанско врабче','Голяма белочела гъска','Зеленоглава патица','Сива чапла','Голяма бяла чапла','Малка бяла чапла','Лиска','Голям гмурец','Малък гмурец'],ensure_ascii=False)
   check('B5 Богат излет and Голям ден: 26 species on one outing, 31 over two outings that day',
     val(f"{sp26}.slice(0,26).map(n=>({{bg:n,sess:'s1'}})).concat({sp26}.slice(26).map(n=>({{bg:n,sess:'s2'}})))",['bigout','bigday']), [[26,1],[31,1]])
@@ -29,9 +29,9 @@ try:
     val("[{bg:'Скорец',count:'~500'},{bg:'Гарван',count:'10–20'},{bg:'Сврака',count:'3+2'},{bg:'Бял щъркел',count:'1000+'}]",['flock']), [[1000,2]])
   check('B8 Летописец: a note counts from 20 characters', val("[{bg:'Кос',note:'пее'},{bg:'Сойка',note:'Пееше дълго на върха на ореха.'}]",['notes']), [[1,0]])
   g=pg.evaluate("BDEF.filter(d=>d.id.startsWith('g:')).map(d=>[d.name,d.g])")
-  check('B9 group badges scale with the group: Кълвачи 4 / 7 / 9 of 10, Грабливи 10 / 20 / 27 of 29',
-    (dict(g)['Кълвачи'],dict(g)['Грабливи'],len(g)), ([4,7,9],[10,20,27],8))
-  check('B10 Семейства counts scientific families', val("[{bg:'Сврака'},{bg:'Сойка'},{bg:'Кос'},{bg:'Голям синигер'}]",['fams']), [[3,0]])
+  check('B9 group badges from Ivan\'s totals, 30 / 50 / 90 %: Кълвачи 3 / 5 / 8 of 9, Грабливи 12 / 20 / 35 of 39',
+    (dict(g)['Кълвачи'],dict(g)['Грабливи'],len(g)), ([3,5,8],[12,20,35],8))
+  check('B10 the Семейства badge is gone', pg.evaluate("BDEF.some(d=>d.id==='fams')"), False)
   soc=pg.evaluate("""(()=>{ME={id:'me'};FR={fol:[{id:'u2',name:'Петър',data:{obs:[],outs:[{id:'x',date:'2026-10-20',orig:{u:'me',o:'m1'}}]}}],fans:[]};
     SOC=[{owner:'u2',item:'o:x',author:'me',kind:'bravo'},{owner:'me',item:'o:m1',author:'u2',kind:'bravo'},{owner:'me',item:'o:m1',author:'me',kind:'bravo'},
          {owner:'u2',item:'o:x',author:'me',kind:'comment'},{owner:'me',item:'o:m1',author:'me',kind:'comment'}];
@@ -60,10 +60,10 @@ try:
   if l.locator('[data-feedmore]').count():l.click('[data-feedmore]');l.wait_for_timeout(300)   # that day is older than the first 20 cards
   check('B16 the feed card of that day shows „значка: Ранобудник — сребро“', 'значка: Ранобудник — сребро' in l.inner_text('#view'), True)
   l.click('.tab[data-v="badges"]');l.wait_for_timeout(200)
-  check('B17 Значки: six sections, 31 badges, „от 93 нива“, and the new silver marked „ново“',
-    (l.evaluate("[...document.querySelectorAll('.bdsec')].map(h=>h.textContent)"),l.locator('.bd2').count(),'от 93 нива' in l.inner_text('.bdintro'),
+  check('B17 Значки: six sections, 30 badges, „от 90 нива“, and the new silver marked „ново“',
+    (l.evaluate("[...document.querySelectorAll('.bdsec')].map(h=>h.textContent)"),l.locator('.bd2').count(),'от 90 нива' in l.inner_text('.bdintro'),
      l.evaluate("[...document.querySelectorAll('.bd2.new b')].map(b=>b.firstChild.textContent)")),
-    (['На терен','Списъкът','Сезони','Наука','Приятели','Семейства'],31,True,['Ранобудник']))
+    (['На терен','Списъкът','Сезони','Наука','Приятели','Семейства'],30,True,['Ранобудник']))
   check('B18 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

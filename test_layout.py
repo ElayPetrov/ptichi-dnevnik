@@ -25,7 +25,7 @@ try:
   check('L2 on a 360 px phone all eight show at once, in two rows', fit, [True,2])
   pg.click('.tab[data-v="badges"]');pg.wait_for_timeout(150);nb=pg.locator('.bd2').count()
   pg.click('.tab[data-v="life"]');pg.wait_for_timeout(150)
-  check('L3 the badges live in Значки, no longer in Моите видове', (nb,pg.locator('#view .bd2').count()), (31,0))
+  check('L3 the badges live in Значки, no longer in Моите видове', (nb,pg.locator('#view .bd2').count()), (30,0))
   pg.click('.tab[data-v="places"]');pg.wait_for_timeout(200)
   names=pg.evaluate("[...document.querySelectorAll('.pl .nm')].map(e=>e.textContent)")
   check('L4 Места: named places first, then each unnamed point by its coordinates, then the records with neither', names, ['Копринка','42.621, 25.392','42.700, 25.400','без място и координати'])

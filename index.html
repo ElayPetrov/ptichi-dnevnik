@@ -670,7 +670,7 @@ const K='bird-journal-v3', KT='bird-journal-theme';
 const MN=['януари','февруари','март','април','май','юни','юли','август','септември','октомври','ноември','декември'];
 const MS=['Я','Ф','М','А','М','Ю','Ю','А','С','О','Н','Д'];
 let OBS=[],view='log',filt='all',q='',edit=null,st={h:0,s:1,p:0},photo=null,beh=[],geo=null,unsure=false,spSel=null;
-let SESS=null, mapMode='grid'; const KS='bird-journal-session';
+let SESS=null, mapMode='real'; const KS='bird-journal-session';
 function loadSess(){try{const r=localStorage.getItem(KS);if(r)SESS=JSON.parse(r);}catch(e){}}
 function saveSess(){try{SESS?localStorage.setItem(KS,JSON.stringify(SESS)):localStorage.removeItem(KS);}catch(e){}}
 // Излетите като събития: дата, начало, край, място и „записа ли всички видове" (true / false / null = не е отбелязано)
@@ -1288,7 +1288,7 @@ function loadLeaflet(){
 }
 async function realMap(C){
   const ok=await loadLeaflet();
-  if(!ok){mapMode='grid';render();msg('картата не се зареди — няма интернет или е блокирана');return;}
+  if(!ok){if(view==='map'&&mapMode==='real'){mapMode='grid';render();msg('картата не се зареди — няма интернет или е блокирана');}return;}   // само ако още гледаш картата
   const el=document.getElementById('lmap'); if(!el)return;
   const map=L.map(el,{scrollWheelZoom:false});
   let gotTile=false, dead=false;
@@ -1297,13 +1297,14 @@ async function realMap(C){
   if(T.sub)opts.subdomains=T.sub;
   const layer=L.tileLayer(T.url,opts);
   layer.on('tileload',()=>{gotTile=true;msg('');});
-  layer.on('tileerror',()=>{if(!gotTile&&!dead){dead=true;mapMode='grid';render();
+  layer.on('tileerror',()=>{if(!gotTile&&!dead&&el.isConnected){dead=true;mapMode='grid';render();
     msg('плочките не се заредиха — пробвай друг слой или провери връзката');}});
   layer.addTo(map);
-  setTimeout(()=>{if(!gotTile&&!dead){dead=true;mapMode='grid';render();
+  setTimeout(()=>{if(!gotTile&&!dead&&el.isConnected){dead=true;mapMode='grid';render();
     msg('картата не се зареди навреме');}},9000);
   const group=L.featureGroup().addTo(map);
   const draw=()=>{   // при всяко приближаване: сливане наново, в пиксели на екрана
+    if(!el.isConnected){try{map.remove();}catch(e){}return;}   // картата вече е сменена — не пипа точките на Схемата
     group.clearLayers();
     const M=mergeNear(C,c=>{const q=map.latLngToContainerPoint([c.lat,c.lon]);return [q.x,q.y];},34);
     window.__C=M;
@@ -1962,7 +1963,8 @@ document.addEventListener('click',e=>{
   const im=e.target.closest('.ph img');
   if(im){document.getElementById('lbimg').src=im.src;document.getElementById('lb').showModal();return;}
   const t=e.target.closest('.tab');
-  if(t){view=t.dataset.v;spSel=null;fsel=null;for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x===t);render();return;}
+  if(t){if(t.dataset.v==='map'&&view!=='map')mapMode='real';   // при отваряне на Карта — истинската карта
+    view=t.dataset.v;spSel=null;fsel=null;for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x===t);render();return;}
   const c=e.target.closest('#filters .chip');
   if(c){filt=c.dataset.f;for(const x of document.querySelectorAll('#filters .chip'))x.setAttribute('aria-pressed',x===c);render();return;}});
 document.getElementById('lb').onclick=()=>document.getElementById('lb').close();
@@ -1983,15 +1985,11 @@ document.getElementById('exp').onclick=()=>{const Q=v=>'"'+String(v==null?'':v).
 const KBK='bird-journal-lastbak';
 const ymd=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
 const bakData=()=>JSON.stringify({v:6,obs:OBS,beh:BEH,outs:OUTS,del:DEL}), bakName=()=>'ptichi-dnevnik-'+today();
-const FAMW=["Accipitridae", "Acrocephalidae", "Aegithalidae", "Alaudidae", "Alcedinidae", "Anatidae", "Apodidae", "Ardeidae", "Burhinidae", "Caprimulgidae", "Certhiidae", "Cettiidae", "Charadriidae", "Ciconiidae", "Cinclidae", "Columbidae", "Coraciidae", "Corvidae", "Cuculidae", "Emberizidae", "Falconidae", "Fringillidae", "Glareolidae", "Haematopodidae", "Hirundinidae", "Laniidae", "Laridae", "Locustellidae", "Meropidae", "Motacillidae", "Muscicapidae", "Oriolidae", "Pandionidae", "Panuridae", "Paridae", "Passeridae", "Pelecanidae", "Phalacrocoracidae", "Phasianidae", "Phylloscopidae", "Picidae", "Podicipedidae", "Procellariidae", "Prunellidae", "Rallidae", "Recurvirostridae", "Regulidae", "Remizidae", "Scolopacidae", "Sittidae", "Strigidae", "Sturnidae", "Sylviidae", "Threskiornithidae", "Tichodromidae", "Troglodytidae", "Turdidae", "Tytonidae", "Upupidae"],SPW='0,0,20,0,20,0,0,0,20,0,0,0,0,0,0,32,0,0,0,20,20,20,0,0,20,0,0,20,0,50,50,50,50,50,57,50,50,50,50,7,53,13,7,7,7,53,7,7,7,7,7,13,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,41,37,41,37,37,41,41,48,48,12,22,45,48,48,12,12,45,48,23,8,22,26,26,26,26,26,26,26,26,26,26,26,26,38,38,38,38,38,38,38,15,15,15,15,15,9,18,18,6,6,24,24,24,24,24,6,28,4,58,16,40,40,40,40,40,40,40,40,40,40,3,3,3,3,3,3,29,29,29,29,29,29,46,55,46,56,56,56,56,30,30,56,30,30,30,30,30,30,30,30,30,30,30,30,1,39,39,1,52,52,1,52,39,39,52,1,1,52,52,1,1,1,27,27,11,27,1,52,52,30,30,30,30,30,34,2,34,34,34,34,33,34,47,34,10,49,10,49,54,25,25,25,25,25,17,17,17,17,17,17,17,17,51,51,35,35,35,35,35,21,21,21,21,21,21,21,21,21,21,19,19,19,19,19,19,19,31,44,14,44,44,36,44,44,44,43,36,43,42,44'.split(',').map(Number);
 // ---- Значки в три нива: бронз — начало, сребро — усилие, злато — майсторство ----
 // Броят се само сигурните записи. „Записи“ се броят честно: един за вид, място и ден (десет записа на едно врабче
 // за час са един). Места: ~1 км клетки (една разходка не става двайсет места); участък: ~500 м.
 // Ключът на ниво е <id>:<1|2|3> — по него вървят „ново“, точката на раздела и акцентите в лентата на приятелите.
 const TIER=['Бронз','Сребро','Злато'];
-const SPWM=new Map(SPL.map((e,i)=>[nrm(e[1]),FAMW[SPW[i]]]));
-function wfam(o){const e=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en);return e?SPWM.get(nrm(e.la))||'':'';}
-const GSZ=f=>SPL.filter(e=>FAMS[e[3]]===f).length;
 const grp=o=>o.fam||((listFind('bg',o.bg)||listFind('la',o.la)||{}).fam)||'';
 const cellOf=(o,km)=>{const g=(o.geo||'').split(',').map(Number);
   if(g.length===2&&isFinite(g[0])&&isFinite(g[1]))return 'g'+Math.floor(g[0]/(0.009*km))+','+Math.floor(g[1]/(0.0122*km));
@@ -2021,28 +2019,27 @@ const BDEF=[
   BD('early','Ранобудник','field','сутрини с птица преди изгрева',[5,25,100],R=>new Set(R.filter(OLDB.early.hit).map(o=>o.date)).size,OLDB.early.icon),
   BD('night','Нощна смяна','field','видове сови, записани в тъмното',[1,3,6],R=>new Set(R.filter(OLDB.night.hit).map(key)).size,OLDB.night.icon),
   BD('outings','На терен','field','излети',[20,100,400],()=>outings().length),
-  BD('records','Неуморен','field','записи (по един за вид, място и ден)',[100,1000,5000],R=>new Set(R.map(bUniq)).size),
-  BD('patch','Моят участък','field','дни на едно място (до ~500 м)',[25,125,365],R=>maxSize(bySet(R,o=>cellOf(o,.5),o=>o.date))),
-  BD('places','Изследо\u00adвател','field','различни места (на ~1 км едно от друго)',[30,150,450],R=>new Set(R.map(o=>cellOf(o,1)).filter(Boolean)).size),
-  BD('steady','Постоянство','field','дни със записи в най-добрите ти 365 дни',[50,150,300],R=>bestWindow(R.map(o=>o.date),365)),
+  BD('records','Неуморен','field','записи (по един за вид, място и ден)',[200,500,1000],R=>new Set(R.map(bUniq)).size),
+  BD('patch','Моят участък','field','дни на едно място (до ~500 м)',[30,150,450],R=>maxSize(bySet(R,o=>cellOf(o,.5),o=>o.date))),
+  BD('places','Изследо\u00adвател','field','различни места (на ~1 км едно от друго)',[50,250,750],R=>new Set(R.map(o=>cellOf(o,1)).filter(Boolean)).size),
+  BD('steady','Постоянство','field','дни със записи в най-добрите ти 365 дни',[100,200,300],R=>bestWindow(R.map(o=>o.date),365)),
   BD('bigout','Богат излет','field','видове на един излет',[25,45,70],R=>maxSize(bySet(R,o=>o.sess||'',key))),
   BD('bigday','Голям ден','field','видове за един ден',[30,60,100],R=>maxSize(bySet(R,o=>o.date,key))),
-  BD('species','Ловец на видове','list','видове в дневника',[50,150,300],R=>new Set(R.map(key).filter(Boolean)).size),
-  BD('fams','Семейства','list','семейства с поне един вид',[15,30,45],R=>new Set(R.map(wfam).filter(Boolean)).size),
-  BD('seasons','Четири сезона','seas','видове във всеки от четирите сезона',[5,25,60],R=>Object.values(bySet(R,key,o=>SEAS4(+o.date.slice(5,7)))).filter(x=>x.size===4).length,OLDB.seasons.icon),
+  BD('species','Ловец на видове','list','видове в дневника',[100,200,300],R=>new Set(R.map(key).filter(Boolean)).size),
+  BD('seasons','Четири сезона','seas','видове във всеки от четирите сезона',[8,40,100],R=>Object.values(bySet(R,key,o=>SEAS4(+o.date.slice(5,7)))).filter(x=>x.size===4).length,OLDB.seasons.icon),
   BD('year12','Цяла година','seas','видове във всеки от 12-те месеца',[5,15,30],R=>Object.values(bySet(R,key,o=>o.date.slice(5,7))).filter(x=>x.size===12).length),
   BD('winter','Зимни гости','seas','видове през една зима (дек.–фев.)',[25,50,75],R=>maxSize(bySet(R.filter(o=>{const m=+o.date.slice(5,7);return m===12||m<=2;}),o=>+o.date.slice(0,4)-(+o.date.slice(5,7)===12?0:1),key))),
   BD('loyal','Верен спътник','seas','дни с един и същ вид',[30,100,365],R=>maxSize(bySet(R,key,o=>o.date))),
-  BD('photo','Фотограф','sci','видове с твоя снимка',[25,100,200],R=>new Set(R.filter(o=>o.photo).map(key)).size,OLDB.photo.icon),
+  BD('photo','Фотограф','sci','видове с твоя снимка',[50,100,200],R=>new Set(R.filter(o=>o.photo).map(key)).size,OLDB.photo.icon),
   BD('complete','Пълен списък','sci','излети с „да, всички“',[5,25,100],()=>outings().filter(x=>x.complete===true).length),
-  BD('etho','Етолог','sci','записи с поведение',[25,125,500],R=>new Set(R.filter(o=>o.beh&&o.beh.length).map(bUniq)).size),
+  BD('etho','Етолог','sci','записи с поведение',[125,625,2500],R=>new Set(R.filter(o=>o.beh&&o.beh.length).map(bUniq)).size),
   BD('notes','Летописец','sci','записи с бележка (поне 20 знака)',[25,125,500],R=>new Set(R.filter(o=>(o.note||'').trim().length>=20).map(bUniq)).size),
-  BD('flock','Голямо ято','sci','птици в един запис',[100,1000,10000],R=>Math.max(0,...R.map(o=>cntNum(o.count)))),
+  BD('flock','Голямо ято','sci','птици в един запис',[200,1000,10000],R=>Math.max(0,...R.map(o=>cntNum(o.count)))),
   BD('together','Заедно','soc','излети заедно с приятел',[10,35,100],()=>sharedOutings()),
   BD('bravo','Браво!','soc','„Браво“ — дадени и получени',[25,125,500],()=>ME?SOC.filter(s=>s.kind==='bravo'&&(s.author===ME.id)!==(s.owner===ME.id)).length:0),
   BD('talk','Събеседник','soc','твои коментари към излети на приятели',[10,50,200],()=>ME?SOC.filter(s=>s.kind==='comment'&&s.author===ME.id&&s.owner!==ME.id).length:0),
-  ...['Грабливи','Патици и гъски','Чайки и рибарки','Чапли и щъркели','Кълвачи','Сови','Синигери','Чинки'].map(f=>{const n=GSZ(f);
-    return BD('g:'+f,f,'fam','видове от групата',[Math.ceil(n/3),Math.ceil(2*n/3),Math.ceil(.9*n)],R=>new Set(R.filter(o=>grp(o)===f).map(key)).size);})];
+  ...[['Грабливи',39],['Патици и гъски',26],['Чайки и рибарки',17],['Чапли и щъркели',13],['Кълвачи',9],['Сови',10],['Синигери',10],['Чинки',13]].map(([f,n])=>{   // n: видовете в групата (по Иван)
+    return BD('g:'+f,f,'fam','видове от групата',[Math.round(.3*n),Math.round(.5*n),Math.round(.9*n)],R=>new Set(R.filter(o=>grp(o)===f).map(key)).size);})];
 const tierOf=(d,v)=>d.g.filter(x=>v>=x).length;
 function tiersNow(){const R=SURE(),out={};for(const d of BDEF){const v=d.v(R)||0;out[d.id]={v,t:tierOf(d,v)};}return out;}
 const tierKeys=T=>Object.entries(T).flatMap(([id,s])=>Array.from({length:s.t},(_,i)=>id+':'+(i+1)));
@@ -2136,7 +2133,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-28.6';
+const VER='2026-10-29.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
