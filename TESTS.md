@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-407 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+409 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -42,7 +42,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_more.py | 14 | icon filters (no „Тази година“) fitting a 360 px phone, months and years folding in Дневник, an outing card's little map and photos, Фенология's order and its month grid fitting a phone with every name in full; the app uses its own address for sign-up emails and the shared code |
 | test_invite.py | 13 | outing invitations through the database stand-in: inviting someone who sees your journal, the banner and checklist, copying without photos or notes into „с …“, answers syncing, later edits staying separate, inviting again for forgotten birds, declining |
 | test_alt.py | 14 | „Може да е и“ for unsure records: hidden until unsure, same-genus suggestions from the list, adding and removing, saving, „или …“ in Дневник, no merging or counting, search, editing, dropped once sure; a long name never runs under the record's buttons |
-| test_feed.py | 14 | the Приятели feed with three accounts on the stand-in: cards for outings and days, opening read-only records, Браво, comments, who sees what, the database refusing outsiders, „Бях там“ with the owner's approval, and the joint-outing comparison |
+| test_feed.py | 16 | the Приятели feed with three accounts on the stand-in: cards for outings and days, opening read-only records, Браво, comments, who sees what, the database refusing outsiders, „Бях там“ with the owner's approval, and the joint-outing comparison; the 2-minute refresh downloads only changed journals and lights the dot on any tab |
 | test_notify.py | 14 | the bird on the account button; orange dots on Приятели (a friend's new records, others' Браво or comments on yours) and Значки (a new badge); new cards first and marked „ново“ until you leave the tab |
 | test_badges.py | 18 | the 31 badges in three levels: honest counting, places (~1 km) and patch (~500 m), the best 365 days, big outing and big day, one winter, careful counts, notes, group thresholds, scientific families, social badges, the one-time summary after the update, a new level while logging and its highlight in the feed, the Значки tab |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |

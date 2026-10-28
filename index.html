@@ -798,9 +798,7 @@ function render(){
   document.getElementById('q').parentElement.style.display=(view==='friends'&&!fsel)||view==='acct'||view==='badges'?'none':'';   // търсенето не важи за лентата и профила
   if(view!=='friends'&&feedVisit)seenCommit();   // излезе ли от лентата — видяното се помни
   if(view!=='badges')badgeVisit=null;
-  seenSeed();
-  {const t=document.querySelector('.tab[data-v="friends"]');if(t)t.classList.toggle('dot',pendingSocial()>0||(view!=='friends'&&unseenFeed()>0));
-   const b=document.querySelector('.tab[data-v="badges"]');if(b)b.classList.toggle('dot',view!=='badges'&&newBadges().length>0);}
+  paintDots();
   if(view==='acct')return renderAcct(el);         // профил, код, добавяне на приятели — от кръгчето горе вдясно
   if(view==='friends')return renderFriends(el);   // работи и с празен дневник: нов телефон, нов приятел
   if(view==='badges')return renderBadges(el);     // и значките — новият човек вижда какво може да спечели
@@ -2096,7 +2094,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-28.3';
+const VER='2026-10-28.4';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -2208,18 +2206,24 @@ async function syncNow(){
     sbStat='синхронизирано в '+nowTime()+(got?' · '+got+(got===1?' нов запис':' нови записа')+' от другото устройство':'');}
   catch(e){sbStat=errMsg(e);}
   syncing=false;paintStat();
-  if(Date.now()-lastFr>5*60*1000)loadFriends();}   // поканите идват с дневниците на приятелите
+  if(Date.now()-lastFr>60*1000)loadFriends();}   // поканите, новите записи и реакциите идват с дневниците на приятелите
 let lastFr=0;
-async function loadFriends(){if(!SB||!ME)return;lastFr=Date.now();
+// подпис на приятелските данни: прерисува се само ако нещо наистина е ново (иначе само точките) — не скача докато гледаш
+const frSig=()=>JSON.stringify([((FR&&FR.fol)||[]).map(f=>f.id+'@'+f.updated_at),((FR&&FR.fans)||[]).map(f=>f.id),SOC.length,SOC.length?SOC[SOC.length-1].id:'',sbMsg]);
+async function loadFriends(){if(!SB||!ME)return;lastFr=Date.now();const s0=frSig();
   try{const {data:links,error}=await SB.from('viewers').select('owner,viewer');if(error)throw error;
     const fol=links.filter(l=>l.viewer===ME.id).map(l=>l.owner),fans=links.filter(l=>l.owner===ME.id).map(l=>l.viewer),ids=[...new Set([...fol,...fans])];
     const pr=ids.length?(await SB.from('profiles').select('user_id,name').in('user_id',ids)).data||[]:[];
-    const js=fol.length?(await SB.from('journals').select('user_id,data,updated_at').in('user_id',fol)).data||[]:[];
+    const meta=fol.length?(await SB.from('journals').select('user_id,updated_at').in('user_id',fol)).data||[]:[];
+    const old=Object.fromEntries(((FR&&FR.fol)||[]).filter(f=>f.data).map(f=>[f.id,f])),
+      need=meta.filter(m=>!old[m.user_id]||old[m.user_id].updated_at!==m.updated_at).map(m=>m.user_id);
+    const js=need.length?(await SB.from('journals').select('user_id,data,updated_at').in('user_id',need)).data||[]:[];
     const nm=id=>(pr.find(p=>p.user_id===id)||{}).name||'приятел';
-    FR={fol:fol.map(id=>({id,name:nm(id),...(js.find(j=>j.user_id===id)||{})})),fans:fans.map(id=>({id,name:nm(id)}))};lsSet(KF,FR);}
+    FR={fol:fol.map(id=>{const j=js.find(x=>x.user_id===id),o=old[id];return {id,name:nm(id),...(j||(o?{data:o.data,updated_at:o.updated_at}:{}))};}),
+      fans:fans.map(id=>({id,name:nm(id)}))};lsSet(KF,FR);}
   catch(e){sbMsg=errMsg(e);}
   await loadSocial();
-  if(view==='friends'||view==='log'||view==='acct')render();}
+  if(frSig()!==s0&&(view==='friends'||view==='log'||view==='acct'))render();else paintDots();}
 // --- изглед ---
 // ---- Приятели: лента с излетите и дните на приятелите (и твоите) ----
 // Карта за всеки излет и за всеки ден със записи извън излет: кой, кога, къде, малка карта, видовете, снимките,
@@ -2341,6 +2345,14 @@ function seenSeed(){if(FSEEN===null&&ME&&FR){FSEEN={};for(const it of fdItems())
         '<div class="yaynm">Вече имаш '+[c[0]?c[0]+' бронзови':'',c[1]?c[1]+' сребърни':'',c[2]?c[2]+' златни':''].filter(Boolean).join(', ')+'</div><div class="yaym">Виж ги в „Значки“</div></div>'});}}}
 function seenCommit(){if(!FSEEN)return;for(const it of fdItems())FSEEN[fdKey(it)]=fdSig(it);lsSet(KFSEEN,FSEEN);feedVisit=null;}
 const unseenFeed=()=>ME&&FSEEN?fdItems().filter(isNewItem).length:0;
+function paintDots(){seenSeed();
+  const t=document.querySelector('.tab[data-v="friends"]');if(t)t.classList.toggle('dot',pendingSocial()>0||(view!=='friends'&&unseenFeed()>0));
+  const b=document.querySelector('.tab[data-v="badges"]');if(b)b.classList.toggle('dot',view!=='badges'&&newBadges().length>0);}
+// Приятелите се опресняват и докато приложението стои отворено: на 2 минути и при връщане в него.
+// Тегли се само кога е променен всеки дневник; целият — само ако е променен, затова е евтино и на мобилни данни.
+function friendsTick(){if(ME&&SB&&!document.hidden&&navigator.onLine!==false)loadFriends();}
+setInterval(friendsTick,120000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&ME&&Date.now()-lastFr>30000)loadFriends();});
 const earnedKeys=()=>tierKeys(tiersNow());
 const newBadges=()=>BSEEN?earnedKeys().filter(k=>!BSEEN.includes(k)):[];
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&view==='friends'&&feedVisit)seenCommit();});

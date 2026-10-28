@@ -84,6 +84,15 @@ try:
     ('Общ излет с Петър: и двамата 3 · само ти 0 · само Петър 0',1))
   iv.click('#acct');iv.wait_for_timeout(200);acc='Твоят код' in iv.inner_text('#view');iv.click('[data-acctback]');iv.wait_for_timeout(200)
   check('X13 the round button opens the profile and friends; „назад“ returns', (acc,iv.evaluate("view")), (True,'friends'))
+  import urllib.parse
+  reqs=[];pe.on('request',lambda r:reqs.append(urllib.parse.unquote(r.url)) if '/rest/v1/journals' in r.url else None)
+  full=lambda:[u for u in reqs if 'select=' in u and 'data' in u.split('select=')[1].split('&')[0]]
+  pdot=lambda:pe.evaluate("document.querySelector('.tab[data-v=friends]').classList.contains('dot')")
+  pe.click('.tab[data-v="map"]');pe.wait_for_timeout(200);reqs.clear();pe.evaluate("friendsTick()");pe.wait_for_timeout(900)
+  check('X15 nothing new: the 2-minute refresh only checks dates (no journal downloaded again), no dot', (len(full()),pdot()), (0,False))
+  iv.evaluate("OBS.push({id:Date.now(),date:'2026-10-28',time:'12:30',place:'Копринка',count:'',bg:'Червеношийка',en:'',la:'',fam:'',note:'',h:0,s:1,p:0,beh:[],geo:null,photo:null,upd:Date.now()});save()");iv.evaluate("syncNow()")
+  reqs.clear();pe.evaluate("friendsTick()");pe.wait_for_timeout(900)
+  check('X16 Ivan logs a bird: the next refresh downloads just his journal and lights the dot, even on Карта', (len(full()),pdot(),pe.evaluate("view")), (1,True,'map'))
   check('X14 no page errors', iv.errs+pe.errs+ma.errs, [])
   b.close()
 finally: srv.terminate();st.stop()
