@@ -32,10 +32,11 @@ try:
   clear(pg);add(pg,'Кос','2026-04-01')
   check('T2 the second record that year: no pop-up', card(pg), '')
   # ---- badges ----
+  pg.evaluate("(()=>{for(let j=0;j<4;j++)OBS.push({id:900+j,date:'2026-10-1'+j,time:'06:30',place:'Тюлбето',count:'',bg:'Кос',en:'',la:'',fam:'',note:'',h:0,s:1,p:0,beh:[],geo:'42.62,25.39',photo:null});save();})()")   # four earlier mornings
   add(pg,'Червеногръдка','2026-10-22','07:00');texts=[]
   for _ in range(3):
     texts.append(card(pg));pg.evaluate("yayHide()");pg.wait_for_timeout(420)
-  check('T3 a bird before sunrise: first the new species, then „Нова значка! Ранобудник“', (any('Честито, нов вид!' in x for x in texts),any('Нова значка!' in x and 'Ранобудник' in x for x in texts)), (True,True))
+  check('T3 the fifth morning before sunrise: first the new species, then „Нова значка! Ранобудник — бронз“', (any('Честито, нов вид!' in x for x in texts),any('Нова значка!' in x and 'Ранобудник — бронз' in x for x in texts)), (True,True))
   clear(pg);add(pg,'Горска улулица','2026-10-22','21:30','Сови');texts=[]
   for _ in range(3):
     texts.append(card(pg));pg.evaluate("yayHide()");pg.wait_for_timeout(420)
@@ -43,10 +44,9 @@ try:
   clear(pg);add(pg,'Синигер за проба','2026-10-22','06:50')
   check('T5 a badge pops up only the first time', 'Нова значка' in ' '.join([card(pg)]+[ (pg.evaluate("yayHide()"),pg.wait_for_timeout(420),card(pg))[2] for _ in range(2)]), False)
   pg.click('.tab[data-v="badges"]');pg.wait_for_timeout(200)
-  st=pg.evaluate("[...document.querySelectorAll('.bd')].map(d=>[d.querySelector('b').firstChild.textContent,d.classList.contains('on'),d.querySelector('small').textContent])")
-  check('T6 the Значки tab shows the four badges: earned ones with their date, the photo badge as progress',
-    [(n,on) for n,on,_ in st], [('Ранобудник',True),('Нощна смяна',True),('Четири сезона',False),('Фотограф',False)])
-  check('T7 ...„от 22 октомври 2026“ and „0 от 50“', (st[0][2],st[3][2]), ('от 22 октомври 2026','0 от 50'))
+  st=pg.evaluate("Object.fromEntries([...document.querySelectorAll('.bd2')].map(d=>[d.querySelector('b').firstChild.textContent,[d.querySelector('.bdt').textContent,d.querySelector('.bdn').textContent]]))")
+  check('T6 the Значки tab: bronze Нощна смяна for the owl after dark, bronze Ранобудник for five mornings', (st['Нощна смяна'][0],st['Ранобудник'][0]), ('Бронз','Бронз'))
+  check('T7 ...with progress „5 / 25 до сребро“ and Фотограф „0 / 25 до бронз“', (st['Ранобудник'][1],st['Фотограф'][1]), ('5 / 25 до сребро','0 / 25 до бронз'))
   # ---- СТО! ----
   hundred=[R(id=1000+i,bg=f'Вид {i}') for i in range(99)]
   p2=page(hundred);add(p2,'Сврака');t=card(p2)
