@@ -413,8 +413,14 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .bdi2.t1{color:#b87333;border-color:#b87333} .bdi2.t2{color:#8f989f;border-color:#a8b0b6;background:color-mix(in srgb,#a8b0b6 16%,var(--card))} .bdi2.t3{color:#c08f0b;border-color:#d4a017;background:color-mix(in srgb,#d4a017 18%,var(--card))}
 .bdx{min-width:0;flex:1} .bdx b{display:block;font-size:13.5px;line-height:1.25;hyphens:manual}
 .bdt{display:block;font-size:11.5px;color:var(--mut);margin:1px 0 4px} .bd2.t1 .bdt{color:#b87333} .bd2.t2 .bdt{color:#8f989f} .bd2.t3 .bdt{color:#c08f0b;font-weight:700}
-.bdp{height:5px;border-radius:3px;background:var(--bg2);overflow:hidden;margin-bottom:4px} .bdp i{display:block;height:100%;background:var(--s);border-radius:3px}
-.bdn,.bdh{display:block;font-size:11.5px;color:var(--mut);line-height:1.3} .bdh{opacity:.85}
+.bdp{height:5px;border-radius:3px;background:var(--bg2);overflow:hidden;margin-bottom:4px}
+.th.rk1{box-shadow:0 0 0 2px var(--card),0 0 0 4.5px #b87333} .th.rk2{box-shadow:0 0 0 2px var(--card),0 0 0 4.5px #a8b0b6} .th.rk3{box-shadow:0 0 0 2px var(--card),0 0 0 4.5px #d4a017}
+.rkt{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:3px;font-style:normal}
+.rkt.rk1{background:color-mix(in srgb,#b87333 18%,transparent);color:#9a5b26} .rkt.rk2{background:color-mix(in srgb,#a8b0b6 24%,transparent);color:#6f787f} .rkt.rk3{background:color-mix(in srgb,#d4a017 22%,transparent);color:#9a7208}
+@media(prefers-color-scheme:dark){.rkt.rk1{color:#df9a5e} .rkt.rk2{color:#c6cdd2} .rkt.rk3{color:#e8bd45}}
+.splegend{font-size:12.5px;color:var(--mut);margin:0 0 12px;line-height:1.7} .rkline{margin:10px 0 5px;font-size:13.5px} .rkbar{max-width:260px} .bdp i{display:block;height:100%;background:var(--s);border-radius:3px}
+.bdn{display:block;font-size:12px;color:var(--ink);font-weight:600;line-height:1.3;font-variant-numeric:tabular-nums}
+.bdh{display:block;font-size:11.5px;color:var(--mut);line-height:1.3;font-style:italic;margin-top:5px;padding-top:5px;border-top:1px dashed var(--line)}
 .bd2.new{border-color:#e8822a;box-shadow:0 0 0 1px #e8822a}
 @media(max-width:420px){.bd2{gap:8px;padding:9px 8px}.bdi2{flex-basis:30px;width:30px;height:30px}.bdi2 svg{width:17px;height:17px}.bdx b{font-size:13px}}   /* „Изследовател“ се побира цяло */
 .yaypic.bdi2{width:64px;height:64px;flex:0 0 64px;opacity:1} .yaypic.bdi2 svg{width:36px;height:36px}
@@ -884,6 +890,12 @@ function outBlock(id,grp,F){const live=!!(SESS&&SESS.id===id),x=live?null:outing
     '<span class="dcount">'+grp.length+(grp.length===1?' запис':' записа')+' · '+nsp+(nsp===1?' вид':' вида')+(x&&x.complete===true?' · пълен списък':'')+'</span></button>'+
     (live?'':'<span class="ogx"><button type="button" data-oadd="'+esc(id)+'">+ птица</button><button type="button" data-oedit="'+esc(id)+'">промени</button><button type="button" data-oinv="'+esc(id)+'">покани</button></span>')+
     '</div><div class="ogb">'+grp.map(o=>recHTML(o,F)).join('')+'</div></div>';}
+// ---- колко добре познаваш вида: пръстен около птицата по дните с нея (не по записите — десет за един ден са един ден) ----
+const RANKS=[[10,'Познат'],[50,'Приятел'],[150,'Познавач']];
+function spDays(){const m={};for(const o of SURE()){const k=key(o);if(k)(m[k]=m[k]||new Set()).add(o.date);}return m;}
+const rankOf=n=>RANKS.filter(r=>n>=r[0]).length;
+function rankLine(n){const t=rankOf(n),nx=RANKS[t];
+  return (t?'<span class="rkt rk'+t+'">'+RANKS[t-1][1]+'</span> ':'')+n+(n===1?' ден':' дни')+' с вида'+(nx?' · още '+(nx[0]-n)+' до „'+nx[1]+'“':'');}
 function renderLife(el){
   if(spSel)return renderSpecies(el,spSel);
   let arr=Object.values(speciesMap());const ql=q.trim().toLowerCase();
@@ -899,13 +911,16 @@ function renderLife(el){
   for(const o of OBS)if(o.u&&key(o)&&!sm.has(key(o))&&(!ql||(o.bg+' '+o.en+' '+o.la).toLowerCase().includes(ql)))un.set(key(o),(o.bg||o.en||o.la)+(o.alt&&o.alt.length?' / '+o.alt.join(' / '):''));
   const unH=un.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с несигурни записи (не се броят): '+[...un.values()].map(esc).join(' · ')+'</div>':'';
   if(!arr.length){el.innerHTML=(unH||'<div class="empty">Нищо не съвпада.</div>');return;}
-  el.innerHTML=arr.map(r=>'<div class="sp l'+r.L+'" data-k="'+esc(r.k)+'" style="cursor:pointer">'+
-    (r.photo?'<div class="th" data-th="'+r.photo+'"></div>':'<div class="th none">'+silFor(r.fam)+'</div>')+
+  const D=spDays(),rk=r=>rankOf((D[r.k]||new Set()).size);
+  el.innerHTML=(ql||filt!=='all'?'':'<div class="splegend">Пръстенът около птицата показва колко добре познаваш вида: <span class="rkt rk1">Познат</span> 10 дни с него, <span class="rkt rk2">Приятел</span> 50, <span class="rkt rk3">Познавач</span> 150.</div>')+
+    arr.map(r=>'<div class="sp l'+r.L+'" data-k="'+esc(r.k)+'" style="cursor:pointer">'+
+    (r.photo?'<div class="th rk'+rk(r)+'" data-th="'+r.photo+'"></div>':'<div class="th none rk'+rk(r)+'">'+silFor(r.fam)+'</div>')+
     '<div style="flex:1;min-width:0">'+
     '<div class="nm">'+esc(r.bg||r.en||r.la)+'</div>'+
     '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':''].filter(Boolean).join(' · ')+'</div>'+
     (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
-    '<div class="meta">пръв път '+human(r.first)+(r.n>1?' · последно '+human(r.last):'')+'</div></div>'+
+    '<div class="meta">пръв път '+human(r.first)+(r.n>1?' · последно '+human(r.last):'')+'</div>'+
+    '<div class="meta rkm">'+rankLine((D[r.k]||new Set()).size)+'</div></div>'+
     '<div class="cnt">'+r.n+'×</div></div>').join('')+unH;
   loadThumbs();}
 // ---- страница на вида ----
@@ -920,7 +935,9 @@ function renderSpecies(el,k){
   const med=a=>{const b=[...a].sort((x,y)=>x-y),i=b.length>>1;return b.length%2?b[i]:(b[i-1]+b[i])/2;};
   const mx=Math.max(1,...Object.values(r.months));
   let h='<button class="again" data-spback>← Моите видове</button><div class="spd">'+
-    '<div style="display:flex;gap:12px;align-items:center"><div class="th none" style="width:60px;height:60px">'+silFor(r.fam)+'</div><div class="big" style="min-width:0">'+esc(r.bg||r.en||r.la)+'</div></div>'+
+    (()=>{const n=new Set(rs.map(o=>o.date)).size,t=rankOf(n),nx=RANKS[t],pv=t?RANKS[t-1][0]:0;
+      return '<div style="display:flex;gap:12px;align-items:center"><div class="th none rk'+t+'" style="width:60px;height:60px">'+silFor(r.fam)+'</div><div class="big" style="min-width:0">'+esc(r.bg||r.en||r.la)+'</div></div>'+
+        '<div class="rkline">'+rankLine(n)+'</div>'+(nx?'<div class="bdp rkbar"><i style="width:'+Math.round(100*(n-pv)/(nx[0]-pv))+'%"></i></div>':'');})()+
     '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':'',r.fam?esc(r.fam):''].filter(Boolean).join(' · ')+'</div>'+
     (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
     '<h4>Доказателства</h4><div class="row"><span>чух</span><span>'+fd(o=>o.h)+'</span></div>'+
@@ -1986,7 +2003,7 @@ const BDEF=[
   BD('bigout','Богат излет','field','видове на един излет',[25,45,70],R=>maxSize(bySet(R,o=>o.sess||'',key))),
   BD('bigday','Голям ден','field','видове за един ден',[30,60,100],R=>maxSize(bySet(R,o=>o.date,key))),
   BD('species','Ловец на видове','list','видове в дневника',[50,150,300],R=>new Set(R.map(key).filter(Boolean)).size),
-  BD('fams','Семейства','list','семейства с поне един вид (от 59)',[15,30,45],R=>new Set(R.map(wfam).filter(Boolean)).size),
+  BD('fams','Семейства','list','семейства с поне един вид',[15,30,45],R=>new Set(R.map(wfam).filter(Boolean)).size),
   BD('seasons','Четири сезона','seas','видове във всеки от четирите сезона',[5,25,60],R=>Object.values(bySet(R,key,o=>SEAS4(+o.date.slice(5,7)))).filter(x=>x.size===4).length,OLDB.seasons.icon),
   BD('year12','Цяла година','seas','видове във всеки от 12-те месеца',[5,15,30],R=>Object.values(bySet(R,key,o=>o.date.slice(5,7))).filter(x=>x.size===12).length),
   BD('winter','Зимни гости','seas','видове през една зима (дек.–фев.)',[25,50,75],R=>maxSize(bySet(R.filter(o=>{const m=+o.date.slice(5,7);return m===12||m<=2;}),o=>+o.date.slice(0,4)-(+o.date.slice(5,7)===12?0:1),key))),
@@ -2000,7 +2017,7 @@ const BDEF=[
   BD('bravo','Браво!','soc','„Браво“ — дадени и получени',[25,125,500],()=>ME?SOC.filter(s=>s.kind==='bravo'&&(s.author===ME.id)!==(s.owner===ME.id)).length:0),
   BD('talk','Събеседник','soc','твои коментари към излети на приятели',[10,50,200],()=>ME?SOC.filter(s=>s.kind==='comment'&&s.author===ME.id&&s.owner!==ME.id).length:0),
   ...['Грабливи','Патици и гъски','Чайки и рибарки','Чапли и щъркели','Кълвачи','Сови','Синигери','Чинки'].map(f=>{const n=GSZ(f);
-    return BD('g:'+f,f,'fam','видове от групата (в списъка има '+n+')',[Math.ceil(n/3),Math.ceil(2*n/3),Math.ceil(.9*n)],R=>new Set(R.filter(o=>grp(o)===f).map(key)).size);})];
+    return BD('g:'+f,f,'fam','видове от групата',[Math.ceil(n/3),Math.ceil(2*n/3),Math.ceil(.9*n)],R=>new Set(R.filter(o=>grp(o)===f).map(key)).size);})];
 const tierOf=(d,v)=>d.g.filter(x=>v>=x).length;
 function tiersNow(){const R=SURE(),out={};for(const d of BDEF){const v=d.v(R)||0;out[d.id]={v,t:tierOf(d,v)};}return out;}
 const tierKeys=T=>Object.entries(T).flatMap(([id,s])=>Array.from({length:s.t},(_,i)=>id+':'+(i+1)));
@@ -2094,7 +2111,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-28.4';
+const VER='2026-10-28.5';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

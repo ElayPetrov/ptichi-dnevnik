@@ -33,5 +33,6 @@ run alt      python3 test_alt.py 8967
 run feed     timeout 700 python3 test_feed.py 8968
 run notify   python3 test_notify.py 8969
 run badges   python3 test_badges.py 8970
+run ranks    python3 test_ranks.py 8971
 printf '%-9s %s of 4 save taps landed\n' tap "$(python3 tap_test.py 8950 ptichi-dnevnik.html | grep -c "'saved'")"
 printf '%-9s ' sun; python3 sun_check.py | tail -1
