@@ -921,6 +921,9 @@ function spDays(){const m={};for(const o of SURE()){const k=key(o);if(k)(m[k]=m[
 const rankOf=n=>RANKS.filter(r=>n>=r[0]).length;
 function rankLine(n){const t=rankOf(n),nx=RANKS[t];
   return (t?'<span class="rkt rk'+t+'">'+RANKS[t-1][1]+'</span> ':'')+n+(n===1?' ден':' дни')+' с вида'+(nx?' · още '+(nx[0]-n)+' до „'+nx[1]+'“':'');}
+// „назад“ връща списъка там, докъдето беше стигнал — не най-горе (вид от „Моите видове“, дневник на приятел от лентата)
+const backY={};
+function backTo(k){const y=backY[k];backY[k]=null;if(y==null)return;window.scrollTo({top:y});requestAnimationFrame(()=>window.scrollTo({top:y}));}
 function renderLife(el){
   if(spSel)return renderSpecies(el,spSel);
   let arr=Object.values(speciesMap());const ql=q.trim().toLowerCase();
@@ -1918,9 +1921,9 @@ document.addEventListener('click',e=>{
   const ocd=e.target.closest('[data-ocard]');
   if(ocd){outCard(ocd.closest('[data-out]').dataset.out);return;}
   if(e.target.closest('[data-spcard]')){spCard(spSel);return;}
-  if(e.target.closest('[data-spback]')){spSel=null;render();return;}
+  if(e.target.closest('[data-spback]')){spSel=null;render();backTo('sp');return;}
   const spc=e.target.closest('.sp[data-k]');
-  if(spc&&!e.target.closest('.th img')){spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
+  if(spc&&!e.target.closest('.th img')){backY.sp=window.scrollY;spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
   const plr=e.target.closest('[data-plren]');
   if(plr){renamePlace(plr.dataset.plren,document.getElementById('pl-name').value);return;}
   const plh=e.target.closest('[data-pl]');
@@ -2133,7 +2136,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-29.1';
+const VER='2026-10-29.2';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -2493,8 +2496,8 @@ document.addEventListener('click',async e=>{
   if(e.target.closest('[data-feedmore]')){FEEDN+=20;render();return;}
   const fcc=e.target.closest('[data-fc]');
   if(fcc&&!e.target.closest('button,a,input,.th,.ph,.oumap,.fwho,.cms')){openFeed=openFeed===fcc.dataset.fc?null:fcc.dataset.fc;render();return;}
-  const fb=e.target.closest('[data-frback]');if(fb){fsel=null;render();return;}
-  const fr=e.target.closest('[data-fr]');if(fr){fsel=fr.dataset.fr;view='friends';for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v==='friends');render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
+  const fb=e.target.closest('[data-frback]');if(fb){fsel=null;render();backTo('fr');return;}
+  const fr=e.target.closest('[data-fr]');if(fr){backY.fr=view==='friends'&&!fsel?window.scrollY:null;fsel=fr.dataset.fr;view='friends';for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v==='friends');render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
   const uf=e.target.closest('[data-unfan]');
   if(uf){if(confirm('Да не вижда повече дневника ти?')){await SB.from('viewers').delete().eq('owner',ME.id).eq('viewer',uf.dataset.unfan);await loadFriends();}return;}
   const a=e.target.closest('[data-sb]');if(!a)return;const act=a.dataset.sb,v=id=>(document.getElementById(id)||{}).value||'';
