@@ -16,7 +16,7 @@ try:
   pg.on('pageerror',lambda e:errs.append(str(e)));pg.on('dialog',lambda d:(asked.append(d.message),d.accept() if answer[0]=='accept' else d.dismiss()))
   pg.route('https://cdnjs.cloudflare.com/**',lambda r:r.abort())   # no map needed here
   pg.add_init_script("if(!localStorage.getItem('bird-journal-v3')){localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-outings',%s);}"%(json.dumps(json.dumps(data,ensure_ascii=False)),json.dumps(json.dumps(outs,ensure_ascii=False))))
-  pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(300);pg.click('.tab[data-v="places"]');pg.wait_for_timeout(200)
+  pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(300);pg.click('.tab[data-v="map"]');pg.wait_for_timeout(200)
   names=lambda:pg.evaluate("[...document.querySelectorAll('.pl .nm')].map(e=>e.textContent)")
   def ren(k,nm,ok=True):
     pg.click(f'.plh[data-pl="{k}"]');pg.wait_for_timeout(100);answer[0]='accept' if ok else 'dismiss';pg.fill('#pl-name',nm);pg.click('[data-plren]');pg.wait_for_timeout(200)

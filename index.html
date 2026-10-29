@@ -68,7 +68,7 @@ h1{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:clamp(28px,6vw,4
 .st{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:11px 6px;text-align:center}
 .st b{display:block;font-family:Fraunces,Georgia,serif;font-size:25px;line-height:1.1;font-weight:500}
 .st span{font-size:10px;color:var(--mut);letter-spacing:.05em;text-transform:uppercase}
-.st.h b{color:var(--h)} .st.s b{color:var(--s)} .st.p b{color:var(--p)}
+.st.d b{color:var(--accent)} .st.h b{color:var(--h)} .st.s b{color:var(--s)} .st.p b{color:var(--p)}
 
 .tabs{display:flex;gap:5px;background:var(--bg2);padding:4px;border-radius:12px;margin-bottom:14px;
   overflow-x:auto;scrollbar-width:none}
@@ -506,6 +506,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="st h"><b id="n-h">0</b><span>само чути</span></div>
   <div class="st s"><b id="n-s">0</b><span>видени</span></div>
   <div class="st p"><b id="n-p">0</b><span>снимани</span></div>
+  <div class="st d" title="дни със записи през последните 365 дни"><b id="n-d">0</b><span>дни на терен</span></div>
 </div>
 <div class="bak" id="bakNag"><span id="bakNagTxt"></span><button type="button" class="btn" id="bakNow">направи сега</button></div>
 
@@ -515,7 +516,6 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <button class="tab" role="tab" data-v="life" aria-selected="false">Моите видове</button>
   <button class="tab" role="tab" data-v="outs" aria-selected="false">Излети</button>
   <button class="tab" role="tab" data-v="map" aria-selected="false">Карта</button>
-  <button class="tab" role="tab" data-v="places" aria-selected="false">Места</button>
   <button class="tab" role="tab" data-v="phen" aria-selected="false">Фенология</button>
   <button class="tab" role="tab" data-v="badges" aria-selected="false">Значки</button>
 </div>
@@ -808,7 +808,8 @@ function stats(){const m=speciesMap();const v=Object.values(m).map(r=>r.L);
   document.getElementById('n-sp').textContent=v.length;
   document.getElementById('n-h').textContent=v.filter(x=>x===1).length;
   document.getElementById('n-s').textContent=v.filter(x=>x>=2).length;
-  document.getElementById('n-p').textContent=v.filter(x=>x===3).length;}
+  document.getElementById('n-p').textContent=v.filter(x=>x===3).length;
+  const t0=dayNum(today());document.getElementById('n-d').textContent=new Set(SURE().map(o=>o.date).filter(d=>{const n=t0-dayNum(d);return n>=0&&n<365;})).size;}
 function pass(o){const ql=q.trim().toLowerCase();
   if(ql&&!((o.bg+' '+o.en+' '+o.la+' '+(o.place||'')+' '+(o.note||'')+' '+(o.alt||[]).join(' ')).toLowerCase().includes(ql)))return false;
   if(filt==='h'&&!(o.h&&!o.s&&!o.p))return false;
@@ -839,7 +840,7 @@ function render(){
   if(view==='log')return renderLog(el);
   if(view==='life')return renderLife(el);
   if(view==='phen')return renderPhen(el);
-  if(view==='map')return renderMap(el);
+  if(view==='map'||view==='places'){renderMap(el);appendPlaces(el);return;}   // Места е под картата
   if(view==='outs')return renderOuts(el);
   return renderPlaces(el);
 }
@@ -1510,6 +1511,10 @@ function placeDetail(r){const sp={};for(const o of r.rs){const k=key(o);if(!k)co
     '<div class="sl">'+Object.values(sp).sort((a,b)=>b.n-a.n||a.nm.localeCompare(b.nm,'bg')).map(x=>'<span>'+esc(x.nm)+(x.n>1?' ·'+x.n:'')+'</span>').join('')+'</div>'+
     '<div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(human(o.date).replace(/ \d{4}$/,''))+(o.time?' '+esc(o.time):'')+'</span><span class="n">'+
       esc(o.bg||o.en||o.la)+(o.count?' · '+esc(o.count):'')+'</span><button type="button" data-ed="'+o.id+'">промени</button></div>').join('')+'</div></div>';}
+function appendPlaces(el){const h=document.createElement('h3');h.className='bdsec';h.textContent='Места';
+  const d=document.createElement('div');d.id='plsec';el.append(h,d);renderPlaces(d);}
+// отваряне на място прерисува само списъка — картата горе остава където си я оставил
+function redrawPlaces(){const d=document.getElementById('plsec');if(d)renderPlaces(d);else render();}
 function renderPlaces(el){const arr=placesList();if(plMap){try{plMap.remove();}catch(e){}plMap=null;}
   el.innerHTML=arr.map(r=>'<div class="pl'+(openPl===r.k?' on':'')+(r.named?'':' unnamed')+'"><div class="plh" data-pl="'+esc(r.k)+'"><div>'+
     '<div class="nm">'+esc(r.name)+'</div><div class="meta">'+(r.named?'':r.none?'':'<span class="tag h">без име</span> ')+human(r.first)+
@@ -1927,7 +1932,7 @@ document.addEventListener('click',e=>{
   const plr=e.target.closest('[data-plren]');
   if(plr){renamePlace(plr.dataset.plren,document.getElementById('pl-name').value);return;}
   const plh=e.target.closest('[data-pl]');
-  if(plh){openPl=openPl===plh.dataset.pl?null:plh.dataset.pl;render();if(openPl){const c=document.querySelector('.pl.on');if(c)c.scrollIntoView({block:'nearest'});}return;}
+  if(plh){openPl=openPl===plh.dataset.pl?null:plh.dataset.pl;redrawPlaces();if(openPl){const c=document.querySelector('.pl.on');if(c)c.scrollIntoView({block:'nearest'});}return;}
   const ymt=e.target.closest('[data-ymt]');
   if(ymt){const g=ymt.parentElement,open=g.classList.contains('shut');g.classList.toggle('shut',!open);ymt.setAttribute('aria-expanded',open);
     if(!q.trim()&&filt==='all')setDay(ymt.dataset.ymt,open);if(open)loadPhotos();return;}
@@ -2136,7 +2141,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-29.2';
+const VER='2026-10-29.3';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

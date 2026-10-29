@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-433 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+439 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -48,6 +48,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_ranks.py | 10 | how well you know each species: bronze „Познат“ 10, silver „Приятел“ 50, gold „Познавач“ 150 days, counted by days not records, species outside the list too, sure records only, the legend, the species page; badge cards with progress and description apart |
 | test_store.py | 7 | the journal, outings, friends' copies and reactions moving from localStorage to IndexedDB on first opening (localStorage freed only after a successful write), new records stored there, reload, and a 40,000-record journal far beyond the old ~5 MB limit |
 | test_back.py | 5 | „назад“ from a species page returns Моите видове to where you were, and back from a friend's journal returns the feed to where you were |
+| test_merge.py | 6 | the sixth box „дни на терен“ (days with sure records in the last 365 days) and the six boxes in two rows; Места under the map in Карта, opening a place without redrawing the map |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

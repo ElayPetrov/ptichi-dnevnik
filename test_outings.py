@@ -33,7 +33,7 @@ try:
   check('C3 Дневник shows it with a ? tag and no нов вид', (card.locator('.tag.u').count(),card.locator('.tag.nw').count()), (1,0))
   pg.click('.tab[data-v="life"]')
   check('C4 life list leaves it out but names it below', (pg.locator('.sp').count(),'Само с несигурни записи (не се броят): Белоглав лешояд' in pg.inner_text('#view')), (1,True))
-  pg.click('.tab[data-v="places"]'); check('C5 places count only sure records', pg.locator('.pl').count(), 1)
+  pg.click('.tab[data-v="map"]'); check('C5 places count only sure records', pg.locator('.pl').count(), 1)
   pg.click('.tab[data-v="phen"]'); check('C6 first dates ignore it', 'Белоглав' in pg.inner_text('#view'), False)
   pg.click('.tab[data-v="log"]')
   rid=rec['id']; pg.click(f'[data-ed="{rid}"]')

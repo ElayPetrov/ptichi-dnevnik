@@ -39,7 +39,7 @@ try:
   check('1e Latin-only species gets a title', any(c[0]=='Larus michahellis' for c in cards), True)
   pg.click('#filters .chip[data-f="ylist"]'); check('1f the year-list filter keys by species', pg.locator('.sp').count(), 4)
   tab(pg,'phen'); pg.click('[data-pm="grid"]'); check('1g phenology rows', pg.locator('table.ph2 tbody tr').count(), 4)
-  tab(pg,'places'); pl=dict(pg.eval_on_selector_all('.pl',"els=>els.map(e=>[e.querySelector('.nm').textContent,e.querySelector('.cnt').firstChild.textContent])"))
+  tab(pg,'map'); pl=dict(pg.eval_on_selector_all('.pl',"els=>els.map(e=>[e.querySelector('.nm').textContent,e.querySelector('.cnt').firstChild.textContent])"))
   check('1h places count merged species', pl, {'Копринка':'2','Розариум':'1','Язовир':'1'})
   check('1i no page errors', pg.errs, [])
   pg=page(DATA+[R(id=8,date='2026-08-01',bg='Сврака',la='Garrulus glandarius',place='Копринка')])
