@@ -656,13 +656,13 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 <dialog id="ckDlg" class="pickdlg outdlg" aria-label="Списък">
   <div class="pickhead">Списък <span id="ck-sub"></span></div>
   <div class="odb">
-    <div class="geo ckadd"><input id="ck-in" list="bgnames" placeholder="добави птица в списъка"><button type="button" class="btn" id="ck-add">Добави</button></div>
-    <div class="msg" id="ck-msg"></div><div id="ck-sug"></div>
     <div class="cktools" id="ck-tools"><button type="button" class="chip" id="ck-mode"></button><button type="button" class="chip" id="ck-undo">отмени последното</button></div>
     <div id="ck-list"></div>
+    <div class="geo ckadd"><input id="ck-in" list="bgnames" placeholder="добави птица в списъка"><button type="button" class="btn" id="ck-add">Добави</button></div>
+    <div class="msg" id="ck-msg"></div><div id="ck-sug"></div>
     <div class="fbtns"><button type="button" class="btn" id="ck-clear">изчисти списъка</button></div>
   </div>
-  <div class="pickfoot"><span id="ck-gps" class="note2" style="max-width:none"></span><span style="flex:1"></span><button type="button" class="btn pri" id="ck-close">Готово</button></div>
+  <div class="pickfoot"><span id="ck-gps" class="note2" style="max-width:none"></span><span style="flex:1"></span><button type="button" class="btn pri" id="ck-close" autofocus>Готово</button></div>
 </dialog>
 <dialog id="outDlg" class="pickdlg outdlg" aria-label="Излет">
   <div class="pickhead">Излет</div>
@@ -1863,6 +1863,7 @@ form.onsubmit=e=>{e.preventDefault();
     saveSess();render();openForm(null);
     document.getElementById('f-bg').focus();
   } else {closeForm();render();}
+  if(saved)ckSaved(saved.id);   // описана в „Списък“ партида се затваря — следващите докосвания са нов запис
   if(isNew&&saved)yayPush(yayNew(saved,nAfter));else if(yearFirst)yayPush(yayYear(saved));
   if(ok&&!rec.u){if(ok&&!rec.u&&!edit){const t=tgList().find(t=>tgMatch(rec,t)&&!OBS.some(o=>o.id!==rec.id&&!o.u&&tgMatch(o,t)));
     if(t)yayPush({cls:'trip',cf:24,ms:6500,html:'<div class="yaypic">'+silFor(rec.fam)+'</div><div class="yaytx"><div class="yayt">Цел постигната!</div><div class="yaynm">'+esc(t.bg||t.la)+'</div><div class="yaym">отбелязана в „Цели“</div></div>'});}
@@ -2154,6 +2155,14 @@ document.getElementById('ebird').onclick=openEbird;
 // Твоят списък с птици — сам го съставяш (предложенията влизат само с твое докосване) и той остава до следващия излет.
 // По време на излет докосване = +1 с часа и мястото в момента; на повече от ~300 м от предишния запис на същия вид
 // в излета става нов запис, иначе бройката на най-близкия расте. „−“ и „отмени последното“ поправят; задържане = формата.
+// Партиди: за всяка птица и режим (видях / чух) — един „отворен“ запис от докосванията. Докосванията растат само в него
+// (никога в запис от формата); задържането го отваря във формата с бройката; запазиш ли го — партидата се затваря
+// и следващите докосвания започват нов запис. На повече от ~300 м — също нова партида.
+const KCKB='bird-journal-ckbatch';let CKB=lsGet(KCKB,null)||{s:null,m:{}};
+const ckBK=sp=>nrm(sp.la||sp.bg)+'|'+(ckHeard?'h':'s');
+function ckSyncB(){if(!SESS)return;if(CKB.s!==SESS.id){CKB={s:SESS.id,m:{}};lsSet(KCKB,CKB);}}
+function ckOpenB(sp){ckSyncB();const id=CKB.m[ckBK(sp)];return id==null?null:OBS.find(o=>o.id===id&&SESS&&o.sess===SESS.id)||null;}
+function ckSaved(id){let ch=0;for(const k of Object.keys(CKB.m||{}))if(CKB.m[k]===id){delete CKB.m[k];ch++;}if(ch)lsSet(KCKB,CKB);}
 const KCK='bird-journal-checklist';let CKL=lsGet(KCK,[])||[],ckWatch=null,ckPos=null,ckAcc=null,ckUndo=[],ckHeard=false,ckLong=false;
 function ckSave(){lsSet(KCK,CKL);}
 function ckAddName(v){v=(v||'').trim();if(!v)return '';const e=listFind('bg',v)||listFind('la',v)||listFind('en',v);
@@ -2168,21 +2177,20 @@ function ckSuggest(){const here=ckPos||myGeo(),have=new Set(CKL.map(x=>nrm(x.la|
     if(!o.u&&here&&o.geo&&kmBetween(here,o.geo)<=5&&t0-dayNum(o.date)<=14)add(o,2);
   return [...m.values()].sort((a,b)=>b.n-a.n||a.c.bg.localeCompare(b.c.bg,'bg')).slice(0,14).map(v=>v.c);}
 const ckRecs=sp=>SESS?OBS.filter(o=>o.sess===SESS.id&&!o.u&&tgMatch(o,sp)):[];
-function ckTap(i){if(!SESS)return;const sp=CKL[i];if(!sp)return;const pos=ckPos,mine=ckRecs(sp);let rec=null;
-  if(mine.length){if(pos&&mine.some(o=>o.geo)){const n=mine.filter(o=>o.geo).map(o=>({o,km:kmBetween(pos,o.geo)})).sort((a,b)=>a.km-b.km)[0];if(n.km<=0.3)rec=n.o;}
-    else rec=[...mine].sort(newest)[0];}
+function ckTap(i){if(!SESS)return;const sp=CKL[i];if(!sp)return;const pos=ckPos;let rec=ckOpenB(sp);
+  if(rec&&pos&&rec.geo&&kmBetween(pos,rec.geo)>0.3)rec=null;   // отишъл си по-нататък — нова партида
   const before=new Set(SURE().map(key).filter(Boolean)).size;
   if(rec){ckUndo.push({id:rec.id,prev:rec.count});rec.count=String((cntNum(rec.count)||1)+1);rec.upd=Date.now();}
   else{const now=new Date();rec={id:Date.now(),date:today(),time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),
       place:SESS.place||'',count:'1',bg:sp.bg,en:sp.en||'',la:sp.la||'',fam:sp.fam||'',note:'',h:ckHeard?1:0,s:ckHeard?0:1,p:0,beh:[],geo:pos||null,photo:null,sess:SESS.id,upd:Date.now()};
-    OBS.push(rec);ckUndo.push({id:rec.id,prev:null});}
+    OBS.push(rec);ckUndo.push({id:rec.id,prev:null});CKB.m[ckBK(sp)]=rec.id;lsSet(KCKB,CKB);}
   SESS.at=Date.now();saveSess();save();
   const after=new Set(SURE().map(key).filter(Boolean)).size;if(after>before)yayPush(yayNew(rec,after));
   ckDraw();}
-function ckMinus(i){const r=[...ckRecs(CKL[i]||{})].sort(newest)[0];if(!r)return;ckUndo.push({id:r.id,prev:r.count,obj:{...r}});
-  const n=(cntNum(r.count)||1)-1;if(n<=0)OBS=OBS.filter(o=>o.id!==r.id);else{r.count=String(n);r.upd=Date.now();}save();ckDraw();}
+function ckMinus(i){const sp=CKL[i];if(!sp)return;const r=ckOpenB(sp);if(!r)return;ckUndo.push({id:r.id,prev:r.count,obj:{...r},bk:ckBK(sp)});
+  const n=(cntNum(r.count)||1)-1;if(n<=0){OBS=OBS.filter(o=>o.id!==r.id);ckSaved(r.id);}else{r.count=String(n);r.upd=Date.now();}save();ckDraw();}
 function ckUndoLast(){const u=ckUndo.pop();if(!u)return;const r=OBS.find(o=>o.id===u.id);
-  if(u.prev===null)OBS=OBS.filter(o=>o.id!==u.id);else if(r){r.count=u.prev;r.upd=Date.now();}else if(u.obj)OBS.push({...u.obj,upd:Date.now()});
+  if(u.prev===null){OBS=OBS.filter(o=>o.id!==u.id);ckSaved(u.id);}else if(r){r.count=u.prev;r.upd=Date.now();}else if(u.obj){OBS.push({...u.obj,upd:Date.now()});if(u.bk){CKB.m[u.bk]=u.id;lsSet(KCKB,CKB);}}   // върнатият запис отново е отворената партида
   save();ckDraw();}
 function ckDraw(){const L=document.getElementById('ck-list');if(!L)return;
   document.getElementById('ck-sub').textContent=SESS?'· излет':'';
@@ -2193,9 +2201,9 @@ function ckDraw(){const L=document.getElementById('ck-list');if(!L)return;
   document.getElementById('ck-sug').innerHTML=sg.length?'<div class="note2" style="max-width:none">Предложения — докосни, за да добавиш:</div><div class="cksug">'+
     sg.map(c=>'<button type="button" class="chip" data-cksug="'+esc(c.bg)+'">+ '+esc(c.bg)+'</button>').join('')+'</div>':'';
   L.innerHTML=(SESS?'':'<div class="note2" style="max-width:none">Започни излет („Излет“), за да броиш. Списъкът остава и за следващия път.</div>')+
-    (CKL.length?CKL.map((sp,i)=>{const rs=ckRecs(sp),n=rs.reduce((a,o)=>a+(cntNum(o.count)||1),0);
+    (CKL.length?CKL.map((sp,i)=>{const rs=ckRecs(sp),n=rs.reduce((a,o)=>a+(cntNum(o.count)||1),0),ob=SESS?ckOpenB(sp):null;
       return '<div class="ckr'+(n?' on':'')+'"><button type="button" class="ckn" data-cktap="'+i+'"'+(SESS?'':' disabled')+'><b>'+esc(sp.bg)+'</b>'+
-        (rs.length>1?'<small>'+rs.length+' места</small>':'')+'</button><span class="ckc">'+(SESS?n:'')+'</span>'+
+        (ob?'<small>сега '+(cntNum(ob.count)||1)+(ckHeard?' чути':'')+' — задръж за описание</small>':rs.length?'<small>'+rs.length+(rs.length===1?' запис':' записа')+'</small>':'')+'</button><span class="ckc">'+(SESS?n:'')+'</span>'+
         (SESS?'<button type="button" class="ckb" data-ckminus="'+i+'" aria-label="едно по-малко">−</button>':'')+
         '<button type="button" class="ckb ckx" data-ckdel="'+i+'" aria-label="махни от списъка">×</button></div>';}).join(''):
      '<div class="note2" style="max-width:none">Списъкът е празен. Добави птиците, които очакваш — по име или от предложенията.</div>');}
@@ -2216,8 +2224,9 @@ const ckL=document.getElementById('ck-list'),ckS=document.getElementById('ck-sug
 ckS.addEventListener('click',e=>{const b=e.target.closest('[data-cksug]');if(b){ckAddName(b.dataset.cksug);ckDraw();}});
 let ckTimer=null;
 ckL.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-cktap]');if(!b||!SESS)return;ckLong=false;
-  ckTimer=setTimeout(()=>{ckLong=true;const sp=CKL[+b.dataset.cktap];ckClose();
-    openForm(null,{date:today(),time:'',place:SESS.place||'',geo:ckPos,sess:SESS.id});fld('bg').value=sp.bg;fld('bg').dispatchEvent(new Event('change'));
+  ckTimer=setTimeout(()=>{ckLong=true;const sp=CKL[+b.dataset.cktap],ob=ckOpenB(sp);ckClose();
+    if(ob)openForm(ob);
+    else{openForm(null,{date:today(),time:'',place:SESS.place||'',geo:ckPos,sess:SESS.id});fld('bg').value=sp.bg;fld('bg').dispatchEvent(new Event('change'));}
     window.scrollTo({top:0,behavior:'smooth'});},550);});
 for(const ev of ['pointerup','pointerleave','pointercancel'])ckL.addEventListener(ev,()=>clearTimeout(ckTimer));
 ckL.addEventListener('click',e=>{const t=e.target.closest('[data-cktap]'),m=e.target.closest('[data-ckminus]'),d=e.target.closest('[data-ckdel]');
@@ -2376,7 +2385,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-29.6';
+const VER='2026-10-29.7';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
