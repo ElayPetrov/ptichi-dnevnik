@@ -362,7 +362,14 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .cmr b{flex:0 0 auto} .cmr button{margin-left:auto;background:none;border:0;color:var(--mut);cursor:pointer;font-size:15px}
 .cmn{display:flex;gap:8px;margin-top:8px} .cmn input{flex:1;min-width:0;margin:0}
 .fcr{margin-top:10px;cursor:default} .fmore{font-size:12px;color:var(--mut);margin-top:8px;text-align:center}
-.outdlg{height:auto;max-height:92vh} .odb{padding:4px 14px 0;overflow:auto}
+.outdlg{height:auto;max-height:92vh}
+.tip{display:flex;gap:10px;align-items:center;background:color-mix(in srgb,var(--s) 9%,var(--card));border:1px dashed var(--s);border-radius:12px;padding:9px 11px;margin:0 0 10px;font-size:13.5px;line-height:1.4}
+.tip span{flex:1;min-width:0} .tip .btn{flex:0 0 auto;padding:6px 11px;font-size:13px}
+#wlDlg{height:auto;max-height:90vh}
+.wldlg h2{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:21px;margin:6px 0 10px} .wldlg p{margin:0 0 10px;line-height:1.5} .wldlg ul{margin:0 0 10px 18px;padding:0;line-height:1.5}
+.wldlg .mut{color:var(--mut);font-size:13.5px} .wldots{display:flex;gap:5px;margin-left:8px} .wldots i{width:7px;height:7px;border-radius:50%;background:var(--line2)} .wldots i.on{background:var(--s)}
+.howto p{font-size:13.5px;line-height:1.45;margin:0 0 8px;color:var(--ink)}
+::placeholder{color:var(--mut);opacity:.55} .odb{padding:4px 14px 0;overflow:auto}
 .invb{display:flex;gap:10px;align-items:center;background:color-mix(in srgb,var(--s) 10%,var(--card));border:1px solid var(--s);border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:14px}
 .invb span{flex:1;min-width:0}
 .impr{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer}
@@ -549,6 +556,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
       <button type="button" class="btn" id="sessEnd">приключи</button>
     </div>
     <div class="sesslist" id="sessList"></div>
+    <div id="tip-sess"></div>
     <div class="sessend">
       <div class="g2"><div class="fg"><label>Начало</label><input type="time" id="se-start"></div>
         <div class="fg"><label>Край</label><input type="time" id="se-end"></div></div>
@@ -568,14 +576,15 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 
 <form class="form" id="form" autocomplete="off">
   <!-- редът следва наблюдението: птицата (колко, коя, сигурно ли, какво правеше), после кога и къде (обикновено попълнени), бележка и снимка -->
+  <div id="tip-form"></div>
   <div class="gcn">
     <div class="fg"><label>Брой</label><input id="f-count" inputmode="numeric" placeholder="1"></div>
-    <div class="fg"><label>Българско име</label><input id="f-bg" list="bgnames" placeholder="Черна червеноопашка"></div>
+    <div class="fg"><label>Българско име</label><input id="f-bg" list="bgnames" placeholder="напр. Черна червеноопашка"></div>
   </div>
   <datalist id="bgnames"></datalist>
   <div class="g2">
-    <div class="fg"><label>Latin</label><input id="f-la" list="lanames" placeholder="Phoenicurus ochruros"></div>
-    <div class="fg"><label>English</label><input id="f-en" list="ennames" placeholder="Black Redstart"></div>
+    <div class="fg"><label>Latin</label><input id="f-la" list="lanames" placeholder="напр. Phoenicurus ochruros"></div>
+    <div class="fg"><label>English</label><input id="f-en" list="ennames" placeholder="напр. Black Redstart"></div>
   </div>
   <datalist id="ennames"></datalist><datalist id="lanames"></datalist>
   <div class="fg"><label>Семейство / група</label><select id="f-fam"></select></div>
@@ -586,6 +595,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <button type="button" class="sb p" data-s="p">Снимах</button>
   </div>
   <div class="fg"><button type="button" class="bh" id="f-unsure" aria-pressed="false">? не съм сигурен — няма да се брои</button></div>
+  <div id="tip-unsure"></div>
   <div class="fg" id="f-alt-row" style="display:none"><label>Може да е и</label>
     <div class="altchips" id="f-alt"></div>
     <div class="geo"><input id="f-alt-in" list="bgnames" placeholder="друг вид, който може да е" style="flex:1;min-width:160px"><button type="button" class="btn" id="f-alt-add">+ добави</button></div>
@@ -598,7 +608,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <div class="fg"><label>Дата</label><input type="date" id="f-date" required></div>
     <div class="fg"><label>Час</label><input type="time" id="f-time"></div>
   </div>
-  <div class="fg"><label>Място</label><input id="f-place" list="places" placeholder="Розариум, Казанлък"></div>
+  <div class="fg"><label>Място</label><input id="f-place" list="places" placeholder="напр. Розариум, Казанлък"></div>
   <datalist id="places"></datalist>
   <div class="fg"><label>Координати (по избор)</label>
     <div class="geo"><input id="f-geo" placeholder="42.61985, 25.39560 — или залепи връзка от Google Maps" style="flex:1;min-width:200px">
@@ -629,7 +639,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 <div id="view"></div>
 
 <div class="foot">
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
+  <div id="footBtns" style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn" id="exp">Експорт CSV</button>
     <button class="btn" id="ebird">Към eBird</button>
     <button class="btn" id="bak">Резервно копие</button>
@@ -663,7 +673,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 </dialog>
 <dialog id="ckDlg" class="pickdlg outdlg" aria-label="Списък">
   <div class="pickhead">Списък <span id="ck-sub"></span></div>
-  <div class="odb">
+  <div class="odb"><div id="tip-ck"></div>
     <div class="cktools" id="ck-tools"><button type="button" class="chip" id="ck-mode"></button><button type="button" class="chip" id="ck-undo">отмени последното</button></div>
     <div id="ck-list"></div>
     <div class="geo ckadd"><input id="ck-in" list="bgnames" placeholder="добави птица в списъка"><button type="button" class="btn" id="ck-add">Добави</button></div>
@@ -671,6 +681,11 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <div class="fbtns"><button type="button" class="btn" id="ck-clear">изчисти списъка</button></div>
   </div>
   <div class="pickfoot"><span id="ck-gps" class="note2" style="max-width:none"></span><span style="flex:1"></span><button type="button" class="btn pri" id="ck-close" autofocus>Готово</button></div>
+</dialog>
+<dialog id="wlDlg" class="pickdlg outdlg wldlg" aria-label="Добре дошъл">
+  <div class="odb"><div id="wl-body"></div></div>
+  <div class="pickfoot"><button type="button" class="btn" id="wl-skip">Пропусни</button><span class="wldots" id="wl-dots"></span><span style="flex:1"></span>
+    <button type="button" class="btn" id="wl-prev">Назад</button><button type="button" class="btn pri" id="wl-next" autofocus>Напред</button></div>
 </dialog>
 <dialog id="outDlg" class="pickdlg outdlg" aria-label="Излет">
   <div class="pickhead">Излет</div>
@@ -748,6 +763,7 @@ function sessUI(){
   const b=document.getElementById('sess');if(!b)return;
   if(SESS){b.classList.add('on');b.classList.toggle('open',sessOpen);document.getElementById('sessTxt').setAttribute('aria-expanded',sessOpen);
     if(sessOpen)document.getElementById('sessList').innerHTML=sessListHTML();
+    document.getElementById('tip-sess').innerHTML=tipHTML('sess',TIPTXT.sess);
     const n=new Set(SURE().filter(o=>o.sess===SESS.id).map(key).filter(Boolean)).size;
     document.getElementById('sessTxt').textContent='Излет · '+human(SESS.date)+(SESS.place?' · '+SESS.place:'')+' · '+n+(n===1?' вид':' вида');
     document.getElementById('sessStart').style.display='none';}
@@ -875,23 +891,25 @@ function yearFirsts(){const y=String(new Date().getFullYear());const m={};
 function render(){
   stats();fillLists();sessUI();bakUI();
   const el=document.getElementById('view');
-  document.getElementById('filters').style.display=(view==='log'||(view==='life'&&!spSel))?'':'none';
-  document.getElementById('q').parentElement.style.display=(view==='friends'&&!fsel)||view==='acct'||view==='badges'||view==='goals'?'none':'';   // търсенето не важи за лентата и профила
+  document.querySelector('.stats').style.display=OBS.length?'':'none';   // нулите не казват нищо, преди да има записи
+  document.getElementById('filters').style.display=OBS.length&&(view==='log'||(view==='life'&&!spSel))?'':'none';
+  document.getElementById('q').parentElement.style.display=!OBS.length||(view==='friends'&&!fsel)||view==='acct'||view==='badges'||view==='goals'?'none':'';   // търсенето не важи за лентата и профила
   if(view!=='friends'&&feedVisit)seenCommit();   // излезе ли от лентата — видяното се помни
   if(view!=='badges')badgeVisit=null;
   if(view!=='goals')tgVisit=null;
   paintDots();
-  if(view==='acct')return renderAcct(el);         // профил, код, добавяне на приятели — от кръгчето горе вдясно
+  if(view==='acct'){renderAcct(el);acctExtras(el);return;}         // профил, код, добавяне на приятели — от кръгчето горе вдясно
   if(view==='friends')return renderFriends(el);   // работи и с празен дневник: нов телефон, нов приятел
   if(view==='badges')return renderBadges(el);
   if(view==='goals')return renderGoals(el);       // и целите — работят и с празен дневник     // и значките — новият човек вижда какво може да спечели
   if(!OBS.length){const ih=instHTML();el.innerHTML=(view==='log'?inviteBanner():'')+'<div class="empty"><div class="emptybird">'+BIRDGLYPH+'</div>'+
-    'Още няма записи.<br>Натисни <b>+ Ново наблюдение</b> и впиши първата птица.'+
+    (EMPTYTXT[view]?EMPTYTXT[view]+'<div class="fbtns" style="justify-content:center;margin-top:12px"><button type="button" class="btn" data-first>Запиши първата птица</button></div>':
+     'Още няма записи.<br>Натисни <b>+ Ново наблюдение</b> и впиши първата птица.')+
     (ih?'<div class="inst" style="margin-top:20px">'+ih+'</div>':'')+'</div>';return;}
   if(view==='log')return renderLog(el);
   if(view==='life')return renderLife(el);
-  if(view==='phen')return renderPhen(el);
-  if(view==='map'||view==='places'){renderMap(el);appendPlaces(el);return;}   // Места е под картата
+  if(view==='phen'){renderPhen(el);el.insertAdjacentHTML('afterbegin',tipHTML('phen',TIPTXT.phen));return;}
+  if(view==='map'||view==='places'){renderMap(el);appendPlaces(el);el.insertAdjacentHTML('afterbegin',tipHTML('map',TIPTXT.map));return;}   // Места е под картата
   if(view==='outs')return renderOuts(el);
   return renderPlaces(el);
 }
@@ -939,15 +957,16 @@ function renderLog(el){
     if(o.sess){const k=o.date+'|'+o.sess;if(seen.has(k))continue;seen.add(k);   // излетът стои там, където е първият му запис в деня
       h+=outBlock(o.sess,byDay[o.date].filter(x=>x.sess===o.sess),F);continue;}
     h+=recHTML(o,F);}
-  el.innerHTML=inviteBanner()+onThisDay()+h+'</div></div>'+(multiM?'</div></div>':'')+(multiY?'</div></div>':'');loadPhotos();}
+  const otip=OBS.length>=3&&!SESS&&!OUTS.length&&!OBS.some(o=>o.sess)?tipHTML('outing',TIPTXT.outing):'';
+  el.innerHTML=inviteBanner()+otip+onThisDay()+h+'</div></div>'+(multiM?'</div></div>':'')+(multiY?'</div></div>':'');loadPhotos();}
 function recHTML(o,F){
     return '<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
       // името и бройката заемат свободното място и се пренасят; „промени“ и „×“ стоят вдясно и не се застъпват с тях
       '<div class="oh"><div class="nm">'+esc(o.bg||o.en||o.la)+(o.count?' <span style="color:var(--mut);font-weight:400">· '+esc(o.count)+'</span>':'')+'</div>'+
       '<div class="x"><button data-ed="'+o.id+'" aria-label="промени" title="промени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5 17v3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14.6 7.4l3 3" stroke="currentColor" stroke-width="2"/></svg></button><button data-del="'+o.id+'" aria-label="изтрий" title="изтрий">×</button></div></div>'+
       (o.u&&o.alt&&o.alt.length?'<div class="altnm">или '+o.alt.map(esc).join(' или ')+'</div>':'')+   // другите възможни видове — на свой ред
-      '<div class="meta">'+[o.en?esc(o.en):'',o.la?'<span class="la">'+esc(o.la)+'</span>':''].filter(Boolean).join(' · ')+'</div>'+
-      '<div class="meta">'+[o.time?'🕐 '+esc(o.time)+((r=>r?' ('+r+')':'')(sunRel(o))):'',o.fam?esc(o.fam):'',o.place?'📍 '+esc(o.place):'',
+      '<div class="meta">'+[o.en?esc(o.en):'',o.la?'<span class="la">'+esc(o.la)+'</span>':'',o.fam?esc(o.fam):''].filter(Boolean).join(' · ')+'</div>'+
+      '<div class="meta">'+[o.time?'🕐 '+esc(o.time)+((r=>r?' ('+r+')':'')(sunRel(o))):'',o.place?'📍 '+esc(o.place):'',
         o.geo?'<a href="https://www.google.com/maps?q='+o.geo+'" target="_blank" rel="noopener" style="color:var(--mut)">коорд.</a>':''].filter(Boolean).join(' · ')+'</div>'+
       (o.note?'<div class="note">'+esc(o.note)+'</div>':'')+
       (o.photo?'<div class="ph" data-ph="'+o.photo+'"></div>':'')+
@@ -1651,7 +1670,8 @@ function drawBeh(){
 const form=document.getElementById('form');
 function syncSts(){for(const b of document.querySelectorAll('.sb'))b.classList.toggle('on',!!st[b.dataset.s]);}
 function syncUnsure(){const b=document.getElementById('f-unsure');b.classList.toggle('on',unsure);b.setAttribute('aria-pressed',unsure);
-  document.getElementById('f-alt-row').style.display=unsure?'':'none';drawAlts();}
+  document.getElementById('f-alt-row').style.display=unsure?'':'none';drawAlts();
+  document.getElementById('tip-unsure').innerHTML=unsure?tipHTML('unsure',TIPTXT.unsure):'';}
 // „Може да е и“: при несигурен запис — другите видове, които може да е (като „Горска / Дългопръста дърволазка“).
 // Не броят и не се свързват с вида на записа (не са негови имена). Предлагат се видовете от същия род от списъка —
 // обикновено точно с тях се бъркат. Махне ли се „не съм сигурен“, при запис изчезват и те.
@@ -1752,6 +1772,7 @@ function openForm(o,seed){
   if(o&&o.photo){photo=o.photo;getPhoto(o.photo).then(b=>{if(b){pv.src=URL.createObjectURL(b);pv.style.display='';rm.style.display='';}});}
   else{pv.style.display='none';rm.style.display='none';}
   sessOptions(o?(o.sess||''):seed?(seed.sess||''):(SESS?SESS.id:''));
+  {const t=document.getElementById('tip-form');if(t)t.innerHTML=o?'':tipHTML('form',TIPTXT.form);}
   document.getElementById('savebtn').textContent=o?'Запази промените':'Запиши';
   form.classList.add('on');document.getElementById('toggle').textContent='− Скрий формата';
   document.getElementById('f-bg').focus();}
@@ -2053,6 +2074,9 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-spback]')){spSel=null;render();backTo('sp');return;}
   const spc=e.target.closest('.sp[data-k]');
   if(spc&&!e.target.closest('.th img')){backY.sp=window.scrollY;spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
+  const tpb=e.target.closest('[data-tip]');if(tpb){tipDone(tpb.dataset.tip);const x=tpb.closest('[data-tipbox]');if(x)x.remove();return;}
+  if(e.target.closest('[data-tipsreset]')){TIPS={};lsSet(KTIP,TIPS);openWelcome();return;}
+  if(e.target.closest('[data-first]')){view='log';for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v==='log');render();openForm(null);window.scrollTo({top:0,behavior:'smooth'});return;}
   if(e.target.closest('#tg-add')){tgSubmit();return;}
   if(e.target.closest('#tgx-ok')){tgxSubmit();return;}
   if(e.target.closest('#tgx-no')){document.getElementById('tg-new').style.display='none';return;}
@@ -2211,6 +2235,7 @@ function ckUndoLast(){const u=ckUndo.pop();if(!u)return;const r=OBS.find(o=>o.id
   if(u.prev===null){OBS=OBS.filter(o=>o.id!==u.id);ckSaved(u.id);}else if(r){r.count=u.prev;r.upd=Date.now();}else if(u.obj){OBS.push({...u.obj,upd:Date.now()});if(u.bk){CKB.m[u.bk]=u.id;lsSet(KCKB,CKB);}}   // върнатият запис отново е отворената партида
   save();ckDraw();}
 function ckDraw(){const L=document.getElementById('ck-list');if(!L)return;
+  document.getElementById('tip-ck').innerHTML=tipHTML('ck',TIPTXT.ck);
   document.getElementById('ck-sub').textContent=SESS?'· излет':'';
   document.getElementById('ck-tools').style.display=SESS?'':'none';
   document.getElementById('ck-mode').textContent=ckHeard?'докосване = чух':'докосване = видях';
@@ -2251,6 +2276,61 @@ ckL.addEventListener('click',e=>{const t=e.target.closest('[data-cktap]'),m=e.ta
   if(t){if(ckLong){ckLong=false;return;}ckTap(+t.dataset.cktap);return;}
   if(m){ckMinus(+m.dataset.ckminus);return;}
   if(d){CKL.splice(+d.dataset.ckdel,1);ckSave();ckDraw();}});
+// ---- първи стъпки: добре дошъл, съвети на място, „Как се ползва“ ----
+// Новият човек вижда 4 карти и после по един съвет, когато стигне до нещо ново (всеки веднъж). Който вече има
+// записи или профил при първото пускане на тази версия, не вижда нищо — всичко се смята за видяно.
+// „Покажи съветите отново“ в профила връща всичко.
+const KTIP='bird-journal-tips';let TIPS=lsGet(KTIP,null),wlI=0;
+function tipsInit(){if(TIPS!==null)return;TIPS=(OBS.length||lsGet(KA,null))?{all:1}:{};lsSet(KTIP,TIPS);}
+const tipSeen=id=>!!(TIPS&&(TIPS.all||TIPS[id]));
+function tipDone(id){TIPS=TIPS||{};TIPS[id]=1;lsSet(KTIP,TIPS);}
+function tipHTML(id,txt){return tipSeen(id)?'':'<div class="tip" data-tipbox="'+id+'"><span>'+txt+'</span><button type="button" class="btn" data-tip="'+id+'">Разбрах</button></div>';}
+const TIPTXT={
+  form:'Започни да пишеш името — латинското, английското и групата се попълват сами. Сивите примери в полетата са само за ориентир.',
+  unsure:'Несигурните записи се пазят, но не се броят. Колебаеш се между два вида? Добави другия в „Може да е и“.',
+  outing:'Излизаш за птици? Натисни „Излет“ — записите се събират заедно, а накрая отбелязваш дали си записал всички видове. Пълните списъци са най-ценни за науката.',
+  sess:'Докосни зелената лента, за да видиш записите от излета. За бързо броене — иконката „Списък“ до „Излет“.',
+  ck:'Добави птиците, които очакваш. На излет: докосване = +1, задържане = описание на текущата бройка.',
+  map:'Отдолу са Местата ти. Точка без име? Отвори я и ѝ дай име — записите оттам ще се събират на едно място.',
+  phen:'Тук с времето виждаш кога идват и си отиват птиците около теб — след няколко месеца става интересно.',
+  code:'Дай кода си на приятел — така той вижда дневника ти и може да те кани на излети. Добави и неговия код, за да виждаш неговия.'};
+const WLC=[
+  ()=>'<h2>Добре дошъл в Птичи дневник</h2><p>Записвай птиците, които виждаш и чуваш — бързо, на терен, дори без връзка.</p><p class="mut">Несигурното си остава несигурно, излетите се пазят заедно, а с времето виждаш как се мени годината около теб.</p>',
+  ()=>'<h2>Сложи го на началния екран</h2><p>Така работи без интернет, а GPS-ът — по-точно.</p><p>'+(standalone()?'✓ Вече е на началния ти екран.':
+     instEvt?'<button type="button" class="btn pri" data-inst>Инсталирай</button>':
+     isIOS?'В Safari: <b>Сподели</b> (квадратчето със стрелка) → <b>Add to Home Screen</b>.':'В Chrome: менюто <b>⋮</b> горе вдясно → <b>Добавяне към началния екран</b>.')+'</p>',
+  ()=>'<h2>Профил — по желание, но си струва</h2><p>Без профил дневникът е само на този телефон. С профил:</p><ul><li>копие в облака — изгубиш ли телефона, записите остават;</li>'+
+     '<li>същият дневник на два телефона;</li><li>приятели — виждате си излетите, каните се, давате си „Браво“.</li></ul>'+
+     '<p><b>Как:</b> кръгчето с птичката горе вдясно → име, имейл и парола → „Нов профил“ → потвърди от писмото.</p>'+
+     '<p class="mut">Приятелите, на които дадеш кода си, виждат всичките ти записи — и точните места.</p>'+
+     '<div class="fbtns"><button type="button" class="btn pri" data-wl="acct">Направи профил сега</button><button type="button" class="btn" data-wl="next">По-късно</button></div>',
+  ()=>'<h2>Първата ти птица</h2><p>Запиши която и да е птица — дори врабче от прозореца. Оттам нататък всичко тръгва само.</p>'+
+     '<div class="fbtns"><button type="button" class="btn pri" data-wl="first">Запиши първата</button><button type="button" class="btn" data-wl="close">Разгледай сам</button></div>'];
+function wlDraw(){document.getElementById('wl-body').innerHTML=WLC[wlI]();
+  document.getElementById('wl-dots').innerHTML=WLC.map((_,i)=>'<i class="'+(i===wlI?'on':'')+'"></i>').join('');
+  document.getElementById('wl-prev').style.visibility=wlI?'visible':'hidden';document.getElementById('wl-next').style.display=wlI<WLC.length-1&&wlI!==2?'':'none';}   // картата за профила има свои бутони
+function openWelcome(){wlI=0;wlDraw();document.getElementById('wlDlg').showModal();}
+function wlEnd(){tipDone('welcome');document.getElementById('wlDlg').close();paintDots();}
+document.getElementById('wl-next').onclick=()=>{wlI=Math.min(WLC.length-1,wlI+1);wlDraw();};
+document.getElementById('wl-prev').onclick=()=>{wlI=Math.max(0,wlI-1);wlDraw();};
+document.getElementById('wl-skip').onclick=wlEnd;
+document.getElementById('wlDlg').addEventListener('click',e=>{const b=e.target.closest('[data-wl]');if(!b)return;const a=b.dataset.wl;
+  if(a==='next'){wlI=Math.min(WLC.length-1,wlI+1);wlDraw();return;}
+  wlEnd();
+  if(a==='acct')document.getElementById('acct').click();
+  if(a==='first'){openForm(null);window.scrollTo({top:0,behavior:'smooth'});}});
+// празните раздели обясняват за какво са
+const EMPTYTXT={life:'Тук ще се трупат видовете ти — всеки с пръстен според това колко добре го познаваш.',
+  outs:'Тук ще са излетите ти. Преди разходка за птици натисни „Излет“ — записите ще се съберат заедно.',
+  map:'Тук ще видиш на карта къде си записвал птици, а отдолу — Местата си.',
+  phen:'Фенологията показва кога идват и си отиват видовете. Започни да записваш — след няколко месеца ще видиш картината.'};
+// профилът: „Данни“ (износ и резервни копия, преместени отдолу) и „Как се ползва“
+let FOOTB=null;   // откача се при стартиране — след като всички бутони са получили действията си
+function acctExtras(el){const d=document.createElement('div');
+  d.innerHTML='<div class="arr fr"><h3>Данни</h3><div class="note2" style="max-width:none">Износ, резервни копия и тема.</div><div id="dataSlot"></div></div>'+
+    '<div class="arr fr"><h3>Как се ползва</h3><div class="howto">'+Object.values(TIPTXT).map(t=>'<p>'+t+'</p>').join('')+'</div>'+
+    '<div class="fbtns"><button type="button" class="btn" data-tipsreset>Покажи съветите отново</button></div></div>';
+  el.appendChild(d);const sl=d.querySelector('#dataSlot');if(sl&&FOOTB)sl.appendChild(FOOTB);}
 // ---- резервни копия: дата в името, помни се кога е правено последното, „Изпрати копие" го праща извън телефона ----
 const KBK='bird-journal-lastbak';
 const ymd=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
@@ -2403,7 +2483,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-29.8';
+const VER='2026-10-30.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -2657,6 +2737,7 @@ function seenSeed(){if(FSEEN===null&&ME&&FR){FSEEN={};for(const it of fdItems())
 function seenCommit(){if(!FSEEN)return;for(const it of fdItems())FSEEN[fdKey(it)]=fdSig(it);lsSet(KFSEEN,FSEEN);feedVisit=null;}
 const unseenFeed=()=>ME&&FSEEN?fdItems().filter(isNewItem).length:0;
 function paintDots(){seenSeed();
+  {const a=document.getElementById('acct');if(a&&typeof tipSeen==='function')a.classList.toggle('dot',!ME&&!lsGet(KA,null)&&tipSeen('welcome')&&!tipSeen('acctdot'));}
   const t=document.querySelector('.tab[data-v="friends"]');if(t)t.classList.toggle('dot',pendingSocial()>0||(view!=='friends'&&unseenFeed()>0));
   const b=document.querySelector('.tab[data-v="badges"]');if(b)b.classList.toggle('dot',view!=='badges'&&newBadges().length>0);
   tgSeed();const g=document.querySelector('.tab[data-v="goals"]');if(g)g.classList.toggle('dot',view!=='goals'&&tgNewKeys().length>0);}
@@ -2691,7 +2772,7 @@ function renderAcct(el){
       (sbMsg?'<div class="msg">'+esc(sbMsg)+'</div>':'')+
       '<div class="fbtns"><button type="button" class="btn pri" data-sb="in">Вход</button><button type="button" class="btn" data-sb="up">Нов профил</button></div></div>';return;}
   const F=FR||{fol:[],fans:[]};   // първо приятелите; профилът и изходът — най-долу
-  el.innerHTML=acctHead+inviteBanner()+'<div class="arr fr">'+
+  el.innerHTML=acctHead+inviteBanner()+tipHTML('code',TIPTXT.code)+'<div class="arr fr">'+
     '<h3>Дневници на приятели</h3>'+friendRows(F)+
     '<div class="fbtns"><button type="button" class="btn" data-sb="refresh">Обнови</button></div>'+
     '<h3>Добави приятел</h3><div class="geo"><input id="fr-code" placeholder="кодът, който ти е дал" style="flex:1;min-width:160px;margin:0"><button type="button" class="btn pri" data-sb="add" style="flex:0 0 auto">Добави</button></div>'+
@@ -2747,7 +2828,7 @@ async function loadFriendPhotos(){   // снимките на приятели �
 // --- действия ---
 document.addEventListener('click',async e=>{
   const ac=e.target.closest('[data-acct]');
-  if(ac){if(view!=='acct')prevView=view;view='acct';fsel=null;for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected','false');render();
+  if(ac){tipDone('acctdot');if(view!=='acct')prevView=view;view='acct';fsel=null;for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected','false');render();
     window.scrollTo({top:document.getElementById('view').offsetTop-90,behavior:'smooth'});return;}
   if(e.target.closest('[data-acctback]')){view=prevView||'log';for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v===view);render();return;}
   const fbr=e.target.closest('[data-bravo]');
@@ -2794,7 +2875,9 @@ document.addEventListener('input',e=>{const k={'sb-name':'name','sb-mail':'mail'
 addEventListener('online',()=>{if(ME)syncNow();else if(lsGet(KA,null))sbStart();});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&ME&&Date.now()-lastSync>20000)syncNow();});
 Promise.all([openDB(),kvLoad()]).then(()=>{SOC=lsGet(KSOC,[])||[];FSEEN=lsGet(KFSEEN,null);   // прочетени отново — вече от IndexedDB
-  load();loadBeh();loadSess();loadOuts();drawBeh();render();if(sbOn()&&lsGet(KA,null))sbStart();});
+  FOOTB=document.getElementById('footBtns');if(FOOTB)FOOTB.remove();
+  load();loadBeh();loadSess();loadOuts();drawBeh();tipsInit();render();if(sbOn()&&lsGet(KA,null))sbStart();
+  if(!tipSeen('welcome'))setTimeout(openWelcome,350);});
 </script>
 </body>
 </html>

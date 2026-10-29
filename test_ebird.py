@@ -15,8 +15,9 @@ try:
   b=p.chromium.launch();pg=b.new_page(viewport={'width':390,'height':844});errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
   pg.add_init_script("if(!localStorage.getItem('bird-journal-v3')){localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-outings',%s);}"%(json.dumps(json.dumps(data,ensure_ascii=False)),json.dumps(json.dumps(outs,ensure_ascii=False))))
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400)
-  check('E1 a „Към eBird“ button at the bottom, next to Експорт CSV', pg.evaluate("document.getElementById('ebird').previousElementSibling.id"), 'exp')
-  pg.evaluate("window.__f=[];offer=(n,c)=>__f.push([n,c]);0");pg.click('#ebird');pg.wait_for_timeout(150)
+  pg.click('#acct');pg.wait_for_timeout(150)
+  check('E1 a „Към eBird“ button in the profile\'s „Данни“, next to Експорт CSV', (pg.evaluate("document.getElementById('ebird').previousElementSibling.id"),pg.evaluate("!!document.getElementById('ebird').closest('#dataSlot')")), ('exp',True))
+  pg.evaluate("window.__f=[];offer=(n,c)=>__f.push([n,c]);0");pg.click('#acct');pg.click('#ebird');pg.wait_for_timeout(150)
   check('E2 the dialog says how many rows and lists, that unsure records stay out, and how to import', ('несигурен запис не влиза' in pg.inner_text('#eb-txt'),'eBird Record Format (Extended)' in pg.inner_text('#eb-txt')), (True,True))
   pg.click('#eb-ok');pg.wait_for_timeout(300)
   f=pg.evaluate("__f");name,csv=f[0];rows=[l.split(',') for l in csv.strip().split('\n')]

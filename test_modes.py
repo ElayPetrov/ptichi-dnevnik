@@ -11,7 +11,7 @@ try:
   def page(sess=None):
     ctx=b.new_context();pg=ctx.new_page();pg.errs=[];pg.dialogs=[]
     pg.on('pageerror',lambda e:pg.errs.append(str(e)));pg.on('dialog',lambda d:(pg.dialogs.append(d.message),d.accept()))
-    init="localStorage.setItem('bird-journal-v3','[]');"
+    init="localStorage.setItem('bird-journal-v3','[]');localStorage.setItem('bird-journal-tips','{\"all\":1}');"   # an empty journal would otherwise get the welcome
     if sess: init+="localStorage.setItem('bird-journal-session',%s);"%json.dumps(json.dumps(sess,ensure_ascii=False))
     pg.add_init_script("if(!sessionStorage.getItem('s')){"+init+"sessionStorage.setItem('s','1')}")
     pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(300);return pg

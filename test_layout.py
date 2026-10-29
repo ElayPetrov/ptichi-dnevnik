@@ -48,7 +48,7 @@ try:
   check('L10 nothing pushes the page sideways', pg.evaluate("document.documentElement.scrollWidth<=document.documentElement.clientWidth"), True)
   pg.evaluate("ME={id:'u1',email:'ivan@test.bg'};MYNAME='Иван';MYCODE='ABCDEFGHJKLM';FR={fol:[],fans:[]};view='acct';render()")
   check('L11 the account view: friends first; your code, who sees you, and you with „изход“ further down',
-    pg.evaluate("[...document.querySelectorAll('.fr h3')].map(h=>h.textContent)"), ['Дневници на приятели','Добави приятел','Твоят код','Виждат твоя дневник','Ти'])
+    pg.evaluate("[...document.querySelectorAll('.fr h3')].map(h=>h.textContent)"), ['Дневници на приятели','Добави приятел','Твоят код','Виждат твоя дневник','Ти','Данни','Как се ползва'])
   check('L12 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

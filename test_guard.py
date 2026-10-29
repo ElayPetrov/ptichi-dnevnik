@@ -18,7 +18,7 @@ try:
   def device(data):
     ctx=b.new_context();pg=ctx.new_page();pg.errs=[];pg.on('pageerror',lambda e:pg.errs.append(str(e)));pg.on('dialog',lambda d:d.accept())
     ctx.route(SB+'/**',st.handle);ctx.route(CDN,lambda r:r.fulfill(path=UMD,headers={'access-control-allow-origin':'*','content-type':'application/javascript'}))
-    pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
+    pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-tips','{\"all\":1}');sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
     pg.goto(f'http://localhost:{port}/share-test.html');pg.wait_for_timeout(300);pg.click('#acct');return pg
   def synced(pg): pg.wait_for_function("!syncing&&sbStat.length>0&&sbStat!=='синхронизира…'",timeout=15000)
   def join(pg,name,mail):

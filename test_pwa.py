@@ -15,7 +15,7 @@ try:
     ctx=b.new_context(**ctxkw);pg=ctx.new_page();pg.errs=[];pg.dialogs=[];pg.ctx=ctx
     pg.on('pageerror',lambda e:pg.errs.append(str(e)));pg.on('dialog',lambda d:(pg.dialogs.append(d.message),d.accept()))
     if data is not None:
-      pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);%ssessionStorage.setItem('s','1')}"%(json.dumps(json.dumps(data,ensure_ascii=False)),extra))
+      pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-tips','{\"all\":1}');%ssessionStorage.setItem('s','1')}"%(json.dumps(json.dumps(data,ensure_ascii=False)),extra))   # no welcome in these checks
     pg.goto(URL);pg.wait_for_timeout(400);return pg
   # ---------- installable + offline ----------
   pg=page([]); cdp=pg.ctx.new_cdp_session(pg)
@@ -42,7 +42,7 @@ try:
   # ---------- backups ----------
   pg=page([R(id=int(time.time()*1000)-i,date=T.isoformat(),bg=f'Вид {i}') for i in range(12)])
   check('B1 12 records and never backed up: reminder shows', (pg.is_visible('#bakNag'),pg.inner_text('#bakNagTxt')), (True,'Още нямаш резервно копие на тези 12 записа.'))
-  with pg.expect_download() as dl: pg.click('#bak')
+  with pg.expect_download() as dl: pg.click('#acct');pg.click('#bak')
   d=dl.value; body=json.load(open(d.path(),encoding='utf-8'))
   check('B2 backup file is dated and complete', (d.suggested_filename,len(body['obs']),body['v'],body['outs']), (f'ptichi-dnevnik-{T.isoformat()}.json',12,6,[]))
   check('B3 reminder clears; footer shows the date', (pg.is_visible('#bakNag'),pg.inner_text('#bakInfo').startswith('Последно копие: ')), (False,True))
@@ -54,7 +54,7 @@ try:
   tf='/home/claude/shared-copy.txt'; open(tf,'w',encoding='utf-8').write(json.dumps({'v':4,'obs':[R(id=1,date='2026-05-01',bg='От файла')],'beh':['пее']},ensure_ascii=False))
   pg.set_input_files('#impf',tf); pg.wait_for_timeout(300)
   check('B6 restore accepts the .txt copy the share sheet makes', (pg.evaluate("OBS.map(o=>o.bg)"),len(pg.dialogs)), (['От файла'],1))
-  check('B7 share button hidden where the browser cannot share files', pg.is_visible('#shr'), pg.evaluate("canShareFiles"))
+  pg.click('#acct');check('B7 share button hidden where the browser cannot share files', pg.is_visible('#shr'), pg.evaluate("canShareFiles"))
   # ---------- arrivals ----------
   Y=T.year
   data=[R(id=1,date=f'{Y-1}-04-28',bg='Пчелояд',la='Merops apiaster'),R(id=2,date=f'{Y}-04-23',bg='Пчелояд',la='Merops apiaster'),
@@ -82,7 +82,7 @@ try:
   check('I3 Android-style install offer shows a button', pg.locator('[data-inst]').count()>=1, True)
   pg.locator('#inst [data-inst]').click(); pg.wait_for_timeout(200)
   check('I4 button opens the browser install prompt, then goes away', (pg.evaluate("window.__prompted"),pg.inner_text('#inst')), (1,''))
-  before=pg.evaluate("document.querySelector('meta[name=theme-color]').content"); pg.click('#theme')
+  before=pg.evaluate("document.querySelector('meta[name=theme-color]').content"); pg.click('#acct');pg.click('#theme')
   check('I5 status bar follows the theme toggle', (before,pg.evaluate("document.querySelector('meta[name=theme-color]').content")), ('#f1e9d4','#14160e'))
   check('I6 no page errors', pg.errs, [])
   b.close()

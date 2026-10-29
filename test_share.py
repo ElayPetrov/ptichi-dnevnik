@@ -27,7 +27,7 @@ try:
     ctx=b.new_context(viewport={'width':390,'height':844});pg=ctx.new_page();pg.errs=[];pg.ctx=ctx
     pg.on('pageerror',lambda e:pg.errs.append(str(e)));pg.on('dialog',lambda d:d.accept())
     ctx.route(SB+'/**',st.handle);ctx.route(CDN,lambda r:r.fulfill(path=UMD,headers={'access-control-allow-origin':'*','content-type':'application/javascript'}))
-    pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
+    pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-tips','{\"all\":1}');sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
     pg.goto(f'http://localhost:{port}/{file}');pg.wait_for_timeout(300)
     if photo: rec(pg,'[data-ed="2"]');pg.set_input_files('#f-photo','/home/claude/a.jpg');pg.wait_for_function("phNew.length===1");pg.click('#savebtn')
     pg.click('#acct');return pg
@@ -90,7 +90,7 @@ try:
   iv.fill('#sb-mail','ivan@test.bg');iv.fill('#sb-pw','грешна');iv.click('[data-sb="in"]');iv.wait_for_selector('.fr .msg')
   check('F22 wrong password says so', iv.inner_text('.fr .msg'), 'Грешен имейл или парола.')
   nc=person([],file='noconf-test.html')
-  check('F23 the build without a project address just says sharing is not set up', nc.inner_text('#view').endswith('Споделянето още не е настроено.'), True)
+  check('F23 the build without a project address just says sharing is not set up', 'Споделянето още не е настроено.' in nc.inner_text('#view'), True)
   check('F24 no page errors anywhere', iv.errs+pe.errs+i2.errs+nc.errs, [])
   b.close()
 finally: srv.terminate();st.stop()

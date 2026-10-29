@@ -8,6 +8,7 @@ srv=subprocess.Popen([sys.executable,'-m','http.server',str(port)],stdout=subpro
 try:
  with sync_playwright() as p:
   b=p.chromium.launch();pg=b.new_page(viewport={'width':390,'height':844});errs=[];pg.on('pageerror',lambda e:errs.append(str(e)));pg.on('dialog',lambda d:d.accept())
+  pg.add_init_script("localStorage.setItem('bird-journal-tips','{\"all\":1}')")   # skip the welcome for this empty journal
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(300)
   pg.click('#sessStart');pg.fill('#f-bg','Кос');pg.fill('#f-count','3');pg.click('#savebtn');pg.wait_for_timeout(150)
   pg.fill('#f-bg','Сойка');pg.click('#f-unsure');pg.click('#savebtn');pg.wait_for_timeout(150);pg.click('#cancel')

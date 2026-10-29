@@ -41,5 +41,6 @@ run goals    python3 test_goals.py 8975
 run ebird    python3 test_ebird.py 8976
 run list     python3 test_checklist.py 8977
 run banner   python3 test_sesslist.py 8978
+run welcome  python3 test_onboard.py 8979
 printf '%-9s %s of 4 save taps landed\n' tap "$(python3 tap_test.py 8950 ptichi-dnevnik.html | grep -c "'saved'")"
 printf '%-9s ' sun; python3 sun_check.py | tail -1

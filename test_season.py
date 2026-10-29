@@ -27,8 +27,8 @@ try:
   check('S3 each season shows only its own details', shown, EXP)
   pg.evaluate("applySeason('autumn')")
   light=pg.evaluate("getComputedStyle(document.querySelector('.hero')).getPropertyValue('--hill2').trim()")
-  pg.click('#theme');dark=pg.evaluate("getComputedStyle(document.querySelector('.hero')).getPropertyValue('--hill2').trim()")
-  pg.click('#theme');back=pg.evaluate("getComputedStyle(document.querySelector('.hero')).getPropertyValue('--hill2').trim()")
+  pg.click('#acct');pg.click('#theme');dark=pg.evaluate("getComputedStyle(document.querySelector('.hero')).getPropertyValue('--hill2').trim()")
+  pg.click('#acct');pg.click('#theme');back=pg.evaluate("getComputedStyle(document.querySelector('.hero')).getPropertyValue('--hill2').trim()")
   check('S4 the season keeps through a theme switch, in that theme\'s colours', (light,dark,back,pg.evaluate("document.querySelector('.hero').dataset.season")), ('#b4884c','#4c3b23','#b4884c','autumn'))
   px="""(()=>{const i=document.getElementById('cardImg'),c=document.createElement('canvas');c.width=i.naturalWidth;c.height=i.naturalHeight;
     const x=c.getContext('2d');x.drawImage(i,0,0);return [...x.getImageData(540,412,1,1).data].slice(0,3);})()"""

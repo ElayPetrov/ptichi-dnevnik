@@ -13,7 +13,7 @@ try:
     ctx=b.new_context();pg=ctx.new_page();pg.errs=[];pg.dialogs=[]
     pg.on('pageerror',lambda e:pg.errs.append(str(e)))
     pg.on('dialog',lambda d:(pg.dialogs.append(d.message),d.accept() if dialog=='accept' else d.dismiss()))
-    pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);%ssessionStorage.setItem('s','1')}"%(json.dumps(json.dumps(data or [],ensure_ascii=False)),extra))
+    pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-tips','{\"all\":1}');%ssessionStorage.setItem('s','1')}"%(json.dumps(json.dumps(data or [],ensure_ascii=False)),extra))   # no welcome in these checks
     pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(300);return pg
   def save(pg,bg,dt=None,unsure=False,la=None):
     if not pg.evaluate("form.classList.contains('on')"): pg.click('#toggle')
@@ -41,7 +41,7 @@ try:
   pg.click('#f-unsure'); pg.click('#savebtn')
   check('C8 switching it off makes it count, and it becomes нов вид', (pg.evaluate(f"OBS.find(o=>o.id==={rid}).u"),stat(pg),pg.locator('.o',has_text='Белоглав лешояд').locator('.tag.nw').count()), (0,{'obs':'2','sp':'2'},1))
   save(pg,'Червен ангел',None,unsure=True)
-  with pg.expect_download() as dl: pg.click('#exp')
+  with pg.expect_download() as dl: pg.click('#acct');pg.click('#exp')
   csv=open(dl.value.path(),encoding='utf-8-sig').read().splitlines()
   check('C9 CSV has the new columns and marks the unsure record', (csv[0].endswith('Несигурен,Излет,Пълен списък'),[l for l in csv if 'Червен ангел' in l][0].split(',')[-3]), (True,'"да"'))
   check('C10 no page errors', pg.errs, [])
@@ -74,7 +74,7 @@ try:
   check('O8 completeness can be changed back to "not marked" in the outing editor', pg.evaluate("OUTS.find(x=>x.date==='2026-10-18').complete"), None)
   pg.click('.ou [data-oedit]'); pg.click('#od-del')   # the card stays open after saving the editor
   check('O9 deleting an outing keeps its records, loose', (len(pg.evaluate("OUTS")),pg.evaluate("OBS.filter(o=>o.date==='2026-10-18'&&!o.sess).length"),pg.locator('.ou').count()), (1,2,1))
-  with pg.expect_download() as dl: pg.click('#bak')
+  with pg.expect_download() as dl: pg.click('#acct');pg.click('#bak')
   body=json.load(open(dl.value.path(),encoding='utf-8'))
   check('O10 backups carry outings now (v5)', (body['v'],len(body['outs'])), (6,1))
   check('O11 no page errors', pg.errs, [])
