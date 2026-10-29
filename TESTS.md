@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-481 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+488 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -52,6 +52,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_goals.py | 13 | Цели: only the targets you add, from the list or the group's new species; a new species needs all three names and then fills the form; a friend's last sighting with day, place and distance; „и … го търси“; the dot for a nearby sighting; „Цел постигната!“; removed targets stay removed through sync |
 | test_ebird.py | 11 | „Към eBird“: eBird Record Format (Extended) with 19 columns and no header; one list per outing (Traveling or Stationary with duration, distance in miles, completeness, observers), incidental lists for other records, one row per species, cleaned text, province from the outlines, unsure records left out |
 | test_checklist.py | 18 | „Списък“: open any time, counting only in an outing; suggestions from where you are, added only on tap; adding by name; a tap logs +1 with time and GPS; a new record beyond ~300 m; minus and undo; heard mode; the new-species card; long press opens the current batch with its count, describing closes it and new taps start a second batch; heard and seen kept apart; form records never added to; no keyboard on opening; the list stays |
+| test_sesslist.py | 7 | the green outing banner opens and closes a plain list of the outing's records, newest first, unsure marked, each with a pencil (edit) and × (delete) |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

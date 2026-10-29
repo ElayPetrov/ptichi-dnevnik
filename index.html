@@ -85,6 +85,13 @@ h1{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:clamp(28px,6vw,4
 .sess.on{display:block}
 .sesshead{display:flex;justify-content:space-between;align-items:center;gap:10px;min-width:0}
 .sesshead span{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sesstog{cursor:pointer;-webkit-tap-highlight-color:transparent} .sesstog::before{content:'▾ ';font-weight:400;opacity:.8}   /* отпред, за да не се отреже */
+.sess.open .sesstog::before{content:'▴ '}
+.sesslist{display:none;max-height:45vh;overflow:auto;margin-top:8px;border-top:1px solid color-mix(in srgb,var(--s) 35%,transparent)} .sess.open .sesslist{display:block}
+.ssr{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed color-mix(in srgb,var(--s) 25%,transparent);font-size:14px}
+.ssr .t{color:var(--mut);font-size:12.5px;min-width:2.8em} .ssr .n{flex:1;min-width:0} .ssr .n.u{font-style:italic;color:var(--mut)}
+.ssr button{background:none;border:0;color:var(--mut);cursor:pointer;padding:2px 6px;font-size:16px;line-height:1} .ssr svg{width:16px;height:16px;display:block}
+.ssempty{color:var(--mut);font-size:13px;padding:8px 0}
 .sesshead .btn{flex:0 0 auto}
 .sess .btn{padding:5px 11px;font-size:12px;border-color:var(--s);color:var(--s);background:transparent}
 /* край на излета */
@@ -538,9 +545,10 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 <div class="addbar">
   <div class="sess" id="sess">
     <div class="sesshead">
-      <span id="sessTxt">Излет</span>
+      <span id="sessTxt" class="sesstog" role="button" tabindex="0" aria-expanded="false">Излет</span>
       <button type="button" class="btn" id="sessEnd">приключи</button>
     </div>
+    <div class="sesslist" id="sessList"></div>
     <div class="sessend">
       <div class="g2"><div class="fg"><label>Начало</label><input type="time" id="se-start"></div>
         <div class="fg"><label>Край</label><input type="time" id="se-end"></div></div>
@@ -729,13 +737,21 @@ function endOuting(complete,stale){if(!SESS)return;const d=outDefaults(stale),si
     start:stale?d.start:(document.getElementById('se-start').value||d.start),end:stale?d.end:(document.getElementById('se-end').value||d.end)});
   SESS=null;saveSess();sessUI();closeForm();render();
   if(!stale&&d.rs.length)yayPush(outingCard(sid));}   // обобщение на излета (забравен излет — без)
+let sessOpen=false;
+// записите на текущия излет, най-новите отгоре — молив за промяна и × за изтриване (същите като в Дневник)
+function sessListHTML(){const rs=OBS.filter(o=>o.sess===SESS.id).sort((a,b)=>(b.time||'').localeCompare(a.time||'')||b.id-a.id);
+  return rs.length?rs.map(o=>'<div class="ssr"><span class="t">'+esc(o.time||'')+'</span><span class="n'+(o.u?' u':'')+'">'+esc(o.bg||o.en||o.la)+(o.u?' ?':'')+
+      (o.count?' · '+esc(o.count):'')+(o.h&&!o.s&&!o.p?' · чут':'')+'</span>'+
+    '<button type="button" data-ed="'+o.id+'" aria-label="промени" title="промени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5 17v3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14.6 7.4l3 3" stroke="currentColor" stroke-width="2"/></svg></button><button type="button" data-del="'+o.id+'" aria-label="изтрий" title="изтрий">×</button></div>').join(''):
+    '<div class="ssempty">Още няма записи в този излет.</div>';}
 function sessUI(){
   const b=document.getElementById('sess');if(!b)return;
-  if(SESS){b.classList.add('on');
+  if(SESS){b.classList.add('on');b.classList.toggle('open',sessOpen);document.getElementById('sessTxt').setAttribute('aria-expanded',sessOpen);
+    if(sessOpen)document.getElementById('sessList').innerHTML=sessListHTML();
     const n=new Set(SURE().filter(o=>o.sess===SESS.id).map(key).filter(Boolean)).size;
     document.getElementById('sessTxt').textContent='Излет · '+human(SESS.date)+(SESS.place?' · '+SESS.place:'')+' · '+n+(n===1?' вид':' вида');
     document.getElementById('sessStart').style.display='none';}
-  else{b.classList.remove('on','ending');document.getElementById('sessStart').style.display='';}
+  else{sessOpen=false;b.classList.remove('on','ending','open');document.getElementById('sessStart').style.display='';}
 }
 // Излет без нов запис от 6+ часа: питаме, преди да даде старата си дата и място на нов запис
 function sessFresh(){if(!SESS||(SESS.at&&Date.now()-SESS.at<6*36e5))return;
@@ -2016,6 +2032,8 @@ document.getElementById('sessEnd').onclick=()=>{if(!SESS)return;const d=outDefau
   if(!d.rs.length){SESS=null;saveSess();sessUI();closeForm();render();return;}   // излет без записи просто приключва
   document.getElementById('se-start').value=d.start;document.getElementById('se-end').value=d.end;
   document.getElementById('sess').classList.add('ending');};
+{const t=document.getElementById('sessTxt'),tg=()=>{sessOpen=!sessOpen;sessUI();};
+  t.addEventListener('click',tg);t.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tg();}});}
 document.getElementById('se-back').onclick=()=>document.getElementById('sess').classList.remove('ending');
 document.getElementById('sess').addEventListener('click',e=>{const b=e.target.closest('[data-done]');if(b)endOuting(b.dataset.done==='1');});
 document.addEventListener('mouseover',e=>{const g=e.target.closest('.pt');if(g)showCluster(+g.dataset.c);});
@@ -2385,7 +2403,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-29.7';
+const VER='2026-10-29.8';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
