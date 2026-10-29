@@ -442,7 +442,10 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .bdx{min-width:0;flex:1} .bdx b{display:block;font-size:13.5px;line-height:1.25;hyphens:manual}
 .bdt{display:block;font-size:11.5px;color:var(--mut);margin:1px 0 4px} .bd2.t1 .bdt{color:#b87333} .bd2.t2 .bdt{color:#8f989f} .bd2.t3 .bdt{color:#c08f0b;font-weight:700}
 .bdp{height:5px;border-radius:3px;background:var(--bg2);overflow:hidden;margin-bottom:4px}
-.th.rk1{box-shadow:0 0 0 2px var(--card),0 0 0 4.5px #b87333} .th.rk2{box-shadow:0 0 0 2px var(--card),0 0 0 4.5px #a8b0b6} .th.rk3{box-shadow:0 0 0 2px var(--card),0 0 0 4.5px #d4a017}
+.thw{position:relative;display:inline-block;flex:0 0 auto}
+.crown{position:absolute;top:-10px;right:-10px;width:24px;height:24px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))} .crown svg{width:100%;height:100%;display:block}
+.crown.big{width:30px;height:30px;top:-12px;right:-12px}
+.crown.rk1{color:#b87333} .crown.rk2{color:#a8b0b6} .crown.rk3{color:#d4a017}
 .rkt{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:3px;font-style:normal}
 .rkt.rk1{background:color-mix(in srgb,#b87333 18%,transparent);color:#9a5b26} .rkt.rk2{background:color-mix(in srgb,#a8b0b6 24%,transparent);color:#6f787f} .rkt.rk3{background:color-mix(in srgb,#d4a017 22%,transparent);color:#9a7208}
 @media(prefers-color-scheme:dark){.rkt.rk1{color:#df9a5e} .rkt.rk2{color:#c6cdd2} .rkt.rk3{color:#e8bd45}}
@@ -990,6 +993,8 @@ function outBlock(id,grp,F){const live=!!(SESS&&SESS.id===id),x=live?null:outing
 const RANKS=[[10,'Познат'],[50,'Приятел'],[150,'Познавач']];
 function spDays(){const m={};for(const o of SURE()){const k=key(o);if(k)(m[k]=m[k]||new Set()).add(o.date);}return m;}
 const rankOf=n=>RANKS.filter(r=>n>=r[0]).length;
+// коронка в ъгъла на птицата — бронзова, сребърна или златна (вместо пръстена)
+const crownHTML=(t,cls)=>t?'<span class="crown rk'+t+(cls?' '+cls:'')+'" title="'+RANKS[t-1][1]+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 17.6h17.6l-1.5-9.2-4.6 3.8L12 4.6l-2.7 7.6-4.6-3.8z" fill="currentColor" stroke="var(--card)" stroke-width="1.3" stroke-linejoin="round"/><rect x="3.2" y="18.6" width="17.6" height="2.6" rx="1.1" fill="currentColor" stroke="var(--card)" stroke-width="1.1"/></svg></span>':'';
 function rankLine(n){const t=rankOf(n),nx=RANKS[t];
   return (t?'<span class="rkt rk'+t+'">'+RANKS[t-1][1]+'</span> ':'')+n+(n===1?' ден':' дни')+' с вида'+(nx?' · още '+(nx[0]-n)+' до „'+nx[1]+'“':'');}
 // „назад“ връща списъка там, докъдето беше стигнал — не най-горе (вид от „Моите видове“, дневник на приятел от лентата)
@@ -1011,9 +1016,9 @@ function renderLife(el){
   const unH=un.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с несигурни записи (не се броят): '+[...un.values()].map(esc).join(' · ')+'</div>':'';
   if(!arr.length){el.innerHTML=(unH||'<div class="empty">Нищо не съвпада.</div>');return;}
   const D=spDays(),rk=r=>rankOf((D[r.k]||new Set()).size);
-  el.innerHTML=(ql||filt!=='all'?'':'<div class="splegend">Пръстенът около птицата показва колко добре познаваш вида: <span class="rkt rk1">Познат</span> 10 дни с него, <span class="rkt rk2">Приятел</span> 50, <span class="rkt rk3">Познавач</span> 150.</div>')+
+  el.innerHTML=(ql||filt!=='all'?'':'<div class="splegend">Коронката до птицата показва колко добре познаваш вида: <span class="rkt rk1">Познат</span> 10 дни с него, <span class="rkt rk2">Приятел</span> 50, <span class="rkt rk3">Познавач</span> 150.</div>')+
     arr.map(r=>'<div class="sp l'+r.L+'" data-k="'+esc(r.k)+'" style="cursor:pointer">'+
-    (r.photo?'<div class="th rk'+rk(r)+'" data-th="'+r.photo+'"></div>':'<div class="th none rk'+rk(r)+'">'+silFor(r.fam)+'</div>')+
+    '<div class="thw">'+(r.photo?'<div class="th rk'+rk(r)+'" data-th="'+r.photo+'"></div>':'<div class="th none rk'+rk(r)+'">'+silFor(r.fam)+'</div>')+crownHTML(rk(r))+'</div>'+
     '<div style="flex:1;min-width:0">'+
     '<div class="nm">'+esc(r.bg||r.en||r.la)+'</div>'+
     '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':''].filter(Boolean).join(' · ')+'</div>'+
@@ -1035,7 +1040,7 @@ function renderSpecies(el,k){
   const mx=Math.max(1,...Object.values(r.months));
   let h='<button class="again" data-spback>← Моите видове</button><div class="spd">'+
     (()=>{const n=new Set(rs.map(o=>o.date)).size,t=rankOf(n),nx=RANKS[t],pv=t?RANKS[t-1][0]:0;
-      return '<div style="display:flex;gap:12px;align-items:center"><div class="th none rk'+t+'" style="width:60px;height:60px">'+silFor(r.fam)+'</div><div class="big" style="min-width:0">'+esc(r.bg||r.en||r.la)+'</div></div>'+
+      return '<div style="display:flex;gap:12px;align-items:center"><div class="thw"><div class="th none rk'+t+'" style="width:60px;height:60px">'+silFor(r.fam)+'</div>'+crownHTML(t,'big')+'</div><div class="big" style="min-width:0">'+esc(r.bg||r.en||r.la)+'</div></div>'+
         '<div class="rkline">'+rankLine(n)+'</div>'+(nx?'<div class="bdp rkbar"><i style="width:'+Math.round(100*(n-pv)/(nx[0]-pv))+'%"></i></div>':'');})()+
     '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':'',r.fam?esc(r.fam):''].filter(Boolean).join(' · ')+'</div>'+
     (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
@@ -2027,7 +2032,7 @@ function renderGoals(el){tgSeed();
         (b?'<div class="tgs">Последно: '+esc(b.f.name)+', '+relDay(b.o.date)+(b.o.place?', '+esc(b.o.place):'')+(b.km!=null?', '+(b.km<10?b.km.toFixed(1).replace('.',','):Math.round(b.km))+' км':'')+'</div>':
           (mine.length?'':'<div class="tgs mut">Никой от приятелите ти още не го е записал.</div>'))+
         (also.length?'<div class="tgo">И '+esc(also.join(', '))+' '+(also.length===1?'го търси':'го търсят')+'.</div>':'')+'</div>';}).join(''):
-     '<div class="empty">Добави птиците, които искаш да видиш. Ще виждаш кога и къде ги е записал приятел, а точка на „Цели“ ще ти казва, когато някой ги види наблизо.</div>');}
+     '<div class="empty">Добави птиците, които искаш да видиш. Ще виждаш кога и къде ги е записал приятел, а известие на „Цели“ ще ти казва, когато някой ги види наблизо.</div>');}
 function tgSubmit(){const i=document.getElementById('tg-in'),v=(i&&i.value||'').trim();if(!v)return;
   const e=listFind('bg',v)||listFind('la',v)||listFind('en',v);
   if(e){tgAdd(e);i.value='';render();return;}
@@ -2041,7 +2046,7 @@ function tgxSubmit(){const g=k=>document.getElementById('tgx-'+k).value.trim(),x
   spxAdd(x);tgAdd(x);render();}
 function renderBadges(el){if(badgeVisit===null){badgeVisit=new Set(newBadges());BSEEN=['#2',...earnedKeys()];lsSet(KBSEEN,BSEEN);}
   const T=tiersNow(),done=Object.values(T).reduce((x,y)=>x+y.t,0);
-  el.innerHTML='<div class="bdintro">Всяка значка има три нива: бронз за начало, сребро за усилие и злато за майсторство. Идват сами от сигурните ти записи. Имаш <b>'+done+'</b> от '+BDEF.length*3+' нива.</div>'+
+  el.innerHTML='<div class="bdintro">Всяка значка има три нива: бронз за начало, сребро за усилие и злато за майсторство. Печелят се сами — само от сигурните ти записи. Имаш <b>'+done+'</b> от '+BDEF.length*3+' нива.</div>'+
     BSECS.map(([sec,title])=>'<h3 class="bdsec">'+title+'</h3><div class="bdg2">'+BDEF.filter(d=>d.sec===sec).map(d=>bdCard(d,T[d.id],badgeVisit)).join('')+'</div>').join('');}
 function badgeStrip(nw){const R=SURE();return '<div class="bdg">'+BADGES.map(b=>{const st=badgeState(b,R);
   return '<div class="bd'+(st.on?' on':'')+(nw&&nw.has(b.id)?' new':'')+'" title="'+esc(b.how)+'"><span class="bdi">'+b.icon+'</span><b>'+b.name+(nw&&nw.has(b.id)?'<span class="newtag">ново</span>':'')+'</b><small>'+
@@ -2286,25 +2291,25 @@ const tipSeen=id=>!!(TIPS&&(TIPS.all||TIPS[id]));
 function tipDone(id){TIPS=TIPS||{};TIPS[id]=1;lsSet(KTIP,TIPS);}
 function tipHTML(id,txt){return tipSeen(id)?'':'<div class="tip" data-tipbox="'+id+'"><span>'+txt+'</span><button type="button" class="btn" data-tip="'+id+'">Разбрах</button></div>';}
 const TIPTXT={
-  form:'Започни да пишеш името — латинското, английското и групата се попълват сами. Сивите примери в полетата са само за ориентир.',
+  form:'Започни да пишеш името — латинското, английското и групата се попълват сами. Сивите текстове в полетата са само примери.',
   unsure:'Несигурните записи се пазят, но не се броят. Колебаеш се между два вида? Добави другия в „Може да е и“.',
   outing:'Излизаш за птици? Натисни „Излет“ — записите се събират заедно, а накрая отбелязваш дали си записал всички видове. Пълните списъци са най-ценни за науката.',
   sess:'Докосни зелената лента, за да видиш записите от излета. За бързо броене — иконката „Списък“ до „Излет“.',
-  ck:'Добави птиците, които очакваш. На излет: докосване = +1, задържане = описание на текущата бройка.',
-  map:'Отдолу са Местата ти. Точка без име? Отвори я и ѝ дай име — записите оттам ще се събират на едно място.',
-  phen:'Тук с времето виждаш кога идват и си отиват птиците около теб — след няколко месеца става интересно.',
+  ck:'Добави птиците, които очакваш. На излет: докосване = +1, задържане = описание на преброените досега.',
+  map:'Отдолу са Местата ти. Място без име? Отвори го и му дай име — записите оттам ще се събират на едно място.',
+  phen:'Тук с времето ще видиш кога идват и си отиват птиците около теб — след няколко месеца става интересно.',
   code:'Дай кода си на приятел — така той вижда дневника ти и може да те кани на излети. Добави и неговия код, за да виждаш неговия.'};
 const WLC=[
-  ()=>'<h2>Добре дошъл в Птичи дневник</h2><p>Записвай птиците, които виждаш и чуваш — бързо, на терен, дори без връзка.</p><p class="mut">Несигурното си остава несигурно, излетите се пазят заедно, а с времето виждаш как се мени годината около теб.</p>',
+  ()=>'<h2>Добре дошъл в Птичи дневник</h2><p>Записвай птиците, които виждаш и чуваш — бързо, на терен, дори без връзка.</p><p class="mut">Документирай излетите си. Следи птиците по време и локации. Сравнявай с приятели.</p>',
   ()=>'<h2>Сложи го на началния екран</h2><p>Така работи без интернет, а GPS-ът — по-точно.</p><p>'+(standalone()?'✓ Вече е на началния ти екран.':
      instEvt?'<button type="button" class="btn pri" data-inst>Инсталирай</button>':
      isIOS?'В Safari: <b>Сподели</b> (квадратчето със стрелка) → <b>Add to Home Screen</b>.':'В Chrome: менюто <b>⋮</b> горе вдясно → <b>Добавяне към началния екран</b>.')+'</p>',
   ()=>'<h2>Профил — по желание, но си струва</h2><p>Без профил дневникът е само на този телефон. С профил:</p><ul><li>копие в облака — изгубиш ли телефона, записите остават;</li>'+
-     '<li>същият дневник на два телефона;</li><li>приятели — виждате си излетите, каните се, давате си „Браво“.</li></ul>'+
-     '<p><b>Как:</b> кръгчето с птичката горе вдясно → име, имейл и парола → „Нов профил“ → потвърди от писмото.</p>'+
+     '<li>един акаунт на много устройства;</li><li>приятели — споделяте, коментирате, излизате заедно.</li></ul>'+
+     '<p><b>Как:</b> кръгчето с птичката горе вдясно → име, имейл и парола → „Нов профил“ → потвърди от имейла.</p>'+
      '<p class="mut">Приятелите, на които дадеш кода си, виждат всичките ти записи — и точните места.</p>'+
      '<div class="fbtns"><button type="button" class="btn pri" data-wl="acct">Направи профил сега</button><button type="button" class="btn" data-wl="next">По-късно</button></div>',
-  ()=>'<h2>Първата ти птица</h2><p>Запиши която и да е птица — дори врабче от прозореца. Оттам нататък всичко тръгва само.</p>'+
+  ()=>'<h2>Първата ти птица</h2><p>Запиши която и да е птица — дори врабче от прозореца. Оттам нататък приложението ще те води.</p>'+
      '<div class="fbtns"><button type="button" class="btn pri" data-wl="first">Запиши първата</button><button type="button" class="btn" data-wl="close">Разгледай сам</button></div>'];
 function wlDraw(){document.getElementById('wl-body').innerHTML=WLC[wlI]();
   document.getElementById('wl-dots').innerHTML=WLC.map((_,i)=>'<i class="'+(i===wlI?'on':'')+'"></i>').join('');
@@ -2320,7 +2325,7 @@ document.getElementById('wlDlg').addEventListener('click',e=>{const b=e.target.c
   if(a==='acct')document.getElementById('acct').click();
   if(a==='first'){openForm(null);window.scrollTo({top:0,behavior:'smooth'});}});
 // празните раздели обясняват за какво са
-const EMPTYTXT={life:'Тук ще се трупат видовете ти — всеки с пръстен според това колко добре го познаваш.',
+const EMPTYTXT={life:'Тук ще се събират видовете ти — всеки с коронка, която показва колко добре го познаваш.',
   outs:'Тук ще са излетите ти. Преди разходка за птици натисни „Излет“ — записите ще се съберат заедно.',
   map:'Тук ще видиш на карта къде си записвал птици, а отдолу — Местата си.',
   phen:'Фенологията показва кога идват и си отиват видовете. Започни да записваш — след няколко месеца ще видиш картината.'};
@@ -2372,7 +2377,7 @@ const BDEF=[
   BD('records','Неуморен','field','записи (по един за вид, място и ден)',[200,500,1000],R=>new Set(R.map(bUniq)).size),
   BD('patch','Моят участък','field','дни на едно място (до ~500 м)',[30,150,450],R=>maxSize(bySet(R,o=>cellOf(o,.5),o=>o.date))),
   BD('places','Изследо\u00adвател','field','различни места (на ~1 км едно от друго)',[50,250,750],R=>new Set(R.map(o=>cellOf(o,1)).filter(Boolean)).size),
-  BD('steady','Постоянство','field','дни със записи в най-добрите ти 365 дни',[100,200,300],R=>bestWindow(R.map(o=>o.date),365)),
+  BD('steady','Постоянство','field','дни със записи за 365 поредни дни (най-добрият ти период)',[100,200,300],R=>bestWindow(R.map(o=>o.date),365)),
   BD('bigout','Богат излет','field','видове на един излет',[25,45,70],R=>maxSize(bySet(R,o=>o.sess||'',key))),
   BD('bigday','Голям ден','field','видове за един ден',[30,60,100],R=>maxSize(bySet(R,o=>o.date,key))),
   BD('species','Ловец на видове','list','видове в дневника',[100,200,300],R=>new Set(R.map(key).filter(Boolean)).size),
@@ -2483,7 +2488,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-30.1';
+const VER='2026-10-30.2';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -2668,7 +2673,7 @@ function fdSocial(it){if(!ME)return '';const k=it.p.id+'|'+it.key,rows=SOC.filte
     h+=linked?'':asked?'<span class="sbn">„Бях там“ — чака '+esc(it.p.name)+'</span>':'<button type="button" class="sb" data-there="'+esc(k)+'">Бях там</button>';}
   h+='</div>';
   if(br.length)h+='<div class="sbn">Браво от '+esc(br.map(s=>nameOf(s.author)).join(', '))+'</div>';
-  if(it.p.me)for(const s of th)h+='<div class="sreq"><span><b>'+esc(nameOf(s.author))+'</b> казва, че е бил(а) на този излет</span>'+
+  if(it.p.me)for(const s of th)h+='<div class="sreq"><span><b>'+esc(nameOf(s.author))+'</b> иска да се присъедини към този излет</span>'+
     '<button type="button" class="btn pri" data-thok="'+esc(s.id)+'" data-thout="'+esc(it.sid)+'" data-thwho="'+esc(s.author)+'">Приеми</button><button type="button" class="btn" data-thno="'+esc(s.id)+'">Откажи</button></div>';
   if(openCm.has(k))h+='<div class="cms">'+cm.map(s=>'<div class="cmr"><b>'+esc(nameOf(s.author))+'</b> '+esc(s.body||'')+
       ((s.author===ME.id||it.p.me)?'<button type="button" data-cmdel="'+esc(s.id)+'" aria-label="изтрий">×</button>':'')+'</div>').join('')+

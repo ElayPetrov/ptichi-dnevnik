@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-506 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+507 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -45,7 +45,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_feed.py | 16 | the Приятели feed with three accounts on the stand-in: cards for outings and days, opening read-only records, Браво, comments, who sees what, the database refusing outsiders, „Бях там“ with the owner's approval, and the joint-outing comparison; the 2-minute refresh downloads only changed journals and lights the dot on any tab |
 | test_notify.py | 14 | the bird on the account button; orange dots on Приятели (a friend's new records, others' Браво or comments on yours) and Значки (a new badge); new cards first and marked „ново“ until you leave the tab |
 | test_badges.py | 18 | the 31 badges in three levels: honest counting, places (~1 km) and patch (~500 m), the best 365 days, big outing and big day, one winter, careful counts, notes, group thresholds, scientific families, social badges, the one-time summary after the update, a new level while logging and its highlight in the feed, the Значки tab |
-| test_ranks.py | 10 | how well you know each species: bronze „Познат“ 10, silver „Приятел“ 50, gold „Познавач“ 150 days, counted by days not records, species outside the list too, sure records only, the legend, the species page; badge cards with progress and description apart |
+| test_ranks.py | 11 | how well you know each species: bronze „Познат“ 10, silver „Приятел“ 50, gold „Познавач“ 150 days, counted by days not records, species outside the list too, sure records only, the legend, the species page, crowns (not rings) in the bird's corner; badge cards with progress and description apart |
 | test_store.py | 7 | the journal, outings, friends' copies and reactions moving from localStorage to IndexedDB on first opening (localStorage freed only after a successful write), new records stored there, reload, and a 40,000-record journal far beyond the old ~5 MB limit |
 | test_back.py | 5 | „назад“ from a species page returns Моите видове to where you were, and back from a friend's journal returns the feed to where you were |
 | test_merge.py | 6 | the sixth box „дни на терен“ (days with sure records in the last 365 days) and the six boxes in two rows; Места under the map in Карта, opening a place without redrawing the map |

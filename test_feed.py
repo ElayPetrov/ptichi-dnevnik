@@ -76,7 +76,7 @@ try:
   feed(pe);pe.locator('.fc').nth(1).locator('[data-there]').click();pe.wait_for_timeout(700)
   check('X10 „Бях там“ asks Ivan first', pe.locator('.fc').nth(1).locator('.soc .sbn').inner_text(), '„Бях там“ — чака Иван')
   fresh(iv);feed(iv)
-  check('X11 Ivan sees the request on his outing (and a dot on Приятели)', (iv.locator('.fc.me .sreq span').first.inner_text(),iv.evaluate("document.querySelector('.tab[data-v=\"friends\"]').classList.contains('dot')")), ('Петър казва, че е бил(а) на този излет',True))
+  check('X11 Ivan sees the request on his outing (and a dot on Приятели)', (iv.locator('.fc.me .sreq span').first.inner_text(),iv.evaluate("document.querySelector('.tab[data-v=\"friends\"]').classList.contains('dot')")), ('Петър иска да се присъедини към този излет',True))
   iv.locator('.fc.me [data-thok]').click();iv.wait_for_timeout(700);iv.evaluate("syncNow()")
   fresh(pe);feed(pe);pe.click('.invb [data-inv]');pe.wait_for_selector('#imp-list input');pe.click('#imp-ok');pe.wait_for_timeout(400);fresh(pe,iv);feed(iv);feed(pe)
   check('X12 once Ivan accepts, Petar copies the outing and both cards compare it',
