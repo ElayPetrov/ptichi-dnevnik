@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-452 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+463 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -50,6 +50,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_back.py | 5 | „назад“ from a species page returns Моите видове to where you were, and back from a friend's journal returns the feed to where you were |
 | test_merge.py | 6 | the sixth box „дни на терен“ (days with sure records in the last 365 days) and the six boxes in two rows; Места under the map in Карта, opening a place without redrawing the map |
 | test_goals.py | 13 | Цели: only the targets you add, from the list or the group's new species; a new species needs all three names and then fills the form; a friend's last sighting with day, place and distance; „и … го търси“; the dot for a nearby sighting; „Цел постигната!“; removed targets stay removed through sync |
+| test_ebird.py | 11 | „Към eBird“: eBird Record Format (Extended) with 19 columns and no header; one list per outing (Traveling or Stationary with duration, distance in miles, completeness, observers), incidental lists for other records, one row per species, cleaned text, province from the outlines, unsure records left out |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 
