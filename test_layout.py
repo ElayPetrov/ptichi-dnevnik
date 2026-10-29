@@ -20,9 +20,9 @@ try:
   pg.evaluate("""new Promise(r=>{const q=indexedDB.open('birdphotos',1);q.onsuccess=async()=>{const im=await (await fetch('a.jpg')).blob();
     const t=q.result.transaction('p','readwrite');for(let i=0;i<11;i++)t.objectStore('p').put(im,'p'+i);t.oncomplete=()=>r();};})""")
   tabs=pg.evaluate("[...document.querySelectorAll('.tab')].map(t=>t.textContent)")
-  check('L1 the tabs: Дневник, Приятели, Моите видове, Излети, Карта (with Места under the map), Фенология, Значки', tabs, ['Дневник','Приятели','Моите видове','Излети','Карта','Фенология','Значки'])
+  check('L1 the tabs: Дневник, Приятели, Моите видове, Излети, Карта (with Места under the map), Цели, Фенология, Значки', tabs, ['Дневник','Приятели','Моите видове','Излети','Карта','Цели','Фенология','Значки'])
   fit=pg.evaluate("(()=>{const W=document.documentElement.clientWidth,r=[...document.querySelectorAll('.tab')].map(t=>t.getBoundingClientRect());return [r.every(x=>x.left>=0&&x.right<=W),new Set(r.map(x=>Math.round(x.top))).size];})()")
-  check('L2 on a 360 px phone all seven show at once, in two rows', fit, [True,2])
+  check('L2 on a 360 px phone all eight show at once, in two rows', fit, [True,2])
   pg.click('.tab[data-v="badges"]');pg.wait_for_timeout(150);nb=pg.locator('.bd2').count()
   pg.click('.tab[data-v="life"]');pg.wait_for_timeout(150)
   check('L3 the badges live in Значки, no longer in Моите видове', (nb,pg.locator('#view .bd2').count()), (30,0))
