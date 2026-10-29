@@ -39,5 +39,6 @@ run back     python3 test_back.py 8973
 run merge    python3 test_merge.py 8974
 run goals    python3 test_goals.py 8975
 run ebird    python3 test_ebird.py 8976
+run list     python3 test_checklist.py 8977
 printf '%-9s %s of 4 save taps landed\n' tap "$(python3 tap_test.py 8950 ptichi-dnevnik.html | grep -c "'saved'")"
 printf '%-9s ' sun; python3 sun_check.py | tail -1

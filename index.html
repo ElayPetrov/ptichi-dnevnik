@@ -406,7 +406,15 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .bdg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:2px 0 14px}
 .bdintro{color:var(--mut);font-size:13.5px;margin:0 0 10px}
 .bdsec{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:16px;margin:16px 0 8px;color:var(--ink)}
-.tgadd{margin-bottom:12px} .tgadd .geo{display:flex;gap:8px} .tgadd .geo input{flex:1 1 auto;min-width:0;margin:0} .tgadd .geo .btn{flex:0 0 auto} .tgx{display:grid;grid-template-columns:1fr;gap:6px;margin:8px 0} @media(min-width:600px){.tgx{grid-template-columns:repeat(3,1fr)}}
+.tgadd{margin-bottom:12px}
+.ckadd{display:flex;gap:8px;flex-wrap:nowrap} .add.sec.ckbtn{padding:12px 13px} .ckadd input{flex:1 1 auto;min-width:0;margin:0} .ckadd .btn{flex:0 0 auto}
+.cksug{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px} .cktools{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
+.ckr{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);padding:2px 0}
+.ckn{flex:1;min-width:0;text-align:left;background:none;border:0;padding:12px 4px;font:inherit;color:var(--ink);cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.ckn b{font-size:16px;font-weight:600} .ckn small{display:block;color:var(--mut);font-size:12px} .ckn:disabled{cursor:default;opacity:.85}
+.ckc{min-width:2.2em;text-align:right;font-family:Fraunces,Georgia,serif;font-size:20px;color:var(--mut)} .ckr.on .ckc{color:var(--s);font-weight:600}
+.ckb{background:var(--card);border:1px solid var(--line);border-radius:10px;width:38px;height:38px;font-size:19px;color:var(--ink);cursor:pointer}
+.ckx{color:var(--mut);border-color:transparent;background:none;width:30px} .tgadd .geo{display:flex;gap:8px} .tgadd .geo input{flex:1 1 auto;min-width:0;margin:0} .tgadd .geo .btn{flex:0 0 auto} .tgx{display:grid;grid-template-columns:1fr;gap:6px;margin:8px 0} @media(min-width:600px){.tgx{grid-template-columns:repeat(3,1fr)}}
 .tgc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:9px} .tgc.done{border-left:3px solid var(--s)}
 .tgc.new{border-color:#e8822a;box-shadow:0 0 0 1px #e8822a}
 .tgh{display:flex;gap:8px;align-items:flex-start} .tgn{flex:1;min-width:0} .tgn b{display:block;font-size:15.5px} .tgn small{color:var(--mut);font-size:12.5px;font-style:italic}
@@ -546,6 +554,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="addrow">
     <button class="add" id="toggle">+ Ново наблюдение</button>
     <button class="add sec" id="sessStart">Излет</button>
+<button class="add sec ckbtn" id="ckOpen" aria-label="Списък" title="Списък"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:22px;height:22px;display:block"><path d="M9 6.5h11M9 12h11M9 17.5h11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M3.6 6.4l1.3 1.3 2.3-2.5M3.6 11.9l1.3 1.3 2.3-2.5M3.6 17.4l1.3 1.3 2.3-2.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </div>
 </div>
 
@@ -643,6 +652,17 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="pickhead">Към eBird</div>
   <div class="odb"><div class="note2" id="eb-txt" style="max-width:none"></div></div>
   <div class="pickfoot"><span style="flex:1"></span><button type="button" class="btn" id="eb-no">Отказ</button><button type="button" class="btn pri" id="eb-ok">Изтегли файла</button></div>
+</dialog>
+<dialog id="ckDlg" class="pickdlg outdlg" aria-label="Списък">
+  <div class="pickhead">Списък <span id="ck-sub"></span></div>
+  <div class="odb">
+    <div class="geo ckadd"><input id="ck-in" list="bgnames" placeholder="добави птица в списъка"><button type="button" class="btn" id="ck-add">Добави</button></div>
+    <div class="msg" id="ck-msg"></div><div id="ck-sug"></div>
+    <div class="cktools" id="ck-tools"><button type="button" class="chip" id="ck-mode"></button><button type="button" class="chip" id="ck-undo">отмени последното</button></div>
+    <div id="ck-list"></div>
+    <div class="fbtns"><button type="button" class="btn" id="ck-clear">изчисти списъка</button></div>
+  </div>
+  <div class="pickfoot"><span id="ck-gps" class="note2" style="max-width:none"></span><span style="flex:1"></span><button type="button" class="btn pri" id="ck-close">Готово</button></div>
 </dialog>
 <dialog id="outDlg" class="pickdlg outdlg" aria-label="Излет">
   <div class="pickhead">Излет</div>
@@ -2130,6 +2150,80 @@ document.getElementById('eb-ok').onclick=()=>{const F=ebirdFiles();document.getE
   F.forEach((c,i)=>setTimeout(()=>offer('ebird'+(F.length>1?'-'+(i+1):'')+'.csv',c,'text/csv'),i*700));};
 document.getElementById('eb-no').onclick=()=>document.getElementById('ebDlg').close();
 document.getElementById('ebird').onclick=openEbird;
+// ---- „Списък“: бърз брояч за излета ----
+// Твоят списък с птици — сам го съставяш (предложенията влизат само с твое докосване) и той остава до следващия излет.
+// По време на излет докосване = +1 с часа и мястото в момента; на повече от ~300 м от предишния запис на същия вид
+// в излета става нов запис, иначе бройката на най-близкия расте. „−“ и „отмени последното“ поправят; задържане = формата.
+const KCK='bird-journal-checklist';let CKL=lsGet(KCK,[])||[],ckWatch=null,ckPos=null,ckAcc=null,ckUndo=[],ckHeard=false,ckLong=false;
+function ckSave(){lsSet(KCK,CKL);}
+function ckAddName(v){v=(v||'').trim();if(!v)return '';const e=listFind('bg',v)||listFind('la',v)||listFind('en',v);
+  if(!e)return '„'+v+'“ го няма в списъка с видове — запиши го през формата.';
+  if(CKL.some(x=>nrm(x.la||x.bg)===nrm(e.la||e.bg)))return 'Вече е в списъка.';
+  CKL.push({bg:e.bg,la:e.la,en:e.en,fam:e.fam||''});ckSave();return '';}
+function ckSuggest(){const here=ckPos||myGeo(),have=new Set(CKL.map(x=>nrm(x.la||x.bg))),m=new Map(),mo=today().slice(5,7),t0=dayNum(today());
+  const add=(o,w)=>{const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en);if(!c||have.has(nrm(c.la)))return;
+    const v=m.get(nrm(c.la))||{c,n:0};v.n+=w;m.set(nrm(c.la),v);};
+  for(const o of SURE()){if(here&&o.geo&&kmBetween(here,o.geo)<=1)add(o,3);else if(o.date.slice(5,7)===mo)add(o,1);}
+  for(const f of (FR&&FR.fol)||[])for(const o of (f.data&&f.data.obs)||[])
+    if(!o.u&&here&&o.geo&&kmBetween(here,o.geo)<=5&&t0-dayNum(o.date)<=14)add(o,2);
+  return [...m.values()].sort((a,b)=>b.n-a.n||a.c.bg.localeCompare(b.c.bg,'bg')).slice(0,14).map(v=>v.c);}
+const ckRecs=sp=>SESS?OBS.filter(o=>o.sess===SESS.id&&!o.u&&tgMatch(o,sp)):[];
+function ckTap(i){if(!SESS)return;const sp=CKL[i];if(!sp)return;const pos=ckPos,mine=ckRecs(sp);let rec=null;
+  if(mine.length){if(pos&&mine.some(o=>o.geo)){const n=mine.filter(o=>o.geo).map(o=>({o,km:kmBetween(pos,o.geo)})).sort((a,b)=>a.km-b.km)[0];if(n.km<=0.3)rec=n.o;}
+    else rec=[...mine].sort(newest)[0];}
+  const before=new Set(SURE().map(key).filter(Boolean)).size;
+  if(rec){ckUndo.push({id:rec.id,prev:rec.count});rec.count=String((cntNum(rec.count)||1)+1);rec.upd=Date.now();}
+  else{const now=new Date();rec={id:Date.now(),date:today(),time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),
+      place:SESS.place||'',count:'1',bg:sp.bg,en:sp.en||'',la:sp.la||'',fam:sp.fam||'',note:'',h:ckHeard?1:0,s:ckHeard?0:1,p:0,beh:[],geo:pos||null,photo:null,sess:SESS.id,upd:Date.now()};
+    OBS.push(rec);ckUndo.push({id:rec.id,prev:null});}
+  SESS.at=Date.now();saveSess();save();
+  const after=new Set(SURE().map(key).filter(Boolean)).size;if(after>before)yayPush(yayNew(rec,after));
+  ckDraw();}
+function ckMinus(i){const r=[...ckRecs(CKL[i]||{})].sort(newest)[0];if(!r)return;ckUndo.push({id:r.id,prev:r.count,obj:{...r}});
+  const n=(cntNum(r.count)||1)-1;if(n<=0)OBS=OBS.filter(o=>o.id!==r.id);else{r.count=String(n);r.upd=Date.now();}save();ckDraw();}
+function ckUndoLast(){const u=ckUndo.pop();if(!u)return;const r=OBS.find(o=>o.id===u.id);
+  if(u.prev===null)OBS=OBS.filter(o=>o.id!==u.id);else if(r){r.count=u.prev;r.upd=Date.now();}else if(u.obj)OBS.push({...u.obj,upd:Date.now()});
+  save();ckDraw();}
+function ckDraw(){const L=document.getElementById('ck-list');if(!L)return;
+  document.getElementById('ck-sub').textContent=SESS?'· излет':'';
+  document.getElementById('ck-tools').style.display=SESS?'':'none';
+  document.getElementById('ck-mode').textContent=ckHeard?'докосване = чух':'докосване = видях';
+  document.getElementById('ck-gps').textContent=SESS?(ckPos?'GPS'+(ckAcc!=null?' ±'+Math.round(ckAcc)+' м':''):'търси GPS…'):'';
+  const sg=ckSuggest();
+  document.getElementById('ck-sug').innerHTML=sg.length?'<div class="note2" style="max-width:none">Предложения — докосни, за да добавиш:</div><div class="cksug">'+
+    sg.map(c=>'<button type="button" class="chip" data-cksug="'+esc(c.bg)+'">+ '+esc(c.bg)+'</button>').join('')+'</div>':'';
+  L.innerHTML=(SESS?'':'<div class="note2" style="max-width:none">Започни излет („Излет“), за да броиш. Списъкът остава и за следващия път.</div>')+
+    (CKL.length?CKL.map((sp,i)=>{const rs=ckRecs(sp),n=rs.reduce((a,o)=>a+(cntNum(o.count)||1),0);
+      return '<div class="ckr'+(n?' on':'')+'"><button type="button" class="ckn" data-cktap="'+i+'"'+(SESS?'':' disabled')+'><b>'+esc(sp.bg)+'</b>'+
+        (rs.length>1?'<small>'+rs.length+' места</small>':'')+'</button><span class="ckc">'+(SESS?n:'')+'</span>'+
+        (SESS?'<button type="button" class="ckb" data-ckminus="'+i+'" aria-label="едно по-малко">−</button>':'')+
+        '<button type="button" class="ckb ckx" data-ckdel="'+i+'" aria-label="махни от списъка">×</button></div>';}).join(''):
+     '<div class="note2" style="max-width:none">Списъкът е празен. Добави птиците, които очакваш — по име или от предложенията.</div>');}
+function ckOpen(){document.getElementById('ck-msg').textContent='';ckDraw();document.getElementById('ckDlg').showModal();
+  // и преди излета — предложенията са за мястото, където си
+  if(navigator.geolocation&&ckWatch==null)try{ckWatch=navigator.geolocation.watchPosition(p=>{ckPos=p.coords.latitude.toFixed(5)+','+p.coords.longitude.toFixed(5);ckAcc=p.coords.accuracy;ckDraw();},
+    ()=>{},{enableHighAccuracy:true,maximumAge:15000});}catch(e){}}
+function ckClose(){document.getElementById('ckDlg').close();if(ckWatch!=null){try{navigator.geolocation.clearWatch(ckWatch);}catch(e){}ckWatch=null;}render();}
+document.getElementById('ckOpen').onclick=ckOpen;
+document.getElementById('ck-close').onclick=ckClose;
+document.getElementById('ckDlg').addEventListener('close',()=>{if(ckWatch!=null){try{navigator.geolocation.clearWatch(ckWatch);}catch(e){}ckWatch=null;}});
+document.getElementById('ck-add').onclick=()=>{const i=document.getElementById('ck-in');document.getElementById('ck-msg').textContent=ckAddName(i.value);i.value='';ckDraw();};
+document.getElementById('ck-in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('ck-add').click();}});
+document.getElementById('ck-mode').onclick=()=>{ckHeard=!ckHeard;ckDraw();};
+document.getElementById('ck-undo').onclick=ckUndoLast;
+document.getElementById('ck-clear').onclick=()=>{if(CKL.length&&confirm('Изчисти целия списък?')){CKL=[];ckSave();ckDraw();}};
+const ckL=document.getElementById('ck-list'),ckS=document.getElementById('ck-sug');
+ckS.addEventListener('click',e=>{const b=e.target.closest('[data-cksug]');if(b){ckAddName(b.dataset.cksug);ckDraw();}});
+let ckTimer=null;
+ckL.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-cktap]');if(!b||!SESS)return;ckLong=false;
+  ckTimer=setTimeout(()=>{ckLong=true;const sp=CKL[+b.dataset.cktap];ckClose();
+    openForm(null,{date:today(),time:'',place:SESS.place||'',geo:ckPos,sess:SESS.id});fld('bg').value=sp.bg;fld('bg').dispatchEvent(new Event('change'));
+    window.scrollTo({top:0,behavior:'smooth'});},550);});
+for(const ev of ['pointerup','pointerleave','pointercancel'])ckL.addEventListener(ev,()=>clearTimeout(ckTimer));
+ckL.addEventListener('click',e=>{const t=e.target.closest('[data-cktap]'),m=e.target.closest('[data-ckminus]'),d=e.target.closest('[data-ckdel]');
+  if(t){if(ckLong){ckLong=false;return;}ckTap(+t.dataset.cktap);return;}
+  if(m){ckMinus(+m.dataset.ckminus);return;}
+  if(d){CKL.splice(+d.dataset.ckdel,1);ckSave();ckDraw();}});
 // ---- резервни копия: дата в името, помни се кога е правено последното, „Изпрати копие" го праща извън телефона ----
 const KBK='bird-journal-lastbak';
 const ymd=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
@@ -2282,7 +2376,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-29.5';
+const VER='2026-10-29.6';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
