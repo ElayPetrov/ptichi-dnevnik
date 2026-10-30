@@ -52,13 +52,13 @@ try:
   pg.click('#sessEnd')
   check('O1 live outing: panel opens with start = when Излет was tapped, end = now',
         (pg.is_visible('.sessend'),pg.input_value('#se-start'),pg.input_value('#se-end')), (True,t0,pg.evaluate("nowTime()")))
-  pg.click('[data-done="1"]')
+  pg.click('[data-done="1"]');pg.wait_for_timeout(600);pg.evaluate("document.getElementById('nnDlg').open&&document.getElementById('nnDlg').close()")   # „Червен ангел“ isn't in any list: the names dialog opens after the outing
   o=pg.evaluate("OUTS[0]")
   check('O2 "Да, всички" saves a complete outing and ends it', (len(pg.evaluate("OUTS")),o['complete'],o['start'],pg.evaluate("SESS"),pg.is_visible('#sess')), (1,True,t0,None,False))
   pg.click('#sessStart'); save(pg,'Чапла',('2026-10-18','06:15')); save(pg,'Кос',('2026-10-18','07:40'))
   pg.click('#sessEnd')
   check('O3 writing up afterwards: defaults are first and last record', (pg.input_value('#se-start'),pg.input_value('#se-end')), ('06:15','07:40'))
-  pg.fill('#se-end','08:00'); pg.click('[data-done="0"]')
+  pg.fill('#se-end','08:00'); pg.click('[data-done="0"]');pg.wait_for_timeout(600);pg.evaluate("document.getElementById('nnDlg').open&&document.getElementById('nnDlg').close()")   # „Червен ангел“ isn't in any list: the names dialog opens after the outing
   o=pg.evaluate("OUTS.find(x=>x.date==='2026-10-18')")
   check('O4 edited end time and "само някои" are kept', (o['start'],o['end'],o['complete']), ('06:15','08:00',False))
   pg.click('#sessStart'); pg.evaluate("closeForm()"); pg.click('#sessEnd')

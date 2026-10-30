@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-561 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+574 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -59,6 +59,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_sounds.py | 11 | „▶ песен“ and „▶ обаждане“ under the picture and in „Сравни“ (stand-in helper, silent audio): credit while playing, one sound at a time, stop, remembered choices, nothing when the helper is unreachable; names in Дневник open the bird's page and „← Дневник“ comes back to the same spot |
 | test_xcfn.mjs | 7 | the Supabase helper `xc` in Node: Bulgaria first for songs, clean calls first, the secret key never in the answer, shared memory, only Latin names accepted, CORS |
 | test_spnav.py | 12 | species names lead to the bird card from Дневник, opened posts in Приятели, opened outings in Излети (chips and records) and Цели; a lighter card for birds you don't have yet; „← …“ returns to the same place, with the post or outing still open |
+| test_names.py | 13 | „Имаше ли предвид…?“ when you pause typing (never shifting the form under a tap); any name saves at once; the end-of-outing dialog and „допълни имената“ tags; the Latin must be „Род вид“; filled names update the records and join the group's list; the in-dialog typo fix; three-named new birds join by themselves; quiet mode in the profile |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

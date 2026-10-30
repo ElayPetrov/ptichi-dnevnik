@@ -53,6 +53,7 @@ try:
   check('W6 an edit on the phone reaches the laptop', lap.evaluate("OBS.find(o=>o.id===1).note"), 'на покрива')
   # outings
   ph.click('#sessStart');ph.fill('#f-bg','Скорец');ph.click('#savebtn');ph.click('#sessEnd');ph.click('[data-done="1"]');ph.wait_for_timeout(5500);sync(lap)
+  ph.evaluate("document.getElementById('nnDlg').open&&document.getElementById('nnDlg').close()")   # „Скорец“ isn't a list name (the list says „Обикновен скорец“): the names dialog opens after the outing
   oid=ph.evaluate("OUTS[0].id")
   check('W7 an outing ended on the phone appears on the laptop', lap.evaluate(f"OUTS.some(x=>x.id==='{oid}'&&x.complete===true)"), True)
   lap.click('.tab[data-v="outs"]');lap.locator('.ou').first.click();lap.click('.ou [data-oedit]');lap.click('#od-del');lap.wait_for_timeout(5500);sync(ph)

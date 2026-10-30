@@ -429,6 +429,10 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .xcb button.on{border-color:var(--s);color:var(--s);font-weight:600}
 .xccr{display:none;font-size:11px;color:var(--mut);margin-top:4px;text-decoration:none;line-height:1.3} .xccr.on{display:block}
 .nmlink{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 30%,transparent);text-underline-offset:3px}
+.typo{font-size:13px;color:var(--mut);margin:4px 0 0} .typo button{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--s);cursor:pointer;text-decoration:underline}
+.tag.nn{border:1px dashed var(--accent);color:var(--accent);background:none;cursor:pointer;font:inherit;font-size:inherit}
+.nnr{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid var(--line)} .nnr.bad input[data-nnf="la"],.nnr.bad input[data-nnf="en"]{border-color:var(--accent)}
+.qtog{display:flex;gap:8px;align-items:center;font-size:14px;margin-top:12px;cursor:pointer}
 .cmpr{padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start} .cmpt{flex:1;min-width:0}
 .refbig{position:relative;display:none;margin:0 0 10px} .refbig.has{display:block}
 .refpic{position:relative;height:220px;border-radius:12px;overflow:hidden;background:var(--bg2)}
@@ -714,6 +718,12 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="odb"><div class="note2" style="max-width:none">Описание, снимки и гласове — отварят се в нов прозорец.</div><div id="cmp-list"></div></div>
   <div class="pickfoot"><span style="flex:1"></span><button type="button" class="btn pri" id="cmp-close" autofocus>Готово</button></div>
 </dialog>
+<dialog id="nnDlg" class="pickdlg outdlg" aria-label="Допълни имената">
+  <div class="pickhead">Допълни имената</div>
+  <div class="odb"><div class="note2" style="max-width:none">Тези видове ги няма в списъка. С латинско и английско име ще имат снимка, гласове и връзки, ще влязат в eBird — и в списъка на групата.</div>
+    <div id="nn-list"></div><div class="msg" id="nn-msg"></div></div>
+  <div class="pickfoot"><span style="flex:1"></span><button type="button" class="btn" id="nn-later">По-късно</button><button type="button" class="btn pri" id="nn-save">Запази</button></div>
+</dialog>
 <dialog id="outDlg" class="pickdlg outdlg" aria-label="Излет">
   <div class="pickhead">Излет</div>
   <div class="odb">
@@ -778,7 +788,8 @@ function endOuting(complete,stale){if(!SESS)return;const d=outDefaults(stale),si
   if(d.rs.length)putOut({id:SESS.id,date:d.date,place:d.place,complete,
     start:stale?d.start:(document.getElementById('se-start').value||d.start),end:stale?d.end:(document.getElementById('se-end').value||d.end)});
   SESS=null;saveSess();sessUI();closeForm();render();
-  if(!stale&&d.rs.length)yayPush(outingCard(sid));}   // обобщение на излета (забравен излет — без)
+  if(!stale&&d.rs.length)yayPush(outingCard(sid));
+  {const nn=OBS.filter(o=>o.sess===sid&&needNames(o)).map(o=>o.bg);if(!stale&&nn.length)setTimeout(()=>openNames(nn),450);}}   // обобщение на излета (забравен излет — без)
 let sessOpen=false;
 // записите на текущия излет, най-новите отгоре — молив за промяна и × за изтриване (същите като в Дневник)
 function sessListHTML(){const rs=OBS.filter(o=>o.sess===SESS.id).sort((a,b)=>(b.time||'').localeCompare(a.time||'')||b.id-a.id);
@@ -1019,7 +1030,7 @@ function recHTML(o,F){
         o.geo?'<a href="https://www.google.com/maps?q='+o.geo+'" target="_blank" rel="noopener" style="color:var(--mut)">коорд.</a>':''].filter(Boolean).join(' · ')+'</div>'+
       (o.note?'<div class="note">'+esc(o.note)+'</div>':'')+
       (o.photo?'<div class="ph" data-ph="'+o.photo+'"></div>':'')+
-      '<div class="tags">'+(F[key(o)]===o.id?'<span class="tag nw">нов вид</span>':'')+(o.u?'<span class="tag u">? не съм сигурен</span>':'')+
+      '<div class="tags">'+(F[key(o)]===o.id?'<span class="tag nw">нов вид</span>':'')+(o.u?'<span class="tag u">? не съм сигурен</span>':'')+(needNames(o)?'<button type="button" class="tag nn" data-nn="'+esc(o.bg)+'">допълни имената</button>':'')+
         (o.h?'<span class="tag h">чух</span>':'')+(o.s?'<span class="tag s">видях</span>':'')+
         (o.p?'<span class="tag p">снимах</span>':'')+
         (o.beh||[]).map(b=>'<span class="tag b">'+esc(b)+'</span>').join('')+'</div>'+
@@ -1742,6 +1753,12 @@ function drawAlts(){const c=document.getElementById('f-alt');if(!c)return;
   document.getElementById('f-alt-sug').innerHTML=sg.length?'<span class="note2">от същия род:</span> '+sg.map(n=>'<button type="button" class="chip" data-alts="'+esc(n)+'">+ '+esc(n)+'</button>').join(''):'';}
 function addAlt(v){v=(v||'').trim();if(!v||nrm(v)===nrm(fld('bg').value)||alts.some(a=>nrm(a)===nrm(v)))return;alts.push(v);drawAlts();}
 document.getElementById('f-cmp').onclick=openCmp;
+document.getElementById('nn-save').onclick=namesSave;
+document.addEventListener('change',e=>{if(e.target&&e.target.matches&&e.target.matches('[data-quiet]'))lsSet(KQUIET,e.target.checked);});
+document.getElementById('nn-later').onclick=()=>document.getElementById('nnDlg').close();
+document.getElementById('nn-list').addEventListener('click',e=>{const b=e.target.closest('[data-nnfix]');if(!b)return;
+  const r=b.closest('.nnr'),sp=listFind('bg',b.dataset.nnfix);if(!sp)return;namesApply(r.dataset.nnfor,sp);r.remove();save();fillLists();render();
+  if(!document.querySelector('#nn-list .nnr'))document.getElementById('nnDlg').close();});
 document.getElementById('cmp-close').onclick=()=>document.getElementById('cmpDlg').close();
 document.getElementById('cmpDlg').addEventListener('close',xcStop);
 document.getElementById('f-alt-add').onclick=()=>{const i=document.getElementById('f-alt-in');addAlt(i.value);i.value='';};
@@ -1811,8 +1828,13 @@ function commitPlace(){const v=fld('place').value;
   else if(fo.geo==='auto'){setGeo(null);fo.geo='';}}
 const picked=e=>!e.inputType||e.inputType==='insertReplacementText';   // избор от падащия списък
 for(const f of NM){const el=fld(f);
-  el.addEventListener('input',e=>{fo[f]='user';if(picked(e))commitName(f);});
+  el.addEventListener('input',e=>{fo[f]='user';if(picked(e))commitName(f);
+    if(f==='bg'){const h=document.getElementById('f-typo');if(h){h.style.display='none';h.dataset.s='';}
+      clearTimeout(typoT);if(!picked(e))typoT=setTimeout(()=>{if(document.activeElement===el)typoCheck();},650);}});
   el.addEventListener('change',()=>commitName(f));}
+fld('bg').insertAdjacentHTML('afterend','<div class="typo" id="f-typo" style="display:none"></div>');
+document.getElementById('f-typo').addEventListener('click',e=>{const b=e.target.closest('[data-typo]');if(!b)return;
+  fld('bg').value=b.dataset.typo;fo.bg='user';commitName('bg');e.currentTarget.style.display='none';e.currentTarget.dataset.s='';});
 fld('place').addEventListener('input',e=>{if(picked(e))commitPlace();});
 fld('place').addEventListener('change',commitPlace);
 fld('fam').addEventListener('change',()=>{fo.fam='user';});
@@ -1833,6 +1855,7 @@ function openForm(o,seed){
   else{pv.style.display='none';rm.style.display='none';}
   sessOptions(o?(o.sess||''):seed?(seed.sess||''):(SESS?SESS.id:''));
   {const t=document.getElementById('tip-form');if(t)t.innerHTML=o?'':tipHTML('form',TIPTXT.form);}
+  {const h=document.getElementById('f-typo');if(h){h.style.display='none';h.dataset.s='';}}
   document.getElementById('savebtn').textContent=o?'Запази промените':'Запиши';
   form.classList.add('on');document.getElementById('toggle').textContent='− Скрий формата';
   document.getElementById('f-bg').focus();}
@@ -1960,7 +1983,8 @@ form.onsubmit=e=>{e.preventDefault();
     saveSess();render();openForm(null);
     document.getElementById('f-bg').focus();
   } else {closeForm();render();}
-  if(saved)ckSaved(saved.id);   // описана в „Списък“ партида се затваря — следващите докосвания са нов запис
+  if(saved)ckSaved(saved.id);
+  if(saved&&!saved.u&&!listFind('bg',saved.bg)&&!listFind('la',saved.la)&&LAT_OK(saved.la)&&(saved.en||'').trim())spxAdd({bg:saved.bg.trim(),la:saved.la.trim(),en:saved.en.trim()});   // описана в „Списък“ партида се затваря — следващите докосвания са нов запис
   if(isNew&&saved)yayPush(yayNew(saved,nAfter));else if(yearFirst)yayPush(yayYear(saved));
   if(ok&&!rec.u){if(ok&&!rec.u&&!edit){const t=tgList().find(t=>tgMatch(rec,t)&&!OBS.some(o=>o.id!==rec.id&&!o.u&&tgMatch(o,t)));
     if(t)yayPush({cls:'trip',cf:24,ms:6500,html:'<div class="yaypic">'+silFor(rec.fam)+'</div><div class="yaytx"><div class="yayt">Цел постигната!</div><div class="yaynm">'+esc(t.bg||t.la)+'</div><div class="yaym">отбелязана в „Цели“</div></div>'});}
@@ -1972,7 +1996,7 @@ let yayT=null,yayQ=[],yayOn=false;
 const YC=['#b07d18','#9c3a28','#5f7048','#c9b27a','#c4646a','#8a9668'];
 const confetti=n=>Array.from({length:n},(_,i)=>'<i class="cf" style="left:'+((4+i*97/n)%100).toFixed(1)+'%;background:'+YC[i%YC.length]+
   ';--r:'+(i%2?'':'-')+(140+i*23)+'deg;animation-delay:'+((i%5)*.09).toFixed(2)+'s"></i>').join('');
-function yayPush(c){if(!c)return;yayQ.push(c);if(!yayOn)yayNext();}
+function yayPush(c){if(!c||quiet())return;yayQ.push(c);if(!yayOn)yayNext();}
 function yayNext(){const el=document.getElementById('yay'),c=yayQ.shift();if(!el||!c){yayOn=false;return;}
   yayOn=true;clearTimeout(yayT);el.className='yay'+(c.cls?' '+c.cls:'');el.innerHTML=c.html+(c.cf?confetti(c.cf):'');
   el.hidden=false;void el.offsetWidth;el.classList.add('in');yayT=setTimeout(yayHide,c.ms||5000);if(c.after)c.after(el);}
@@ -2139,6 +2163,7 @@ document.addEventListener('click',e=>{
     render();backTo('sp');return;}
   const spc=e.target.closest('.sp[data-k]');
   if(spc&&!e.target.closest('.th img')&&!e.target.closest('a')){backY.sp=window.scrollY;spBack=null;spInfo=null;spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
+  const nnb=e.target.closest('[data-nn]');if(nnb){openNames([nnb.dataset.nn]);return;}
   const sr=e.target.closest('[data-sprf]');if(sr){e.preventDefault();e.stopImmediatePropagation();spOpen({bg:sr.dataset.bg,la:sr.dataset.la,en:sr.dataset.en});return;}
   const tpb=e.target.closest('[data-tip]');if(tpb){tipDone(tpb.dataset.tip);const x=tpb.closest('[data-tipbox]');if(x)x.remove();return;}
   const xb=e.target.closest('[data-xcplay]');if(xb){xcPlay(xb);return;}
@@ -2351,6 +2376,44 @@ function xcPlay(btn){const w=btn.closest('[data-xc]'),x=w&&w._d&&w._d[btn.datase
   const cr=w.querySelector('.xccr');cr.textContent=xcCredit(x);cr.href=xcHttps(x.url)||'https://xeno-canto.org/'+x.id;cr.classList.add('on');
   a.addEventListener('ended',()=>{if(xcAud===a)xcStop();});
   const p=a.play();if(p&&p.catch)p.catch(()=>{if(xcAud===a)xcStop();});}
+// ---- имена (издание 1): „меко“ — записът се пази веднага с каквото е написано ----
+// Вид, който го няма в списъка (нито в този на групата) и няма латинско и английско име, получава етикет
+// „допълни имената“; при край на излет един прозорец пита за всички такива наведнъж. Попълнените влизат в
+// списъка на групата. Проверка за правопис: „Имаше ли предвид Сива чапла?“ — само предлага, нищо не спира.
+const LAT_OK=s=>/^[A-Z][a-zë-]+ [a-z-]+/.test((s||'').trim());
+function needNames(o){if(!(o.bg||'').trim())return false;
+  if(listFind('bg',o.bg)||listFind('la',o.la)||listFind('en',o.en))return false;
+  return !(LAT_OK(o.la)&&(o.en||'').trim());}
+function lev(a,b){if(a===b)return 0;const m=a.length,n=b.length;if(!m||!n)return m+n;let p=[...Array(n+1).keys()];
+  for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];}
+function typoFor(v){const t=nrm(v);if(t.length<3||listFind('bg',v))return null;
+  const lim=t.length>=6?2:1;let best=null,bd=lim+1;
+  for(const nm of new Set([...SPL.flatMap(x=>[x[0],x[5]]),...spxAll().map(x=>x.bg)].filter(Boolean))){
+    const d=lev(t,nrm(nm));if(d<bd){bd=d;best=nm;}}
+  return bd<=lim?best:null;}
+// не прерисува същото предложение: докосването му отнема фокуса от полето, а прерисуване точно тогава би изгубило докосването
+let typoT=null;   // подсказката излиза при пауза в писането — никога при излизане от полето, за да не мърда нищо под пръста
+function typoCheck(){const h=document.getElementById('f-typo');if(!h)return;const s=typoFor(fld('bg').value)||'';
+  if(h.dataset.s===s&&(s?h.style.display!=='none':true))return;h.dataset.s=s;
+  h.innerHTML=s?'Имаше ли предвид <button type="button" data-typo="'+esc(s)+'">'+esc(s)+'</button>?':'';h.style.display=s?'':'none';}
+function openNames(names){const L=[...new Set(names.map(n=>n.trim()).filter(Boolean))];if(!L.length)return;
+  document.getElementById('nn-list').innerHTML=L.map(n=>{const s=typoFor(n);
+    return '<div class="nnr" data-nnfor="'+esc(n)+'"><input data-nnf="bg" value="'+esc(n)+'" placeholder="български">'+
+      (s?'<div class="typo">Имаше ли предвид <button type="button" data-nnfix="'+esc(s)+'">'+esc(s)+'</button>?</div>':'')+
+      '<input data-nnf="la" placeholder="латинско (Род вид)"><input data-nnf="en" placeholder="английско"></div>';}).join('');
+  document.getElementById('nn-msg').textContent='';document.getElementById('nnDlg').showModal();}
+function namesApply(from,sp){const k=nrm(from);let n=0;
+  for(const o of OBS)if(nrm(o.bg)===k&&needNames(o)){o.bg=sp.bg;o.la=sp.la;o.en=sp.en;if(sp.fam&&!o.fam)o.fam=sp.fam;o.upd=Date.now();n++;}
+  return n;}
+function namesSave(){const msg=document.getElementById('nn-msg');let bad=0,done=0;
+  for(const r of document.querySelectorAll('#nn-list .nnr')){const g=f=>r.querySelector('[data-nnf="'+f+'"]').value.trim(),x={bg:g('bg'),la:g('la'),en:g('en')};
+    if(!x.la&&!x.en)continue;
+    if(!x.bg||!LAT_OK(x.la)||!x.en){bad++;r.classList.add('bad');continue;}
+    r.classList.remove('bad');namesApply(r.dataset.nnfor,x);spxAdd(x);done++;r.remove();}
+  if(done){save();fillLists();render();}
+  if(bad){msg.textContent='Трябват и трите имена; латинското е „Род вид“, напр. Phoenicopterus roseus.';return;}
+  document.getElementById('nnDlg').close();}
+const KQUIET='bird-journal-quiet',quiet=()=>!!lsGet(KQUIET,false);   // тих режим — без изскачащи поздравления и конфети
 // ---- „Списък“: бърз брояч за излета ----
 // Твоят списък с птици — сам го съставяш (предложенията влизат само с твое докосване) и той остава до следващия излет.
 // По време на излет докосване = +1 с часа и мястото в момента; на повече от ~300 м от предишния запис на същия вид
@@ -2486,6 +2549,7 @@ const EMPTYTXT={life:'Тук ще се събират видовете ти — 
 let FOOTB=null;   // откача се при стартиране — след като всички бутони са получили действията си
 function acctExtras(el){const d=document.createElement('div');
   d.innerHTML='<div class="arr fr"><h3>Данни</h3><div class="note2" style="max-width:none">Износ, резервни копия и тема.</div><div id="dataSlot"></div>'+
+    '<label class="qtog"><input type="checkbox" data-quiet'+(quiet()?' checked':'')+'> Тих режим — без изскачащи поздравления и конфети</label>'+
     '<div class="note2" id="refInfo" style="max-width:none;margin-top:10px"></div><div class="fbtns"><button type="button" class="btn" data-refclear>Изчисти примерните снимки</button></div></div>'+
     '<div class="arr fr"><h3>Как се ползва</h3><div class="howto">'+Object.values(TIPTXT).map(t=>'<p>'+t+'</p>').join('')+'</div>'+
     '<div class="fbtns"><button type="button" class="btn" data-tipsreset>Покажи съветите отново</button></div></div>';
@@ -2645,7 +2709,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-30.10';
+const VER='2026-10-30.11';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
