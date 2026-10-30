@@ -17,8 +17,11 @@ try:
   L=lambda sel:pg.evaluate(f"Object.fromEntries([...document.querySelectorAll('{sel} .idl a')].map(a=>[a.textContent.replace(' ↗',''),decodeURIComponent(a.href)]))")
   kos=pg.evaluate("(()=>{const c=[...document.querySelectorAll('.sp')].find(c=>c.querySelector('.nm').textContent==='Кос');return Object.fromEntries([...c.querySelectorAll('.idl a')].map(a=>[a.textContent.replace(' ↗',''),decodeURIComponent(a.href)]))})()")
   check('I1 a bird card links to БДЗП, its voices on xeno-canto and Wikipedia', kos,
-    {'БДЗП':'https://bspb.org/определител/','Гласове':'https://xeno-canto.org/species/Turdus-merula','Уикипедия':'https://bg.wikipedia.org/w/index.php?search=Turdus merula&go=Go'})
+    {'БДЗП':'https://bspb.org/ptici/кос/','Гласове':'https://xeno-canto.org/species/Turdus-merula','Уикипедия':'https://bg.wikipedia.org/w/index.php?search=Turdus merula&go=Go'})
   fl=pg.evaluate("(()=>{const c=[...document.querySelectorAll('.sp')].find(c=>c.querySelector('.nm').textContent==='Розово фламинго');return [...c.querySelectorAll('.idl a')].map(a=>decodeURIComponent(a.href))})()")
+  check('I2b a bird outside BSPB\'s list opens their Определител instead', fl[0], 'https://bspb.org/определител/')
+  ch=pg.evaluate("[...SPL.keys()].map(i=>SPBS[i]).filter(x=>!x).length+'|'+SPBS[SPL.findIndex(e=>e[0]==='Авлига')]+'|'+SPBS[SPL.findIndex(e=>e[0]==='Черен синигер')]")
+  check('I2c every listed species has its BSPB page address (Авлига as BSPB gives it, a bracketed title without brackets)', ch, '0|авлига|черен-боров-синигер')
   check('I2 a bird added by the user works too, by its Latin name', fl[1:], ['https://xeno-canto.org/species/Phoenicopterus-roseus','https://bg.wikipedia.org/w/index.php?search=Phoenicopterus roseus&go=Go'])
   st=pg.evaluate("(()=>{const c=[...document.querySelectorAll('.sp')].find(c=>c.querySelector('.nm').textContent==='Странна птица');return [...c.querySelectorAll('.idl a')].map(a=>decodeURIComponent(a.href))})()")
   check('I3 without a Latin name it searches by the name', st[1:], ['https://xeno-canto.org/explore?query=Странна птица','https://bg.wikipedia.org/w/index.php?search=Странна птица&go=Go'])

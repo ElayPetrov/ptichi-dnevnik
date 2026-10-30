@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-517 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+519 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -54,7 +54,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_checklist.py | 18 | „Списък“: open any time, counting only in an outing; suggestions from where you are, added only on tap; adding by name; a tap logs +1 with time and GPS; a new record beyond ~300 m; minus and undo; heard mode; the new-species card; long press opens the current batch with its count, describing closes it and new taps start a second batch; heard and seen kept apart; form records never added to; no keyboard on opening; the list stays |
 | test_sesslist.py | 7 | the green outing banner opens and closes a plain list of the outing's records, newest first, unsure marked, each with a pencil (edit) and × (delete) |
 | test_onboard.py | 17 | first steps: four welcome cards (with the profile's why and how), „Направи профил сега“, the data buttons moved into the profile with „Как се ползва“, calm empty screens, each tip once, the outing tip after three records, examples marked „напр.“, and nothing for people who already use the app |
-| test_idlinks.py | 10 | identification links (БДЗП, Гласове, Уикипедия) on Моите видове cards, the species page and Цели, for user-added and nameless birds too; links open a new window without opening the card; one small „сравни ↗“ in „Може да е и“ that lists the candidates with their links |
+| test_idlinks.py | 12 | identification links (БДЗП, Гласове, Уикипедия) on Моите видове cards, the species page and Цели, for user-added and nameless birds too; links open a new window without opening the card; one small „сравни ↗“ in „Може да е и“ that lists the candidates with their links |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 
