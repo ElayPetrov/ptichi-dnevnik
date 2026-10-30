@@ -57,7 +57,7 @@ try:
   clear(p3);p3.click('#sessEnd');p3.click('[data-done="1"]');p3.wait_for_timeout(300);t=card(p3)
   check('T9 finishing an outing sums it up', ('Край на излета' in t,'3 вида · 3 записа' in t,'2 нови за дневника' in t,'първа птица: Зеленика в 08:10' in t), (True,True,True,True))
   p3.click('#yay [data-yayout]');p3.wait_for_function("document.getElementById('cardDlg').open",timeout=6000)
-  check('T10 ...and its „карта за споделяне“ opens the outing card', p3.evaluate("document.getElementById('cardDlg').open"), True)
+  check('T10 ...and its „картичка за споделяне“ opens the outing card', p3.evaluate("document.getElementById('cardDlg').open"), True)
   # ---- „На днешна дата“ ----
   p4=page(base);t=p4.inner_text('.otd') if p4.locator('.otd').count() else ''
   check('T11 „На днешна дата“ lists earlier years with records today, newest first', ('2025' in t and 'Сойка' in t, t.index('2025')<t.index('2024') if '2024' in t else False), (True,True))

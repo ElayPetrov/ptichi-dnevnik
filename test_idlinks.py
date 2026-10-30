@@ -17,7 +17,7 @@ try:
   L=lambda sel:pg.evaluate(f"Object.fromEntries([...document.querySelectorAll('{sel} .idl a')].map(a=>[a.textContent.replace(' ↗',''),decodeURIComponent(a.href)]))")
   kos=pg.evaluate("(()=>{const c=[...document.querySelectorAll('.sp')].find(c=>c.querySelector('.nm').textContent==='Кос');return Object.fromEntries([...c.querySelectorAll('.idl a')].map(a=>[a.textContent.replace(' ↗',''),decodeURIComponent(a.href)]))})()")
   check('I1 a bird card links to БДЗП, its voices on xeno-canto and Wikipedia', kos,
-    {'БДЗП':'https://www.google.com/search?q=site:bspb.org Кос','Гласове':'https://xeno-canto.org/species/Turdus-merula','Уикипедия':'https://bg.wikipedia.org/w/index.php?search=Turdus merula&go=Go'})
+    {'БДЗП':'https://bspb.org/определител/','Гласове':'https://xeno-canto.org/species/Turdus-merula','Уикипедия':'https://bg.wikipedia.org/w/index.php?search=Turdus merula&go=Go'})
   fl=pg.evaluate("(()=>{const c=[...document.querySelectorAll('.sp')].find(c=>c.querySelector('.nm').textContent==='Розово фламинго');return [...c.querySelectorAll('.idl a')].map(a=>decodeURIComponent(a.href))})()")
   check('I2 a bird added by the user works too, by its Latin name', fl[1:], ['https://xeno-canto.org/species/Phoenicopterus-roseus','https://bg.wikipedia.org/w/index.php?search=Phoenicopterus roseus&go=Go'])
   st=pg.evaluate("(()=>{const c=[...document.querySelectorAll('.sp')].find(c=>c.querySelector('.nm').textContent==='Странна птица');return [...c.querySelectorAll('.idl a')].map(a=>decodeURIComponent(a.href))})()")
@@ -26,7 +26,7 @@ try:
   np_.value.close();pg.wait_for_timeout(150)
   check('I4 a link opens in a new window and doesn\'t open the bird\'s page', (pg.evaluate("spSel"),pg.evaluate("view")), (None,'life'))
   pg.locator('.sp .nm',has_text='Кос').first.click();pg.wait_for_timeout(200)
-  check('I5 the bird\'s own page has the links too', list(L('.spd').keys()), ['БДЗП','Гласове','Уикипедия'])
+  check('I5 the bird\'s own page has the links too, at the bottom just above „Картичка за споделяне“', (list(L('.spd').keys()),pg.evaluate("document.querySelector('.spd .idl').nextElementSibling.querySelector('[data-spcard]')!==null"),pg.inner_text('[data-spcard]')), (['БДЗП','Гласове','Уикипедия'],True,'Картичка за споделяне'))
   pg.click('.tab[data-v="goals"]');pg.fill('#tg-in','Черен щъркел');pg.click('#tg-add');pg.wait_for_timeout(200)
   check('I6 so do the Цели cards', list(L('.tgc').keys()), ['БДЗП','Гласове','Уикипедия'])
   pg.click('.tab[data-v="log"]');pg.click('#toggle');pg.fill('#f-bg','Горска дърволазка');pg.locator('#f-bg').dispatch_event('change')

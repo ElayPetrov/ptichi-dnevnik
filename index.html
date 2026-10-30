@@ -422,7 +422,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .bdsec{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:16px;margin:16px 0 8px;color:var(--ink)}
 .tgadd{margin-bottom:12px}
 .idl{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:12.5px} .idl a{color:var(--s);text-decoration:none;font-weight:600}
-.idl.big{font-size:14px;gap:4px 16px;margin:8px 0 2px}
+.idl.big{font-size:14px;gap:4px 16px;margin:8px 0 2px} .idl.spbot{margin:14px 0 6px}
 .cmplink{background:none;border:0;padding:0 0 0 8px;color:var(--s);font:inherit;font-size:12px;font-weight:600;text-transform:none;letter-spacing:0;cursor:pointer}
 .cmpr{padding:10px 0;border-bottom:1px solid var(--line)} .cmpr b{display:block;font-size:15px} .cmpr small{color:var(--mut);font-style:italic}
 .ckadd{display:flex;gap:8px;flex-wrap:nowrap} .add.sec.ckbtn{padding:12px 13px} .ckadd input{flex:1 1 auto;min-width:0;margin:0} .ckadd .btn{flex:0 0 auto}
@@ -719,7 +719,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <button type="button" class="btn" id="pickCancel">Отказ</button>
     <button type="button" class="btn pri" id="pickOk" disabled>Готово</button></div>
 </dialog>
-<dialog id="cardDlg"><img id="cardImg" alt="Карта за споделяне">
+<dialog id="cardDlg"><img id="cardImg" alt="Картичка за споделяне">
   <div class="fbtns"><button type="button" class="btn pri" id="cardShare">Сподели</button>
     <button type="button" class="btn" id="cardSave">Изтегли</button><button type="button" class="btn" id="cardClose">Затвори</button></div></dialog>
 
@@ -1050,7 +1050,7 @@ function renderSpecies(el,k){
   let h='<button class="again" data-spback>← Моите видове</button><div class="spd">'+
     (()=>{const n=new Set(rs.map(o=>o.date)).size,t=rankOf(n),nx=RANKS[t],pv=t?RANKS[t-1][0]:0;
       return '<div style="display:flex;gap:12px;align-items:center"><div class="thw"><div class="th none rk'+t+'" style="width:60px;height:60px">'+silFor(r.fam)+'</div>'+crownHTML(t,'big')+'</div><div class="big" style="min-width:0">'+esc(r.bg||r.en||r.la)+'</div></div>'+
-        '<div class="rkline">'+rankLine(n)+'</div>'+idLinks(r,'big')+(nx?'<div class="bdp rkbar"><i style="width:'+Math.round(100*(n-pv)/(nx[0]-pv))+'%"></i></div>':'');})()+
+        '<div class="rkline">'+rankLine(n)+'</div>'+(nx?'<div class="bdp rkbar"><i style="width:'+Math.round(100*(n-pv)/(nx[0]-pv))+'%"></i></div>':'');})()+
     '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':'',r.fam?esc(r.fam):''].filter(Boolean).join(' · ')+'</div>'+
     (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
     '<h4>Доказателства</h4><div class="row"><span>чух</span><span>'+fd(o=>o.h)+'</span></div>'+
@@ -1062,7 +1062,7 @@ function renderSpecies(el,k){
     (morn.length>=2?'<h4>Спрямо изгрева</h4><div class="row"><span>сутрешните записи</span><span>обикновено '+(Math.round(med(morn))>=0?dur(Math.round(med(morn)))+' след':dur(-Math.round(med(morn)))+' преди')+' изгрева</span></div>':'')+
     '<h4>Места</h4>'+Object.entries(P).sort((a,b)=>b[1]-a[1]).map(([p,n])=>'<div class="row"><span>'+esc(p)+'</span><span>'+n+'×</span></div>').join('')+
     (rs.some(o=>o.photo)?'<h4>Снимки</h4><div class="thstrip">'+rs.filter(o=>o.photo).reverse().map(o=>'<div class="th" data-th="'+o.photo+'"></div>').join('')+'</div>':'')+
-    '<div class="fbtns"><button type="button" class="btn" data-spcard>Карта за споделяне</button></div></div>';
+    idLinks(r,'big spbot')+'<div class="fbtns"><button type="button" class="btn" data-spcard>Картичка за споделяне</button></div></div>';
   h+=rs.slice().reverse().map(o=>'<div class="srow"><div>'+human(o.date)+(o.time?' · '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+
     (o.note?'<div class="meta">'+esc(o.note)+'</div>':'')+'</div><div class="tags">'+(o.h?'<span class="tag h">чух</span>':'')+
     (o.s?'<span class="tag s">видях</span>':'')+(o.p?'<span class="tag p">снимах</span>':'')+'</div></div>').join('');
@@ -1570,7 +1570,7 @@ function renderOuts(el){const L=outings();
       '<div class="ed"><div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(o.time||'')+'</span><span class="n'+(o.u?' u':'')+'">'+esc(o.bg||o.en||o.la)+
         (o.count?' · '+esc(o.count):'')+'</span><button type="button" data-ed="'+o.id+'">промени</button></div>').join('')+'</div>'+
       '<button type="button" class="btn" data-oadd="'+esc(x.id)+'">+ птица</button><button type="button" class="btn" data-oedit="'+esc(x.id)+'">промени излета</button>'+
-      '<button type="button" class="btn" data-ocard>карта</button><button type="button" class="btn" data-oinv="'+esc(x.id)+'">покани</button></div>';}
+      '<button type="button" class="btn" data-ocard>картичка</button><button type="button" class="btn" data-oinv="'+esc(x.id)+'">покани</button></div>';}
     h+='</div>';}
   el.innerHTML=h;
   for(const m of el.querySelectorAll('[data-omap]')){const x=L.find(y=>y.id===m.dataset.omap);
@@ -1942,7 +1942,7 @@ function yayNew(o,n){const sto=n===100;   // вид № 100 е „СТО!“
   return {cls:sto?'gold':'',cf:sto?30:16,ms:sto?7000:5000,after:el=>yayPic(el,o),
     html:'<div class="yaypic">'+silFor(o.fam)+'</div><div class="yaytx"><div class="yayt">'+(sto?'СТО!':'Честито, нов вид!')+'</div>'+yayName(o)+
       '<div class="yayn">Вид № '+n+' в дневника ти</div>'+(!sto&&MILE(n)?'<div class="yaym">Кръгла бройка — '+n+' вида!</div>':'')+
-      '<button type="button" class="yaycard" data-yaycard="'+esc(key(o))+'">карта за споделяне</button></div>'};}
+      '<button type="button" class="yaycard" data-yaycard="'+esc(key(o))+'">картичка за споделяне</button></div>'};}
 function yayYear(o){const k=key(o),y=+o.date.slice(0,4);   // първа среща с вида за годината; при прелетните — спрямо миналата
   const last=SURE().filter(x=>key(x)===k&&+x.date.slice(0,4)===y-1).map(x=>x.date).sort()[0];
   let cmp='';if(last){const d=doy(o.date)-doy(last),a=Math.abs(d);
@@ -1964,7 +1964,7 @@ function outingCard(id){const byDT=(a,b)=>(a.date+(a.time||'')).localeCompare(b.
       '<div class="yaynm">'+ks.length+(ks.length===1?' вид':' вида')+' · '+rs.length+(rs.length===1?' запис':' записа')+'</div>'+
       (bits.length?'<div class="yaym">'+bits.join(' · ')+'</div>':'')+
       (t?'<div class="yayn">първа птица: '+esc(t.bg||t.en||t.la)+' в '+esc(t.time)+'</div>':'')+
-      '<button type="button" class="yaycard" data-yayout="'+esc(id)+'">карта за споделяне</button></div>'};}
+      '<button type="button" class="yaycard" data-yayout="'+esc(id)+'">картичка за споделяне</button></div>'};}
 document.getElementById('yay').addEventListener('click',e=>{const c=e.target.closest('[data-yaycard]'),t=e.target.closest('[data-yayout]');
   yayHide();if(c)spCard(c.dataset.yaycard);if(t)outCard(t.dataset.yayout);});
 
@@ -2214,7 +2214,7 @@ document.getElementById('ebird').onclick=openEbird;
 // Определителят им няма отделни адреси за видовете. Без латинско име — търсене по името.
 function idLinks(o,cls){const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en)||{},
     la=(c.la||o.la||'').trim(),bg=(c.bg||o.bg||'').trim(),en=(c.en||o.en||'').trim(),L=[];
-  if(bg)L.push(['БДЗП','https://www.google.com/search?q='+encodeURIComponent('site:bspb.org '+bg)]);
+  if(bg)L.push(['БДЗП','https://bspb.org/%D0%BE%D0%BF%D1%80%D0%B5%D0%B4%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB/']);
   if(/^[A-Z][a-zë-]+ [a-z-]+/.test(la))L.push(['Гласове','https://xeno-canto.org/species/'+la.split(/\s+/).slice(0,2).join('-')]);
   else if(en||bg)L.push(['Гласове','https://xeno-canto.org/explore?query='+encodeURIComponent(en||bg)]);
   if(la||bg||en)L.push(['Уикипедия','https://bg.wikipedia.org/w/index.php?search='+encodeURIComponent(la||bg||en)+'&go=Go']);
@@ -2513,7 +2513,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-30.3';
+const VER='2026-10-30.4';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

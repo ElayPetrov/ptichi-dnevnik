@@ -36,7 +36,7 @@ try:
   check('Y7 with a photo, it shows your photo; no round number at 11', (pg.locator('#yay .yaypic img').count(),'Кръгла' in pg.inner_text('#yay')), (1,False))
   pg.click('#yay .yaycard');pg.wait_for_function("document.getElementById('cardDlg').open&&document.getElementById('cardImg').naturalWidth>0",timeout=6000)
   pg.wait_for_timeout(450)
-  check('Y8 its „карта за споделяне“ opens the share card for that species, and the pop-up closes', (pg.evaluate("document.getElementById('cardDlg').open"),'Erithacus-rubecula' in pg.evaluate("cardFile&&cardFile.name"),shown()), (True,True,False))
+  check('Y8 its „картичка за споделяне“ opens the share card for that species, and the pop-up closes', (pg.evaluate("document.getElementById('cardDlg').open"),'Erithacus-rubecula' in pg.evaluate("cardFile&&cardFile.name"),shown()), (True,True,False))
   pg.evaluate("document.getElementById('cardDlg').close()")
   # during an outing the form reopens for the next bird and keeps the cursor; the pop-up doesn't get in the way
   pg.click('#sessStart');pg.fill('#f-bg','Зеленика');pg.locator('#f-bg').dispatch_event('change');pg.click('[data-s="h"]');pg.click('#savebtn');pg.wait_for_timeout(300)
