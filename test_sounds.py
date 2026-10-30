@@ -22,10 +22,10 @@ try:
   pg=ctx.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
   pg.add_init_script("if(!localStorage.getItem('bird-journal-v3'))localStorage.setItem('bird-journal-v3',%s)"%json.dumps(json.dumps(data,ensure_ascii=False)))
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400);pg.evaluate("yayHide&&yayHide()")
-  links=pg.evaluate("[...document.querySelectorAll('#view .o .nm')].slice(0,40).map(n=>[n.textContent.split(' ·')[0],!!n.querySelector('[data-spgo]')])")
-  check('S1 in Дневник a bird\'s name opens its page; an unsure-only bird has none to open', (['Кос',True] in links,['Горска дърволазка',False] in links), (True,True))
+  links=pg.evaluate("[...document.querySelectorAll('#view .o .nm')].slice(0,40).map(n=>[n.textContent.split(' ·')[0],!!n.querySelector('[data-sprf]')])")
+  check('S1 in Дневник every bird\'s name opens its card (an unsure-only bird gets the lighter one)', (['Кос',True] in links,['Горска дърволазка',True] in links), (True,True))
   pg.evaluate("for(const d of new Set(OBS.map(o=>o.date)))setDay(d,true);render()")   # all days open, so there is something to scroll
-  nm=pg.locator('[data-spgo]:visible').filter(has_text='Кос').nth(4);nm.scroll_into_view_if_needed();pg.wait_for_timeout(100);y0=pg.evaluate("Math.round(scrollY)");nm.click();pg.wait_for_timeout(300)
+  nm=pg.locator('[data-sprf]:visible').filter(has_text='Кос').nth(4);nm.scroll_into_view_if_needed();pg.wait_for_timeout(100);y0=pg.evaluate("Math.round(scrollY)");nm.click();pg.wait_for_timeout(300)
   check('S2 ...it opens the bird\'s page, with „← Дневник“ to go back', (pg.evaluate("view"),pg.inner_text('[data-spback]')), ('life','← Дневник'))
   pg.wait_for_selector('.xcw.has',timeout=5000)
   check('S3 under the picture: small „▶ песен“ and „▶ обаждане“', pg.evaluate("[...document.querySelectorAll('.spd .xcb button')].map(b=>b.textContent)"), ['▶ песен','▶ обаждане'])

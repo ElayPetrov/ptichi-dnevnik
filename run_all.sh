@@ -45,6 +45,7 @@ run welcome  python3 test_onboard.py 8979
 run idlinks  python3 test_idlinks.py 8980
 run refphoto python3 test_refphoto.py 8981
 run sounds   python3 test_sounds.py 8982
+run spnav    python3 test_spnav.py 8983
 run xcfn     sh -c 'cp supabase/functions/xc/index.ts /tmp/xcfn.mjs && node test_xcfn.mjs'
 printf '%-9s %s of 4 save taps landed\n' tap "$(python3 tap_test.py 8950 ptichi-dnevnik.html | grep -c "'saved'")"
 printf '%-9s ' sun; python3 sun_check.py | tail -1

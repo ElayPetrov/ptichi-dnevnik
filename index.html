@@ -914,7 +914,7 @@ function yearFirsts(){const y=String(new Date().getFullYear());const m={};
 
 function render(){
   stats();fillLists();sessUI();bakUI();RECLK=null;
-  {const c=view+'|'+(spSel||'')+'|'+(fsel||'');if(c!==xcCtx){xcStop();xcCtx=c;}}   // звукът спира, щом смениш раздела или птицата
+  {const c=view+'|'+(spSel||'')+'|'+(spInfo?spInfo.bg+spInfo.la:'')+'|'+(fsel||'');if(c!==xcCtx){xcStop();xcCtx=c;}}   // звукът спира, щом смениш раздела или птицата
   const el=document.getElementById('view');
   document.querySelector('.stats').style.display=OBS.length?'':'none';   // нулите не казват нищо, преди да има записи
   document.getElementById('filters').style.display=OBS.length&&(view==='log'||(view==='life'&&!spSel))?'':'none';
@@ -984,10 +984,27 @@ function renderLog(el){
     h+=recHTML(o,F);}
   const otip=OBS.length>=3&&!SESS&&!OUTS.length&&!OBS.some(o=>o.sess)?tipHTML('outing',TIPTXT.outing):'';
   el.innerHTML=inviteBanner()+otip+onThisDay()+h+'</div></div>'+(multiM?'</div></div>':'')+(multiY?'</div></div>':'');loadPhotos();}
-let RECLK=null,spFrom=null;
-function recNm(o){const t=esc(o.bg||o.en||o.la);if(view!=='log'||fsel)return t;
-  if(!RECLK)RECLK=new Set(SURE().map(key));const k=key(o);
-  return k&&RECLK.has(k)?'<button type="button" class="nmlink" data-spgo="'+esc(k)+'">'+t+'</button>':t;}
+// Името на вида води до картата на птицата — от Дневник, публикациите в Приятели, излетите и Цели.
+// Вид, който още нямаш (на приятел, или цел), отваря олекотена карта: снимка, гласове, имена и връзки.
+// „← …“ връща там, откъдето си дошъл, на същото място.
+let RECLK=null,spBack=null,spInfo=null;
+const spLink=(o,txt)=>'<button type="button" class="nmlink" data-sprf data-bg="'+esc(o.bg||'')+'" data-la="'+esc(o.la||'')+'" data-en="'+esc(o.en||'')+'">'+(txt==null?esc(o.bg||o.en||o.la):txt)+'</button>';
+function recNm(o){return view==='log'&&!fsel?spLink(o):esc(o.bg||o.en||o.la);}
+const spBackLabel=()=>({log:'← Дневник',friends:'← Приятели',outs:'← Излети',goals:'← Цели'})[spBack&&spBack.v]||'← Моите видове';
+function spOpen(ref){spBack={v:view,f:fsel,y:window.scrollY};
+  const m=SURE().find(o=>tgMatch(o,ref));
+  if(m){spSel=key(m);spInfo=null;}else{spSel='~';spInfo=ref;}
+  view='life';fsel=null;for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v==='life');render();
+  window.scrollTo({top:document.getElementById('view').offsetTop-90});}
+function renderUnseen(el,o){const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en)||{},
+    r={bg:c.bg||o.bg,la:c.la||o.la,en:c.en||o.en,fam:c.fam||o.fam||''},la=refLatin(r);
+  renderLifeRefs();
+  el.innerHTML='<button class="again" data-spback>'+spBackLabel()+'</button><div class="spd">'+
+    (la?'<div class="refbig" data-ref="'+esc(la)+'" data-refcr="full"></div>':'')+
+    '<div class="sphd"><div class="thw"><div class="th none" style="width:60px;height:60px">'+silFor(r.fam)+'</div></div><div class="big" style="min-width:0">'+esc(r.bg||r.en||r.la)+'</div></div>'+
+    (la?'<div class="xcw" data-xc="'+esc(la)+'"></div>':'')+
+    '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':'',r.fam?esc(r.fam):''].filter(Boolean).join(' · ')+'</div>'+
+    '<div class="note2" style="max-width:none;margin-top:10px">Още нямаш сигурни записи на този вид.</div>'+idLinks(r,'big spbot')+'</div>';}
 function recHTML(o,F){
     return '<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
       // името и бройката заемат свободното място и се пренасят; „промени“ и „×“ стоят вдясно и не се застъпват с тях
@@ -1056,6 +1073,7 @@ function renderLife(el){
   loadThumbs();}
 // ---- страница на вида ----
 function renderSpecies(el,k){
+  if(k==='~')return spInfo?renderUnseen(el,spInfo):(spSel=null,renderLife(el));
   const rs=SURE().filter(o=>key(o)===k).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
   const r=speciesMap()[k];if(!rs.length||!r){spSel=null;return renderLife(el);}
   const un=OBS.filter(o=>o.u&&key(o)===k).length;
@@ -1066,7 +1084,7 @@ function renderSpecies(el,k){
   const med=a=>{const b=[...a].sort((x,y)=>x-y),i=b.length>>1;return b.length%2?b[i]:(b[i-1]+b[i])/2;};
   const mx=Math.max(1,...Object.values(r.months));
   renderLifeRefs();
-  let h='<button class="again" data-spback>'+(spFrom==='log'?'← Дневник':'← Моите видове')+'</button><div class="spd">'+
+  let h='<button class="again" data-spback>'+spBackLabel()+'</button><div class="spd">'+
     (()=>{const n=new Set(rs.map(o=>o.date)).size,t=rankOf(n),nx=RANKS[t],pv=t?RANKS[t-1][0]:0;
       const la=refLatin(r);
       return (la?'<div class="refbig" data-ref="'+esc(la)+'" data-refcr="full">'+crownHTML(t,'big')+'</div>':'')+
@@ -1588,8 +1606,8 @@ function renderOuts(el){const L=outings();
       '<div class="tags">'+(x.complete===true?'<span class="tag s">пълен списък</span>':x.complete===false?'<span class="tag b">частичен списък</span>':'<span class="tag h">пълнотата не е отбелязана</span>')+'</div></div></div>'+
       (pics.length?'<div class="ouph">'+pics.map(o=>'<div class="th" data-th="'+o.photo+'" title="'+esc(o.bg||o.en||o.la)+'"></div>').join('')+'</div>':'');
     if(openOut===x.id){const rs=[...x.rs].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
-      h+='<div class="sl">'+sp.map(r=>'<span class="v'+r.L+'">'+esc(r.nm)+'</span>').join('')+'</div>'+
-      '<div class="ed"><div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(o.time||'')+'</span><span class="n'+(o.u?' u':'')+'">'+esc(o.bg||o.en||o.la)+
+      h+='<div class="sl">'+sp.map(r=>'<span class="v'+r.L+'">'+spLink({bg:r.nm})+'</span>').join('')+'</div>'+
+      '<div class="ed"><div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(o.time||'')+'</span><span class="n'+(o.u?' u':'')+'">'+spLink(o)+
         (o.count?' · '+esc(o.count):'')+'</span><button type="button" data-ed="'+o.id+'">промени</button></div>').join('')+'</div>'+
       '<button type="button" class="btn" data-oadd="'+esc(x.id)+'">+ птица</button><button type="button" class="btn" data-oedit="'+esc(x.id)+'">промени излета</button>'+
       '<button type="button" class="btn" data-ocard>картичка</button><button type="button" class="btn" data-oinv="'+esc(x.id)+'">покани</button></div>';}
@@ -2061,7 +2079,7 @@ function renderGoals(el){tgSeed();
         also=((FR&&FR.fol)||[]).filter(f=>Object.values((f.data&&f.data.tg)||{}).some(x=>x&&!x.del&&(nrm(x.la)===t.k||nrm(x.bg)===t.k||tgMatch({bg:x.bg,la:x.la,en:x.en},t)))).map(f=>f.name),
         nw=tgVisit.has(t.k);
       const rl=refLatin(t);
-      return '<div class="tgc'+(mine.length?' done':'')+(nw?' new':'')+'"><div class="tgh">'+(rl?'<div class="refsm" data-ref="'+esc(rl)+'"></div>':'')+'<div class="tgn"><b>'+esc(t.bg||t.la)+(nw?'<span class="newtag">ново</span>':'')+'</b>'+
+      return '<div class="tgc'+(mine.length?' done':'')+(nw?' new':'')+'"><div class="tgh">'+(rl?'<div class="refsm" data-ref="'+esc(rl)+'"></div>':'')+'<div class="tgn"><b>'+spLink(t)+(nw?'<span class="newtag">ново</span>':'')+'</b>'+
           '<small>'+[t.la,t.en].filter(Boolean).map(esc).join(' · ')+'</small>'+idLinks(t)+'</div><button type="button" class="tgx-del" data-tgdel="'+esc(t.k)+'" aria-label="махни целта">×</button></div>'+
         (mine.length?'<div class="tgs ok">✓ видян на '+human(mine[0].date)+'</div>':'')+
         (b?'<div class="tgs">Последно: '+esc(b.f.name)+', '+relDay(b.o.date)+(b.o.place?', '+esc(b.o.place):'')+(b.km!=null?', '+(b.km<10?b.km.toFixed(1).replace('.',','):Math.round(b.km))+' км':'')+'</div>':
@@ -2112,14 +2130,13 @@ document.addEventListener('click',e=>{
   const ocd=e.target.closest('[data-ocard]');
   if(ocd){outCard(ocd.closest('[data-out]').dataset.out);return;}
   if(e.target.closest('[data-spcard]')){spCard(spSel);return;}
-  if(e.target.closest('[data-spback]')){spSel=null;
-    if(spFrom==='log'){spFrom=null;view='log';for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v==='log');render();backTo('log');return;}
+  if(e.target.closest('[data-spback]')){spSel=null;spInfo=null;
+    if(spBack){const b=spBack;spBack=null;view=b.v;fsel=b.f;for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v===b.v);
+      render();backY.go=b.y;backTo('go');return;}
     render();backTo('sp');return;}
-  const sg=e.target.closest('[data-spgo]');if(sg){backY.log=window.scrollY;spFrom='log';spSel=sg.dataset.spgo;view='life';
-    for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v==='life');render();
-    window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
   const spc=e.target.closest('.sp[data-k]');
-  if(spc&&!e.target.closest('.th img')&&!e.target.closest('a')){backY.sp=window.scrollY;spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
+  if(spc&&!e.target.closest('.th img')&&!e.target.closest('a')){backY.sp=window.scrollY;spBack=null;spInfo=null;spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
+  const sr=e.target.closest('[data-sprf]');if(sr){e.preventDefault();e.stopImmediatePropagation();spOpen({bg:sr.dataset.bg,la:sr.dataset.la,en:sr.dataset.en});return;}
   const tpb=e.target.closest('[data-tip]');if(tpb){tipDone(tpb.dataset.tip);const x=tpb.closest('[data-tipbox]');if(x)x.remove();return;}
   const xb=e.target.closest('[data-xcplay]');if(xb){xcPlay(xb);return;}
   if(e.target.closest('[data-refclear]')){refClear().then(()=>render());return;}
@@ -2620,7 +2637,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-30.7';
+const VER='2026-10-30.8';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -2813,7 +2830,7 @@ function fdSocial(it){if(!ME)return '';const k=it.p.id+'|'+it.key,rows=SOC.filte
   return h;}
 // запис само за четене — подреден като в Дневника (без „промени“, „×“ и „+ друг вид тук“)
 function fdRec(p,r){const F=fdMarks(p);
-  return '<div class="o l'+lvl(r)+(r.u?' uns':'')+'"><div class="oh"><div class="nm">'+esc(r.bg||r.en||r.la)+(r.count?' <span style="color:var(--mut);font-weight:400">· '+esc(r.count)+'</span>':'')+'</div></div>'+
+  return '<div class="o l'+lvl(r)+(r.u?' uns':'')+'"><div class="oh"><div class="nm">'+spLink(r)+(r.count?' <span style="color:var(--mut);font-weight:400">· '+esc(r.count)+'</span>':'')+'</div></div>'+
     (r.u&&r.alt&&r.alt.length?'<div class="altnm">или '+r.alt.map(esc).join(' или ')+'</div>':'')+
     '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':''].filter(Boolean).join(' · ')+'</div>'+
     '<div class="meta">'+[r.time?'🕐 '+esc(r.time)+((x=>x?' ('+x+')':'')(sunRel(r))):'',r.fam?esc(r.fam):'',r.place?'📍 '+esc(r.place):'',
