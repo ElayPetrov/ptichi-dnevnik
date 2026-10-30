@@ -430,7 +430,10 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .xccr{display:none;font-size:11px;color:var(--mut);margin-top:4px;text-decoration:none;line-height:1.3} .xccr.on{display:block}
 .nmlink{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 30%,transparent);text-underline-offset:3px}
 .cmpr{padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start} .cmpt{flex:1;min-width:0}
-.refbig{position:relative;display:none;margin:0 0 10px} .refbig.has{display:block} .refbig img{display:block;width:100%;max-height:240px;object-fit:cover;border-radius:12px;background:var(--bg2)}
+.refbig{position:relative;display:none;margin:0 0 10px} .refbig.has{display:block}
+.refpic{position:relative;height:220px;border-radius:12px;overflow:hidden;background:var(--bg2)}
+.refbg{position:absolute;inset:-20px;background-size:cover;background-position:center;filter:blur(18px) brightness(.85);opacity:.9}
+.refpic img{position:relative;display:block;width:100%;height:100%;object-fit:contain}
 .refbig .crown{display:none} .refbig.has .crown{display:block;top:-10px;right:-10px}
 .refbig.has + .sphd .thw{display:none}
 .refcr{display:block;font-size:11px;color:var(--mut);margin-top:4px;text-decoration:none;line-height:1.3}
@@ -2311,7 +2314,12 @@ async function refBlob(la,meta){let b=null;try{b=await getPhoto('ref:'+la);}catc
 const refCredit=m=>m&&!m.none?'Снимка: '+(m.author||'неизвестен автор')+(m.lic?' · '+m.lic:'')+' · Wikimedia Commons':'';
 async function loadRefs(){for(const d of document.querySelectorAll('[data-ref]')){if(d.dataset.done)continue;d.dataset.done='1';
   const la=d.dataset.ref,meta=await refMeta(la),b=await refBlob(la,meta);if(!b||!document.body.contains(d))continue;
-  const im=document.createElement('img');im.src=URL.createObjectURL(b);im.alt='';d.prepend(im);d.classList.add('has');
+  const im=document.createElement('img'),u=URL.createObjectURL(b);im.src=u;im.alt='';
+  if(d.classList.contains('refbig')){   // голямата снимка се вижда цялата — главата не се отрязва; кутията не расте
+    const w=document.createElement('div');w.className='refpic';const bg=document.createElement('div');bg.className='refbg';bg.style.backgroundImage='url("'+u+'")';
+    w.append(bg,im);d.prepend(w);}
+  else d.prepend(im);
+  d.classList.add('has');
   const cr=refCredit(meta);if(cr){const a=document.createElement('a');a.href=meta.page||'#';a.target='_blank';a.rel='noopener';
     if(d.dataset.refcr==='full'){a.className='refcr';a.textContent=cr;}else{a.className='refc';a.textContent='©';a.title=cr;}d.append(a);}}}
 function refUsed(){return Object.values(REFI).reduce((a,m)=>a+(m.size||0),0);}
@@ -2637,7 +2645,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-30.8';
+const VER='2026-10-30.9';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

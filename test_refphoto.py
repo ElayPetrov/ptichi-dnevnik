@@ -32,6 +32,7 @@ try:
   check('P2 the bird\'s page shows the photo at the top with its credit, linked to Commons', (pg.inner_text('.refbig .refcr'),pg.get_attribute('.refbig .refcr','href')),
     ('Снимка: Иван Тестов · CC BY-SA 4.0 · Wikimedia Commons','https://commons.wikimedia.org/wiki/File:T.jpg'))
   check('P3 ...the small silhouette steps aside and the crown sits on the photo; nothing ran from the credit text', (pg.is_visible('.sphd .thw'),pg.evaluate("window.__x||0")), (False,0))
+  check('P3b the whole photo fits a box of fixed height (nothing cut off), the sides filled with a blurred copy', pg.evaluate("(()=>{const w=document.querySelector('.refbig .refpic');return [Math.round(w.getBoundingClientRect().height),getComputedStyle(w.querySelector('img')).objectFit,!!w.querySelector('.refbg')]})()"), [220,'contain',True])
   pg.click('[data-spback]');pg.locator('.sp .nm',has_text='Сойка').first.click();pg.wait_for_timeout(800)
   check('P4 an article without a picture: the silhouette stays', (pg.locator('.refbig.has').count(),pg.is_visible('.sphd .thw')), (0,True))
   # offline: the blackbird's photo was kept, the jay never had one
