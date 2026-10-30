@@ -21,7 +21,7 @@ try:
   pg.click('.tab[data-v="goals"]');pg.wait_for_timeout(200)
   check('G2 empty to begin with: only what you add appears', (pg.locator('.tgc').count(),pg.locator('.empty').count()), (0,1))
   pg.fill('#tg-in','Черен щъркел');pg.click('#tg-add');pg.wait_for_timeout(200)
-  card=lambda:pg.evaluate("[...document.querySelectorAll('.tgc')].map(c=>c.innerText.replace(/\\n+/g,' | '))")
+  card=lambda:pg.evaluate("[...document.querySelectorAll('.tgc')].map(c=>{const k=c.cloneNode(true);k.querySelectorAll('.idl').forEach(x=>x.remove());document.body.appendChild(k);const s=k.innerText.replace(/\\n+/g,' | ');k.remove();return s;})")   # the identification links are checked in test_idlinks
   check('G3 a species from the list: its names filled in, Петър\'s last sighting with distance, and that he is after it too', card(),
     ['Черен щъркел | Ciconia nigra · Black stork | × | Последно: Петър, преди 3 дни, Копринка, 12 км | И Петър го търси.'])
   pg.fill('#tg-in','Розово фламинго');pg.click('#tg-add');pg.wait_for_timeout(200)

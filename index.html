@@ -421,6 +421,10 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .bdintro{color:var(--mut);font-size:13.5px;margin:0 0 10px}
 .bdsec{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:16px;margin:16px 0 8px;color:var(--ink)}
 .tgadd{margin-bottom:12px}
+.idl{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:12.5px} .idl a{color:var(--s);text-decoration:none;font-weight:600}
+.idl.big{font-size:14px;gap:4px 16px;margin:8px 0 2px}
+.cmplink{background:none;border:0;padding:0 0 0 8px;color:var(--s);font:inherit;font-size:12px;font-weight:600;text-transform:none;letter-spacing:0;cursor:pointer}
+.cmpr{padding:10px 0;border-bottom:1px solid var(--line)} .cmpr b{display:block;font-size:15px} .cmpr small{color:var(--mut);font-style:italic}
 .ckadd{display:flex;gap:8px;flex-wrap:nowrap} .add.sec.ckbtn{padding:12px 13px} .ckadd input{flex:1 1 auto;min-width:0;margin:0} .ckadd .btn{flex:0 0 auto}
 .cksug{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px} .cktools{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
 .ckr{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);padding:2px 0}
@@ -599,7 +603,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   </div>
   <div class="fg"><button type="button" class="bh" id="f-unsure" aria-pressed="false">? не съм сигурен — няма да се брои</button></div>
   <div id="tip-unsure"></div>
-  <div class="fg" id="f-alt-row" style="display:none"><label>Може да е и</label>
+  <div class="fg" id="f-alt-row" style="display:none"><label>Може да е и <button type="button" class="cmplink" id="f-cmp">сравни ↗</button></label>
     <div class="altchips" id="f-alt"></div>
     <div class="geo"><input id="f-alt-in" list="bgnames" placeholder="друг вид, който може да е" style="flex:1;min-width:160px"><button type="button" class="btn" id="f-alt-add">+ добави</button></div>
     <div class="altsug" id="f-alt-sug"></div></div>
@@ -689,6 +693,11 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="odb"><div id="wl-body"></div></div>
   <div class="pickfoot"><button type="button" class="btn" id="wl-skip">Пропусни</button><span class="wldots" id="wl-dots"></span><span style="flex:1"></span>
     <button type="button" class="btn" id="wl-prev">Назад</button><button type="button" class="btn pri" id="wl-next" autofocus>Напред</button></div>
+</dialog>
+<dialog id="cmpDlg" class="pickdlg outdlg" aria-label="Сравни">
+  <div class="pickhead">Сравни</div>
+  <div class="odb"><div class="note2" style="max-width:none">Описание, снимки и гласове — отварят се в нов прозорец.</div><div id="cmp-list"></div></div>
+  <div class="pickfoot"><span style="flex:1"></span><button type="button" class="btn pri" id="cmp-close" autofocus>Готово</button></div>
 </dialog>
 <dialog id="outDlg" class="pickdlg outdlg" aria-label="Излет">
   <div class="pickhead">Излет</div>
@@ -1024,7 +1033,7 @@ function renderLife(el){
     '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':''].filter(Boolean).join(' · ')+'</div>'+
     (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
     '<div class="meta">пръв път '+human(r.first)+(r.n>1?' · последно '+human(r.last):'')+'</div>'+
-    '<div class="meta rkm">'+rankLine((D[r.k]||new Set()).size)+'</div></div>'+
+    '<div class="meta rkm">'+rankLine((D[r.k]||new Set()).size)+'</div>'+idLinks(r)+'</div>'+
     '<div class="cnt">'+r.n+'×</div></div>').join('')+unH;
   loadThumbs();}
 // ---- страница на вида ----
@@ -1041,7 +1050,7 @@ function renderSpecies(el,k){
   let h='<button class="again" data-spback>← Моите видове</button><div class="spd">'+
     (()=>{const n=new Set(rs.map(o=>o.date)).size,t=rankOf(n),nx=RANKS[t],pv=t?RANKS[t-1][0]:0;
       return '<div style="display:flex;gap:12px;align-items:center"><div class="thw"><div class="th none rk'+t+'" style="width:60px;height:60px">'+silFor(r.fam)+'</div>'+crownHTML(t,'big')+'</div><div class="big" style="min-width:0">'+esc(r.bg||r.en||r.la)+'</div></div>'+
-        '<div class="rkline">'+rankLine(n)+'</div>'+(nx?'<div class="bdp rkbar"><i style="width:'+Math.round(100*(n-pv)/(nx[0]-pv))+'%"></i></div>':'');})()+
+        '<div class="rkline">'+rankLine(n)+'</div>'+idLinks(r,'big')+(nx?'<div class="bdp rkbar"><i style="width:'+Math.round(100*(n-pv)/(nx[0]-pv))+'%"></i></div>':'');})()+
     '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':'',r.fam?esc(r.fam):''].filter(Boolean).join(' · ')+'</div>'+
     (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
     '<h4>Доказателства</h4><div class="row"><span>чух</span><span>'+fd(o=>o.h)+'</span></div>'+
@@ -1689,6 +1698,8 @@ function drawAlts(){const c=document.getElementById('f-alt');if(!c)return;
   const sg=unsure?altSuggest():[];
   document.getElementById('f-alt-sug').innerHTML=sg.length?'<span class="note2">от същия род:</span> '+sg.map(n=>'<button type="button" class="chip" data-alts="'+esc(n)+'">+ '+esc(n)+'</button>').join(''):'';}
 function addAlt(v){v=(v||'').trim();if(!v||nrm(v)===nrm(fld('bg').value)||alts.some(a=>nrm(a)===nrm(v)))return;alts.push(v);drawAlts();}
+document.getElementById('f-cmp').onclick=openCmp;
+document.getElementById('cmp-close').onclick=()=>document.getElementById('cmpDlg').close();
 document.getElementById('f-alt-add').onclick=()=>{const i=document.getElementById('f-alt-in');addAlt(i.value);i.value='';};
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='tg-in'){e.preventDefault();tgSubmit();}});
 document.getElementById('f-alt-in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addAlt(e.target.value);e.target.value='';}});
@@ -2027,7 +2038,7 @@ function renderGoals(el){tgSeed();
         also=((FR&&FR.fol)||[]).filter(f=>Object.values((f.data&&f.data.tg)||{}).some(x=>x&&!x.del&&(nrm(x.la)===t.k||nrm(x.bg)===t.k||tgMatch({bg:x.bg,la:x.la,en:x.en},t)))).map(f=>f.name),
         nw=tgVisit.has(t.k);
       return '<div class="tgc'+(mine.length?' done':'')+(nw?' new':'')+'"><div class="tgh"><div class="tgn"><b>'+esc(t.bg||t.la)+(nw?'<span class="newtag">ново</span>':'')+'</b>'+
-          '<small>'+[t.la,t.en].filter(Boolean).map(esc).join(' · ')+'</small></div><button type="button" class="tgx-del" data-tgdel="'+esc(t.k)+'" aria-label="махни целта">×</button></div>'+
+          '<small>'+[t.la,t.en].filter(Boolean).map(esc).join(' · ')+'</small>'+idLinks(t)+'</div><button type="button" class="tgx-del" data-tgdel="'+esc(t.k)+'" aria-label="махни целта">×</button></div>'+
         (mine.length?'<div class="tgs ok">✓ видян на '+human(mine[0].date)+'</div>':'')+
         (b?'<div class="tgs">Последно: '+esc(b.f.name)+', '+relDay(b.o.date)+(b.o.place?', '+esc(b.o.place):'')+(b.km!=null?', '+(b.km<10?b.km.toFixed(1).replace('.',','):Math.round(b.km))+' км':'')+'</div>':
           (mine.length?'':'<div class="tgs mut">Никой от приятелите ти още не го е записал.</div>'))+
@@ -2078,7 +2089,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-spcard]')){spCard(spSel);return;}
   if(e.target.closest('[data-spback]')){spSel=null;render();backTo('sp');return;}
   const spc=e.target.closest('.sp[data-k]');
-  if(spc&&!e.target.closest('.th img')){backY.sp=window.scrollY;spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
+  if(spc&&!e.target.closest('.th img')&&!e.target.closest('a')){backY.sp=window.scrollY;spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
   const tpb=e.target.closest('[data-tip]');if(tpb){tipDone(tpb.dataset.tip);const x=tpb.closest('[data-tipbox]');if(x)x.remove();return;}
   if(e.target.closest('[data-tipsreset]')){TIPS={};lsSet(KTIP,TIPS);openWelcome();return;}
   if(e.target.closest('[data-first]')){view='log';for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v==='log');render();openForm(null);window.scrollTo({top:0,behavior:'smooth'});return;}
@@ -2198,6 +2209,20 @@ document.getElementById('eb-ok').onclick=()=>{const F=ebirdFiles();document.getE
   F.forEach((c,i)=>setTimeout(()=>offer('ebird'+(F.length>1?'-'+(i+1):'')+'.csv',c,'text/csv'),i*700));};
 document.getElementById('eb-no').onclick=()=>document.getElementById('ebDlg').close();
 document.getElementById('ebird').onclick=openEbird;
+// ---- помощ за разпознаване (ниво 1): връзки за всеки вид — БДЗП, гласове (xeno-canto), Уикипедия ----
+// Работят и за видовете, добавени от групата (по латинското име). БДЗП: търсене в bspb.org по името, защото
+// Определителят им няма отделни адреси за видовете. Без латинско име — търсене по името.
+function idLinks(o,cls){const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en)||{},
+    la=(c.la||o.la||'').trim(),bg=(c.bg||o.bg||'').trim(),en=(c.en||o.en||'').trim(),L=[];
+  if(bg)L.push(['БДЗП','https://www.google.com/search?q='+encodeURIComponent('site:bspb.org '+bg)]);
+  if(/^[A-Z][a-zë-]+ [a-z-]+/.test(la))L.push(['Гласове','https://xeno-canto.org/species/'+la.split(/\s+/).slice(0,2).join('-')]);
+  else if(en||bg)L.push(['Гласове','https://xeno-canto.org/explore?query='+encodeURIComponent(en||bg)]);
+  if(la||bg||en)L.push(['Уикипедия','https://bg.wikipedia.org/w/index.php?search='+encodeURIComponent(la||bg||en)+'&go=Go']);
+  return L.length?'<span class="idl'+(cls?' '+cls:'')+'">'+L.map(([t,u])=>'<a href="'+u+'" target="_blank" rel="noopener">'+t+' ↗</a>').join('')+'</span>':'';}
+function openCmp(){const v=[{bg:fld('bg').value,la:fld('la').value,en:fld('en').value},...alts.map(a=>({bg:a}))].filter(x=>(x.bg||x.la||'').trim());
+  document.getElementById('cmp-list').innerHTML=v.map(x=>{const c=listFind('bg',x.bg)||listFind('la',x.la)||{};
+    return '<div class="cmpr"><b>'+esc(x.bg||x.la)+'</b><small>'+esc([c.la||x.la,c.en||x.en].filter(Boolean).join(' · '))+'</small>'+idLinks(x)+'</div>';}).join('');
+  document.getElementById('cmpDlg').showModal();}
 // ---- „Списък“: бърз брояч за излета ----
 // Твоят списък с птици — сам го съставяш (предложенията влизат само с твое докосване) и той остава до следващия излет.
 // По време на излет докосване = +1 с часа и мястото в момента; на повече от ~300 м от предишния запис на същия вид
@@ -2488,7 +2513,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-30.2';
+const VER='2026-10-30.3';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
