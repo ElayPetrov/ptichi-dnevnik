@@ -1,4 +1,7 @@
-# Птичи дневник
+# Пера́ — дневник за наблюдение на птици
+
+(Formerly „Птичи дневник“; the web address and the data are unchanged.)
+
 
 A bird field-observation journal: one HTML file with a Bulgarian interface. It installs on a phone, works offline, and can share and sync journals between friends through Supabase.
 

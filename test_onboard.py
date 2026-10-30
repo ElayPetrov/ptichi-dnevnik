@@ -15,7 +15,7 @@ try:
     if pg.is_visible('#wl-next'):pg.click('#wl-next')
     elif pg.locator('[data-wl="next"]').count():pg.click('[data-wl="next"]')   # the profile card has its own „По-късно“
     pg.wait_for_timeout(80)
-  check('O1 a new user gets four welcome cards', heads, ['Добре дошъл в Птичи дневник','Сложи го на началния екран','Профил — по желание, но си струва','Първата ти птица'])
+  check('O1 a new user gets four welcome cards', heads, ['Добре дошъл в Пера́','Сложи го на началния екран','Профил — по желание, но си струва','Първата ти птица'])
   pg.click('#wl-prev');pg.wait_for_timeout(80);t=pg.inner_text('#wl-body')
   check('O2 the profile card says why and how, and what friends will see', ('копие в облака' in t,'кръгчето с птичката горе вдясно' in t,'точните места' in t), (True,True,True))
   pg.click('[data-wl="acct"]');pg.wait_for_timeout(250)

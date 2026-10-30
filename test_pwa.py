@@ -23,11 +23,11 @@ try:
   pg.evaluate("navigator.serviceWorker.ready"); pg.wait_for_timeout(500)
   errs=cdp.send('Page.getInstallabilityErrors')['installabilityErrors']
   check('P1 Chrome sees it as installable', [e['errorId'] for e in errs], [])
-  mf=cdp.send('Page.getAppManifest'); check('P2 manifest parses cleanly', (mf.get('errors'),'Птичи дневник' in mf.get('data','')), ([],True))
+  mf=cdp.send('Page.getAppManifest'); check('P2 manifest parses cleanly', (mf.get('errors'),'Пера́' in mf.get('data','')), ([],True))
   pg.reload(); pg.wait_for_function("navigator.serviceWorker.controller!==null")
   pg.click('#toggle'); pg.fill('#f-bg','Сврака'); pg.click('#savebtn')
   pg.ctx.set_offline(True); pg.reload(); pg.wait_for_function("document.getElementById('n-obs').textContent==='1'")
-  check('P3 offline: the app opens and shows the saved record', (pg.title(),pg.inner_text('#n-obs')), ('Птичи дневник','1'))
+  check('P3 offline: the app opens and shows the saved record', (pg.title(),pg.inner_text('#n-obs')), ('Пера́ — дневник за наблюдение на птици','1'))
   pg.ctx.set_offline(False)
   html=open(ROOT+'/index.html',encoding='utf-8').read()
   import re as _re; open(ROOT+'/index.html','w',encoding='utf-8').write(_re.sub(r"const VER='[^']*'","const VER='TEST-NEW'",html))

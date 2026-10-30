@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Птичи дневник</title>
+<title>Пера́ — дневник за наблюдение на птици</title>
 <!-- за инсталиране като приложение (от Netlify); от локален файл просто не се зареждат -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="apple-mobile-web-app-title" content="Дневник">
+<meta name="apple-mobile-web-app-title" content="Пера́">
 <meta name="theme-color" content="#f1e9d4">
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -547,7 +547,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <g class="s-snow" fill="var(--snow)"><polygon points="62,237 56,247 68,247"/><polygon points="130,249 124,259 136,259"/><polygon points="1120,233 1114,243 1126,243"/><polygon points="1053,253 1047,263 1059,263"/><polygon points="301,261 295,271 307,271"/><polygon points="906,257 900,267 912,267"/></g>
   <rect width="1200" height="300" fill="none"/>
 </svg>
-<div class="ttl"><h1>Птичи дневник</h1><div class="sub">полеви наблюдения</div></div>
+<div class="ttl"><h1>Пера́</h1><div class="sub">дневник за наблюдение на птици</div></div>
 </div>
 
 <div class="stats">
@@ -1173,7 +1173,7 @@ async function makeCard(o){   // o: {kicker,title,sub,meta,list:[{nm,L}],rows:[[
     if(o.list.length>shown.length){x.fillStyle=CP.mut;x.fillText('+ още '+(o.list.length-shown.length),L+(shown.length>=per?col:0)+34,y+(shown.length%per)*50);}}
   if(o.rows){x.font='34px '+SAN;for(const [a,b] of o.rows){if(y>H-170)break;x.fillStyle=CP.ink;x.fillText(a,L,y);x.fillStyle=CP.mut;x.textAlign='right';x.fillText(b,R,y);x.textAlign='left';y+=56;}}
   x.fillStyle=CP.h4;x.save();x.translate(L+30,H-70);x.scale(1,1);x.fill(new Path2D(BIRDP));x.restore();
-  x.fillStyle=CP.mut;x.font='500 30px '+SER;x.fillText('Птичи дневник',L+76,H-60);
+  x.fillStyle=CP.mut;x.font='500 30px '+SER;x.fillText('Пера́',L+76,H-60);
   const blob=await new Promise(r=>c.toBlob(r,'image/png'));
   cardFile=new File([blob],'ptichi-dnevnik-'+(o.file||'karta')+'.png',{type:'image/png'});
   const im=document.getElementById('cardImg');if(im.src)URL.revokeObjectURL(im.src);im.src=URL.createObjectURL(blob);
@@ -2237,7 +2237,7 @@ function ebirdRows(){const R=OBS.filter(o=>!o.u),O={};for(const x of outings())O
       if(x.start&&x.end){let d=mins(x.end)-mins(x.start);if(d<0)d+=1440;dur=String(d);
         const pts=byT.filter(o=>o.geo).map(o=>o.geo);let km=0;for(let i=1;i<pts.length;i++)km+=kmBetween(pts[i-1],pts[i]);
         if(km>=0.05){proto='Traveling';dist=(km*0.621371).toFixed(2);}else proto='Stationary';}}
-    const sub=sz('Птичи дневник'+(x&&x.with?'; с '+x.with:''));
+    const sub=sz('Пера́'+(x&&x.with?'; с '+x.with:''));
     // един вид — един ред в списъка
     const sp=new Map();
     for(const o of rs){const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en)||{},la=(c.la||o.la||'').trim(),k=nrm(la||o.bg||o.en);
@@ -2453,7 +2453,7 @@ const TIPTXT={
   phen:'Тук с времето ще видиш кога идват и си отиват птиците около теб — след няколко месеца става интересно.',
   code:'Дай кода си на приятел — така той вижда дневника ти и може да те кани на излети. Добави и неговия код, за да виждаш неговия.'};
 const WLC=[
-  ()=>'<h2>Добре дошъл в Птичи дневник</h2><p>Записвай птиците, които виждаш и чуваш — бързо, на терен, дори без връзка.</p><p class="mut">Документирай излетите си. Следи птиците по време и локации. Сравнявай с приятели.</p>',
+  ()=>'<h2>Добре дошъл в Пера́</h2><p>Записвай птиците, които виждаш и чуваш — бързо, на терен, дори без връзка.</p><p class="mut">Документирай излетите си. Следи птиците по време и локации. Сравнявай с приятели.</p>',
   ()=>'<h2>Сложи го на началния екран</h2><p>Така работи без интернет, а GPS-ът — по-точно.</p><p>'+(standalone()?'✓ Вече е на началния ти екран.':
      instEvt?'<button type="button" class="btn pri" data-inst>Инсталирай</button>':
      isIOS?'В Safari: <b>Сподели</b> (квадратчето със стрелка) → <b>Add to Home Screen</b>.':'В Chrome: менюто <b>⋮</b> горе вдясно → <b>Добавяне към началния екран</b>.')+'</p>',
@@ -2577,7 +2577,7 @@ function bakUI(){const t=lastBak(), days=t?Math.floor((Date.now()-t)/864e5):0;
 const canShareFiles=(()=>{try{return !!(navigator.share&&navigator.canShare&&navigator.canShare({files:[new File(['{}'],'t.txt',{type:'text/plain'})]}));}catch(e){return false;}})();
 async function shareBak(){const d=bakData();let f=new File([d],bakName()+'.json',{type:'application/json'});
   try{if(!navigator.canShare({files:[f]}))f=new File([d],bakName()+'.txt',{type:'text/plain'});}catch(e){}   // Chrome на Android не праща .json; .txt минава и „Възстанови" го приема
-  try{await navigator.share({files:[f],title:'Птичи дневник — резервно копие'});markBak();}
+  try{await navigator.share({files:[f],title:'Пера́ — резервно копие'});markBak();}
   catch(e){if(e&&e.name!=='AbortError')alert('Не стана. Ползвай „Резервно копие" и прехвърли файла ръчно.');}}
 document.getElementById('bak').onclick=()=>{offer(bakName()+'.json',bakData(),'application/json');markBak();};
 document.getElementById('shr').onclick=shareBak;
@@ -2645,7 +2645,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-10-30.9';
+const VER='2026-10-30.10';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -3023,7 +3023,7 @@ document.addEventListener('click',async e=>{
       sbStat='';sbForm.pw='';render();await afterSignIn();return render();}
     if(act==='out'){await SB.auth.signOut();ME=null;FR=null;lsSet(KF,null);sbMsg='';sbForm.pw='';footNote();return render();}
     if(act==='copy'){await navigator.clipboard.writeText(MYCODE);a.textContent='Копирано';return;}
-    if(act==='send'){try{await navigator.share({text:'Моят код за Птичи дневник: '+(MYCODE.match(/.{1,4}/g)||[]).join('-')+'\n'+SB_SITE});}catch(x){}return;}
+    if(act==='send'){try{await navigator.share({text:'Моят код за Пера́: '+(MYCODE.match(/.{1,4}/g)||[]).join('-')+'\n'+SB_SITE});}catch(x){}return;}
     if(act==='newcode'){if(!confirm('Нов код? Старият спира да работи за нови приятели; които вече виждат дневника ти, остават.'))return;
       const r=await SB.rpc('new_code');if(r.error)throw r.error;MYCODE=r.data||MYCODE;return render();}
     if(act==='add'){const c=v('fr-code').trim();if(!c)return;const r=await SB.rpc('follow',{friend_code:c});
