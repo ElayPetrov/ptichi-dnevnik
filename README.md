@@ -9,7 +9,7 @@ Everything sits in this one folder, and GitHub Pages publishes it as it is from 
 - The app: `index.html` is the whole app, `sw.js` keeps it working offline, and `manifest.webmanifest` with the three icons makes it installable.
 - The database: `setup.sql` sets up sharing and sync. Safe to re-run in the Supabase SQL editor.
 - The species list: built into `index.html` (`SPL`). 268 species from BSPB's Определител (Bulgarian and Latin names), with the Latin name checked against Wikipedia's „List of birds of Bulgaria“ (IOC 9.2), which also gives the English name and the family. It suggests names, fills empty fields, and links names that belong to one species when counting; it never changes a record. `species.csv` is the same list as a spreadsheet, with BSPB's older Latin names where they differ.
-- The tests: `prepare.sh`, `setup.sh`, `run_all.sh`, `sbstack.py`, `sun.js`, `sun_check.py`, `tap_test.py`, the `test_*.py` files and two test photos. 529 automated checks and a sunrise check, built to run in a Claude sandbox; see `TESTS.md`.
+- The tests: `prepare.sh`, `setup.sh`, `run_all.sh`, `sbstack.py`, `sun.js`, `sun_check.py`, `tap_test.py`, the `test_*.py` files and two test photos. 548 automated checks and a sunrise check, built to run in a Claude sandbox; see `TESTS.md`.
 
 The Supabase key in `index.html` is the publishable key, meant to sit in a browser. What each person can read or change is enforced by the database rules in `setup.sql`.
 
@@ -26,3 +26,7 @@ Change the cache name `V` in `sw.js` only when `sw.js` itself changes.
 Province outlines for the eBird export come from Apache Superset's country map of Bulgaria (Apache License 2.0), simplified.
 
 Reference photos come from Wikimedia Commons through English Wikipedia's article on each species, shown with the photographer and licence as Commons requires.
+
+## Bird sounds (xeno-canto)
+
+The „▶ песен“ / „▶ обаждане“ buttons ask a small Supabase Edge Function, `xc` (code in `supabase/functions/xc/index.ts`), which holds the xeno-canto API key as the secret `XC_KEY` and returns only the chosen recordings' numbers and credits. The sound itself streams from xeno-canto. One-time setup: run the `xc_cache` part of `setup.sql`, create the function `xc` with that code, switch off its JWT verification, and add the secret `XC_KEY`. xeno-canto recordings are mostly CC BY-NC: fine for a free app, to be revisited if the app ever charges money.

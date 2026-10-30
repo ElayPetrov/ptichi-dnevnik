@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-529 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+548 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -23,7 +23,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_pwa.py | 23 | installability, offline opening, updates, backups, arrivals, install hints |
 | test_outings.py | 25 | unsure records, outings as events, backups v4/v5/v6 |
 | test_views.py | 14 | sun times, species page, year curve, share cards |
-| test_sql.py | 24 | database access rules, as three users |
+| test_sql.py | 25 | database access rules, as three users |
 | test_share.py | 24 | two people end to end: sign-up, codes, sync, comparison, offline, second phone |
 | test_twoway.py | 14 | one account on phone and laptop: merges, deletions, outings, photos, a write race |
 | test_guard.py | 7 | a friend's two devices; someone signing in on another person's browser; the message when sign-ups are off |
@@ -56,6 +56,8 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_onboard.py | 17 | first steps: four welcome cards (with the profile's why and how), „Направи профил сега“, the data buttons moved into the profile with „Как се ползва“, calm empty screens, each tip once, the outing tip after three records, examples marked „напр.“, and nothing for people who already use the app |
 | test_idlinks.py | 12 | identification links (БДЗП, Гласове, Уикипедия) on Моите видове cards, the species page and Цели, for user-added and nameless birds too; links open a new window without opening the card; one small „сравни ↗“ in „Може да е и“ that lists the candidates with their links |
 | test_refphoto.py | 10 | the reference photo from Wikimedia Commons (stand-in answers): not in your list, on the bird's page with photographer and licence, the silhouette when there is no picture, kept for offline, in „Сравни“ and on Цели cards (also for a user-added species), not kept with under ~50 MB free, cleared from Данни, and no script from credit text |
+| test_sounds.py | 11 | „▶ песен“ and „▶ обаждане“ under the picture and in „Сравни“ (stand-in helper, silent audio): credit while playing, one sound at a time, stop, remembered choices, nothing when the helper is unreachable; names in Дневник open the bird's page and „← Дневник“ comes back to the same spot |
+| test_xcfn.mjs | 7 | the Supabase helper `xc` in Node: Bulgaria first for songs, clean calls first, the secret key never in the answer, shared memory, only Latin names accepted, CORS |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

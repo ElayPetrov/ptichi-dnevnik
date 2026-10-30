@@ -66,4 +66,6 @@ check("S22 ...so the person you share with cannot pick up your code to follow yo
 newA=as_(A,"select public.new_code()")[0][0]
 check("S23 a new code replaces the old one; the old one stops working", (newA!=codeA,as_(C,"select public.follow(%s)",(codeA,))[:22],as_(C,"select public.follow(%s)",(newA,))[0][0]), (True,'ERR: unknown code',A))
 check("S24 cannot rename someone else", as_(B,"update public.profiles set name='x' where user_id=%s",(A,)), 0)
+cur.execute("insert into public.xc_cache(sp,data) values ('Turdus merula','{\"song\":null}')")
+check("S25 the sound helper's memory is closed to the app: signed-in users can neither read nor write it", ((lambda r: isinstance(r,str) or r[0][0]==0)(as_(A,"select count(*) from public.xc_cache")), as_(A,"insert into public.xc_cache(sp,data) values ('X y','{}')").startswith('ERR')), (True,True))
 print('FAILURES:',fails)

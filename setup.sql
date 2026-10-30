@@ -182,3 +182,12 @@ create policy "profiles: read" on public.profiles for select to authenticated
   using (public.can_view(user_id)
          or exists (select 1 from public.viewers v where v.viewer = profiles.user_id and v.owner = (select auth.uid()))
          or exists (select 1 from public.social s where s.author = profiles.user_id and public.can_view(s.owner)));
+
+-- Гласовете (2026-10-30): паметта на помощника „xc“ (Edge Function), който избира песен и обаждане от xeno-canto.
+-- Чете и пише само помощникът със служебния ключ; за приложението таблицата е затворена (RLS без правила).
+create table if not exists public.xc_cache (
+  sp   text primary key,
+  data jsonb not null,
+  at   timestamptz not null default now()
+);
+alter table public.xc_cache enable row level security;
