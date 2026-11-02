@@ -517,11 +517,13 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .lbcap{color:#fff;font-size:14px;text-align:center;margin-top:8px} .lbcap a,.lbcap .spl{color:#fff} .lbcap .btn{margin-left:6px;padding:4px 10px;font-size:13px}
 .o.flash{outline:3px solid var(--accent);outline-offset:2px;transition:outline-color 1.5s}
 .athead{display:flex;flex-direction:column;gap:2px;margin:4px 0 10px;font-size:14.5px}
-.atz{margin:0 0 12px} .atzl{font-size:11.5px;color:var(--mut);margin-bottom:2px} .atz svg{width:100%;height:auto;display:block}
+.atz{margin:0 0 12px} .atzl{font-size:11.5px;color:var(--mut);margin-bottom:2px}
+.atsc{overflow:auto;max-height:62vh;border-radius:10px;-webkit-overflow-scrolling:touch} .atsc svg{display:block}
+.atq.none rect{fill:none;stroke:var(--line);stroke-dasharray:none}
 .atq rect{fill:var(--bg2);stroke:var(--line2);stroke-width:1} .atq{cursor:pointer}
 .atq.s1 rect{fill:color-mix(in srgb,var(--s) 18%,var(--card))} .atq.s2 rect{fill:color-mix(in srgb,var(--s) 35%,var(--card))} .atq.s3 rect{fill:color-mix(in srgb,var(--s) 55%,var(--card))}
 .atq.s4 rect{fill:color-mix(in srgb,var(--s) 75%,var(--card))} .atq.s5 rect{fill:var(--s)}
-.atq.none rect{fill:none;stroke-dasharray:4 3} .atq.here rect{stroke:var(--accent);stroke-width:3} .atq.sel rect{stroke:var(--ink);stroke-width:3}
+ .atq.here rect{stroke:var(--accent);stroke-width:3} .atq.sel rect{stroke:var(--ink);stroke-width:3}
 .atn{font-family:Fraunces,Georgia,serif;font-size:15px;fill:var(--ink)} .atq.s4 .atn,.atq.s5 .atn,.atq.s4 .atc,.atq.s5 .atc{fill:#fff} .atc{font-size:8.5px;fill:var(--mut)}
 .atd{margin-top:6px} .atd h3{margin:0 0 2px} .atold{color:var(--mut)}
 .atleg{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:12px} .atleg i{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--line2)}
@@ -2882,6 +2884,10 @@ function sqOf(geo){const g=parseGeo(geo);if(!g)return null;const [la,lo]=g.split
   const u=toUTM(la,lo),e100=Math.floor(u.E/100000),n100=Math.floor(u.N/100000),col=MGC[((u.z-1)%3)*8+e100-1],row=MGR[(n100+(u.z%2?0:5))%20];
   if(!col||!row)return null;const e10=Math.floor((u.E%100000)/10000),n10=Math.floor((u.N%100000)/10000);
   return {id:u.z+u.band+' '+col+row+' '+e10+n10,sh:col+row+e10+n10,z:u.z,E0:Math.floor(u.E/10000)*10000,N0:Math.floor(u.N/10000)*10000};}
+// кодът на квадрат по зоната и югозападния му ъгъл — направо, без връщане към градуси (така клетките до границата на зоната не се объркват)
+function sqId(z,E0,N0){const la=fromUTM(z,E0+5e3,N0+5e3)[0],band='CDEFGHJKLMNPQRSTUVWXX'[Math.floor((la+80)/8)],e100=Math.floor(E0/1e5),n100=Math.floor(N0/1e5);
+  const col=MGC[((z-1)%3)*8+e100-1],row=MGR[(n100+(z%2?0:5))%20];if(!col||!row)return '';
+  return z+band+' '+col+row+' '+Math.floor((E0%1e5)/1e4)+Math.floor((N0%1e5)/1e4);}
 function atlasData(){const S={};for(const o of SURE()){const q=sqOf(o.geo);if(!q)continue;const s=S[q.id]||(S[q.id]={...q,sp:{},days:new Set()});s.days.add(o.date);
     const k=key(o);if(!k)continue;const r=s.sp[k]||(s.sp[k]={o,nm:o.bg||o.en||o.la,n:0,bc:{}});r.n++;if(o.bg){r.nm=o.bg;r.o=o;}
     if(o.bc&&BC[o.bc]){const y=o.date.slice(0,4);r.bc[y]=Math.max(r.bc[y]||0,o.bc);}}
@@ -2892,14 +2898,20 @@ function atlasHere(){if(atAsked||!navigator.geolocation)return;atAsked=true;
   navigator.geolocation.getCurrentPosition(p=>{atHere=sqOf(p.coords.latitude.toFixed(5)+','+p.coords.longitude.toFixed(5));if(view==='map'&&mapMode==='grid')render();},()=>{},{maximumAge:6e5,timeout:8000});}
 function renderAtlas(el,bar){const S=atlasData(),L=Object.values(S),Y=today().slice(0,4);atlasHere();
   const last=[...SURE()].sort(newest).find(o=>sqOf(o.geo)),here=atHere||(last?sqOf(last.geo):null);
-  let svg='';
-  for(const z of [...new Set(L.map(s=>s.z).concat(here?[here.z]:[]))].sort()){const Z=L.filter(s=>s.z===z),pts=Z.concat(here&&here.z===z&&!S[here.id]?[here]:[]);
-    const minE=Math.min(...pts.map(s=>s.E0)),maxE=Math.max(...pts.map(s=>s.E0)),minN=Math.min(...pts.map(s=>s.N0)),maxN=Math.max(...pts.map(s=>s.N0));
-    const cols=(maxE-minE)/1e4+1,rows=(maxN-minN)/1e4+1,cs=46;
-    let g='';for(const s of pts){const x=(s.E0-minE)/1e4*cs,y=(maxN-s.N0)/1e4*cs,n=S[s.id]?Object.keys(S[s.id].sp).length:0,me=here&&here.id===s.id,sel=atSel===s.id;
-      g+='<g class="atq'+(n?' s'+ATSH(n):' none')+(me?' here':'')+(sel?' sel':'')+'" data-atq="'+esc(s.id)+'" tabindex="0"><rect x="'+(x+1)+'" y="'+(y+1)+'" width="'+(cs-2)+'" height="'+(cs-2)+'" rx="5"/>'+
-        '<text x="'+(x+cs/2)+'" y="'+(y+cs/2+2)+'" text-anchor="middle" class="atn">'+(n||'')+'</text><text x="'+(x+cs/2)+'" y="'+(y+cs-6)+'" text-anchor="middle" class="atc">'+esc(s.sh)+'</text></g>';}
-    svg+='<div class="atz"><div class="atzl">зона '+z+'</div><svg viewBox="0 0 '+cols*cs+' '+rows*cs+'" style="max-width:'+Math.max(cols*cs,200)+'px">'+g+'</svg></div>';}
+  // всяка зона — с една и съща големина на квадрата и пълна мрежа (и празните квадрати), с един квадрат поле наоколо;
+  // зоната, в която си, е първа; широките мрежи се плъзгат настрани
+  const cs=44;let svg='';
+  const zs=[...new Set(L.map(s=>s.z).concat(here?[here.z]:[]))].sort((a,b)=>(here&&a===here.z?-1:here&&b===here.z?1:a-b));
+  for(const z of zs){const pts=L.filter(s=>s.z===z).concat(here&&here.z===z&&!S[here.id]?[here]:[]);
+    const minE=Math.min(...pts.map(s=>s.E0))-1e4,maxE=Math.max(...pts.map(s=>s.E0))+1e4,minN=Math.min(...pts.map(s=>s.N0))-1e4,maxN=Math.max(...pts.map(s=>s.N0))+1e4;
+    const cols=(maxE-minE)/1e4+1,rows=(maxN-minN)/1e4+1,band=(pts[0].id||'').split(' ')[0].replace(/\d+/,'');
+    let g='';
+    for(let cx=0;cx<cols;cx++)for(let cy=0;cy<rows;cy++){const E0=minE+cx*1e4,N0=maxN-cy*1e4,x=cx*cs,y=cy*cs;
+      const id=sqId(z,E0,N0),sq=S[id],n=sq?Object.keys(sq.sp).length:0,me=here&&here.id===id,sel=atSel===id;
+      g+='<g class="atq'+(n?' s'+ATSH(n):' none')+(me?' here':'')+(sel?' sel':'')+'"'+(id?' data-atq="'+esc(id)+'"':'')+(n||me?' tabindex="0"':'')+'><rect x="'+(x+1)+'" y="'+(y+1)+'" width="'+(cs-2)+'" height="'+(cs-2)+'" rx="5"/>'+
+        (n?'<text x="'+(x+cs/2)+'" y="'+(y+cs/2+2)+'" text-anchor="middle" class="atn">'+n+'</text>':'')+
+        (n||me?'<text x="'+(x+cs/2)+'" y="'+(y+cs-6)+'" text-anchor="middle" class="atc">'+esc((id.split(' ')[1]||'')+(id.split(' ')[2]||''))+'</text>':'')+'</g>';}
+    svg+='<div class="atz"><div class="atzl">зона '+z+(z===34?' · западно от 24° изт.':z===35?' · източно от 24° изт.':'')+'</div><div class="atsc"><svg width="'+cols*cs+'" height="'+rows*cs+'" viewBox="0 0 '+cols*cs+' '+rows*cs+'">'+g+'</svg></div></div>';}
   const s=atSel&&S[atSel];
   const det=s?'<div class="atd"><h3>'+esc(s.id)+'</h3><div class="note2" style="max-width:none">'+Object.keys(s.sp).length+' вида · '+s.days.size+(s.days.size===1?' ден':' дни')+' в квадрата</div>'+
     Object.values(s.sp).map(r=>{const yb=r.bc[Y],ys=Object.keys(r.bc).sort().reverse();return [yb||0,r.nm,'<div class="ar"><div><b>'+spLink(r.o,esc(r.nm))+'</b>'+
@@ -2910,7 +2922,10 @@ function renderAtlas(el,bar){const S=atlasData(),L=Object.values(S),Y=today().sl
   el.innerHTML=bar+'<div class="athead">'+(here?(atHere?'Ти си в квадрат <b>'+esc(here.id)+'</b>':'Последното ти място е в квадрат <b>'+esc(here.id)+'</b>'):'')+
     '<span class="note2" style="max-width:none">квадрати 10×10 км (UTM – MGRS), както в Атласа на птиците в България</span></div>'+
     (L.length?svg:'<div class="empty">Още няма записи с координати.</div>')+det+
-    '<div class="atleg"><i class="s1"></i>1–4 <i class="s2"></i>5–14 <i class="s3"></i>15–29 <i class="s4"></i>30–49 <i class="s5"></i>50+ вида</div>';}
+    '<div class="atleg"><i class="s1"></i>1–4 <i class="s2"></i>5–14 <i class="s3"></i>15–29 <i class="s4"></i>30–49 <i class="s5"></i>50+ вида</div>';
+  // мрежата започва около квадрата, в който си (или избрания)
+  setTimeout(()=>{for(const c of el.querySelectorAll('.atsc')){const t=c.querySelector('.atq.sel')||c.querySelector('.atq.here');if(!t)continue;const r=t.getBBox();
+    c.scrollLeft=Math.max(0,r.x+r.width/2-c.clientWidth/2);c.scrollTop=Math.max(0,r.y+r.height/2-c.clientHeight/2);}},0);}
 // квадратите и върху истинската карта (по избор)
 const KATOV='bird-journal-atlasov';let ATOV=!!lsGet(KATOV,false);
 function atlasOverlay(map){if(!ATOV||!window.L)return;
@@ -3244,7 +3259,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-02.9';
+const VER='2026-11-02.10';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

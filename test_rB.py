@@ -24,8 +24,10 @@ try:
   check('B1 Карта: „Атлас“ instead of „Схема“', pg.evaluate("[...document.querySelectorAll('[data-mm]')].map(b=>b.textContent)"), ['Истинска карта','Атлас'])
   pg.click('[data-mm="grid"]');pg.wait_for_timeout(1200)
   check('B2 your position’s square at the top (from the phone’s GPS)', pg.inner_text('.athead b'), '35T LH 61')
-  sq=pg.evaluate("[...document.querySelectorAll('.atq')].map(g=>g.dataset.atq+':'+g.querySelector('.atn').textContent).sort()")
+  sq=pg.evaluate("[...document.querySelectorAll('.atq:not(.none)')].map(g=>g.dataset.atq+':'+g.querySelector('.atn').textContent).sort()")
   check('B3 the squares with your records, in both zones, each with its number of species', sq, ['34T FN 92:1','35T LH 61:2','35T LH 63:1'])
+  geo=pg.evaluate("[...document.querySelectorAll('.atz')].map(z=>{const r=z.querySelector('.atq rect');return [z.querySelector('.atzl').textContent.split(' ')[1],Math.round(r.getBoundingClientRect().width),z.querySelectorAll('.atq.none').length>0]})")
+  check('B3b every zone has the same square size, a full grid with empty squares, and your zone comes first', geo, [['35',42,True],['34',42,True]])
   pg.click('[data-atq="35T LH 61"]');pg.wait_for_timeout(150)
   check('B4 tapping a square: its species, days, and the strongest breeding code this year (older years small)', (pg.inner_text('.atd h3'),pg.inner_text('.atd .note2'),pg.evaluate("[...document.querySelectorAll('.atd .ar')].map(a=>a.innerText.replace(/\\s+/g,' ').trim())")),
     ('35T LH 61','2 вида · 3 дни в квадрата',['Кос C14 B4 · 2025 2×','Сойка 1×']))
