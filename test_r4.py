@@ -43,25 +43,7 @@ try:
   rows=[l.split(',') for l in pg.evaluate("__f[0][1]").strip().split('\n')]
   check('A8 the eBird export: „Larus sp.“ as genus + sp., the subspecies with all three words', (sorted([r[1]+' '+r[2] for r in rows if r[1] in ('Larus','Motacilla')])), ['Larus sp.','Motacilla flava','Motacilla flava feldegg'])   # May's plain record is its own list
   pg.click('[data-acctback]')
-  # a friend's profile
-  pg.evaluate("ME={id:'me',email:'i@t.bg'};MYNAME='Иван';FR={fol:[{id:'u2',name:'Петър',data:%s,updated_at:new Date().toISOString()}],fans:[]};tgAdd({bg:'Кос',la:'Turdus merula',en:'Common blackbird'});"%json.dumps(fr,ensure_ascii=False))
-  pg.evaluate("BDG={'early:1':'2026-05-01'};fsel='u2';view='friends';render()");pg.wait_for_timeout(200)
-  top=pg.evaluate("[...document.querySelectorAll('#view .cmp')].map(c=>[...c.querySelectorAll('div')].map(d=>d.querySelector('span').textContent+':'+d.querySelector('b').textContent))")
-  check('A9 at the top: общи / само твои / само на Петър, then his наблюдения, видени, снимани, дни на терен', top,
-    [['общи вида:1','само твои:2','само на Петър:2'],['наблюдения:3','видени:2','снимани:1','дни на терен:2']])   # his „sp.“ record is left out
-  heads=pg.evaluate("[...document.querySelectorAll('#view .fsh span')].map(s=>s.textContent)")
-  check('A10 five folding sections, all folded to start', (heads[1:],pg.evaluate("[...document.querySelectorAll('#view .fsb')].filter(b=>b.style.display!=='none').length")),
-    (['Видовете на Петър · 3','Последни записи','Цели на Петър · 2','Значки на Петър · 2 · 1 златна'],0))
-  pg.click('[data-ffold="tg"]');pg.wait_for_timeout(80)
-  tg=pg.evaluate("[...document.querySelectorAll('[data-ffold=tg]+.fsb .ar')].map(a=>a.innerText.replace(/\\n+/g,' | '))")
-  check('A11 his targets: not yet seen first; a shared one says „и ти го търсиш“ and where you last saw it; one he reached has ✓', tg,
-    ['Черен щъркел','Кос ✓ | ✓ и ти го търсиш · ти си го виждал — последно 12 октомври 2026, Тюлбето · вече го е видял'])
-  pg.click('[data-ffold="bd"]');pg.wait_for_timeout(80)
-  check('A12 his badges, gold first, with your level beside each', pg.evaluate("[...document.querySelectorAll('[data-ffold=bd]+.fsb .ar')].map(a=>a.innerText.replace(/\\n+/g,' | '))"),
-    ['Ранобудник — злато | ти: бронз','Неуморен — бронз | ти: още нямаш'])
-  pg.evaluate("render()");pg.wait_for_timeout(80)
-  check('A13 the open sections stay open (remembered)', pg.evaluate("[...document.querySelectorAll('#view .fsh')].filter(h=>h.getAttribute('aria-expanded')==='true').map(h=>h.dataset.ffold)"), ['tg','bd'])
-  check('A14 his „sp.“ record isn\'t counted as a species in the comparison', 'Чайка sp.' in pg.inner_text('#view'), False)
+  # the friend's profile moved on in release 5 — its checks live in test_r5.py
   check('A15 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

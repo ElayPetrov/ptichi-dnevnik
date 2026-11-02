@@ -49,8 +49,8 @@ try:
   pe.fill('#fr-code',code.lower()[:6]+'-'+code[6:]);pe.click('[data-sb="add"]');pe.wait_for_selector('.fr .ar.tap')
   check('F6 Petar adds Ivan by code: Ivan appears with his sure species', pe.inner_text('.fr .ar.tap b'), 'Иван')
   check('F7 ...counted like the life list (unsure records left out)', pe.inner_text('.fr .ar.tap small').startswith('3 вида · 3 записа'), True)
-  pe.click('.fr .ar.tap');pe.wait_for_selector('.cmp')
-  check('F8 comparison: shared / only Petar / only Ivan, matched by any shared name', pe.eval_on_selector_all('.cmp:not(.c4) b',"e=>e.map(x=>x.textContent)"), ['2','1','1'])
+  pe.click('.fr .ar.tap');pe.wait_for_selector('.cbar')
+  check('F8 comparison: shared / only Petar / only Ivan, matched by any shared name', pe.evaluate("Object.fromEntries([...document.querySelectorAll('.cbar>div')].map(d=>[d.querySelector('span').textContent,d.querySelector('b').textContent]))"), {'само твои':'1','общи вида':'2','само на Иван':'1'})   # since 2026-11-02.3 a three-colour bar
   check('F9 ...and the lists behind the numbers', pe.eval_on_selector_all('.chips',"e=>e.map(x=>x.innerText.replace(/\\n/g,', '))"), ['Пчелояд','Кос'])
   pe.click('[data-ffold="rec"]')   # „Последни записи“ starts folded since 2026-11-02.2
   pe.wait_for_selector('[data-fph] img',timeout=5000)
@@ -74,7 +74,7 @@ try:
   pe.evaluate("SB=null;sbP=null;ME=null;sbTried=false;FR=null;fsel=null;document.querySelectorAll('script[src*=supabase]').forEach(s=>s.remove());delete window.supabase;view='acct';render()")
   pe.wait_for_function("document.querySelector('.fr h3')&&document.querySelector('.fr h3').textContent==='Без връзка'",timeout=5000)
   check("F16 offline: Ivan's journal is still there from the last download", (pe.locator('.fr .ar.tap').count(),pe.inner_text('.fr h3')), (1,'Без връзка'))
-  pe.click('.fr .ar.tap');check('F17 ...and opens', pe.locator('.cmp:not(.c4)').count(), 1)
+  pe.click('.fr .ar.tap');check('F17 ...and opens', pe.locator('.cbar').count(), 1)
   pe.ctx.unroute(SB+'/**');pe.ctx.unroute(CDN);pe.ctx.route(SB+'/**',st.handle);pe.ctx.route(CDN,lambda r:r.fulfill(path=UMD,headers={'access-control-allow-origin':'*','content-type':'application/javascript'}))
   # ---- Ivan on a second phone with an empty journal ----
   i2=person([]);i2.fill('#sb-mail','ivan@test.bg');i2.fill('#sb-pw','птица123');i2.click('[data-sb="in"]')

@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-612 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+596 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -62,7 +62,8 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_names.py | 13 | „Имаше ли предвид…?“ when you pause typing (never shifting the form under a tap); any name saves at once; the end-of-outing dialog and „допълни имената“ tags; the Latin must be „Род вид“; filled names update the records and join the group's list; the in-dialog typo fix; three-named new birds join by themselves; quiet mode in the profile |
 | test_restore.py | 7 | the backup's restore path rehearsed on local Postgres: the copy holds accounts as well as the app's tables; Supabase's documented restore command runs into a fresh database; every row, the Cyrillic journal, friend codes, row security and policies come back and work |
 | test_counts.py | 16 | „точно / поне / около“ and the sex-and-age counters (♂, ♀, възрастни, половонезрели, млади): saving, showing, the parts limit, the total from the parts, old free-text counts untouched, the three tags leaving the chips for new records, editing, the CSV and eBird exports; four map styles with „Улици“ from OpenStreetMap; the place picker's own remembered style, „Сателит + надписи“ by default |
-| test_r4.py | 15 | three equal name fields and the compact count line; „sp.“ from any name field, counted as a record not a species, with its tag; subspecies as a third Latin word, credited to the species; the eBird export of both; a friend's profile: comparison and his numbers on top, five folding sections remembered, his targets (shared, where you saw them, reached) and badges (with your level) |
+| test_r4.py | 11 | three equal name fields and the compact count line; „sp.“ from any name field, counted as a record not a species, with its tag; subspecies as a third Latin word, credited to the species; the eBird export of both (the friend's profile checks moved to test_r5.py) |
+| test_r5.py | 17 | breeding codes: the folded menu on the count line, three groups, the „?“ explanation, saving, the coloured chip, the strongest code per year on the bird card, the removed tags; „Подреди“ in Моите видове (name, records, group with headings, remembered); the Приятели filter; the redesigned friend profile (header, comparison bar, latest find, badges computed from his records, timeline) |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

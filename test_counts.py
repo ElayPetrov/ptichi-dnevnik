@@ -59,7 +59,7 @@ try:
   pg.evaluate("window.__f=[];offer=(n,c)=>__f.push([n,c]);0");pg.click('#acct');pg.click('#exp');pg.wait_for_timeout(150)
   csv=pg.evaluate("__f[0][1]").split('\n')
   row=[l for l in csv if 'Голям синигер' in l][0]
-  check('C11 Експорт CSV gets „Вид брой“ and „Пол и възраст“ after „Брой“', ('Брой,Вид брой,Пол и възраст,Чух' in csv[0],'"около"' in [l for l in csv if 'Голям корморан' in l][0],'"3♂ 2♀ · млади 1"' in row), (True,True,True))
+  check('C11 Експорт CSV gets „Вид брой“ and „Пол и възраст“ after „Брой“', ('Брой,Вид брой,Пол и възраст,Гнездене,Чух' in csv[0],'"около"' in [l for l in csv if 'Голям корморан' in l][0],'"3♂ 2♀ · млади 1"' in row), (True,True,True))
   pg.evaluate("__f=[]");pg.click('#ebird');pg.click('#eb-ok');pg.wait_for_timeout(300)
   eb=[l for l in pg.evaluate("__f[0][1]").split('\n') if 'Parus' in l][0].split(',')
   check('C12 the eBird export: the number, and sex and age in the species comment', (eb[3],'3♂ 2♀ · млади 1' in eb[4]), ('12',True))
