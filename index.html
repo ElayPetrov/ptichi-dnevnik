@@ -516,6 +516,19 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .galc span{display:block;font-size:11.5px;line-height:1.25;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lbcap{color:#fff;font-size:14px;text-align:center;margin-top:8px} .lbcap a,.lbcap .spl{color:#fff} .lbcap .btn{margin-left:6px;padding:4px 10px;font-size:13px}
 .o.flash{outline:3px solid var(--accent);outline-offset:2px;transition:outline-color 1.5s}
+.athead{display:flex;flex-direction:column;gap:2px;margin:4px 0 10px;font-size:14.5px}
+.atz{margin:0 0 12px} .atzl{font-size:11.5px;color:var(--mut);margin-bottom:2px} .atz svg{width:100%;height:auto;display:block}
+.atq rect{fill:var(--bg2);stroke:var(--line2);stroke-width:1} .atq{cursor:pointer}
+.atq.s1 rect{fill:color-mix(in srgb,var(--s) 18%,var(--card))} .atq.s2 rect{fill:color-mix(in srgb,var(--s) 35%,var(--card))} .atq.s3 rect{fill:color-mix(in srgb,var(--s) 55%,var(--card))}
+.atq.s4 rect{fill:color-mix(in srgb,var(--s) 75%,var(--card))} .atq.s5 rect{fill:var(--s)}
+.atq.none rect{fill:none;stroke-dasharray:4 3} .atq.here rect{stroke:var(--accent);stroke-width:3} .atq.sel rect{stroke:var(--ink);stroke-width:3}
+.atn{font-family:Fraunces,Georgia,serif;font-size:15px;fill:var(--ink)} .atq.s4 .atn,.atq.s5 .atn,.atq.s4 .atc,.atq.s5 .atc{fill:#fff} .atc{font-size:8.5px;fill:var(--mut)}
+.atd{margin-top:6px} .atd h3{margin:0 0 2px} .atold{color:var(--mut)}
+.atleg{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:12px} .atleg i{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--line2)}
+.atleg .s1{background:color-mix(in srgb,var(--s) 18%,var(--card))} .atleg .s2{background:color-mix(in srgb,var(--s) 35%,var(--card))} .atleg .s3{background:color-mix(in srgb,var(--s) 55%,var(--card))} .atleg .s4{background:color-mix(in srgb,var(--s) 75%,var(--card))} .atleg .s5{background:var(--s)}
+.trkb{padding:6px 10px;font-size:13px} .trkb.on{background:#e8822a;color:#fff;border-color:#e8822a}
+.trk{margin:8px 0} .trk svg{width:100%;max-width:420px;height:auto;background:var(--bg2);border-radius:10px;display:block}
+.trk path{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .trk .t0{fill:var(--s)} .trk .t1{fill:#c0392b}
 .typo{font-size:13px;color:var(--mut);margin:4px 0 0} .typo button{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--s);cursor:pointer;text-decoration:underline}
 .tag.nn{border:1px dashed var(--accent);color:var(--accent);background:none;cursor:pointer;font:inherit;font-size:inherit}
 .nnr{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid var(--line)} .nnr.bad input[data-nnf="la"],.nnr.bad input[data-nnf="en"]{border-color:var(--accent)}
@@ -666,6 +679,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="sess" id="sess">
     <div class="sesshead">
       <span id="sessTxt" class="sesstog" role="button" tabindex="0" aria-expanded="false">Излет</span>
+      <button type="button" class="btn trkb" id="sessTrk" title="Записвай пътя">📍 път</button>
       <button type="button" class="btn" id="sessEnd">приключи</button>
     </div>
     <div class="sesslist" id="sessList"></div>
@@ -895,7 +909,8 @@ function outDefaults(stale){
     start:(live&&SESS.t0&&(!f||SESS.d0===f.date)?SESS.t0:(f&&f.time))||SESS.t0||'',
     end:(live&&!stale?nowTime():(l&&l.time))||''};}
 function endOuting(complete,stale){if(!SESS)return;const d=outDefaults(stale),sid=SESS.id;
-  if(d.rs.length)putOut({id:SESS.id,date:d.date,place:d.place,complete,
+  trkStop();
+  if(d.rs.length)putOut({id:SESS.id,date:d.date,place:d.place,complete,trk:SESS.trk&&SESS.trk.length>1?SESS.trk:undefined,dist:SESS.trk&&SESS.trk.length>1?SESS.dist:undefined,
     start:stale?d.start:(document.getElementById('se-start').value||d.start),end:stale?d.end:(document.getElementById('se-end').value||d.end)});
   SESS=null;saveSess();sessUI();closeForm();render();
   if(!stale&&d.rs.length)yayPush(outingCard(sid));
@@ -914,7 +929,8 @@ function sessUI(){
     document.getElementById('tip-sess').innerHTML=tipHTML('sess',TIPTXT.sess);
     const n=new Set(SURE().filter(o=>o.sess===SESS.id).map(key).filter(Boolean)).size;
     document.getElementById('sessTxt').textContent='Излет · '+human(SESS.date)+(SESS.place?' · '+SESS.place:'')+' · '+n+(n===1?' вид':' вида');
-    document.getElementById('sessStart').style.display='none';}
+    document.getElementById('sessStart').style.display='none';
+    {const tb=document.getElementById('sessTrk');if(tb){tb.textContent=SESS.trkOn?'📍 '+kmTxt(SESS.dist)+' ⏸':(SESS.trk&&SESS.trk.length?'📍 '+kmTxt(SESS.dist)+' ▶':'📍 път');tb.classList.toggle('on',!!SESS.trkOn);tb.setAttribute('aria-pressed',String(!!SESS.trkOn));}}}
   else{sessOpen=false;b.classList.remove('on','ending','open');document.getElementById('sessStart').style.display='';}
 }
 // Излет без нов запис от 6+ часа: питаме, преди да даде старата си дата и място на нов запис
@@ -1440,10 +1456,10 @@ function renderMap(el){
     return;}
   const bar='<div class="mapbar">'+
     '<button class="chip" data-mm="real"'+(mapMode==='real'?' aria-pressed="true"':'')+'>Истинска карта</button>'+
-    '<button class="chip" data-mm="grid"'+(mapMode==='grid'?' aria-pressed="true"':'')+'>Схема</button>'+
+    '<button class="chip" data-mm="grid"'+(mapMode==='grid'?' aria-pressed="true"':'')+'>Атлас</button>'+
     '<span class="note2" id="mapmsg" style="align-self:center;max-width:none"></span></div>'+
     (mapMode==='real'?'<div class="mapbar tiles">'+Object.keys(TILES).map(k=>'<button class="chip" data-tk="'+k+'"'+
-      (tileKey===k?' aria-pressed="true"':'')+'>'+TILES[k].name+'</button>').join('')+'</div>':'');
+      (tileKey===k?' aria-pressed="true"':'')+'>'+TILES[k].name+'</button>').join('')+'<button class="chip" data-atov aria-pressed="'+ATOV+'">▦ квадрати</button></div>':'');
   const panel='<div class="mappanel" id="mp"><div style="color:var(--mut);font-size:13.5px">'+
     'Пипни или посочи кръг, за да видиш какво си намерил там. Големината е брой различни видове.</div></div>'+
     (noGeo?'<div class="note2" style="margin-top:9px;max-width:none">'+noGeo+' записа са без координати и не се показват.</div>':'');
@@ -1456,7 +1472,8 @@ function renderMap(el){
     realMap(C);
     return;
   }
-  // ---- grid ----
+  // ---- „Атлас“ (на мястото на старата „Схема“) — работи и без връзка ----
+  return renderAtlas(el,bar);
   const B=bounds(C), W=900, H=Math.max(340,Math.min(680,Math.round(W*B.spanY/B.spanX)));
   const X=lo=>((lo-B.n1)*B.kx)/B.spanX*W, Y=la=>H-((la-B.m1)/B.spanY*H);
   const dw=Math.max(280,el.clientWidth||W), M=mergeNear(C,c=>[X(c.lon),Y(c.lat)],34*W/dw);   // ~34 пиксела на екрана
@@ -1560,6 +1577,8 @@ async function realMap(C){
     msg('плочките не се заредиха — пробвай друг слой или провери връзката');}});
   layer.addTo(map);
   for(const u of T.over||[])L.tileLayer(u,{maxZoom:T.max,crossOrigin:true}).addTo(map);   // надписи и пътища върху снимката
+  atlasOverlay(map);
+  for(const x of outings())if(x.trk&&x.trk.length>1)L.polyline(x.trk.map(q=>[q[0],q[1]]),{color:'#e8822a',weight:3,opacity:.75}).bindTooltip('Излет · '+human(x.date)+' · '+kmTxt(x.dist)).addTo(map);
   setTimeout(()=>{if(!gotTile&&!dead&&el.isConnected){dead=true;mapMode='grid';render();
     msg('картата не се зареди навреме');}},9000);
   const group=L.featureGroup().addTo(map);
@@ -1738,7 +1757,7 @@ function renderOuts(el){const L=outings();
       '<div class="tags">'+(x.complete===true?'<span class="tag s">пълен списък</span>':x.complete===false?'<span class="tag b">частичен списък</span>':'<span class="tag h">пълнотата не е отбелязана</span>')+'</div></div></div>'+
       (pics.length?'<div class="ouph">'+pics.map(o=>'<div class="th" data-th="'+o.photo+'" title="'+esc(o.bg||o.en||o.la)+'"></div>').join('')+'</div>':'');
     if(openOut===x.id){const rs=[...x.rs].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
-      h+='<div class="sl">'+sp.map(r=>'<span class="v'+r.L+'">'+spLink({bg:r.nm})+'</span>').join('')+'</div>'+
+      h+='<div class="sl">'+sp.map(r=>'<span class="v'+r.L+'">'+spLink({bg:r.nm})+'</span>').join('')+'</div>'+trkSVG(x)+
       '<div class="ed"><div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(o.time||'')+'</span><span class="n'+(o.u?' u':'')+'">'+spLink(o)+
         (o.count||o.as?' · '+esc(cntText(o)):'')+'</span><button type="button" data-ed="'+o.id+'">промени</button></div>').join('')+'</div>'+
       '<button type="button" class="btn" data-oadd="'+esc(x.id)+'">+ птица</button><button type="button" class="btn" data-oedit="'+esc(x.id)+'">промени излета</button>'+
@@ -2287,8 +2306,9 @@ function badgeStrip(nw){const R=SURE();return '<div class="bdg">'+BADGES.map(b=>
   return '<div class="bd'+(st.on?' on':'')+(nw&&nw.has(b.id)?' new':'')+'" title="'+esc(b.how)+'"><span class="bdi">'+b.icon+'</span><b>'+b.name+(nw&&nw.has(b.id)?'<span class="newtag">ново</span>':'')+'</b><small>'+
     (st.on?(st.first?'от '+human(st.first):'спечелена'):(b.goal?st.n+' от '+b.goal:b.how))+'</small></div>';}).join('')+'</div>';}
 document.getElementById('sessStart').onclick=()=>{
-  SESS={id:'s'+Date.now(),date:today(),time:nowTime(),place:'',geo:null,at:Date.now(),live:null,t0:nowTime(),d0:today()};
-  saveSess();sessUI();openForm(null);};
+  SESS={id:'s'+Date.now(),date:today(),time:nowTime(),place:'',geo:null,at:Date.now(),live:null,t0:nowTime(),d0:today(),trkOn:!!lsGet(KTRK,false)};
+  saveSess();sessUI();openForm(null);if(SESS.trkOn)trkStart();};
+document.getElementById('sessTrk').onclick=trkToggle;
 document.getElementById('sessEnd').onclick=()=>{if(!SESS)return;const d=outDefaults();
   if(!d.rs.length){SESS=null;saveSess();sessUI();closeForm();render();return;}   // излет без записи просто приключва
   document.getElementById('se-start').value=d.start;document.getElementById('se-end').value=d.end;
@@ -2321,6 +2341,8 @@ document.addEventListener('click',e=>{
     b.style.display=op?'':'none';ffb.setAttribute('aria-expanded',String(op));ffb.querySelector('i').textContent=op?'▾':'▸';FFOLD[k]=op;lsSet(KFF,FFOLD);if(op){loadFriendPhotos();loadPhotos();}return;}
   const nnb=e.target.closest('[data-nn]');if(nnb){openNames([nnb.dataset.nn]);return;}
   const sr=e.target.closest('[data-sprf]');if(sr){e.preventDefault();e.stopImmediatePropagation();spOpen({bg:sr.dataset.bg,la:sr.dataset.la,en:sr.dataset.en});return;}
+  const atq=e.target.closest('[data-atq]');if(atq){atSel=atSel===atq.dataset.atq?null:atq.dataset.atq;render();return;}
+  const atv=e.target.closest('[data-atov]');if(atv){ATOV=!ATOV;lsSet(KATOV,ATOV);render();return;}
   const exb=e.target.closest('[data-exif]');if(exb){if(exb.dataset.exif==='1')exifApply();else{exifSug=null;document.getElementById('f-exif').style.display='none';}return;}
   const gb=e.target.closest('[data-gal]');if(gb){galOpen(gb);return;}
   const grb=e.target.closest('[data-galrec]');if(grb){const o=OBS.find(x=>x.id==grb.dataset.galrec);document.getElementById('lb').close();view='log';for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v==='log');
@@ -2429,6 +2451,7 @@ function ebirdRows(){const R=OBS.filter(o=>!o.u),O={};for(const x of outings())O
     if(x){obs=x.with?'2':'1';all=x.complete===true?'Y':'N';
       if(x.start&&x.end){let d=mins(x.end)-mins(x.start);if(d<0)d+=1440;dur=String(d);
         const pts=byT.filter(o=>o.geo).map(o=>o.geo);let km=0;for(let i=1;i<pts.length;i++)km+=kmBetween(pts[i-1],pts[i]);
+        if(x.dist)km=x.dist;   // измереният път, ако е записван
         if(km>=0.05){proto='Traveling';dist=(km*0.621371).toFixed(2);}else proto='Stationary';}}
     const sub=sz('Перá'+(x&&x.with?'; с '+x.with:''));
     // един вид — един ред в списъка
@@ -2840,6 +2863,84 @@ function exifCheck(buf){exifSug=null;const el=document.getElementById('f-exif');
 function exifApply(){const x=exifSug,el=document.getElementById('f-exif');if(x){if(x.date)fld('date').value=x.date;if(x.time)fld('time').value=x.time;
     if(x.geo){setGeo(x.geo);fo.geo='user';const pl=el.dataset.pl;if(pl&&!fld('place').value.trim()){fld('place').value=pl;fc.place=pl;}}}
   exifSug=null;el.style.display='none';}
+// ---- атлас (издание B): квадратите 10×10 км (UTM – MGRS), както в Атласа на птиците в България на БДЗП ----
+const UTMk0=0.9996,UTMa=6378137,UTMf=1/298.257223563,UTMe2=UTMf*(2-UTMf),UTMep2=UTMe2/(1-UTMe2);
+function toUTM(lat,lon){const z=Math.floor((lon+180)/6)+1,l0=((z-1)*6-177)*Math.PI/180,p=lat*Math.PI/180,l=lon*Math.PI/180,s=Math.sin(p),c=Math.cos(p);
+  const N=UTMa/Math.sqrt(1-UTMe2*s*s),T=Math.tan(p)**2,C=UTMep2*c*c,A=c*(l-l0),e=UTMe2;
+  const M=UTMa*((1-e/4-3*e*e/64-5*e**3/256)*p-(3*e/8+3*e*e/32+45*e**3/1024)*Math.sin(2*p)+(15*e*e/256+45*e**3/1024)*Math.sin(4*p)-(35*e**3/3072)*Math.sin(6*p));
+  const E=UTMk0*N*(A+(1-T+C)*A**3/6+(5-18*T+T*T+72*C-58*UTMep2)*A**5/120)+500000;
+  let Y=UTMk0*(M+N*Math.tan(p)*(A*A/2+(5-T+9*C+4*C*C)*A**4/24+(61-58*T+T*T+600*C-330*UTMep2)*A**6/720));if(lat<0)Y+=1e7;
+  return {z,E,N:Y,band:'CDEFGHJKLMNPQRSTUVWXX'[Math.floor((lat+80)/8)]};}
+function fromUTM(z,E,Y){const x=E-500000,e=UTMe2,M=Y/UTMk0,mu=M/(UTMa*(1-e/4-3*e*e/64-5*e**3/256)),e1=(1-Math.sqrt(1-e))/(1+Math.sqrt(1-e));
+  const p1=mu+(3*e1/2-27*e1**3/32)*Math.sin(2*mu)+(21*e1*e1/16-55*e1**4/32)*Math.sin(4*mu)+(151*e1**3/96)*Math.sin(6*mu)+(1097*e1**4/512)*Math.sin(8*mu);
+  const s=Math.sin(p1),N1=UTMa/Math.sqrt(1-e*s*s),T1=Math.tan(p1)**2,C1=UTMep2*Math.cos(p1)**2,R1=UTMa*(1-e)/(1-e*s*s)**1.5,D=x/(N1*UTMk0);
+  const lat=p1-(N1*Math.tan(p1)/R1)*(D*D/2-(5+3*T1+10*C1-4*C1*C1-9*UTMep2)*D**4/24+(61+90*T1+298*C1+45*T1*T1-252*UTMep2-3*C1*C1)*D**6/720);
+  const lon=((z-1)*6-177)*Math.PI/180+(D-(1+2*T1+C1)*D**3/6+(5-2*C1+28*T1-3*C1*C1+8*UTMep2+24*T1*T1)*D**5/120)/Math.cos(p1);
+  return [lat*180/Math.PI,lon*180/Math.PI];}
+const MGC='ABCDEFGHJKLMNPQRSTUVWXYZ',MGR='ABCDEFGHJKLMNPQRSTUV';
+function sqOf(geo){const g=parseGeo(geo);if(!g)return null;const [la,lo]=g.split(',').map(Number);if(!isFinite(la)||!isFinite(lo)||la<-80||la>=84)return null;
+  const u=toUTM(la,lo),e100=Math.floor(u.E/100000),n100=Math.floor(u.N/100000),col=MGC[((u.z-1)%3)*8+e100-1],row=MGR[(n100+(u.z%2?0:5))%20];
+  if(!col||!row)return null;const e10=Math.floor((u.E%100000)/10000),n10=Math.floor((u.N%100000)/10000);
+  return {id:u.z+u.band+' '+col+row+' '+e10+n10,sh:col+row+e10+n10,z:u.z,E0:Math.floor(u.E/10000)*10000,N0:Math.floor(u.N/10000)*10000};}
+function atlasData(){const S={};for(const o of SURE()){const q=sqOf(o.geo);if(!q)continue;const s=S[q.id]||(S[q.id]={...q,sp:{},days:new Set()});s.days.add(o.date);
+    const k=key(o);if(!k)continue;const r=s.sp[k]||(s.sp[k]={o,nm:o.bg||o.en||o.la,n:0,bc:{}});r.n++;if(o.bg){r.nm=o.bg;r.o=o;}
+    if(o.bc&&BC[o.bc]){const y=o.date.slice(0,4);r.bc[y]=Math.max(r.bc[y]||0,o.bc);}}
+  return S;}
+const ATSH=n=>n>=50?5:n>=30?4:n>=15?3:n>=5?2:1;
+let atSel=null,atHere=null,atAsked=false;
+function atlasHere(){if(atAsked||!navigator.geolocation)return;atAsked=true;
+  navigator.geolocation.getCurrentPosition(p=>{atHere=sqOf(p.coords.latitude.toFixed(5)+','+p.coords.longitude.toFixed(5));if(view==='map'&&mapMode==='grid')render();},()=>{},{maximumAge:6e5,timeout:8000});}
+function renderAtlas(el,bar){const S=atlasData(),L=Object.values(S),Y=today().slice(0,4);atlasHere();
+  const last=[...SURE()].sort(newest).find(o=>sqOf(o.geo)),here=atHere||(last?sqOf(last.geo):null);
+  let svg='';
+  for(const z of [...new Set(L.map(s=>s.z).concat(here?[here.z]:[]))].sort()){const Z=L.filter(s=>s.z===z),pts=Z.concat(here&&here.z===z&&!S[here.id]?[here]:[]);
+    const minE=Math.min(...pts.map(s=>s.E0)),maxE=Math.max(...pts.map(s=>s.E0)),minN=Math.min(...pts.map(s=>s.N0)),maxN=Math.max(...pts.map(s=>s.N0));
+    const cols=(maxE-minE)/1e4+1,rows=(maxN-minN)/1e4+1,cs=46;
+    let g='';for(const s of pts){const x=(s.E0-minE)/1e4*cs,y=(maxN-s.N0)/1e4*cs,n=S[s.id]?Object.keys(S[s.id].sp).length:0,me=here&&here.id===s.id,sel=atSel===s.id;
+      g+='<g class="atq'+(n?' s'+ATSH(n):' none')+(me?' here':'')+(sel?' sel':'')+'" data-atq="'+esc(s.id)+'" tabindex="0"><rect x="'+(x+1)+'" y="'+(y+1)+'" width="'+(cs-2)+'" height="'+(cs-2)+'" rx="5"/>'+
+        '<text x="'+(x+cs/2)+'" y="'+(y+cs/2+2)+'" text-anchor="middle" class="atn">'+(n||'')+'</text><text x="'+(x+cs/2)+'" y="'+(y+cs-6)+'" text-anchor="middle" class="atc">'+esc(s.sh)+'</text></g>';}
+    svg+='<div class="atz"><div class="atzl">зона '+z+'</div><svg viewBox="0 0 '+cols*cs+' '+rows*cs+'" style="max-width:'+Math.max(cols*cs,200)+'px">'+g+'</svg></div>';}
+  const s=atSel&&S[atSel];
+  const det=s?'<div class="atd"><h3>'+esc(s.id)+'</h3><div class="note2" style="max-width:none">'+Object.keys(s.sp).length+' вида · '+s.days.size+(s.days.size===1?' ден':' дни')+' в квадрата</div>'+
+    Object.values(s.sp).map(r=>{const yb=r.bc[Y],ys=Object.keys(r.bc).sort().reverse();return [yb||0,r.nm,'<div class="ar"><div><b>'+spLink(r.o,esc(r.nm))+'</b>'+
+      (yb?' <span class="tag bc bc'+BC[yb][0]+'">'+BC[yb][0]+yb+'</span>':'')+
+      (ys.filter(y=>y!==Y).slice(0,2).map(y=>' <small class="atold">'+BC[r.bc[y]][0]+r.bc[y]+' · '+y+'</small>').join(''))+'</div><span>'+r.n+'×</span></div>'];})
+      .sort((a,b)=>b[0]-a[0]||String(a[1]).localeCompare(String(b[1]),'bg')).map(x=>x[2]).join('')+'</div>':
+    '<div class="note2" style="max-width:none">Пипни квадрат, за да видиш видовете в него и най-силния код за гнездене тази година.</div>';
+  el.innerHTML=bar+'<div class="athead">'+(here?(atHere?'Ти си в квадрат <b>'+esc(here.id)+'</b>':'Последното ти място е в квадрат <b>'+esc(here.id)+'</b>'):'')+
+    '<span class="note2" style="max-width:none">квадрати 10×10 км (UTM – MGRS), както в Атласа на птиците в България</span></div>'+
+    (L.length?svg:'<div class="empty">Още няма записи с координати.</div>')+det+
+    '<div class="atleg"><i class="s1"></i>1–4 <i class="s2"></i>5–14 <i class="s3"></i>15–29 <i class="s4"></i>30–49 <i class="s5"></i>50+ вида</div>';}
+// квадратите и върху истинската карта (по избор)
+const KATOV='bird-journal-atlasov';let ATOV=!!lsGet(KATOV,false);
+function atlasOverlay(map){if(!ATOV||!window.L)return;
+  for(const s of Object.values(atlasData())){const n=Object.keys(s.sp).length,c=[[s.E0,s.N0],[s.E0+1e4,s.N0],[s.E0+1e4,s.N0+1e4],[s.E0,s.N0+1e4]].map(([e,y])=>fromUTM(s.z,e,y));
+    L.polygon(c,{color:'#2f6b45',weight:1.2,fillColor:'#2f6b45',fillOpacity:.08+.1*ATSH(n),interactive:true}).bindTooltip(s.id+' · '+n+(n===1?' вид':' вида')).on('click',()=>{mapMode='grid';atSel=s.id;render();}).addTo(map);}}
+// ---- „Записвай пътя“ (издание B): път и разстояние на излета ----
+// Уеб приложението следи мястото само докато е отворено на екрана — затова екранът се държи буден, докато записва.
+const KTRK='bird-journal-trackpref';let trkW=null,trkLock=null;
+const hav=(a,b)=>{const R=6371,t=Math.PI/180,dl=(b[0]-a[0])*t,dn=(b[1]-a[1])*t,x=Math.sin(dl/2)**2+Math.cos(a[0]*t)*Math.cos(b[0]*t)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(x));};
+async function trkLockOn(){try{if(navigator.wakeLock&&!trkLock&&document.visibilityState==='visible'){trkLock=await navigator.wakeLock.request('screen');trkLock.addEventListener('release',()=>{trkLock=null;});}}catch(e){}}
+function trkStart(){if(!SESS||trkW!==null||!navigator.geolocation)return;
+  trkW=navigator.geolocation.watchPosition(p=>{if(!SESS||!SESS.trkOn)return;const c=p.coords;if(c.accuracy>60)return;
+      const pt=[+c.latitude.toFixed(6),+c.longitude.toFixed(6),Math.round(Date.now()/1000)],t=SESS.trk||(SESS.trk=[]),last=t[t.length-1];
+      if(!last){t.push(pt);saveSess();sessUI();return;}const d=hav(last,pt);if(d<0.025)return;
+      t.push(pt);SESS.dist=Math.round(((SESS.dist||0)+d)*1000)/1000;saveSess();sessUI();},
+    e=>{logErr('gps: '+(e&&e.message||e.code),'');},{enableHighAccuracy:true,maximumAge:5000,timeout:30000});
+  trkLockOn();}
+function trkStop(){if(trkW!==null){try{navigator.geolocation.clearWatch(trkW);}catch(e){}trkW=null;}if(trkLock){try{trkLock.release();}catch(e){}trkLock=null;}}
+function trkToggle(){if(!SESS)return;SESS.trkOn=!SESS.trkOn;lsSet(KTRK,SESS.trkOn);
+  if(SESS.trkOn&&!lsGet('bird-journal-trackinfo',false)){lsSet('bird-journal-trackinfo',true);alert('Пътят се записва, докато Перá е отворено на екрана — екранът остава включен и батерията се харчи повече. Можеш да го спреш по всяко време оттук.');}
+  saveSess();if(SESS.trkOn)trkStart();else trkStop();sessUI();}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&SESS&&SESS.trkOn){trkLockOn();if(trkW===null)trkStart();}});
+const kmTxt=k=>(Math.round((k||0)*10)/10).toFixed(1).replace('.',',')+' км';
+function trkSVG(x){const t=x.trk||[];if(t.length<2)return '';const W=320,H=140,la=t.map(p=>p[0]),lo=t.map(p=>p[1]),k=Math.cos(la[0]*Math.PI/180);
+  const a0=Math.min(...la),a1=Math.max(...la),o0=Math.min(...lo),o1=Math.max(...lo),sx=(o1-o0)*k||1e-6,sy=(a1-a0)||1e-6,sc=Math.min((W-20)/sx,(H-20)/sy);
+  const P=t.map(p=>[10+((p[1]-o0)*k)*sc+((W-20)-sx*sc)/2,H-10-(p[0]-a0)*sc-((H-20)-sy*sc)/2]),d=P.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join('');
+  return '<div class="trk"><svg viewBox="0 0 '+W+' '+H+'"><path d="'+d+'"/><circle class="t0" cx="'+P[0][0].toFixed(1)+'" cy="'+P[0][1].toFixed(1)+'" r="5"/><circle class="t1" cx="'+P[P.length-1][0].toFixed(1)+'" cy="'+P[P.length-1][1].toFixed(1)+'" r="5"/></svg>'+
+    '<div class="note2" style="max-width:none">път: '+kmTxt(x.dist)+' · '+t.length+' точки</div></div>';}
+// при отворен излет със записван път — продължава след презареждане
+if(typeof SESS!=='undefined'&&SESS&&SESS.trkOn)setTimeout(trkStart,1500);
 // ---- „Списък“: бърз брояч за излета ----
 // Твоят списък с птици — сам го съставяш (предложенията влизат само с твое докосване) и той остава до следващия излет.
 // По време на излет докосване = +1 с часа и мястото в момента; на повече от ~300 м от предишния запис на същия вид
@@ -3143,7 +3244,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-02.8';
+const VER='2026-11-02.9';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

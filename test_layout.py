@@ -40,8 +40,8 @@ try:
   pg.click('[data-mm="real"]');pg.wait_for_function("document.querySelector('[data-tk]')",timeout=6000)
   rows=pg.evaluate("(()=>{const a=document.querySelector('[data-mm=\"real\"]').getBoundingClientRect(),t=document.querySelector('[data-tk]').getBoundingClientRect();return t.top>=a.bottom;})()")
   check('L8 Карта: „Истинска карта“ first, its map styles on a row beneath it', (first,rows), ('real',True))
-  pg.click('[data-mm="grid"]');pg.wait_for_timeout(200)
-  i=pg.evaluate("window.__C.findIndex(c=>c.name==='Копринка')");pg.locator(f'svg .pt[data-c="{i}"]').click()
+  pg.wait_for_function("window.__map&&document.querySelectorAll('#lmap path.leaflet-interactive').length>0",timeout=8000);pg.wait_for_timeout(300)
+  i=pg.evaluate("window.__C.findIndex(c=>c.name==='Копринка')");pg.evaluate(f"showCluster({i})")   # the point's panel, now from the real map
   pg.wait_for_function("document.querySelectorAll('#mp .phstrip .th img').length===11",timeout=6000)
   sc=pg.evaluate("(()=>{const s=document.querySelector('#mp .phstrip');return [document.querySelectorAll('#mp .phstrip figure').length,s.scrollWidth>s.clientWidth,getComputedStyle(s).overflowX,document.querySelector('#mp .phcount').textContent];})()")
   check('L9 a point shows all 11 photos, not 8, in a strip that swipes sideways', sc, [11,True,'auto','11 снимки — плъзни настрани'])
