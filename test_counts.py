@@ -20,16 +20,16 @@ try:
   pg.add_init_script("if(!localStorage.getItem('bird-journal-v3')){localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-tips','{\"all\":1}');localStorage.setItem('bird-journal-quiet','true');}"%json.dumps(json.dumps(data,ensure_ascii=False)))
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400)
   pg.click('#toggle')
-  check('C1 the form: „точно / поне / около“ with „точно“ chosen, and „по пол и възраст“ folded away', (pg.evaluate("[...document.querySelectorAll('#f-cq [data-cq]')].map(b=>[b.textContent,b.getAttribute('aria-pressed')])"),pg.is_visible('#f-as')),
-    ([['точно','true'],['поне','false'],['около','false']],False))
-  pg.fill('#f-count','40');pg.fill('#f-bg','Голям корморан');pg.click('[data-cq="est"]');pg.click('#savebtn');pg.wait_for_timeout(150)
+  check('C1 the form: a small „точно / поне / около“ menu showing „точно“, and „по пол и възраст“ folded away', (pg.evaluate("[...document.querySelectorAll('#f-cqs option')].map(o=>o.textContent)"),pg.input_value('#f-cqs'),pg.is_visible('#f-as')),
+    (['точно','поне','около'],'exact',False))
+  pg.fill('#f-count','40');pg.fill('#f-bg','Голям корморан');pg.select_option('#f-cqs','est');pg.click('#savebtn');pg.wait_for_timeout(150)
   pg.click('#toggle') if not pg.is_visible('#f-count') else None
-  pg.fill('#f-count','15');pg.fill('#f-bg','Сива чапла');pg.click('[data-cq="min"]');pg.click('#savebtn');pg.wait_for_timeout(150)
+  pg.fill('#f-count','15');pg.fill('#f-bg','Сива чапла');pg.select_option('#f-cqs','min');pg.click('#savebtn');pg.wait_for_timeout(150)
   pg.click('#toggle') if not pg.is_visible('#f-count') else None
   pg.fill('#f-count','12');pg.fill('#f-bg','Голям синигер');pg.click('#f-astog')
   for k,n in (('m',3),('f',2),('juv',1)):
     for _ in range(n):pg.click(f'[data-asp="{k}"]')
-  check('C2 the sex-and-age counters fill in, and the fold shows what\'s set', pg.inner_text('#f-astog'), 'по пол и възраст (3♂ 2♀ · млади 1) ▾')
+  check('C2 the sex-and-age counters fill in, and the fold shows what\'s set', pg.inner_text('#f-astog'), '♂♀ 3♂ 2♀ · млади 1 ▾')
   pg.click('#savebtn');pg.wait_for_timeout(150)
   recs=pg.evaluate("Object.fromEntries(OBS.filter(o=>o.id>9).map(o=>[o.bg,[o.count,o.cq||'',o.as||null]]))")
   check('C3 saved: the number, its kind, and the parts', recs, {'Голям корморан':['40','est',None],'Сива чапла':['15','min',None],'Голям синигер':['12','',{'m':3,'f':2,'juv':1}]})

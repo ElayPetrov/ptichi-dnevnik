@@ -26,7 +26,7 @@ try:
     pg.on('console',lambda m: errs.append('console.'+m.type+': '+m.text) if m.type=='error' and 'fonts.g' not in m.text and 'ERR_' not in m.text else None)
     dialogs=[]; pg.on('dialog',lambda d:(dialogs.append(d.message),d.accept()))
     pg.add_init_script("if(!sessionStorage.getItem('seeded')){localStorage.clear();localStorage.setItem('bird-journal-v3',%s);sessionStorage.setItem('seeded','1');}"%json.dumps(json.dumps(DATA,ensure_ascii=False)))
-    pg.goto(f'http://localhost:{PORT}/ptichi-dnevnik.html'); pg.wait_for_function("document.getElementById('n-obs').textContent==='6'")
+    pg.goto(f'http://localhost:{PORT}/ptichi-dnevnik.html'); pg.wait_for_function("document.getElementById('n-obs').textContent==='5'")   # record 5 („gull sp.“) is a genus-level record now: a record, not counted
     # record which inputType real typing produces
     pg.evaluate("window.__it=[];for(const id of ['f-bg','f-la','f-place'])document.getElementById(id).addEventListener('input',e=>__it.push(e.inputType),true)")
     pick=lambda sel,val: pg.evaluate("([s,v])=>{const el=document.querySelector(s);el.focus();el.value=v;el.dispatchEvent(new InputEvent('input',{inputType:'insertReplacementText',bubbles:true}));}",[sel,val])
