@@ -54,7 +54,7 @@ try:
   check('F9 ...and the lists behind the numbers', pe.eval_on_selector_all('.chips',"e=>e.map(x=>x.innerText.replace(/\\n/g,', '))"), ['Пчелояд','Кос'])
   pe.click('[data-ffold="rec"]')   # „Последни записи“ starts folded since 2026-11-02.2
   pe.wait_for_selector('[data-fph] img',timeout=5000)
-  check("F10 Ivan's photo loads for Petar", pe.locator('[data-fph] img').count(), 1)
+  check("F10 Ivan's photo loads for Petar", (pe.locator('[data-ffold="rec"]+.fsb [data-fph] img').count(),pe.locator('[data-ffold="ph"]+.fsb [data-fph] img').count()), (1,0))   # the folded gallery waits until opened
   pe.fill('#q','') ; pe.click('[data-frback]')
   pe.click('#acct')   # back to the account view (a friend's journal opens in Приятели)
   pe.fill('#fr-code','NOPE-NOPE-NOPE');pe.click('[data-sb="add"]');pe.wait_for_selector('.fr .msg')

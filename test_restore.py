@@ -10,7 +10,7 @@ def pg(cmd):return subprocess.run(['su','postgres','-c',cmd],capture_output=True
 STUB=open('test_sql.py',encoding='utf-8').read().split('STUB="""',1)[1].split('"""',1)[0]
 for db in ('bk_src','bk_dst'):pg(f"psql -q -c 'drop database if exists {db}' -c 'create database {db}'")
 def conn(db):c=psycopg2.connect(dbname=db,user='tester',password='t',host='localhost');c.autocommit=True;return c,c.cursor()
-c,cur=conn('bk_src');cur.execute(STUB);cur.execute(open('supabase-setup.sql',encoding='utf-8').read())
+c,cur=conn('bk_src');cur.execute(STUB);cur.execute(open(('setup.sql' if __import__('os').path.exists('setup.sql') else 'supabase-setup.sql'),encoding='utf-8').read())
 A,B=[str(uuid.uuid4()) for _ in range(2)]
 for u,n in ((A,'Иван'),(B,'Петър')):
   cur.execute("insert into auth.users values (%s)",(u,));cur.execute("insert into public.profiles(user_id,name) values (%s,%s)",(u,n))
@@ -44,7 +44,7 @@ cur.execute("select code from public.profiles where user_id=%s",(A,))
 check('K5 friend codes survive, so friendships keep working', cur.fetchone()[0], codeA)
 cur.execute("select count(*) from pg_policies where schemaname='public'");pol=cur.fetchone()[0]
 cur.execute("select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' and c.relrowsecurity");rls=cur.fetchone()[0]
-check('K6 the access rules come back too: row security on every table, and its policies', (rls,pol>=8), (5,True))
+check('K6 the access rules come back too: row security on every table, and its policies', (rls,pol>=8), (6,True))   # six tables since app_errors (2026-11-02.7)
 cur.execute("begin");cur.execute("set local role authenticated");cur.execute("select set_config('request.jwt.claim.sub',%s,true)",(B,))
 cur.execute("select count(*) from public.journals");seen=cur.fetchone()[0];cur.execute("rollback")
 check('K7 ...and they work: Petar, Ivan\'s friend, sees both journals after the restore', seen, 2)

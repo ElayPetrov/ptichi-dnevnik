@@ -20,7 +20,7 @@ grant execute on function storage.foldername(text) to anon, authenticated;
 grant usage on schema public to anon, authenticated;
 """
 cur.execute(STUB)
-sql=open('supabase-setup.sql',encoding='utf-8').read()
+sql=open(('setup.sql' if __import__('os').path.exists('setup.sql') else 'supabase-setup.sql'),encoding='utf-8').read()
 cur.execute(sql); cur.execute(sql)   # twice: must be safe to re-run
 A,B,C=[str(uuid.uuid4()) for _ in range(3)]
 for u in (A,B,C): cur.execute("insert into auth.users values (%s)",(u,))

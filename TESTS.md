@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-658 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+675 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -67,6 +67,8 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_r6.py | 22 | several photos per record (★ main, ×, „+N“, the swipe viewer, removal on edit), clearing the count kind on edit, replies („↪ Име“, „отговори“) and conversation notifications („нов отговор“), „Твоята година“ (banner 15.12–15.01, dismissed for good with a note, always in the profile, the story's cards and numbers, sharing as an image) |
 | test_r7.py | 5 | species cards' corner: days, records and birds; sorting by days, records and birds; days-only crowns; Неуморен, Етолог and Летописец counting one per species and day |
 | test_r8.py | 7 | the bug hunt of 2 Nov 2026: the six boxes count species by best level, cards keep their level colour, the heard-only and photographed filters, a backup restored with targets, the group's species, badge levels and every newer record field, and the profile's year button on the latest year with records |
+| test_rA.py | 16 | the error log (sent once with version, user and screen; add-on errors ignored; queued when offline), „Съобщи за проблем“, the gallery in your and friends' profiles (folded, names, sorting, viewer with caption, jump to the record), the photo-data line (date, time, place; „вземи“ and „×“) |
+| test_lint.py | 1 | no code hidden behind a // comment on the same line (the mistake behind the 2026-11-02.5 bug) |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

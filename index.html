@@ -509,6 +509,13 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .yrbars i{width:100%;border-radius:5px 5px 2px 2px;background:currentColor;opacity:.75;min-height:2px} .yrbars span{font-size:10px;margin-top:4px;opacity:.75}
 .yrc .refbig img{max-height:170px} .yrc.fin{background:linear-gradient(160deg,#2f6b45,#7a4fb0);color:#fff}
 .yrfoot{display:flex;gap:8px;justify-content:space-between;padding:12px}
+.exif{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--mut);margin-top:6px} .exif .btn{padding:4px 10px;font-size:13px}
+.exx{background:none;border:0;color:var(--mut);font-size:17px;cursor:pointer;padding:0 6px}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px} .galc{border:0;padding:0;background:none;cursor:pointer;text-align:left;font:inherit;color:var(--ink)}
+.galc .ph{width:100%;aspect-ratio:1;border-radius:10px;overflow:hidden;margin:0;background:var(--bg2)} .galc .ph img{width:100%;height:100%;object-fit:cover;display:block;max-height:none}
+.galc span{display:block;font-size:11.5px;line-height:1.25;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbcap{color:#fff;font-size:14px;text-align:center;margin-top:8px} .lbcap a,.lbcap .spl{color:#fff} .lbcap .btn{margin-left:6px;padding:4px 10px;font-size:13px}
+.o.flash{outline:3px solid var(--accent);outline-offset:2px;transition:outline-color 1.5s}
 .typo{font-size:13px;color:var(--mut);margin:4px 0 0} .typo button{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--s);cursor:pointer;text-decoration:underline}
 .tag.nn{border:1px dashed var(--accent);color:var(--accent);background:none;cursor:pointer;font:inherit;font-size:inherit}
 .nnr{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid var(--line)} .nnr.bad input[data-nnf="la"],.nnr.bad input[data-nnf="en"]{border-color:var(--accent)}
@@ -732,6 +739,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="fg"><label>Снимка (по избор)</label>
     <div class="pho"><input type="file" id="f-photo" accept="image/*" style="flex:1;min-width:170px">
       <img id="prev" style="display:none" alt=""><button type="button" class="btn" id="rmph" style="display:none">махни</button></div>
+    <div id="f-exif" class="exif" style="display:none"></div>
     <div id="phxrow" class="phxrow"></div></div>
   <div class="fbtns">
     <button type="submit" class="btn pri" id="savebtn">Запиши</button>
@@ -765,7 +773,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 </div>
 <input type="file" id="impf" accept="application/json,text/plain,.json,.txt" style="display:none">
 </div>
-<dialog id="lb"><img id="lbimg" alt=""><div id="lbx" class="lbx" style="display:none"></div></dialog>
+<dialog id="lb"><img id="lbimg" alt=""><div id="lbx" class="lbx" style="display:none"></div><div id="lbcap" class="lbcap"></div></dialog>
 <div id="yay" class="yay" role="status" aria-live="polite" hidden></div>
 <dialog id="invDlg" class="pickdlg outdlg" aria-label="Покани в излета">
   <div class="pickhead">Покани в излета</div>
@@ -1827,7 +1835,7 @@ async function loadThumbs(){
   }
 }
 async function loadPhotos(){for(const d of document.querySelectorAll('[data-ph]')){
-  if(d.dataset.loaded||d.closest('.dayg.shut,.og.shut,.mg.shut,.yg.shut'))continue;d.dataset.loaded='1';   // свитите дни и излети чакат да се отворят
+  if(d.dataset.loaded||d.closest('.dayg.shut,.og.shut,.mg.shut,.yg.shut')||(d.closest('.fsb')&&d.closest('.fsb').style.display==='none'))continue;d.dataset.loaded='1';   // свитите дни и излети чакат да се отворят
   const b=await getPhoto(d.dataset.ph);if(b)phImg(d,b,false);else{d.classList.add('bad');d.innerHTML='<span class="phmsg">'+PH_MISS+'</span>';}}}
 function fillLists(){
   const set=(id,v)=>document.getElementById(id).innerHTML=v.map(x=>'<option value="'+esc(x)+'">').join('');
@@ -1876,7 +1884,8 @@ document.getElementById('f-cqs').addEventListener('change',e=>{fCQ=e.target.valu
 document.getElementById('f-astog').onclick=()=>{const b=document.getElementById('f-as');b.style.display=b.style.display==='none'?'':'none';asDraw();};
 document.getElementById('f-as').addEventListener('click',e=>{const p=e.target.closest('[data-asp]'),m=e.target.closest('[data-asm]');if(p)asStep(p.dataset.asp,1);if(m)asStep(m.dataset.asm,-1);});
 document.addEventListener('change',e=>{if(e.target&&e.target.matches&&e.target.matches('[data-quiet]'))lsSet(KQUIET,e.target.checked);
-  if(e.target&&e.target.id==='spSort'){SPS=e.target.value;lsSet(KSPS,SPS);render();}});
+  if(e.target&&e.target.id==='spSort'){SPS=e.target.value;lsSet(KSPS,SPS);render();}
+  if(e.target&&e.target.matches&&e.target.matches('[data-galsort]')){GALS=e.target.value;lsSet(KGAL,GALS);render();}});
 document.getElementById('nn-later').onclick=()=>document.getElementById('nnDlg').close();
 document.getElementById('nn-list').addEventListener('click',e=>{const b=e.target.closest('[data-nnfix]');if(!b)return;
   const r=b.closest('.nnr'),sp=listFind('bg',b.dataset.nnfix);if(!sp)return;namesApply(r.dataset.nnfor,sp);r.remove();save();fillLists();render();
@@ -1980,6 +1989,7 @@ function openForm(o,seed){
   else{pv.style.display='none';rm.style.display='none';}
   sessOptions(o?(o.sess||''):seed?(seed.sess||''):(SESS?SESS.id:''));
   {const t=document.getElementById('tip-form');if(t)t.innerHTML=o?'':tipHTML('form',TIPTXT.form);}
+  {const x=document.getElementById('f-exif');if(x)x.style.display='none';exifSug=null;}
   {const h=document.getElementById('f-typo');if(h){h.style.display='none';h.dataset.s='';}}
   countFieldsLoad(o);
   fBC=o&&o.bc?o.bc:0;document.getElementById('f-bcbox').style.display=fBC?'':'none';bcDraw();
@@ -2068,7 +2078,7 @@ function dropNew(keep){const K=new Set([].concat(keep||[]));for(const id of phNe
 // Докато снимката се смалява и записва, „Запиши“ я изчаква — иначе бързо натискане записва без нея.
 let photoBusy=null;
 document.getElementById('f-photo').onchange=e=>{photoBusy=(async()=>{try{
-  const f=e.target.files[0];if(!f)return;const blob=await shrink(f);
+  const f=e.target.files[0];if(!f)return;exifCheck(f);const blob=await shrink(f);
   if(!blob){e.target.value='';alert('Тази снимка не може да се отвори в браузъра (вероятно е във формат HEIC). Избери друга или снимай в JPEG.');return;}
   const pid='ph'+Date.now()+Math.random().toString(36).slice(2,7);
   if(await putPhoto(pid,blob)){if(!form.classList.contains('on')){delPhoto(pid);return;}   // формата е затворена междувременно
@@ -2307,9 +2317,15 @@ document.addEventListener('click',e=>{
   const spc=e.target.closest('.sp[data-k]');
   if(spc&&!e.target.closest('.th img')&&!e.target.closest('a')){backY.sp=window.scrollY;spBack=null;spInfo=null;spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
   const ffb=e.target.closest('[data-ffold]');if(ffb){const k=ffb.dataset.ffold,b=ffb.nextElementSibling,op=b.style.display==='none';
-    b.style.display=op?'':'none';ffb.setAttribute('aria-expanded',String(op));ffb.querySelector('i').textContent=op?'▾':'▸';FFOLD[k]=op;lsSet(KFF,FFOLD);if(op)loadFriendPhotos();return;}
+    b.style.display=op?'':'none';ffb.setAttribute('aria-expanded',String(op));ffb.querySelector('i').textContent=op?'▾':'▸';FFOLD[k]=op;lsSet(KFF,FFOLD);if(op){loadFriendPhotos();loadPhotos();}return;}
   const nnb=e.target.closest('[data-nn]');if(nnb){openNames([nnb.dataset.nn]);return;}
   const sr=e.target.closest('[data-sprf]');if(sr){e.preventDefault();e.stopImmediatePropagation();spOpen({bg:sr.dataset.bg,la:sr.dataset.la,en:sr.dataset.en});return;}
+  const exb=e.target.closest('[data-exif]');if(exb){if(exb.dataset.exif==='1')exifApply();else{exifSug=null;document.getElementById('f-exif').style.display='none';}return;}
+  const gb=e.target.closest('[data-gal]');if(gb){galOpen(gb);return;}
+  const grb=e.target.closest('[data-galrec]');if(grb){const o=OBS.find(x=>x.id==grb.dataset.galrec);document.getElementById('lb').close();view='log';for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v==='log');
+    if(o){setDay(o.date,true);setDay('m:'+o.date.slice(0,7),true);setDay('y:'+o.date.slice(0,4),true);}render();
+    setTimeout(()=>{const d=document.querySelector('#view [data-ed="'+grb.dataset.galrec+'"]'),c=d&&d.closest('.o');if(c){c.scrollIntoView({block:'center'});c.classList.add('flash');setTimeout(()=>c.classList.remove('flash'),1600);}},80);return;}
+  const rpb=e.target.closest('[data-report]');if(rpb){reportProblem();return;}
   const yrb=e.target.closest('[data-yr]');if(yrb){openYear(+yrb.dataset.yr);return;}
   const yrh=e.target.closest('[data-yrhide]');if(yrh){const h=lsGet(KYRB,{})||{};h[yrh.dataset.yrhide]=1;lsSet(KYRB,h);
     const b=yrh.closest('.yrban');if(b)b.outerHTML='<div class="yrnote">Скрито. „Твоята година“ е винаги в профила (кръгчето горе вдясно).</div>';return;}
@@ -2667,14 +2683,14 @@ function phxDraw(){const r=document.getElementById('phxrow');if(!r)return;
   r.innerHTML=phx.map((id,i)=>'<div class="phxi" data-phxi="'+i+'"><img alt=""><button type="button" data-phxmain="'+i+'" title="направи основна" aria-label="направи основна">★</button><button type="button" data-phxdel="'+i+'" aria-label="махни">×</button></div>').join('')+
     (photo&&1+phx.length<PHMAX?'<label class="btn phxadd">+ още снимки<input type="file" id="f-photo2" accept="image/*" multiple hidden></label>':'');
   r.querySelectorAll('.phxi').forEach((d,i)=>getPhoto(phx[i]).then(b=>{if(b)d.querySelector('img').src=URL.createObjectURL(b);}));}
-async function phxAdd(files){for(const f of [...files]){if((photo?1:0)+phx.length>=PHMAX)break;const blob=await shrink(f);if(!blob)continue;
+async function phxAdd(files){if(files&&files[0]&&!photo)exifCheck(files[0]);for(const f of [...files]){if((photo?1:0)+phx.length>=PHMAX)break;const blob=await shrink(f);if(!blob)continue;
     const pid='ph'+Date.now()+Math.random().toString(36).slice(2,7);if(!await putPhoto(pid,blob))continue;phNew.push(pid);
     if(!photo){photo=pid;const pv=document.getElementById('prev');pv.src=URL.createObjectURL(blob);pv.style.display='';document.getElementById('rmph').style.display='';}
     else phx.push(pid);}
   phxDraw();}
 const allPh=o=>[o.photo,...(o.photos||[])].filter(Boolean);
 function phWrap(inner,o,fid){const n=(o.photos||[]).length;return n?'<div class="phw" data-phx="'+esc((o.photos||[]).join(','))+'"'+(fid?' data-phu="'+esc(fid)+'"':'')+'>'+inner+'<span class="phn">+'+n+'</span></div>':inner;}
-async function lbOpen(im){const w=im.closest('.phw'),ids=w?w.dataset.phx.split(',').filter(Boolean):[],u=w?w.dataset.phu:'';
+async function lbOpen(im){document.getElementById('lbcap').innerHTML='';const w=im.closest('.phw'),ids=w?w.dataset.phx.split(',').filter(Boolean):[],u=w?w.dataset.phu:'';
   const one=document.getElementById('lbimg'),strip=document.getElementById('lbx');one.src=im.src;
   if(!ids.length){one.style.display='';strip.style.display='none';strip.innerHTML='';document.getElementById('lb').showModal();return;}
   one.style.display='none';strip.style.display='';strip.innerHTML='<img src="'+im.src+'" alt="">'+ids.map(()=>'<img alt="">').join('');document.getElementById('lb').showModal();
@@ -2745,6 +2761,71 @@ function yrDraw(){const c=YR.c[YRI],box=document.getElementById('yr-card');
   if(c.ref)setTimeout(loadRefs,0);}
 function yrShare(){const c=YR.c[YRI];makeCard({kicker:c.k,title:c.big,sub:c.sub||'',rows:(c.rows||[]).map(r=>[r[0],String(r[1])]).concat(c.bars?c.bars.map((v,i)=>[MONTHS_S[i],v+' вида']).filter(r=>r[1]!=='0 вида'):[]),file:'godina-'+YR.y+'-'+(YRI+1)});}
 const yearsWith=()=>[...new Set(SURE().map(o=>o.date.slice(0,4)))].sort().reverse();
+// ---- грешките (издание A): всяка грешка на кой да е телефон се записва в Supabase — версия, телефон, екран ----
+// Без записи и без места. Пазят се и без връзка (до 30) и се пращат при първа възможност; една и съща — веднъж.
+const KERR='bird-journal-errq';let ERRQ=lsGet(KERR,[])||[];const errSeen=new Set();
+function logErr(msg,src){const m=String(msg||'').slice(0,500),k=m+'|'+(src||'');if(!m||errSeen.has(k)||/ResizeObserver loop/.test(m))return;errSeen.add(k);
+  let v='';try{v=view+(spSel?'/вид':'')+(fsel?'/приятел':'');}catch(e){}
+  ERRQ.push({at:new Date().toISOString(),ver:VER,ua:navigator.userAgent.slice(0,200),view:v,msg:m,src:String(src||'').slice(0,300)});ERRQ=ERRQ.slice(-30);lsSet(KERR,ERRQ);
+  setTimeout(errFlush,0);}
+async function errFlush(){if(!ERRQ.length||!navigator.onLine||typeof SB==='undefined'||!SB)return;const batch=ERRQ.slice(0,10);
+  try{const r=await SB.from('app_errors').insert(batch.map(e=>({...e,user_id:ME?ME.id:null})));if(!r.error){ERRQ=ERRQ.slice(batch.length);lsSet(KERR,ERRQ);}}catch(e){}}
+window.addEventListener('error',e=>{const f=e.filename||'';if(f&&!f.startsWith(location.origin))return;   // само нашите — не на добавки на браузъра
+  logErr(e.message,f.split('/').pop()+':'+e.lineno+':'+e.colno+(e.error&&e.error.stack?' | '+String(e.error.stack).split('\n').slice(1,3).join(' ').trim():''));});
+window.addEventListener('unhandledrejection',e=>{const r=e.reason;logErr('promise: '+(r&&(r.message||r))||'?',r&&r.stack?String(r.stack).split('\n').slice(0,2).join(' '):'');});
+// „Съобщи за проблем“ — готов текст с версията и телефона, за чата или имейла
+function reportText(){return 'Проблем в Перá\n\nКакво направих:\n\nКакво очаквах:\n\nКакво стана:\n\n—\nверсия '+VER+'\n'+navigator.userAgent+'\nекран '+innerWidth+'×'+innerHeight+
+  (matchMedia('(display-mode: standalone)').matches?' · инсталирано':' · в браузъра')+(ME?'':' · без профил')+(navigator.onLine?'':' · без връзка')+
+  (ERRQ.length?'\nпоследни грешки: '+ERRQ.slice(-3).map(e=>e.msg).join(' | '):'');}
+async function reportProblem(){const t=reportText();
+  if(navigator.share){try{await navigator.share({title:'Перá — проблем',text:t});return;}catch(e){if(e&&e.name==='AbortError')return;}}
+  try{await navigator.clipboard.writeText(t);alert('Текстът е копиран — постави го в съобщение и допиши какво стана.');}catch(e){prompt('Копирай този текст:',t);}}
+// ---- снимки (издание A): галерия в профила — твоята и на приятелите; данни от самата снимка ----
+const KGAL='bird-journal-galsort';let GALS=lsGet(KGAL,'date')||'date';
+function galItems(obs){const it=[];for(const o of obs)for(const pid of allPh(o))it.push({pid,o,nm:o.bg||o.en||o.la||'?'});
+  const by={date:(a,b)=>(b.o.date+(b.o.time||'')).localeCompare(a.o.date+(a.o.time||''))||b.o.id-a.o.id,
+    species:(a,b)=>String(a.nm).localeCompare(String(b.nm),'bg')||b.o.date.localeCompare(a.o.date),
+    place:(a,b)=>String(a.o.place||'я').localeCompare(String(b.o.place||'я'),'bg')||b.o.date.localeCompare(a.o.date)}[GALS]||((a,b)=>0);
+  return it.sort(by);}
+function galHTML(obs,uid){const it=galItems(obs);if(!it.length)return '<div class="note2">Още няма снимки.</div>';
+  return '<div class="spsort">Подреди: <select data-galsort>'+[['date','по дата'],['species','по вид'],['place','по място']].map(([k,l])=>'<option value="'+k+'"'+(GALS===k?' selected':'')+'>'+l+'</option>').join('')+'</select></div>'+
+    '<div class="gal">'+it.slice(0,120).map(x=>'<button type="button" class="galc" data-gal="'+esc(x.pid)+'"'+(uid?' data-galu="'+esc(uid)+'"':'')+' data-galr="'+x.o.id+'">'+
+      (uid?'<div class="ph" data-fph="'+esc(uid+'/'+x.pid)+'"></div>':'<div class="ph" data-ph="'+esc(x.pid)+'"></div>')+'<span>'+esc(x.nm)+'</span></button>').join('')+'</div>'+
+    (it.length>120?'<div class="note2">Показани са последните 120 от '+it.length+'.</div>':'');}
+function galOpen(btn){const im=btn.querySelector('img');if(!im)return;const uid=btn.dataset.galu||'',rid=+btn.dataset.galr;
+  const src=uid?((((FR&&FR.fol)||[]).find(f=>f.id===uid)||{}).data||{}).obs||[]:OBS,o=src.find(x=>x.id===rid);
+  document.getElementById('lbimg').src=im.src;document.getElementById('lbimg').style.display='';const sx=document.getElementById('lbx');sx.style.display='none';sx.innerHTML='';
+  document.getElementById('lbcap').innerHTML=o?'<b>'+spLink(o)+'</b> · '+esc(human(o.date))+(o.time?' '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+(uid?'':' <button type="button" class="btn" data-galrec="'+o.id+'">покажи записа</button>'):'';
+  document.getElementById('lb').showModal();}
+// данните на снимката (EXIF): дата и час на снимане и място, ако телефонът ги е записал — само предложение под снимката
+function exifOf(buf){try{const v=new DataView(buf);if(v.getUint16(0)!==0xFFD8)return null;let o=2;
+    while(o<v.byteLength-10){const mk=v.getUint16(o),len=v.getUint16(o+2);if(mk===0xFFE1&&v.getUint32(o+4)===0x45786966)return exifTiff(v,o+10);if((mk&0xFF00)!==0xFF00)break;o+=2+len;}
+    return null;}catch(e){return null;}}
+function exifTiff(v,t){const le=v.getUint16(t)===0x4949,u16=p=>v.getUint16(p,le),u32=p=>v.getUint32(p,le),
+    str=(p,n)=>{let s='';for(let i=0;i<n-1&&p+i<v.byteLength;i++)s+=String.fromCharCode(v.getUint8(p+i));return s;},
+    ifd=(p,cb)=>{const n=u16(p);for(let i=0;i<n;i++){const e=p+2+i*12;cb(u16(e),u32(e+4),e+8);}};
+  const out={};let ex=0,gp=0;
+  ifd(t+u32(t+4),(tag,cnt,vp)=>{if(tag===0x8769)ex=t+u32(vp);if(tag===0x8825)gp=t+u32(vp);if(tag===0x0132)out.dt=out.dt||str(t+u32(vp),cnt);});
+  if(ex)ifd(ex,(tag,cnt,vp)=>{if(tag===0x9003)out.dt=str(t+u32(vp),cnt);});
+  if(gp){const g={};ifd(gp,(tag,cnt,vp)=>{if(tag===1||tag===3)g[tag]=String.fromCharCode(v.getUint8(vp));
+      if(tag===2||tag===4){const p=t+u32(vp),r=i=>{const d=u32(p+i*8+4);return d?u32(p+i*8)/d:0;};g[tag]=r(0)+r(1)/60+r(2)/3600;}});
+    if(g[2]&&g[4])out.geo=(g[2]*(g[1]==='S'?-1:1)).toFixed(5)+','+(g[4]*(g[3]==='W'?-1:1)).toFixed(5);}
+  const m=/^(\d{4}):(\d\d):(\d\d)[ T](\d\d):(\d\d)/.exec(out.dt||'');
+  return {date:m&&+m[1]>=2000&&m[1]+'-'+m[2]+'-'+m[3]<=today()?m[1]+'-'+m[2]+'-'+m[3]:'',time:m?m[4]+':'+m[5]:'',geo:out.geo||''};}
+let exifSug=null;
+function nearPlace(geo){const g=parseGeo(geo);if(!g)return '';const [la,lo]=g.split(',').map(Number);let best=null,bd=2.0;
+  for(const o of OBS){if(!o.geo||!o.place)continue;const [a,b]=String(o.geo).split(',').map(Number),d=Math.hypot((a-la)*111,(b-lo)*111*Math.cos(la*Math.PI/180));if(d<bd){bd=d;best=o.place;}}
+  return best||'';}
+async function exifCheck(file){exifSug=null;const el=document.getElementById('f-exif');if(!el)return;el.style.display='none';
+  try{const x=exifOf(await file.slice(0,262144).arrayBuffer());if(!x||(!x.date&&!x.geo))return;
+    const curGeo=parseGeo(fld('geo').value)||'',same=(!x.date||x.date===fld('date').value)&&(!x.time||x.time===fld('time').value)&&(!x.geo||x.geo===curGeo);if(same)return;
+    exifSug=x;const pl=x.geo?nearPlace(x.geo):'';
+    el.innerHTML='<span>📷 '+[x.date?esc(human(x.date))+(x.time?', '+esc(x.time):''):'',x.geo?(pl?'близо до '+esc(pl):'има място'):''].filter(Boolean).join(' · ')+'</span>'+
+      '<button type="button" class="btn" data-exif="1">вземи</button><button type="button" class="exx" data-exif="0" aria-label="не">×</button>';
+    el.dataset.pl=pl;el.style.display='';}catch(e){}}
+function exifApply(){const x=exifSug,el=document.getElementById('f-exif');if(x){if(x.date)fld('date').value=x.date;if(x.time)fld('time').value=x.time;
+    if(x.geo){setGeo(x.geo);fo.geo='user';const pl=el.dataset.pl;if(pl&&!fld('place').value.trim()){fld('place').value=pl;fc.place=pl;}}}
+  exifSug=null;el.style.display='none';}
 // ---- „Списък“: бърз брояч за излета ----
 // Твоят списък с птици — сам го съставяш (предложенията влизат само с твое докосване) и той остава до следващия излет.
 // По време на излет докосване = +1 с часа и мястото в момента; на повече от ~300 м от предишния запис на същия вид
@@ -2882,12 +2963,13 @@ function acctExtras(el){const d=document.createElement('div');
   const ys=yearsWith(),cy=ys.includes(String(storyYear()))?storyYear():+ys[0];   // годината с история — ако в тази още няма записи, последната с такива
   d.innerHTML=(ys.length?'<div class="arr fr"><h3>Твоята година</h3><div class="fbtns"><button type="button" class="btn pri" data-yr="'+cy+'">✨ Твоята '+cy+'</button></div>'+
     (ys.filter(y=>+y!==cy).length?'<div class="note2" style="max-width:none;margin-top:8px">Минали години: '+ys.filter(y=>+y!==cy).map(y=>'<button type="button" class="chip" data-yr="'+y+'">'+y+'</button>').join(' ')+'</div>':'')+'</div>':'')+
+    fsec('myph','📷 Снимки · '+galItems(OBS).length,galHTML(OBS))+
     '<div class="arr fr"><h3>Данни</h3><div class="note2" style="max-width:none">Износ, резервни копия и тема.</div><div id="dataSlot"></div>'+
     '<label class="qtog"><input type="checkbox" data-quiet'+(quiet()?' checked':'')+'> Тих режим — без изскачащи поздравления и конфети</label>'+
     '<div class="note2" id="refInfo" style="max-width:none;margin-top:10px"></div><div class="fbtns"><button type="button" class="btn" data-refclear>Изчисти примерните снимки</button></div></div>'+
     '<div class="arr fr"><h3>Как се ползва</h3><div class="howto">'+Object.values(TIPTXT).map(t=>'<p>'+t+'</p>').join('')+'</div>'+
-    '<div class="fbtns"><button type="button" class="btn" data-tipsreset>Покажи съветите отново</button></div></div>';
-  el.appendChild(d);const sl=d.querySelector('#dataSlot');if(sl&&FOOTB)sl.appendChild(FOOTB);
+    '<div class="fbtns"><button type="button" class="btn" data-tipsreset>Покажи съветите отново</button><button type="button" class="btn" data-report>Съобщи за проблем</button></div></div>';
+  el.appendChild(d);const sl=d.querySelector('#dataSlot');if(sl&&FOOTB)sl.appendChild(FOOTB);setTimeout(loadPhotos,0);   // и снимките в галерията
   const ri=d.querySelector('#refInfo'),mb=n=>(n/1e6).toFixed(1).replace('.',',')+' MB';
   (async()=>{let t='';try{const e=await navigator.storage.estimate();if(e&&e.usage!=null)t='Приложението заема '+mb(e.usage)+'. ';}catch(x){}
     ri.textContent=t+'Примерните снимки (Уикипедия) — '+mb(refUsed())+'.';})();}
@@ -3047,7 +3129,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-02.6';
+const VER='2026-11-02.7';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -3407,13 +3489,15 @@ function renderFriend(el,id){
       '<div class="ar"><div><b style="color:'+['var(--mut)','var(--h)','var(--s)','var(--p)'][r.L]+'">'+spLink(r.o,esc(r.nm))+'</b><small>пръв път '+human(r.first)+'</small></div><span>'+(d=>d+' '+(d===1?'ден':'дни'))((dz[r.k]||new Set()).size)+'</span></div>').join(''))+
     fsec('rec','🕒 Последни записи','<div class="ftl">'+recent.map(o=>'<div class="ftr l'+lvl(o)+'"><i></i><div><b>'+spLink(o)+'</b><small>'+human(o.date)+(o.time?' · '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+
       (o.note?' · '+esc(o.note):'')+'</small>'+(o.photo?'<div class="ph" data-fph="'+esc(id+'/'+o.photo)+'"></div>':'')+'</div></div>').join('')+'</div>')+
+    fsec('ph','📷 Снимки на '+nm+' · '+galItems(f.data.obs||[]).length,galHTML(f.data.obs||[],id))+
     fsec('tg','🎯 Цели на '+nm+' · '+tg.length,tg.map(x=>x.html).join('')||'<div class="note2">Още няма цели.</div>')+
     fsec('bd','🏅 Значки на '+nm+' · '+BB.length+(gold?' · '+gold+(gold===1?' златна':' златни'):''),BB.length?'<div class="fbd">'+BB.map(x=>
       '<div class="fbm" title="'+esc(x.d.name+' — '+TIER[x.his-1]+'; ти: '+(x.me?TIER[x.me-1]:'още нямаш'))+'"><div class="bdi2 t'+x.his+'">'+(x.d.icon||BICON[x.d.sec])+'</div><b>'+esc(x.d.name)+'</b>'+
       '<span>'+TIER[x.his-1].toLowerCase()+'</span><small>ти: '+(x.me?TIER[x.me-1].toLowerCase():'—')+'</small></div>').join('')+'</div>':'<div class="note2">Още няма значки.</div>');
-  loadFriendPhotos();setTimeout(loadRefs,0);}
+  loadFriendPhotos();setTimeout(loadRefs,0);}   // (снимките в сгънатите части се зареждат при отваряне)
 async function loadFriendPhotos(){   // снимките на приятели се пазят и в телефона, за да се виждат и без мрежа
-  for(const d of document.querySelectorAll('[data-fph]')){if(d.dataset.loaded)continue;const k='f:'+d.dataset.fph;let b=await getPhoto(k);
+  // в сгънатите части снимките чакат да се отворят
+  for(const d of document.querySelectorAll('[data-fph]')){if(d.dataset.loaded||(d.closest('.fsb')&&d.closest('.fsb').style.display==='none'))continue;const k='f:'+d.dataset.fph;let b=await getPhoto(k);
     if(!b&&SB&&ME){try{const r=await SB.storage.from('photos').download(d.dataset.fph+'.jpg');if(r.data){b=r.data;await putPhoto(k,b);}}catch(e){}}
     if(b){d.innerHTML='<img src="'+URL.createObjectURL(b)+'" alt="">';d.dataset.loaded='1';}}}
 // --- действия ---
