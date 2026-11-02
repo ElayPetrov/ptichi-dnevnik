@@ -2078,8 +2078,9 @@ function dropNew(keep){const K=new Set([].concat(keep||[]));for(const id of phNe
 // Докато снимката се смалява и записва, „Запиши“ я изчаква — иначе бързо натискане записва без нея.
 let photoBusy=null;
 document.getElementById('f-photo').onchange=e=>{photoBusy=(async()=>{try{
-  const f=e.target.files[0];if(!f)return;exifCheck(f);const blob=await shrink(f);
-  if(!blob){e.target.value='';alert('Тази снимка не може да се отвори в браузъра (вероятно е във формат HEIC). Избери друга или снимай в JPEG.');return;}
+  const f=e.target.files[0];if(!f)return;const rp=await readPhoto(f);
+  if(rp.err){e.target.value='';alert(PHERR[rp.err]);return;}
+  exifCheck(rp.buf);const blob=rp.blob;
   const pid='ph'+Date.now()+Math.random().toString(36).slice(2,7);
   if(await putPhoto(pid,blob)){if(!form.classList.contains('on')){delPhoto(pid);return;}   // формата е затворена междувременно
     phNew.push(pid);photo=pid;phxDraw();const pv=document.getElementById('prev');
@@ -2683,11 +2684,13 @@ function phxDraw(){const r=document.getElementById('phxrow');if(!r)return;
   r.innerHTML=phx.map((id,i)=>'<div class="phxi" data-phxi="'+i+'"><img alt=""><button type="button" data-phxmain="'+i+'" title="направи основна" aria-label="направи основна">★</button><button type="button" data-phxdel="'+i+'" aria-label="махни">×</button></div>').join('')+
     (photo&&1+phx.length<PHMAX?'<label class="btn phxadd">+ още снимки<input type="file" id="f-photo2" accept="image/*" multiple hidden></label>':'');
   r.querySelectorAll('.phxi').forEach((d,i)=>getPhoto(phx[i]).then(b=>{if(b)d.querySelector('img').src=URL.createObjectURL(b);}));}
-async function phxAdd(files){if(files&&files[0]&&!photo)exifCheck(files[0]);for(const f of [...files]){if((photo?1:0)+phx.length>=PHMAX)break;const blob=await shrink(f);if(!blob)continue;
+async function phxAdd(files){const errs=new Set();
+  for(const f of [...files]){if((photo?1:0)+phx.length>=PHMAX)break;const rp=await readPhoto(f);if(rp.err){errs.add(rp.err);continue;}
+    if(!photo)exifCheck(rp.buf);const blob=rp.blob;
     const pid='ph'+Date.now()+Math.random().toString(36).slice(2,7);if(!await putPhoto(pid,blob))continue;phNew.push(pid);
     if(!photo){photo=pid;const pv=document.getElementById('prev');pv.src=URL.createObjectURL(blob);pv.style.display='';document.getElementById('rmph').style.display='';}
     else phx.push(pid);}
-  phxDraw();}
+  phxDraw();for(const k of errs)alert(PHERR[k]);}
 const allPh=o=>[o.photo,...(o.photos||[])].filter(Boolean);
 function phWrap(inner,o,fid){const n=(o.photos||[]).length;return n?'<div class="phw" data-phx="'+esc((o.photos||[]).join(','))+'"'+(fid?' data-phu="'+esc(fid)+'"':'')+'>'+inner+'<span class="phn">+'+n+'</span></div>':inner;}
 async function lbOpen(im){document.getElementById('lbcap').innerHTML='';const w=im.closest('.phw'),ids=w?w.dataset.phx.split(',').filter(Boolean):[],u=w?w.dataset.phu:'';
@@ -2813,11 +2816,22 @@ function exifTiff(v,t){const le=v.getUint16(t)===0x4949,u16=p=>v.getUint16(p,le)
   const m=/^(\d{4}):(\d\d):(\d\d)[ T](\d\d):(\d\d)/.exec(out.dt||'');
   return {date:m&&+m[1]>=2000&&m[1]+'-'+m[2]+'-'+m[3]<=today()?m[1]+'-'+m[2]+'-'+m[3]:'',time:m?m[4]+':'+m[5]:'',geo:out.geo||''};}
 let exifSug=null;
+// Снимката се чете от телефона само веднъж, в паметта: някои телефони не дават един файл да се чете два пъти наведнъж
+// (данните на снимката и самата снимка) и тогава снимката „не се отваря“. Причината при неуспех се записва в дневника на грешките.
+async function readPhoto(f){let buf;
+  try{buf=await f.arrayBuffer();}catch(e){logErr('photo read: '+((e&&e.name)||e),(f.type||'?')+' '+f.size);return {err:'read'};}
+  const blob=await shrink(new Blob([buf],{type:f.type||'image/jpeg'}));
+  if(!blob){const sig=String.fromCharCode(...new Uint8Array(buf.slice(4,12))),heic=/ftyp(heic|heix|hevc|hevx|mif1|msf1)/.test(sig);
+    logErr('photo decode'+(heic?' (heic)':''),(f.type||'?')+' '+f.size+' '+sig.replace(/[^\x20-\x7e]/g,'.'));return {err:heic?'heic':'decode'};}
+  return {blob,buf};}
+const PHERR={read:'Снимката не можа да се прочете от телефона. Опитай пак или я избери от „Файлове“.',
+  heic:'Тази снимка е във формат HEIC, който браузърът не отваря. Избери друга или снимай в JPEG.',
+  decode:'Тази снимка не може да се отвори в браузъра. Опитай с друга.'};
 function nearPlace(geo){const g=parseGeo(geo);if(!g)return '';const [la,lo]=g.split(',').map(Number);let best=null,bd=2.0;
   for(const o of OBS){if(!o.geo||!o.place)continue;const [a,b]=String(o.geo).split(',').map(Number),d=Math.hypot((a-la)*111,(b-lo)*111*Math.cos(la*Math.PI/180));if(d<bd){bd=d;best=o.place;}}
   return best||'';}
-async function exifCheck(file){exifSug=null;const el=document.getElementById('f-exif');if(!el)return;el.style.display='none';
-  try{const x=exifOf(await file.slice(0,262144).arrayBuffer());if(!x||(!x.date&&!x.geo))return;
+function exifCheck(buf){exifSug=null;const el=document.getElementById('f-exif');if(!el)return;el.style.display='none';
+  try{const x=exifOf(buf);if(!x||(!x.date&&!x.geo))return;
     const curGeo=parseGeo(fld('geo').value)||'',same=(!x.date||x.date===fld('date').value)&&(!x.time||x.time===fld('time').value)&&(!x.geo||x.geo===curGeo);if(same)return;
     exifSug=x;const pl=x.geo?nearPlace(x.geo):'';
     el.innerHTML='<span>📷 '+[x.date?esc(human(x.date))+(x.time?', '+esc(x.time):''):'',x.geo?(pl?'близо до '+esc(pl):'има място'):''].filter(Boolean).join(' · ')+'</span>'+
@@ -3129,7 +3143,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-02.7';
+const VER='2026-11-02.8';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
