@@ -39,9 +39,9 @@ try:
   pg.locator('#view .tag.nn[data-nn="Кус"]').click();pg.wait_for_timeout(150)
   pg.click('#nn-list [data-nnfix]');pg.wait_for_timeout(200)
   check('T9 in the dialog a near miss offers the right bird, and one tap fixes the record', pg.evaluate("[OBS.find(o=>o.id===77).bg,OBS.find(o=>o.id===77).la]"), ['Кос','Turdus merula'])
-  pg.click('#toggle');pg.fill('#f-bg','Розово фламинго');pg.fill('#f-la','Phoenicopterus roseus');pg.fill('#f-en','Greater Flamingo');pg.click('#savebtn');pg.wait_for_timeout(200)
+  pg.click('#toggle');pg.fill('#f-bg','Тестова птица');pg.fill('#f-la','Avis testa');pg.fill('#f-en','Test bird');pg.click('#savebtn');pg.wait_for_timeout(200)
   if pg.is_visible('#cancel'):pg.click('#cancel')   # outside an outing the form closes after saving
-  check('T10 a new bird saved with all three names joins the group\'s list by itself, no tag', ('Phoenicopterus roseus' in pg.evaluate("SPXO.map(x=>x.la)"),pg.locator('#view .tag.nn[data-nn="Розово фламинго"]').count()), (True,0))
+  check('T10 a new bird saved with all three names joins the group\'s list by itself, no tag', ('Avis testa' in pg.evaluate("SPXO.map(x=>x.la)"),pg.locator('#view .tag.nn[data-nn="Тестова птица"]').count()), (True,0))
   pg.evaluate("yayHide&&yayHide()")
   pg.click('#acct');pg.wait_for_timeout(150);pg.check('[data-quiet]');pg.click('[data-acctback]');pg.wait_for_timeout(150)
   pg.click('#toggle');pg.fill('#f-bg','Сойка');pg.click('#savebtn');pg.wait_for_timeout(400)

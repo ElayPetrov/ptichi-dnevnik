@@ -23,13 +23,13 @@ try:
   pg.evaluate("filt='p';render()");pp=pg.evaluate("[...document.querySelectorAll('#view .sp .nm')].map(n=>n.textContent)");pg.evaluate("filt='all';render()")
   check('Q3 the heard-only and photographed filters work again', (h,pp), (['Кос'],['Сврака']))
   # backup round-trip, now with targets, the group's species and badge levels
-  pg.evaluate("tgAdd({bg:'Черен щъркел',la:'Ciconia nigra',en:'Black stork'});spxAdd({bg:'Розово фламинго',la:'Phoenicopterus roseus',en:'Greater Flamingo'});BDG['early:1']={r:1,d:'2025-10-20'};")
+  pg.evaluate("tgAdd({bg:'Черен щъркел',la:'Ciconia nigra',en:'Black stork'});spxAdd({bg:'Тестова птица',la:'Avis testa',en:'Test bird'});BDG['early:1']={r:1,d:'2025-10-20'};")
   open('/tmp/bak8.json','w',encoding='utf-8').write(pg.evaluate("bakData()"))
   pg2=b.new_page();pg2.on('pageerror',lambda e:errs.append('2:'+str(e)));pg2.on('dialog',lambda d:d.accept())
   pg2.add_init_script("localStorage.setItem('bird-journal-tips','{\"all\":1}')")
   pg2.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg2.wait_for_timeout(400);pg2.click('#acct');pg2.set_input_files('#impf','/tmp/bak8.json');pg2.wait_for_timeout(600)
   check('Q4 a backup restored on a new phone brings back records, targets, the group\'s species and badge levels', (pg2.evaluate("OBS.length"),pg2.evaluate("tgList().map(t=>t.bg)"),pg2.evaluate("SPXO.map(x=>x.la)"),pg2.evaluate("!!BDG['early:1']")),
-    (6,['Черен щъркел'],['Phoenicopterus roseus'],True))
+    (6,['Черен щъркел'],['Avis testa'],True))   # (the flamingo is official since 2026-11-02.13, so it never joins the group's list)
   check('Q5 ...and every newer field of a record (kind of count, sex/age, breeding code)', pg2.evaluate("(o=>[o.cq,o.as,o.bc])(OBS.find(o=>o.id===6))"), ['est',{'m':3},4])
   pg.click('#acct');pg.wait_for_timeout(150)
   check('Q6 the profile\'s year button opens the latest year that has records (here 2025)', pg.inner_text('.btn[data-yr]').strip(), '✨ Твоята 2025')

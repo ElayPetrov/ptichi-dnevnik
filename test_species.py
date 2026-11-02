@@ -12,8 +12,8 @@ try:
   b=p.chromium.launch();pg=b.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
   pg.add_init_script("localStorage.setItem('bird-journal-v3',%s)"%json.dumps(json.dumps(data,ensure_ascii=False)))
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(300)
-  check('S1 the list holds 268 species, each in one of the app\'s groups, no name used twice',
-    pg.evaluate("(()=>{const n=SPL.flatMap(s=>[s[0],s[5]]).filter(Boolean).map(nrm);return [SPL.length,SPL.every(s=>FAMS[s[3]]),new Set(n).size===n.length];})()"), [268,True,True])
+  check('S1 the list holds 413 species (268 from BSPB + 145 from the official list), each in one of the app\'s groups, no name used twice',
+    pg.evaluate("(()=>{const n=SPL.flatMap(s=>[s[0],...altsOf(s)]).filter(Boolean).map(nrm);return [SPL.length,SPL.every(s=>FAMS[s[3]]),new Set(n).size===n.length];})()"), [413,True,True])
   vals=lambda:pg.evaluate("['bg','en','la','fam'].map(k=>fld(k).value)")
   def name(f,v):
     pg.click('#toggle');pg.fill('#f-'+f,v);pg.locator('#f-'+f).dispatch_event('change');r=vals();pg.click('#cancel');return r

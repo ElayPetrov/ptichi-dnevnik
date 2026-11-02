@@ -8,7 +8,7 @@ def check(n,got,exp):
   print(('PASS ' if ok else 'FAIL ')+n+('' if ok else f'\n     got {got!r}\n     exp {exp!r}'))
 mine=[R(id=1,bg='Кос',date=D(2))]
 fr={'obs':[R(id=50,bg='Черен щъркел',la='Ciconia nigra',place='Копринка',geo='42.62,25.54',date=D(3),time='08:00'),R(id=51,bg='Сойка',date=D(5))],'outs':[],
-    'tg':{'ciconia nigra':{'bg':'Черен щъркел','la':'Ciconia nigra','en':'Black Stork','t':1}},'spx':[{'bg':'Розово фламинго','la':'Phoenicopterus roseus','en':'Greater Flamingo'}]}
+    'tg':{'ciconia nigra':{'bg':'Черен щъркел','la':'Ciconia nigra','en':'Black Stork','t':1}},'spx':[{'bg':'Тестова птица','la':'Avis testa','en':'Test Bird'}]}
 srv=subprocess.Popen([sys.executable,'-m','http.server',str(port)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL);time.sleep(1)
 try:
  with sync_playwright() as p:
@@ -24,8 +24,8 @@ try:
   card=lambda:pg.evaluate("[...document.querySelectorAll('.tgc')].map(c=>{const k=c.cloneNode(true);k.querySelectorAll('.idl').forEach(x=>x.remove());document.body.appendChild(k);const s=k.innerText.replace(/\\n+/g,' | ');k.remove();return s;})")   # the identification links are checked in test_idlinks
   check('G3 a species from the list: its names filled in, Петър\'s last sighting with distance, and that he is after it too', card(),
     ['Черен щъркел | Ciconia nigra · Black stork | × | Последно: Петър, преди 3 дни, Копринка, 12 км | И Петър го търси.'])
-  pg.fill('#tg-in','Розово фламинго');pg.click('#tg-add');pg.wait_for_timeout(200)
-  check('G4 a species a friend added to the group\'s list is found too', card()[0].split(' | ')[:2], ['Розово фламинго','Phoenicopterus roseus · Greater Flamingo'])
+  pg.fill('#tg-in','Тестова птица');pg.click('#tg-add');pg.wait_for_timeout(200)
+  check('G4 a species a friend added to the group\'s list is found too', card()[0].split(' | ')[:2], ['Тестова птица','Avis testa · Test Bird'])   # (the flamingo is in the official list since 2026-11-02.13)
   pg.fill('#tg-in','Императорски пингвин');pg.click('#tg-add');pg.wait_for_timeout(150)
   check('G5 a name not in any list asks for all three names', (pg.is_visible('#tg-new'),pg.input_value('#tgx-bg')), (True,'Императорски пингвин'))
   pg.fill('#tgx-la','aptenodytes');pg.click('#tgx-ok');pg.wait_for_timeout(100)
@@ -45,8 +45,8 @@ try:
   for _ in range(3):seen.append(pg.evaluate("document.getElementById('yay').innerText"));pg.evaluate("yayHide()");pg.wait_for_timeout(450)
   check('G11 seeing a target yourself: „Цел постигната!“ (after the new-species card) and a tick on its card', (any('Цел постигната!' in x for x in seen),'✓ видян на' in ' '.join(card())), (True,True))
   pg.evaluate("yayHide()")
-  pg.locator('[data-tgdel="phoenicopterus roseus"]').click();pg.wait_for_timeout(150)
-  pg.evaluate("mergeIn({obs:[],outs:[],beh:[],del:{},tg:{'phoenicopterus roseus':{bg:'Розово фламинго',la:'Phoenicopterus roseus',en:'Greater Flamingo',t:5}}})");pg.reload();pg.wait_for_timeout(400)
+  pg.locator('[data-tgdel="avis testa"]').click();pg.wait_for_timeout(150)
+  pg.evaluate("mergeIn({obs:[],outs:[],beh:[],del:{},tg:{'avis testa':{bg:'Тестова птица',la:'Avis testa',en:'Test Bird',t:5}}})");pg.reload();pg.wait_for_timeout(400)
   check('G12 a removed target stays removed, even when an older copy syncs in, and after a reload', pg.evaluate("tgList().map(t=>t.bg).sort()"), ['Императорски пингвин','Черен щъркел'])
   check('G13 no page errors', errs, [])
   b.close()
