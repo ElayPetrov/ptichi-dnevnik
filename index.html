@@ -530,6 +530,8 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .atleg .s1{background:color-mix(in srgb,var(--s) 18%,var(--card))} .atleg .s2{background:color-mix(in srgb,var(--s) 35%,var(--card))} .atleg .s3{background:color-mix(in srgb,var(--s) 55%,var(--card))} .atleg .s4{background:color-mix(in srgb,var(--s) 75%,var(--card))} .atleg .s5{background:var(--s)}
 .trkb{padding:6px 10px;font-size:13px} .trkb.on{background:#e8822a;color:#fff;border-color:#e8822a}
 .trk{margin:8px 0} .trk svg{width:100%;max-width:420px;height:auto;background:var(--bg2);border-radius:10px;display:block}
+.oumap.big{width:100%;height:210px;margin:8px 0 4px;border-radius:12px} .smtrk{position:absolute;left:0;top:0;pointer-events:none}
+.smtrk polyline{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round;opacity:.9}
 .trk path{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .trk .t0{fill:var(--s)} .trk .t1{fill:#c0392b}
 .typo{font-size:13px;color:var(--mut);margin:4px 0 0} .typo button{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--s);cursor:pointer;text-decoration:underline}
 .tag.nn{border:1px dashed var(--accent);color:var(--accent);background:none;cursor:pointer;font:inherit;font-size:inherit}
@@ -1680,14 +1682,16 @@ function sessOptions(cur){const d=fld('date').value,L=outings().filter(x=>x.date
   sel.value=cur&&L.some(x=>x.id===cur)?cur:'';document.getElementById('f-sess-row').style.display=L.length?'':'none';}
 document.getElementById('f-date').addEventListener('change',()=>sessOptions(document.getElementById('f-sess').value));
 // Малка карта без библиотека: плочките на подходящото приближение и точките върху тях. Без мрежа остават само точките.
-function staticMap(el,pts){if(!pts.length){el.remove();return;}const W=el.clientWidth||96,H=el.clientHeight||72,T=TILES[tileKey]||TILES.sat;
+function staticMap(el,pts,trk){const tp=(trk||[]).map(q=>[q[0],q[1]]),all=pts.concat(tp);if(!all.length){el.remove();return;}
+  const W=el.clientWidth||96,H=el.clientHeight||72,T=TILES[tileKey]||TILES.sat;
   const px=(la,lo,z)=>{const n=256*2**z,s=Math.sin(la*Math.PI/180);return [(lo+180)/360*n,(.5-Math.log((1+s)/(1-s))/(4*Math.PI))*n];};
-  let z=15,P;for(;z>3;z--){P=pts.map(p=>px(p[0],p[1],z));const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]);if(Math.max(...xs)-Math.min(...xs)<=W-16&&Math.max(...ys)-Math.min(...ys)<=H-16)break;}
-  P=pts.map(p=>px(p[0],p[1],z));const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),L0=(Math.min(...xs)+Math.max(...xs))/2-W/2,T0=(Math.min(...ys)+Math.max(...ys))/2-H/2;let h='';
+  let z=15,P;for(;z>3;z--){P=all.map(p=>px(p[0],p[1],z));const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]);if(Math.max(...xs)-Math.min(...xs)<=W-16&&Math.max(...ys)-Math.min(...ys)<=H-16)break;}
+  P=all.map(p=>px(p[0],p[1],z));const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),L0=(Math.min(...xs)+Math.max(...xs))/2-W/2,T0=(Math.min(...ys)+Math.max(...ys))/2-H/2;let h='';
   for(let tx=Math.floor(L0/256);tx<=Math.floor((L0+W)/256);tx++)for(let ty=Math.floor(T0/256);ty<=Math.floor((T0+H)/256);ty++)
     h+='<img alt="" loading="lazy" src="'+T.url.replace('{z}',z).replace('{x}',tx).replace('{y}',ty).replace('{s}',(T.sub||'a')[0]).replace('{r}','')+
       '" style="left:'+(tx*256-L0).toFixed(0)+'px;top:'+(ty*256-T0).toFixed(0)+'px" onerror="this.remove()">';
-  for(const p of P)h+='<i style="left:'+(p[0]-L0).toFixed(1)+'px;top:'+(p[1]-T0).toFixed(1)+'px"></i>';
+  if(tp.length>1)h+='<svg class="smtrk" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'"><polyline points="'+P.slice(pts.length).map(q=>(q[0]-L0).toFixed(1)+','+(q[1]-T0).toFixed(1)).join(' ')+'"/></svg>';
+  for(const q of P.slice(0,pts.length))h+='<i style="left:'+(q[0]-L0).toFixed(1)+'px;top:'+(q[1]-T0).toFixed(1)+'px"></i>';
   el.innerHTML=h;}
 // ---- покани за излет ----
 // Каниш хора, които виждат дневника ти. Поканата пътува в собствения ти дневник (out.inv[техен id] = кога), който те
@@ -1759,7 +1763,7 @@ function renderOuts(el){const L=outings();
       '<div class="tags">'+(x.complete===true?'<span class="tag s">пълен списък</span>':x.complete===false?'<span class="tag b">частичен списък</span>':'<span class="tag h">пълнотата не е отбелязана</span>')+'</div></div></div>'+
       (pics.length?'<div class="ouph">'+pics.map(o=>'<div class="th" data-th="'+o.photo+'" title="'+esc(o.bg||o.en||o.la)+'"></div>').join('')+'</div>':'');
     if(openOut===x.id){const rs=[...x.rs].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
-      h+='<div class="sl">'+sp.map(r=>'<span class="v'+r.L+'">'+spLink({bg:r.nm})+'</span>').join('')+'</div>'+trkSVG(x)+
+      h+='<div class="sl">'+sp.map(r=>'<span class="v'+r.L+'">'+spLink({bg:r.nm})+'</span>').join('')+'</div>'+(x.trk&&x.trk.length>1||x.rs.some(o=>o.geo)?'<div class="oumap big" data-omap="'+esc(x.id)+'"></div>'+(x.trk&&x.trk.length>1?'<div class="note2" style="max-width:none">път: '+kmTxt(x.dist)+'</div>':''):'')+
       '<div class="ed"><div class="orl">'+rs.map(o=>'<div class="orr"><span class="t">'+esc(o.time||'')+'</span><span class="n'+(o.u?' u':'')+'">'+spLink(o)+
         (o.count||o.as?' · '+esc(cntText(o)):'')+'</span><button type="button" data-ed="'+o.id+'">промени</button></div>').join('')+'</div>'+
       '<button type="button" class="btn" data-oadd="'+esc(x.id)+'">+ птица</button><button type="button" class="btn" data-oedit="'+esc(x.id)+'">промени излета</button>'+
@@ -1767,7 +1771,7 @@ function renderOuts(el){const L=outings();
     h+='</div>';}
   el.innerHTML=h;
   for(const m of el.querySelectorAll('[data-omap]')){const x=L.find(y=>y.id===m.dataset.omap);
-    staticMap(m,x?[...new Set(x.rs.filter(o=>o.geo).map(o=>o.geo))].map(g=>g.split(',').map(Number)):[]);}
+    staticMap(m,x?[...new Set(x.rs.filter(o=>o.geo).map(o=>o.geo))].map(g=>g.split(',').map(Number)):[],x&&x.trk);}
   loadThumbs();}
 // Места: всяко място се отваря — малка карта с точките му, видовете и всички записи. Записите без име на място
 // се групират по координатите си (~100 м) и носят тях за име, за да не се слеят в едно „без място“.
@@ -2136,7 +2140,8 @@ form.onsubmit=e=>{e.preventDefault();
     bg:g('bg'),en:g('en'),la:g('la'),fam:document.getElementById('f-fam').value,note:g('note'),
     h:st.h?1:0,s:st.s?1:0,p:st.p?1:0,u:unsure?1:0,alt:unsure&&alts.length?[...alts]:undefined,beh:[...beh],geo:parseGeo(document.getElementById('f-geo').value)||null,photo:photo||null,upd:Date.now()};
   rec.sess=document.getElementById('f-sess').value||undefined;   // излетът се избира във формата (и после)
-  countFieldsApply(rec);rec.bc=fBC||undefined;rec.photos=photo&&phx.length?[...phx]:undefined;
+  countFieldsApply(rec);rec.bc=fBC||undefined;
+  if(!edit&&!rec.geo&&SESS&&SESS.trkOn&&rec.sess===SESS.id&&(SESS.trk||[]).length){const q=SESS.trk[SESS.trk.length-1];if(Date.now()/1000-q[2]<180)rec.geo=q[0].toFixed(5)+','+q[1].toFixed(5);}rec.photos=photo&&phx.length?[...phx]:undefined;
   const nBefore=new Set(SURE().map(key).filter(Boolean)).size,bBefore=tiersNow();   // за поздравленията
   let ok=true;const old=edit?((OBS.find(o=>o.id===edit)||{}).photo||null):null,oldX=edit?((OBS.find(o=>o.id===edit)||{}).photos||[]):[];
   if(edit){const i=OBS.findIndex(o=>o.id===edit);if(i>=0)OBS[i]={...OBS[i],...rec};else ok=false;}else OBS.push(rec);
@@ -2308,7 +2313,7 @@ function badgeStrip(nw){const R=SURE();return '<div class="bdg">'+BADGES.map(b=>
   return '<div class="bd'+(st.on?' on':'')+(nw&&nw.has(b.id)?' new':'')+'" title="'+esc(b.how)+'"><span class="bdi">'+b.icon+'</span><b>'+b.name+(nw&&nw.has(b.id)?'<span class="newtag">ново</span>':'')+'</b><small>'+
     (st.on?(st.first?'от '+human(st.first):'спечелена'):(b.goal?st.n+' от '+b.goal:b.how))+'</small></div>';}).join('')+'</div>';}
 document.getElementById('sessStart').onclick=()=>{
-  SESS={id:'s'+Date.now(),date:today(),time:nowTime(),place:'',geo:null,at:Date.now(),live:null,t0:nowTime(),d0:today(),trkOn:!!lsGet(KTRK,false)};
+  SESS={id:'s'+Date.now(),date:today(),time:nowTime(),place:'',geo:null,at:Date.now(),live:null,t0:nowTime(),d0:today(),trkOn:false};
   saveSess();sessUI();openForm(null);if(SESS.trkOn)trkStart();};
 document.getElementById('sessTrk').onclick=trkToggle;
 document.getElementById('sessEnd').onclick=()=>{if(!SESS)return;const d=outDefaults();
@@ -2944,7 +2949,7 @@ function trkStart(){if(!SESS||trkW!==null||!navigator.geolocation)return;
     e=>{logErr('gps: '+(e&&e.message||e.code),'');},{enableHighAccuracy:true,maximumAge:5000,timeout:30000});
   trkLockOn();}
 function trkStop(){if(trkW!==null){try{navigator.geolocation.clearWatch(trkW);}catch(e){}trkW=null;}if(trkLock){try{trkLock.release();}catch(e){}trkLock=null;}}
-function trkToggle(){if(!SESS)return;SESS.trkOn=!SESS.trkOn;lsSet(KTRK,SESS.trkOn);
+function trkToggle(){if(!SESS)return;SESS.trkOn=!SESS.trkOn;
   if(SESS.trkOn&&!lsGet('bird-journal-trackinfo',false)){lsSet('bird-journal-trackinfo',true);alert('Пътят се записва, докато Перá е отворено на екрана — екранът остава включен и батерията се харчи повече. Можеш да го спреш по всяко време оттук.');}
   saveSess();if(SESS.trkOn)trkStart();else trkStop();sessUI();}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&SESS&&SESS.trkOn){trkLockOn();if(trkW===null)trkStart();}});
@@ -3259,7 +3264,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-02.10';
+const VER='2026-11-02.11';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
