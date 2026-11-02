@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-698 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+701 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -70,7 +70,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_rA.py | 16 | the error log (sent once with version, user and screen; add-on errors ignored; queued when offline), „Съобщи за проблем“, the gallery in your and friends' profiles (folded, names, sorting, viewer with caption, jump to the record), the photo-data line (date, time, place; „вземи“ and „×“) |
 | test_lint.py | 1 | no code hidden behind a // comment on the same line (the mistake behind the 2026-11-02.5 bug) |
 | test_phread.py | 8 | a chosen photo is read from the phone once and never opened straight from the file; a real HEIC file, a broken file and an unreadable file each get their own message and a log entry; a bad extra photo is reported, the good one kept |
-| test_rB.py | 15 | „Атлас“ in place of Схема: your square from GPS, squares in both UTM zones with species counts, a square's species with the strongest breeding code this year, squares over the real map; „📍 път“: off until switched on, points every 25 m+, jitter ignored, pause, kept with the ended outing, drawn in Излети, eBird distance, remembered for the next outing |
+| test_rB.py | 18 | „Атлас“ in place of Схема: your square from GPS, squares in both UTM zones with species counts, a square's species with the strongest breeding code this year, squares over the real map; „📍 път“: off until switched on, points every 25 m+, jitter ignored, pause, kept with the ended outing, drawn in Излети, eBird distance, remembered for the next outing |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

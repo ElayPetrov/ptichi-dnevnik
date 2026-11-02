@@ -2006,7 +2006,7 @@ function openForm(o,seed){
   if(!o&&ctx&&ctx.place)document.getElementById('f-place').value=ctx.place;
   document.getElementById('f-fam').value=o?(o.fam||''):'';
   st=o?{h:o.h?1:0,s:o.s?1:0,p:o.p?1:0}:{h:0,s:1,p:0};unsure=!!(o&&o.u);alts=o&&o.alt?[...o.alt]:[];syncUnsure();
-  syncSts();syncBeh();setGeo(o?(o.geo||null):((!o&&ctx&&ctx.geo)?ctx.geo:null));initAuto();
+  syncSts();syncBeh();setGeo(o?(o.geo||null):(trkNow()||((!o&&ctx&&ctx.geo)?ctx.geo:null)));initAuto();
   const pv=document.getElementById('prev'),rm=document.getElementById('rmph');
   document.getElementById('f-photo').value='';
   phx=o&&o.photos?[...o.photos]:[];setTimeout(phxDraw,0);
@@ -2141,7 +2141,7 @@ form.onsubmit=e=>{e.preventDefault();
     h:st.h?1:0,s:st.s?1:0,p:st.p?1:0,u:unsure?1:0,alt:unsure&&alts.length?[...alts]:undefined,beh:[...beh],geo:parseGeo(document.getElementById('f-geo').value)||null,photo:photo||null,upd:Date.now()};
   rec.sess=document.getElementById('f-sess').value||undefined;   // излетът се избира във формата (и после)
   countFieldsApply(rec);rec.bc=fBC||undefined;
-  if(!edit&&!rec.geo&&SESS&&SESS.trkOn&&rec.sess===SESS.id&&(SESS.trk||[]).length){const q=SESS.trk[SESS.trk.length-1];if(Date.now()/1000-q[2]<180)rec.geo=q[0].toFixed(5)+','+q[1].toFixed(5);}rec.photos=photo&&phx.length?[...phx]:undefined;
+  if(!edit&&SESS&&rec.sess===SESS.id&&fo.geo!=='user'){const g=trkNow();if(g)rec.geo=g;}rec.photos=photo&&phx.length?[...phx]:undefined;
   const nBefore=new Set(SURE().map(key).filter(Boolean)).size,bBefore=tiersNow();   // за поздравленията
   let ok=true;const old=edit?((OBS.find(o=>o.id===edit)||{}).photo||null):null,oldX=edit?((OBS.find(o=>o.id===edit)||{}).photos||[]):[];
   if(edit){const i=OBS.findIndex(o=>o.id===edit);if(i>=0)OBS[i]={...OBS[i],...rec};else ok=false;}else OBS.push(rec);
@@ -2953,6 +2953,8 @@ function trkToggle(){if(!SESS)return;SESS.trkOn=!SESS.trkOn;
   if(SESS.trkOn&&!lsGet('bird-journal-trackinfo',false)){lsSet('bird-journal-trackinfo',true);alert('Пътят се записва, докато Перá е отворено на екрана — екранът остава включен и батерията се харчи повече. Можеш да го спреш по всяко време оттук.');}
   saveSess();if(SESS.trkOn)trkStart();else trkStop();sessUI();}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&SESS&&SESS.trkOn){trkLockOn();if(trkW===null)trkStart();}});
+function trkNow(){const t=SESS&&SESS.trkOn&&SESS.trk;if(!t||!t.length)return null;const q=t[t.length-1];
+  return Date.now()/1000-q[2]<180?q[0].toFixed(5)+','+q[1].toFixed(5):null;}
 const kmTxt=k=>(Math.round((k||0)*10)/10).toFixed(1).replace('.',',')+' км';
 function trkSVG(x){const t=x.trk||[];if(t.length<2)return '';const W=320,H=140,la=t.map(p=>p[0]),lo=t.map(p=>p[1]),k=Math.cos(la[0]*Math.PI/180);
   const a0=Math.min(...la),a1=Math.max(...la),o0=Math.min(...lo),o1=Math.max(...lo),sx=(o1-o0)*k||1e-6,sy=(a1-a0)||1e-6,sc=Math.min((W-20)/sx,(H-20)/sy);
@@ -3264,7 +3266,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-02.11';
+const VER='2026-11-02.12';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

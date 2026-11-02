@@ -46,17 +46,31 @@ try:
   pg.click('#sessTrk');ctx.set_geolocation({'latitude':42.6400,'longitude':25.3960,'accuracy':8});pg.wait_for_timeout(500)
   check('B8 pausing stops adding points; the banner says so', (pg.evaluate("SESS.trk.length"),pg.inner_text('#sessTrk')), (5,'📍 1,1 км ▶'))
   pg.click('#sessTrk');pg.wait_for_timeout(300)
+  # your report: a record every ~100 m while walking — each must get its own spot, not the outing's first one
+  got=[]
+  for k,(la,lo) in enumerate([(42.6410,25.3960),(42.6420,25.3960),(42.6430,25.3960)]):
+    ctx.set_geolocation({'latitude':la,'longitude':lo,'accuracy':8});pg.wait_for_timeout(500)
+    if not pg.is_visible('#f-bg'):pg.click('#toggle')
+    pg.fill('#f-bg',['Чинка','Щиглец','Зеленика'][k]);pg.click('#savebtn');pg.wait_for_timeout(250);pg.evaluate("yayHide&&yayHide()")
+    got.append(pg.evaluate("OBS.filter(o=>o.sess===SESS.id).sort((a,b)=>b.id-a.id)[0].geo"))
+  pg.click('#cancel') if pg.is_visible('#cancel') else None
+  check('B9c records made while walking each get their own position from the path (not all on the first point)', got, ['42.64100,25.39600','42.64200,25.39600','42.64300,25.39600'])
+  pg.click('#toggle');pg.click('#geoBtn');pg.wait_for_timeout(400);pg.fill('#f-geo','42.70000,25.40000');pg.fill('#f-bg','Сврака');pg.click('#savebtn');pg.wait_for_timeout(250);pg.evaluate("yayHide&&yayHide()")
+  check('B9d a position you set yourself is kept', pg.evaluate("OBS.find(o=>o.bg==='Сврака'&&o.sess===SESS.id).geo"), '42.70000,25.40000')
+  pg.click('#cancel') if pg.is_visible('#cancel') else None
+  ctx.set_geolocation({'latitude':42.6400,'longitude':25.3960,'accuracy':8});pg.wait_for_timeout(500)
+  pg.evaluate("OBS=OBS.filter(o=>!(o.sess===SESS.id&&['Чинка','Щиглец','Зеленика','Сврака'].includes(o.bg)));save()")
   pg.click('#toggle');pg.fill('#f-bg','Сойка');pg.fill('#f-geo','');pg.evaluate("geo=null");pg.click('#savebtn');pg.wait_for_timeout(200);pg.click('#cancel') if pg.is_visible('#cancel') else None
   check('B9b while the path is on, a record without its own position takes the current point from the path', pg.evaluate("OBS.filter(o=>o.sess===SESS.id).map(o=>o.geo)"), ['42.64000,25.39600'])
   pg.evaluate("yayHide&&yayHide()");pg.click('#sessEnd');pg.wait_for_timeout(150);pg.fill('#se-start','07:00');pg.fill('#se-end','09:00');pg.click('#sess [data-done="1"]');pg.wait_for_timeout(600)
   o=pg.evaluate("OUTS[OUTS.length-1]")
-  check('B9 the ended outing keeps its path and distance; the GPS stops', (len(o.get('trk') or [])>=5,round(o.get('dist',0),1),pg.evaluate("trkW")), (True,2.3,None))   # resuming 1,2 km further adds that stretch
+  check('B9 the ended outing keeps its path and distance; the GPS stops', (len(o.get('trk') or [])>=5,round(o.get('dist',0),1),pg.evaluate("trkW")), (True,3.0,None))   # resuming 1,2 km further adds that stretch, and the extra walk for B9c adds 0,7 km
   pg.evaluate("yayHide&&yayHide()");pg.click('.tab[data-v="outs"]');pg.wait_for_timeout(150);pg.locator('.ou').first.click();pg.wait_for_timeout(150)
-  check('B10 Излети: the closed card\'s small map has the walking line; opened, the same map larger, with dots and the line, and „път: 2,3 км“',
-    (pg.locator('.ou .ouh .oumap .smtrk polyline').count(),pg.locator('.oumap.big .smtrk polyline').count(),pg.locator('.oumap.big i').count()>=1,'път: 2,3 км' in pg.inner_text('.ou')), (1,1,True,True))
+  check('B10 Излети: the closed card\'s small map has the walking line; opened, the same map larger, with dots and the line, and „път: 3,0 км“',
+    (pg.locator('.ou .ouh .oumap .smtrk polyline').count(),pg.locator('.oumap.big .smtrk polyline').count(),pg.locator('.oumap.big i').count()>=1,'път: 3,0 км' in pg.inner_text('.ou')), (1,1,True,True))
   pg.evaluate("window.__f=[];offer=(n,c)=>__f.push([n,c]);0");pg.click('#acct');pg.click('#ebird');pg.click('#eb-ok');pg.wait_for_timeout(300)
   row=[l.split(',') for l in pg.evaluate("__f[0][1]").strip().split('\n') if 'Сойка' in l or 'Eurasian jay' in l.lower() or 'Garrulus' in l][-1]
-  check('B11 eBird: a Traveling list with the measured distance (in miles)', (row[12],row[16]), ('Traveling','1.43'))
+  check('B11 eBird: a Traveling list with the measured distance (in miles)', (row[12],row[16]), ('Traveling','1.84'))
   pg.click('[data-acctback]');pg.click('.tab[data-v="log"]');pg.click('#sessStart');pg.wait_for_timeout(600)
   check('B12 every new outing starts with „📍 път“ off — only on if you switch it on', (pg.evaluate("!!SESS.trkOn"),pg.evaluate("trkW===null")), (False,True))
   check('B13 no page errors', errs, [])
