@@ -65,7 +65,7 @@ try:
   pe.locator('.fc').nth(1).locator('[data-cm]').click();pe.wait_for_timeout(150);pe.locator('.fc').nth(1).locator('.cmn input').fill('Страхотен излет!');pe.locator('.fc').nth(1).locator('[data-cmsend]').click();pe.wait_for_timeout(700)
   fresh(iv);feed(iv);ivown=iv.locator('.fc.me').first
   ivown.locator('[data-cm]').click();iv.wait_for_timeout(150)
-  check('X6 Ivan sees the „Браво“ and the comment on his own outing', (iv.locator('.fc.me .sbn').first.inner_text(),iv.locator('.fc.me .cmr').first.inner_text().replace('\n',' ').replace('×','').strip()), ('Браво от Петър','Петър Страхотен излет!'))
+  check('X6 Ivan sees the „Браво“ and the comment on his own outing', (iv.locator('.fc.me .sbn').first.inner_text(),iv.locator('.fc.me .cmr').first.inner_text().replace('\n',' ').replace('×','').replace('отговори','').strip()), ('Браво от Петър','Петър Страхотен излет!'))   # „отговори“ is the reply link since 2026-11-02.4
   fresh(ma);feed(ma)
   check('X7 Maria (who sees only Ivan) sees his card with Petar\'s „Браво“, and no cards of Petar', (ma.evaluate("[...document.querySelectorAll('.fc .fchn b')].map(b=>b.textContent)"),'Браво от Петър' in ma.inner_text('#view')), (['Иван','Ти'],True))   # Ivan's outing (27 Oct) is newer than Maria's record (26 Oct)
   pid=pe.evaluate("ME.id")

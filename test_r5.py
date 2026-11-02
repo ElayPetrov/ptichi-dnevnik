@@ -19,20 +19,20 @@ try:
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400)
   # breeding codes
   pg.click('#toggle')
-  check('B1 „🥚 гнездене ▸“ sits on the count line, folded like sex and age', (pg.inner_text('#f-bctog'),pg.is_visible('#f-bcbox')), ('🥚 гнездене ▸',False))
+  check('B1 „гнездене ▸“ sits on the count line, folded like sex and age', (pg.inner_text('#f-bctog'),pg.is_visible('#f-bcbox')), ('гнездене ▸',False))
   pg.click('#f-bctog');opts=pg.evaluate("[...document.querySelectorAll('#f-bc optgroup')].map(g=>[g.label,g.children.length])")
   check('B2 a small menu with the 16 codes in three groups', opts, [['A · възможно',2],['B · вероятно',7],['C · потвърдено',7]])
   pg.click('#f-bchelp');pg.wait_for_timeout(100)
   check('B3 „?“ opens the explanation of the codes', (pg.evaluate("document.getElementById('bcDlg').open"),pg.locator('#bc-list .bcrow').count(),'Никога не приближавай гнездо' in pg.inner_text('#bcDlg')), (True,16,True))
   pg.click('#bc-close');pg.fill('#f-bg','Голям синигер');pg.select_option('#f-bc','14');pg.wait_for_timeout(50)
-  check('B4 the chosen code shows on the fold link', pg.inner_text('#f-bctog'), '🥚 C14 носи храна или фекална торбичка ▾')
+  check('B4 the chosen code shows on the fold link', pg.inner_text('#f-bctog'), 'C14 носи храна или фекална торбичка ▾')
   chips=pg.evaluate("[...document.querySelectorAll('#beh .bh')].map(b=>b.dataset.b)")
   check('B5 „гнезди“, „с малки“, „двойка“ are no longer offered as tags for new records', [t for t in ('гнезди','с малки','двойка') if t in chips], [])
   pg.click('#savebtn');pg.wait_for_timeout(150);pg.click('#cancel') if pg.is_visible('#cancel') else None
   check('B6 saved as code 14, shown as a green chip', (pg.evaluate("OBS.find(o=>o.bg==='Голям синигер').bc"),pg.evaluate("[...document.querySelectorAll('#view .tag.bc')].map(t=>[t.textContent,t.classList.contains('bcC')])")), (14,[['C14 носи храна или фекална торбичка',True]]))
   pg.evaluate("OBS.push({...OBS.find(o=>o.bg==='Голям синигер'),id:77,date:'2025-05-10',bc:4});save();")
   pg.click('.tab[data-v="life"]');pg.locator('.sp .nm',has_text='Голям синигер').first.click();pg.wait_for_timeout(150)
-  check('B7 the bird card: the strongest evidence per year', pg.inner_text('.bcline'), '🥚 Гнездене: '+str(T.year)+' — потвърдено (C14) · 2025 — вероятно (B4)')
+  check('B7 the bird card: the strongest evidence per year', pg.inner_text('.bcline'), 'Гнездене: '+str(T.year)+' — потвърдено (C14) · 2025 — вероятно (B4)')
   pg.click('[data-spback]')
   # sorting
   order=lambda:pg.evaluate("[...document.querySelectorAll('#view .sp .nm')].map(n=>n.textContent)")
