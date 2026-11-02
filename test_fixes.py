@@ -33,9 +33,9 @@ try:
   check('1b one нов вид tag per species', pg.locator('.tag.nw').count(), 4)
   tab(pg,'life'); cards=pg.eval_on_selector_all('.sp',"els=>els.map(e=>[e.querySelector('.nm').textContent,[...e.querySelectorAll('.meta')].map(m=>m.textContent),e.querySelector('.cnt').textContent])")
   bt=[c for c in cards if c[0]=='Син синигер'][0]
-  check('1c renamed genus is one species, newest name shown, old one listed', (bt[1][0],bt[1][1],bt[2]), ('Eurasian Blue Tit · Cyanistes caeruleus','също: Parus caeruleus','2×'))
+  check('1c renamed genus is one species, newest name shown, old one listed', (bt[1][0],bt[1][1],bt[2]), ('Eurasian Blue Tit · Cyanistes caeruleus','също: Parus caeruleus','2 дни2 записа2 птици'))   # since 2026-11-02.5 the card shows days, with records small under it
   sv=[c for c in cards if c[0]=='Сврака'][0]
-  check('1d bg-only + bg/la + en/la records join', (sv[1][0],sv[2]), ('Eurasian Magpie · Pica pica','3×'))
+  check('1d bg-only + bg/la + en/la records join', (sv[1][0],sv[2]), ('Eurasian Magpie · Pica pica','3 дни3 записа3 птици'))
   check('1e Latin-only species gets a title', any(c[0]=='Larus michahellis' for c in cards), True)
   pg.click('#filters .chip[data-f="ylist"]'); check('1f the year-list filter keys by species', pg.locator('.sp').count(), 4)
   tab(pg,'phen'); pg.click('[data-pm="grid"]'); check('1g phenology rows', pg.locator('table.ph2 tbody tr').count(), 4)

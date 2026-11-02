@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-646 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+651 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -65,6 +65,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_r4.py | 11 | three equal name fields and the compact count line; „sp.“ from any name field, counted as a record not a species, with its tag; subspecies as a third Latin word, credited to the species; the eBird export of both (the friend's profile checks moved to test_r5.py) |
 | test_r5.py | 17 | breeding codes: the folded menu on the count line, three groups, the „?“ explanation, saving, the coloured chip, the strongest code per year on the bird card, the removed tags; „Подреди“ in Моите видове (name, records, group with headings, remembered); the Приятели filter; the redesigned friend profile (header, comparison bar, latest find, badges computed from his records, timeline) |
 | test_r6.py | 22 | several photos per record (★ main, ×, „+N“, the swipe viewer, removal on edit), clearing the count kind on edit, replies („↪ Име“, „отговори“) and conversation notifications („нов отговор“), „Твоята година“ (banner 15.12–15.01, dismissed for good with a note, always in the profile, the story's cards and numbers, sharing as an image) |
+| test_r7.py | 5 | species cards' corner: days, records and birds; sorting by days, records and birds; days-only crowns; Неуморен, Етолог and Летописец counting one per species and day |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

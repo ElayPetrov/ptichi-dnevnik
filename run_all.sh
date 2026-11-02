@@ -52,6 +52,8 @@ run counts   python3 test_counts.py 8985
 run release4 python3 test_r4.py 8986
 run release5 python3 test_r5.py 8987
 run release6 python3 test_r6.py 8988
+run release7 python3 test_r7.py 8989
+run dayrule  python3 test_dayrule.py 8989
 run xcfn     sh -c 'cp supabase/functions/xc/index.ts /tmp/xcfn.mjs && node test_xcfn.mjs'
 printf '%-9s %s of 4 save taps landed\n' tap "$(python3 tap_test.py 8950 ptichi-dnevnik.html | grep -c "'saved'")"
 printf '%-9s ' sun; python3 sun_check.py | tail -1

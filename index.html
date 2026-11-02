@@ -486,6 +486,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .pill{font-size:11.5px;border-radius:999px;padding:2px 8px} .pill.pb{background:var(--s);color:#fff} .pill.ps{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent)} .pill.pd{background:var(--line);color:var(--ink)}
 .fbd{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px} .fbm{text-align:center} .fbm .bdi2{margin:0 auto 4px}
 .fbm b{display:block;font-size:12.5px;line-height:1.2} .fbm span{display:block;font-size:11.5px;color:var(--ink)} .fbm small{display:block;font-size:10.5px;color:var(--mut)}
+.sp .cnt small{display:block;font-size:11px;color:var(--mut);font-family:system-ui;font-weight:400;text-align:right}
 .cmre{color:var(--s);font-weight:600;font-size:12.5px} .cmrep{background:none;border:0;color:var(--s);font:inherit;font-size:12px;cursor:pointer;padding:0 4px}
 .nreply{font-size:11.5px;background:#e8822a;color:#fff;border-radius:999px;padding:2px 8px;margin-left:4px}
 .phxrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px} .phxi{position:relative;width:64px;height:64px} .phxi img{width:64px;height:64px;object-fit:cover;border-radius:10px;display:block;background:var(--bg2)}
@@ -995,8 +996,8 @@ function firsts(){const m={};for(const o of SURE().sort((a,b)=>a.date===b.date?a
   const k=key(o);if(k&&!(k in m))m[k]=o.id;}return m;}
 function speciesMap(){const m={};
   for(const o of SURE().sort((a,b)=>a.date===b.date?a.id-b.id:a.date.localeCompare(b.date))){const k=key(o);if(!k)continue;
-  if(!m[k])m[k]={k,bg:'',en:'',la:'',fam:'',n:0,L:0,first:o.date,last:o.date,months:{},photo:null,pdate:'',nm:{}};
-  const r=m[k];r.n++;r.L=Math.max(r.L,lvl(o));
+  if(!m[k])m[k]={k,bg:'',en:'',la:'',fam:'',n:0,b:0,L:0,first:o.date,last:o.date,months:{},photo:null,pdate:'',nm:{}};
+  const r=m[k];r.n++;r.b+=cntNum(o.count)||1;   // птиците: сборът на бройките (запис без брой е една птица)r.L=Math.max(r.L,lvl(o));
   if(o.date<r.first)r.first=o.date;if(o.date>r.last)r.last=o.date;
   const mo=+o.date.slice(5,7);r.months[mo]=(r.months[mo]||0)+1;
   for(const f of ['bg','en','la','fam'])if(o[f])r[f]=o[f];   // най-новото изписване печели
@@ -1185,7 +1186,7 @@ function renderLife(el){
     (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
     '<div class="meta">пръв път '+human(r.first)+(r.n>1?' · последно '+human(r.last):'')+'</div>'+
     '<div class="meta rkm">'+rankLine((D[r.k]||new Set()).size)+'</div>'+idLinks(r)+'</div>'+
-    '<div class="cnt">'+r.n+'×</div></div>').join('')+unH;
+    (dd=>'<div class="cnt">'+dd+' '+(dd===1?'ден':'дни')+'<small>'+r.n+(r.n===1?' запис':' записа')+'</small><small>'+r.b+(r.b===1?' птица':' птици')+'</small></div></div>')((D[r.k]||new Set()).size)).join('')+unH;   // дни — като коронките и подреждането
   loadThumbs();}
 // ---- страница на вида ----
 function renderSpecies(el,k){
@@ -2638,9 +2639,9 @@ const KFDF='bird-journal-feedf';let FDF=lsGet(KFDF,'all')||'all';
 const fdfHTML=()=>'<div class="fdf">'+[['all','Всички'],['me','Мои'],['fr','На приятели']].map(([k,l])=>'<button type="button" class="chip" data-fdf="'+k+'" aria-pressed="'+(FDF===k)+'">'+l+'</button>').join('')+'</div>';
 // ---- Моите видове: подреждане ----
 const KSPS='bird-journal-spsort';let SPS=lsGet(KSPS,'name')||'name';
-const SPSORT=[['name','име А–Я'],['last','последно видян'],['recs','брой записи'],['days','дни с вида'],['new','нови отгоре'],['grp','по група']];
+const SPSORT=[['name','име А–Я'],['last','последно видян'],['days','дни с вида'],['recs','брой записи'],['birds','брой птици'],['new','нови отгоре'],['grp','по група']];
 function spSortArr(arr,D){const nm=(a,b)=>String(a.bg||a.la).localeCompare(String(b.bg||b.la),'bg'),dd=r=>(D[r.k]||new Set()).size;
-  const f={name:nm,last:(a,b)=>b.last.localeCompare(a.last)||nm(a,b),recs:(a,b)=>b.n-a.n||nm(a,b),days:(a,b)=>dd(b)-dd(a)||nm(a,b),
+  const f={name:nm,last:(a,b)=>b.last.localeCompare(a.last)||nm(a,b),recs:(a,b)=>b.n-a.n||nm(a,b),birds:(a,b)=>(b.b||0)-(a.b||0)||nm(a,b),days:(a,b)=>dd(b)-dd(a)||nm(a,b),
     new:(a,b)=>b.first.localeCompare(a.first)||nm(a,b),grp:(a,b)=>String(a.fam||'я').localeCompare(String(b.fam||'я'),'bg')||nm(a,b)}[SPS]||nm;
   return arr.sort(f);}
 // ---- профилът на приятел (издание 5): значките се смятат от записите му, като твоите ----
@@ -2902,7 +2903,7 @@ const grp=o=>o.fam||((listFind('bg',o.bg)||listFind('la',o.la)||{}).fam)||'';
 const cellOf=(o,km)=>{const g=(o.geo||'').split(',').map(Number);
   if(g.length===2&&isFinite(g[0])&&isFinite(g[1]))return 'g'+Math.floor(g[0]/(0.009*km))+','+Math.floor(g[1]/(0.0122*km));
   const p=(o.place||'').trim();return p?'n'+nrm(p):'';};
-const bUniq=o=>key(o)+'|'+cellOf(o,1)+'|'+o.date;
+const bUniq=o=>key(o)+'|'+o.date;   // един вид в един ден е един запис — местата не се броят отделно
 // бройката се чете предпазливо: „~500“ и „500+“ са 500, „10–20“ е 10, „3+2“ е 5
 const cntNum=s=>{const m=String(s||'').replace(/\s/g,'');if(/^\d+(\+\d+)+$/.test(m))return m.split('+').reduce((a,b)=>a+(+b),0);const n=m.match(/\d+/);return n?+n[0]:0;};
 const dayNum=d=>Math.round(Date.UTC(+d.slice(0,4),+d.slice(5,7)-1,+d.slice(8,10))/864e5);
@@ -2927,7 +2928,7 @@ const BDEF=[
   BD('early','Ранобудник','field','сутрини с птица преди изгрева',[5,25,100],R=>new Set(R.filter(OLDB.early.hit).map(o=>o.date)).size,OLDB.early.icon),
   BD('night','Нощна смяна','field','видове сови, записани в тъмното',[1,3,6],R=>new Set(R.filter(OLDB.night.hit).map(key)).size,OLDB.night.icon),
   BD('outings','На терен','field','излети',[20,100,400],()=>outings().length),
-  BD('records','Неуморен','field','записи (по един за вид, място и ден)',[200,500,1000],R=>new Set(R.map(bUniq)).size),
+  BD('records','Неуморен','field','записи (по един за вид и ден)',[200,500,1000],R=>new Set(R.map(bUniq)).size),
   BD('patch','Моят участък','field','дни на едно място (до ~500 м)',[30,150,450],R=>maxSize(bySet(R,o=>cellOf(o,.5),o=>o.date))),
   BD('places','Изследо\u00adвател','field','различни места (на ~1 км едно от друго)',[50,250,750],R=>new Set(R.map(o=>cellOf(o,1)).filter(Boolean)).size),
   BD('steady','Постоянство','field','дни със записи за 365 поредни дни (най-добрият ти период)',[100,200,300],R=>bestWindow(R.map(o=>o.date),365)),
@@ -3041,7 +3042,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-02.4';
+const VER='2026-11-02.5';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -3368,7 +3369,7 @@ function compareJ(a,b){   // общи видове между два дневн�
 function renderFriend(el,id){
   const f=((FR&&FR.fol)||[]).find(x=>x.id===id);if(!f||!f.data){fsel=null;return renderFriends(el);}
   const fo=(f.data.obs||[]).filter(o=>!o.u&&!isSp(o)),C=compareJ(SURE(),fo),nm=esc(f.name),kk=ufKeyer(fo);
-  const sp={},dz={};for(const o of fo){const k=kk(o);if(!k)continue;const r=sp[k]||(sp[k]={o,nm:o.bg||o.en||o.la,first:o.date,n:0,L:0});
+  const sp={},dz={};for(const o of fo){const k=kk(o);if(!k)continue;const r=sp[k]||(sp[k]={k,o,nm:o.bg||o.en||o.la,first:o.date,n:0,L:0});
     r.n++;r.L=Math.max(r.L,lvl(o));if(o.date<r.first)r.first=o.date;if(o.bg){r.nm=o.bg;r.o=o;}(dz[k]=dz[k]||new Set()).add(o.date);}
   const L=Object.values(sp).map(r=>r.L),t0=dayNum(today()),days=new Set(fo.map(o=>o.date).filter(d=>{const n=t0-dayNum(d);return n>=0&&n<365;})).size;
   const crowns=[0,0,0,0];for(const k in dz)crowns[rankOf(dz[k].size)]++;
@@ -3398,7 +3399,7 @@ function renderFriend(el,id){
       (C.onlyB.length?'<h3 style="font-size:15px">Само при '+nm+'</h3><div class="chips">'+C.onlyB.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>':'')+
       (C.onlyA.length?'<h3 style="font-size:15px">Само при теб</h3><div class="chips">'+C.onlyA.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>':'')||'<div class="note2">Имате едни и същи видове.</div>')+
     fsec('sp','🐦 Видовете на '+nm+' · '+Object.keys(sp).length,Object.values(sp).sort((x,y)=>String(x.nm).localeCompare(String(y.nm),'bg')).map(r=>
-      '<div class="ar"><div><b style="color:'+['var(--mut)','var(--h)','var(--s)','var(--p)'][r.L]+'">'+spLink(r.o,esc(r.nm))+'</b><small>пръв път '+human(r.first)+'</small></div><span>'+r.n+'×</span></div>').join(''))+
+      '<div class="ar"><div><b style="color:'+['var(--mut)','var(--h)','var(--s)','var(--p)'][r.L]+'">'+spLink(r.o,esc(r.nm))+'</b><small>пръв път '+human(r.first)+'</small></div><span>'+(d=>d+' '+(d===1?'ден':'дни'))((dz[r.k]||new Set()).size)+'</span></div>').join(''))+
     fsec('rec','🕒 Последни записи','<div class="ftl">'+recent.map(o=>'<div class="ftr l'+lvl(o)+'"><i></i><div><b>'+spLink(o)+'</b><small>'+human(o.date)+(o.time?' · '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+
       (o.note?' · '+esc(o.note):'')+'</small>'+(o.photo?'<div class="ph" data-fph="'+esc(id+'/'+o.photo)+'"></div>':'')+'</div></div>').join('')+'</div>')+
     fsec('tg','🎯 Цели на '+nm+' · '+tg.length,tg.map(x=>x.html).join('')||'<div class="note2">Още няма цели.</div>')+
