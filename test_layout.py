@@ -47,9 +47,9 @@ try:
   check('L9 a point shows all 11 photos, not 8, in a strip that swipes sideways', sc, [11,True,'auto','11 снимки — плъзни настрани'])
   check('L10 nothing pushes the page sideways', pg.evaluate("document.documentElement.scrollWidth<=document.documentElement.clientWidth"), True)
   pg.evaluate("ME={id:'u1',email:'ivan@test.bg'};MYNAME='Иван';MYCODE='ABCDEFGHJKLM';FR={fol:[],fans:[]};view='acct';render()")
-  check('L11 the profile: a header card, then Приятели, Твоят код, Твоята година, Известия, Данни и настройки, Помощ, and „изход“ last',
+  check('L11 the profile: a header card, then Приятели, Твоят код, Твоята година, Известия, Данни и настройки, Помощ, Парола, and „изход“ last',
     (pg.locator('.phero').count(),pg.evaluate("[...document.querySelectorAll('.pcard h3')].map(h=>h.textContent)"),pg.evaluate("[...document.querySelectorAll('#view button')].pop().textContent")),
-    (1,['Приятели','Твоят код','Твоята година','Известия на този телефон','Данни и настройки','Помощ'],'Изход от профила'))
+    (1,['Приятели','Твоят код','Твоята година','Известия на този телефон','Данни и настройки','Помощ','Парола'],'Изход от профила'))
   check('L12 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-833 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+843 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -82,6 +82,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_pushdeno.py | 9 | the push helper end to end in Deno (Supabase's runtime), the real file unmodified, against a stand-in Supabase REST API and push service: keys made once with the service key, a suggestion to the right phones, a dead phone removed, the author's own phone quiet, decrypted by the independent library, a valid VAPID signature, the first look at a journal only remembers, a new question to a follower, the test message, a bad call refused |
 | test_rows.py | 6 | the profile's checkbox rows (notification kinds, „Тих режим“) at 320 and 390 px: the boxes in one straight column, all 20×20, each level with its first line, the texts in one column, long texts wrap inside the card, the page doesn't widen |
 | test_cos.py | 11 | the 3 Nov cosmetic round: Дневник remembers folding in every filter (open at first, kept after switching and reopening, each filter its own, a new record opens its day everywhere), smaller map style buttons, the profile's header card, initials avatars, adding a friend inside the friends' card, folded how-to, sign-out last, no overflow |
+| test_pw.py | 10 | forgotten password: „Забравена парола?“ asks for the e-mail first, then has Supabase send the recovery letter back to Перá; the link opens „Нова парола“ on top of the profile (even signed out on that phone); length and matching checks; saving; „Смени паролата“ folded above „Изход“ |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

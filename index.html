@@ -359,7 +359,9 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .psub{font-family:Inter,system-ui,sans-serif;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:14px 0 2px;font-weight:600}
 .btn.sm{padding:4px 10px;font-size:12.5px} .pyear{width:100%} .pcard .fbtns{flex-wrap:wrap} .pcard .fbtns .btn{white-space:nowrap}
 .phow summary{cursor:pointer;font-weight:600;padding:4px 0;list-style:revert} .phow .howto{margin-top:6px}
-.pout{text-align:center;margin:18px 0 6px} .pout .btn{color:var(--accent)} .acchd h2{font-family:Fraunces,Georgia,serif;font-size:20px;margin:0;font-weight:500}
+.pout{text-align:center;margin:18px 0 6px} .pout .btn{color:var(--accent)}
+.linkbtn{background:none;border:0;padding:6px 0 0;font:inherit;font-size:13px;color:var(--mut);text-decoration:underline;cursor:pointer}
+.pwf input{display:block;width:100%;margin:8px 0 0} .pwchg summary{cursor:pointer;font-weight:600;padding:4px 0} .pwrec{border-color:var(--s);box-shadow:0 0 0 2px var(--sb)} .acchd h2{font-family:Fraunces,Georgia,serif;font-size:20px;margin:0;font-weight:500}
 .fc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin:0 0 12px;cursor:pointer}
 .fc.me{border-left:3px solid var(--h)}
 .fch{display:flex;gap:10px;align-items:center;margin-bottom:9px}
@@ -2491,6 +2493,7 @@ function goTo(g){if(!g)return;if(g.startsWith('q:')){spSel=null;view='log';rende
 {const g=new URLSearchParams(location.search).get('go');if(g){try{history.replaceState(null,'',location.pathname);}catch(e){}setTimeout(()=>goTo(g),700);}}
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const u=e.data&&e.data.go;if(u)try{goTo(new URL(u,location.href).searchParams.get('go'));}catch(x){}});
 setTimeout(pushRefresh,2500);
+setTimeout(()=>{if(RECLINK){view='acct';render();sbStart();}},0);   // линк от писмо за нова парола — дори ако на този телефон не си влизал (RECLINK се обявява по-надолу)
 document.getElementById('id-bg').addEventListener('input',idLook);document.getElementById('id-ok').onclick=idSend;document.getElementById('id-cancel').onclick=()=>document.getElementById('idDlg').close();
 document.getElementById('q-list').addEventListener('click',e=>{const b=e.target.closest('[data-qok]');if(b)qAccept(+b.dataset.qok);});
 document.getElementById('q-close').onclick=()=>{if(confirm('Да затворя ли въпроса без отговор? Записът остава несигурен.'))qClose();};document.getElementById('q-done').onclick=()=>document.getElementById('qDlg').close();
@@ -3299,6 +3302,7 @@ function acctExtras(el){const d=document.createElement('div');
       '<div class="note2" id="refInfo" style="max-width:none;margin-top:10px"></div><div class="fbtns"><button type="button" class="btn" data-refclear>Изчисти примерните снимки</button></div>')+
     pcard('❓','Помощ','<details class="phow"><summary>Как се ползва</summary><div class="howto">'+Object.values(TIPTXT).map(t=>'<p>'+t+'</p>').join('')+'</div></details>'+
       '<div class="fbtns"><button type="button" class="btn" data-tipsreset>Покажи съветите отново</button><button type="button" class="btn" data-report>Съобщи за проблем</button></div>')+
+    (ME&&!PWREC?pcard('🔒','Парола','<details class="pwchg"'+(pwMsg?' open':'')+'><summary>Смени паролата</summary>'+pwForm()+'</details>'):'')+
     (ME?'<div class="pout"><button type="button" class="btn" data-sb="out">Изход от профила</button></div>':'');
   el.appendChild(d);const sl=d.querySelector('#dataSlot');if(sl&&FOOTB)sl.appendChild(FOOTB);setTimeout(loadPhotos,0);if(ME)pushRender();   // и снимките в галерията
   const ri=d.querySelector('#refInfo'),mb=n=>(n/1e6).toFixed(1).replace('.',',')+' MB';
@@ -3477,7 +3481,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-03.7';
+const VER='2026-11-03.8';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -3509,7 +3513,7 @@ function sbClient(){
   if(!sbOn())return Promise.reject(new Error('cfg'));
   return sbP||(sbP=new Promise((ok,no)=>{const s=document.createElement('script');s.src=SB_JS;s.crossOrigin='anonymous';
     s.onload=()=>{try{SB=window.supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:KA,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-      SB.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&ME){ME=null;FR=null;lsSet(KF,null);footNote();if(view==='friends'||view==='acct')render();}});ok(SB);}
+      SB.auth.onAuthStateChange((ev,ses)=>{if(ev==='PASSWORD_RECOVERY'){pwRecovery(ses);return;}if(ev==='SIGNED_OUT'&&ME){ME=null;FR=null;lsSet(KF,null);footNote();if(view==='friends'||view==='acct')render();}});ok(SB);}
       catch(e){sbP=null;no(e);}};
     s.onerror=()=>{sbP=null;s.remove();no(new Error('offline'));};document.head.appendChild(s);}));}
 function errMsg(e){const m=String(e&&(e.message||e.error_description||e.msg)||e);
@@ -3524,7 +3528,7 @@ function footNote(){document.getElementById('priv').textContent=ME?'Записи
   'Записите се пазят в този браузър, на това устройство. Никой друг не ги вижда.';}
 function paintStat(){const e=document.getElementById('sbStat');if(e)e.textContent=sbStat;}
 async function sbStart(){if(!sbOn()||sbBusy)return;sbBusy=true;sbTried=true;
-  try{const sb=await sbClient();const {data}=await sb.auth.getSession();ME=data.session?data.session.user:null;if(ME)await afterSignIn();}
+  try{const sb=await sbClient();const {data}=await sb.auth.getSession();ME=data.session?data.session.user:null;if(ME&&RECLINK&&!PWREC)pwRecovery(data.session);if(ME)await afterSignIn();}
   catch(e){sbMsg=errMsg(e);}
   sbBusy=false;footNote();if(view==='friends'||view==='acct')render();}
 async function afterSignIn(){setTimeout(pushRefresh,1500);
@@ -3797,6 +3801,12 @@ let prevView='log';
 // профилът: инициали, малък аватар, карта-раздел с икона
 const initials=n=>{const w=String(n||'?').trim().split(/\s+/).filter(Boolean);return ((w[0]||'?').charAt(0)+(w.length>1?w[w.length-1].charAt(0):'')).toUpperCase();};
 const pav=n=>'<span class="pav" style="--fh:'+nameHue(n||'?')+'">'+esc(initials(n))+'</span>';
+// паролата: нова след линка за възстановяване (PWREC) или смяна от профила
+let PWREC=false,pwMsg='';const RECLINK=/(^|[#&?])type=recovery(&|$)/.test(location.hash+'&'+location.search);
+const pwForm=()=>'<div class="pwf"><input id="pw-new" type="password" autocomplete="new-password" placeholder="нова парола (поне 6 знака)">'+
+  '<input id="pw-new2" type="password" autocomplete="new-password" placeholder="още веднъж"><div class="fbtns"><button type="button" class="btn pri" data-sb="pwset">Запази паролата</button></div>'+
+  (pwMsg?'<div class="msg">'+esc(pwMsg)+'</div>':'')+'</div>';
+function pwRecovery(session){PWREC=true;pwMsg='';if(session&&session.user)ME=session.user;view='acct';spSel=null;fsel=null;render();}
 const pcard=(icon,title,body,act,cls)=>'<section class="pcard'+(cls?' '+cls:'')+'"><div class="pch"><span class="pci">'+icon+'</span><h3>'+title+'</h3>'+(act||'')+'</div>'+body+'</section>';
 const acctHead='<div class="acchd"><button type="button" class="again" data-acctback>← назад</button><h2>Профил и приятели</h2></div>';
 function renderAcct(el){
@@ -3813,9 +3823,10 @@ function renderAcct(el){
       '<div class="fg"><label>Имейл</label><input id="sb-mail" type="email" autocomplete="email" value="'+esc(sbForm.mail)+'"></div>'+
       '<div class="fg"><label>Парола (поне 6 знака)</label><input id="sb-pw" type="password" autocomplete="current-password" value="'+esc(sbForm.pw)+'"></div>'+
       (sbMsg?'<div class="msg">'+esc(sbMsg)+'</div>':'')+
-      '<div class="fbtns"><button type="button" class="btn pri" data-sb="in">Вход</button><button type="button" class="btn" data-sb="up">Нов профил</button></div></div>';return;}
+      '<div class="fbtns"><button type="button" class="btn pri" data-sb="in">Вход</button><button type="button" class="btn" data-sb="up">Нов профил</button></div>'+
+      '<button type="button" class="linkbtn" data-sb="forgot">Забравена парола?</button></div>';return;}
   const F=FR||{fol:[],fans:[]},R=SURE(),lv=Object.values(tiersNow()).reduce((a,x)=>a+x.t,0),nm=MYNAME||(ME.email||'').split('@')[0];
-  el.innerHTML=acctHead+
+  el.innerHTML=acctHead+(PWREC?pcard('🔒','Нова парола','<div class="note2" style="max-width:none">Влезе с линка от писмото. Избери нова парола — после влизаш с нея и на другите си устройства.</div>'+pwForm(),'','fr pwrec'):'')+
     '<div class="fhero phero" style="--fh:'+nameHue(nm)+'"><div class="fav">'+esc(initials(nm))+'</div><div class="fhn"><h2>'+esc(nm)+'</h2>'+
       '<div class="fhs">'+esc(ME.email||'')+'</div><div class="fhs psync"><i></i><span id="sbStat">'+esc(sbStat)+'</span></div></div></div>'+
     '<div class="ptiles"><div><b>'+fmtN(spCount(R))+'</b><span>вида</span></div><div><b>'+fmtN(R.length)+'</b><span>записа</span></div>'+
@@ -3929,6 +3940,15 @@ document.addEventListener('click',async e=>{
         if(!data.session){sbMsg='Готово. Отвори писмото от Supabase, потвърди адреса и после натисни „Вход“.';return render();}ME=data.user;}
       else{const {data,error}=await sb.auth.signInWithPassword({email:mail,password:pw});if(error)throw error;ME=data.user;}
       sbStat='';sbForm.pw='';render();await afterSignIn();return render();}
+    if(act==='forgot'){const mail=v('sb-mail').trim();sbForm.mail=mail;
+      if(!mail){sbMsg='Впиши имейла си горе и натисни отново „Забравена парола?“.';return render();}
+      a.disabled=true;const sb=await sbClient();const {error}=await sb.auth.resetPasswordForEmail(mail,{redirectTo:SB_SITE});if(error)throw error;
+      sbMsg='Изпратих писмо до '+mail+'. Отвори линка в него — Перá ще те пусне и ще поиска нова парола.';return render();}
+    if(act==='pwset'){const p1=v('pw-new'),p2=v('pw-new2');
+      if(p1.length<6){pwMsg='Паролата трябва да е поне 6 знака.';return render();}
+      if(p1!==p2){pwMsg='Двете не съвпадат — напиши я още веднъж.';return render();}
+      a.disabled=true;const {error}=await SB.auth.updateUser({password:p1});if(error){pwMsg=errMsg(error);return render();}
+      PWREC=false;pwMsg='Паролата е сменена. Използвай новата при следващ вход.';return render();}
     if(act==='out'){await pushForget();await SB.auth.signOut();ME=null;FR=null;lsSet(KF,null);sbMsg='';sbForm.pw='';footNote();return render();}
     if(act==='copy'){await navigator.clipboard.writeText(MYCODE);a.textContent='Копирано';return;}
     if(act==='send'){try{await navigator.share({text:'Моят код за Перá: '+(MYCODE.match(/.{1,4}/g)||[]).join('-')+'\n'+SB_SITE});}catch(x){}return;}
