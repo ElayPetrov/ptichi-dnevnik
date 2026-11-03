@@ -1,7 +1,7 @@
 // Птичи дневник — service worker.
 // Пази копие на страницата, иконите и шрифтовете, за да се отваря и без интернет.
 // Записите и снимките НЕ са тук — те са в localStorage / IndexedDB на устройството.
-const V = 'pd-2';   // смени, ако промениш този файл; старият кеш се трие сам
+const V = 'pd-3';   // смени, ако промениш този файл; старият кеш се трие сам
 const SHELL = ['manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 const FONTS = /^https:\/\/fonts\.(googleapis|gstatic)\.com\//;
 
@@ -59,4 +59,23 @@ self.addEventListener('fetch', e => {
     e.respondWith(caches.match(r).then(hit => hit || net));
   }
   // всичко останало (истинската карта, Leaflet) върви направо към мрежата
+});
+
+// Известия (2026-11-03): помощникът „push“ праща {t: заглавие, b: текст, u: къде да отвори, g: етикет}.
+// Етикетът слива повторенията (напр. няколко предложения по един въпрос стават едно известие).
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (x) { d = { b: e.data ? e.data.text() : '' }; }
+  e.waitUntil(self.registration.showNotification(d.t || 'Перá', {
+    body: d.b || '', icon: 'icon-192.png', badge: 'icon-192.png', tag: d.g || undefined, renotify: !!d.g, data: { u: d.u || './' } }));
+});
+// Докоснато известие: отворената Перá се показва и отива на мястото; ако не е отворена — отваря се там.
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.u) || './', self.registration.scope).href;
+  e.waitUntil((async () => {
+    for (const c of await self.clients.matchAll({ type: 'window', includeUncontrolled: true }))
+      if (c.url.startsWith(self.registration.scope)) { await c.focus(); c.postMessage({ go: url }); return; }
+    await self.clients.openWindow(url);
+  })());
 });

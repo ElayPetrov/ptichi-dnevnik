@@ -536,6 +536,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .smtrk polyline{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round;opacity:.9}
 .trk path{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .trk .t0{fill:var(--s)} .trk .t1{fill:#c0392b}
 .rareline{font-size:13px;color:#b5651d;margin:4px 0 2px;font-weight:600}
+.pushk{display:flex;flex-direction:column;gap:2px;margin:6px 0}
 .askl{display:flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer} .askl input{width:18px;height:18px}
 .asktag{margin:3px 0 1px} .asklnk{background:none;border:1px solid var(--line2);border-radius:999px;padding:2px 10px;font:inherit;font-size:12.5px;color:var(--s);cursor:pointer}
 .asktag.ok{font-size:12.5px;color:var(--s)}
@@ -2395,6 +2396,54 @@ function renderBadges(el){if(badgeVisit===null){badgeVisit=new Set(newBadges());
         return '<button type="button" class="bdsec bdfold" data-bdf="'+sec+'" aria-expanded="'+op+'"><span>'+title+'</span><small>'+got+' / '+max+'</small><i>'+(op?'▾':'▸')+'</i></button>'+
           '<div class="bdg2"'+(op?'':' style="display:none"')+'>'+L.map(d=>bdCard(d,T[d.id],badgeVisit)).join('')+'</div>';}).join('');}
 const KBDF='bird-journal-bdfold';
+// ---- известия на телефона (Web Push): абонаментът е в push_subs, изпраща помощникът „push“ ----
+const KPUSHK='bird-journal-pushkinds',KPUSHKEY='bird-journal-pushkey',pushFn=()=>SB_URL+'/functions/v1/push';
+const PUSHL=[['ask','Приятел пита какво е птица'],['idp','Предложение по твой въпрос · прието твое определение'],['inv','Покана за излет'],['comment','Коментари и отговори'],['bravo','„Браво“']];
+const pushKinds=()=>lsGet(KPUSHK,['ask','idp','inv','comment']);
+const pushOK=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+const b64uBytes=t=>{t=String(t).replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';return Uint8Array.from(atob(t),c=>c.charCodeAt(0));};
+async function pushSub(){if(!pushOK())return null;try{const reg=await navigator.serviceWorker.ready;return await reg.pushManager.getSubscription();}catch(e){return null;}}
+const fnH=(x={})=>({apikey:SB_KEY,...x});   // ключът за помощниците (публичен — той е и в самата страница)
+async function pushKey(){const k=lsGet(KPUSHKEY,'');if(k)return k;const r=await fetch(pushFn()+'?key=1',{headers:fnH()});const d=r.ok?await r.json():null;
+  if(!d||!d.key)throw new Error('Помощникът за известия не отговаря.');lsSet(KPUSHKEY,d.key);return d.key;}
+async function pushSave(sub){const j=sub.toJSON();const r=await SB.from('push_subs').upsert({endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,kinds:pushKinds(),updated_at:new Date().toISOString()},{onConflict:'user_id,endpoint'});if(r.error)throw r.error;}
+async function pushRefresh(){if(!SB||!ME)return;const sub=await pushSub();if(sub)try{await pushSave(sub);}catch(e){}}   // абонаментът се освежава при всеки вход
+async function pushForget(){const sub=await pushSub();if(!sub)return;try{if(SB&&ME)await SB.from('push_subs').delete().eq('endpoint',sub.endpoint);}catch(e){}try{await sub.unsubscribe();}catch(e){}}
+let pushMsg='';
+async function pushRender(){const el=document.getElementById('pushSlot');if(!el)return;
+  const note=t=>'<div class="note2" style="max-width:none">'+t+'</div>';
+  if(isIOS&&!standalone()){el.innerHTML=note('На iPhone известията идват само ако Перá е на началния екран: в Safari натисни „Сподели“ → „Добави към началния екран“ и отваряй Перá оттам. Нужен е iOS 16.4 или по-нов.');return;}
+  if(!pushOK()){el.innerHTML=note(isIOS?'Този iPhone не може да показва известия от уеб приложения — нужен е iOS 16.4 или по-нов.':'Този браузър не може да показва известия.');return;}
+  if(Notification.permission==='denied'){el.innerHTML=note('Известията за Перá са спрени в настройките на телефона (или на браузъра). Разреши ги там и се върни тук.');return;}
+  const sub=await pushSub(),K=pushKinds();
+  if(!sub){el.innerHTML=note('Телефонът ще те известява, когато приятел пита какво е птица, предложи вид по твой въпрос, покани те на излет или коментира. Кое — избираш после.')+
+    (pushMsg?note(esc(pushMsg)):'')+'<div class="fbtns"><button type="button" class="btn pri" data-push="on">Включи известията</button></div>';return;}
+  el.innerHTML=note('Известията са включени на този телефон. Какво да идва:')+
+    '<div class="pushk">'+PUSHL.map(([k,t])=>'<label class="qtog"><input type="checkbox" data-pushk="'+k+'"'+(K.includes(k)?' checked':'')+'> '+t+'</label>').join('')+'</div>'+
+    (pushMsg?note(esc(pushMsg)):'')+'<div class="fbtns"><button type="button" class="btn" data-push="test">Изпрати пробно</button><button type="button" class="btn" data-push="off">Спри известията тук</button></div>';}
+async function pushOn(){pushMsg='';try{
+    const perm=await Notification.requestPermission();if(perm!=='granted'){pushMsg=perm==='denied'?'Телефонът отказа известията.':'Известията не бяха разрешени.';return pushRender();}
+    const reg=await navigator.serviceWorker.ready,key=b64uBytes(await pushKey());
+    let sub=await reg.pushManager.getSubscription();
+    try{if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});}
+    catch(e){if(sub)await sub.unsubscribe();sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});}
+    await pushSave(sub);pushMsg='Готово. „Изпрати пробно“ показва дали стигат.';}
+  catch(e){pushMsg='Не успях: '+((e&&e.message)||e);}
+  pushRender();}
+async function pushKind(k,on){const L=pushKinds().filter(x=>x!==k);if(on)L.push(k);lsSet(KPUSHK,L);
+  const sub=await pushSub();if(sub&&SB&&ME)try{await SB.from('push_subs').update({kinds:L,updated_at:new Date().toISOString()}).eq('endpoint',sub.endpoint);}catch(e){}}
+async function pushTest(){const sub=await pushSub();if(!sub)return;pushMsg='Изпращам…';pushRender();
+  try{const r=await fetch(pushFn(),{method:'POST',headers:fnH({'Content-Type':'application/json'}),body:JSON.stringify({test:sub.endpoint})});const d=r.ok?await r.json():{};
+    pushMsg=d.sent?'Изпратено — трябва да дойде до няколко секунди.':'Не стигна до телефона. Изключи и включи известията отново.';}
+  catch(e){pushMsg='Помощникът за известия не отговаря.';}pushRender();}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-push]');if(!b)return;const a=b.dataset.push;
+  if(a==='on')pushOn();else if(a==='off'){pushMsg='';pushForget().then(pushRender);}else if(a==='test')pushTest();});
+document.addEventListener('change',e=>{const c=e.target.closest('[data-pushk]');if(c)pushKind(c.dataset.pushk,c.checked);});
+// докоснато известие: Перá отваря правилното място (?go=friends или ?go=q:<запис>)
+function goTo(g){if(!g)return;if(g.startsWith('q:')){spSel=null;view='log';render();setTimeout(()=>openQ(+g.slice(2)),300);}else{spSel=null;view=g==='log'?'log':'friends';render();}}
+{const g=new URLSearchParams(location.search).get('go');if(g){try{history.replaceState(null,'',location.pathname);}catch(e){}setTimeout(()=>goTo(g),700);}}
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const u=e.data&&e.data.go;if(u)try{goTo(new URL(u,location.href).searchParams.get('go'));}catch(x){}});
+setTimeout(pushRefresh,2500);
 document.getElementById('id-bg').addEventListener('input',idLook);document.getElementById('id-ok').onclick=idSend;document.getElementById('id-cancel').onclick=()=>document.getElementById('idDlg').close();
 document.getElementById('q-list').addEventListener('click',e=>{const b=e.target.closest('[data-qok]');if(b)qAccept(+b.dataset.qok);});
 document.getElementById('q-close').onclick=()=>{if(confirm('Да затворя ли въпроса без отговор? Записът остава несигурен.'))qClose();};document.getElementById('q-done').onclick=()=>document.getElementById('qDlg').close();
@@ -2649,7 +2698,7 @@ async function refClear(){for(const k of Object.keys(REFI))if(REFI[k].size)delPh
 const KXC='bird-journal-xcidx',xcFn=()=>SB_URL+'/functions/v1/xc';let XCI=lsGet(KXC,{})||{},xcAud=null,xcBtn=null,xcCtx='';
 async function xcGet(la){const m=XCI[la];if(m&&Date.now()-(m.at||0)<30*864e5)return m.d;
   if(navigator.onLine===false)return m?m.d:null;
-  try{const r=await fetch(xcFn()+'?sp='+encodeURIComponent(la));const d=r.ok?await r.json():null;
+  try{const r=await fetch(xcFn()+'?sp='+encodeURIComponent(la),{headers:{apikey:SB_KEY}});const d=r.ok?await r.json():null;
     if(d&&'song' in d&&'call' in d){XCI[la]={d,at:Date.now()};lsSet(KXC,XCI);return d;}}catch(e){}
   return m?m.d:null;}
 const xcHttps=u=>String(u||'').replace(/^\/\//,'https://').replace(/^http:\/\//,'https://');
@@ -3195,12 +3244,13 @@ function acctExtras(el){const d=document.createElement('div');
   d.innerHTML=(ys.length?'<div class="arr fr"><h3>Твоята година</h3><div class="fbtns"><button type="button" class="btn pri" data-yr="'+cy+'">✨ Твоята '+cy+'</button></div>'+
     (ys.filter(y=>+y!==cy).length?'<div class="note2" style="max-width:none;margin-top:8px">Минали години: '+ys.filter(y=>+y!==cy).map(y=>'<button type="button" class="chip" data-yr="'+y+'">'+y+'</button>').join(' ')+'</div>':'')+'</div>':'')+
     fsec('myph','📷 Снимки · '+galItems(OBS).length,galHTML(OBS))+
+    (ME?'<div class="arr fr"><h3>Известия на този телефон</h3><div id="pushSlot"><div class="note2" style="max-width:none">…</div></div></div>':'')+
     '<div class="arr fr"><h3>Данни</h3><div class="note2" style="max-width:none">Износ, резервни копия и тема.</div><div id="dataSlot"></div>'+
     '<label class="qtog"><input type="checkbox" data-quiet'+(quiet()?' checked':'')+'> Тих режим — без изскачащи поздравления и конфети</label>'+
     '<div class="note2" id="refInfo" style="max-width:none;margin-top:10px"></div><div class="fbtns"><button type="button" class="btn" data-refclear>Изчисти примерните снимки</button></div></div>'+
     '<div class="arr fr"><h3>Как се ползва</h3><div class="howto">'+Object.values(TIPTXT).map(t=>'<p>'+t+'</p>').join('')+'</div>'+
     '<div class="fbtns"><button type="button" class="btn" data-tipsreset>Покажи съветите отново</button><button type="button" class="btn" data-report>Съобщи за проблем</button></div></div>';
-  el.appendChild(d);const sl=d.querySelector('#dataSlot');if(sl&&FOOTB)sl.appendChild(FOOTB);setTimeout(loadPhotos,0);   // и снимките в галерията
+  el.appendChild(d);const sl=d.querySelector('#dataSlot');if(sl&&FOOTB)sl.appendChild(FOOTB);setTimeout(loadPhotos,0);if(ME)pushRender();   // и снимките в галерията
   const ri=d.querySelector('#refInfo'),mb=n=>(n/1e6).toFixed(1).replace('.',',')+' MB';
   (async()=>{let t='';try{const e=await navigator.storage.estimate();if(e&&e.usage!=null)t='Приложението заема '+mb(e.usage)+'. ';}catch(x){}
     ri.textContent=t+'Примерните снимки (Уикипедия) — '+mb(refUsed())+'.';})();}
@@ -3377,7 +3427,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-03.3';
+const VER='2026-11-03.5';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -3427,7 +3477,7 @@ async function sbStart(){if(!sbOn()||sbBusy)return;sbBusy=true;sbTried=true;
   try{const sb=await sbClient();const {data}=await sb.auth.getSession();ME=data.session?data.session.user:null;if(ME)await afterSignIn();}
   catch(e){sbMsg=errMsg(e);}
   sbBusy=false;footNote();if(view==='friends'||view==='acct')render();}
-async function afterSignIn(){
+async function afterSignIn(){setTimeout(pushRefresh,1500);
   try{let {data:p,error}=await SB.from('profiles').select('user_id,name').eq('user_id',ME.id).maybeSingle();if(error)throw error;
     if(!p){p={name:(ME.user_metadata&&ME.user_metadata.name)||''};const r=await SB.from('profiles').insert({user_id:ME.id,name:p.name});if(r.error)throw r.error;}
     MYNAME=p.name||'';const c=await SB.rpc('my_code');if(c.error)throw c.error;MYCODE=c.data||'';sbMsg='';}
@@ -3823,7 +3873,7 @@ document.addEventListener('click',async e=>{
         if(!data.session){sbMsg='Готово. Отвори писмото от Supabase, потвърди адреса и после натисни „Вход“.';return render();}ME=data.user;}
       else{const {data,error}=await sb.auth.signInWithPassword({email:mail,password:pw});if(error)throw error;ME=data.user;}
       sbStat='';sbForm.pw='';render();await afterSignIn();return render();}
-    if(act==='out'){await SB.auth.signOut();ME=null;FR=null;lsSet(KF,null);sbMsg='';sbForm.pw='';footNote();return render();}
+    if(act==='out'){await pushForget();await SB.auth.signOut();ME=null;FR=null;lsSet(KF,null);sbMsg='';sbForm.pw='';footNote();return render();}
     if(act==='copy'){await navigator.clipboard.writeText(MYCODE);a.textContent='Копирано';return;}
     if(act==='send'){try{await navigator.share({text:'Моят код за Перá: '+(MYCODE.match(/.{1,4}/g)||[]).join('-')+'\n'+SB_SITE});}catch(x){}return;}
     if(act==='newcode'){if(!confirm('Нов код? Старият спира да работи за нови приятели; които вече виждат дневника ти, остават.'))return;

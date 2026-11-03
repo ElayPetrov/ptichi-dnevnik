@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-760 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+811 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -75,6 +75,11 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_ux3.py | 9 | nothing sticks out past a 340 px screen (the sunrise line, long place names), „Сутрин обикновено го срещаш … след изгрева“, „Моите / Всички видове“ with the full list by group, ticks and rare marks, opening an unseen species and back, the map's style sub-tabs on one row |
 | test_fam.py | 19 | Иван's groups everywhere (41, field-guide order; old stored group names mapped), 40 family badges — 20 with levels at 30/50/90 % of the lower count (his field guide vs Перá), 20 single badges at more than half — Етолог with breeding codes, Атласист, По слух, Броячът, Квадрати, Пътят, Рядкости, Мисията изпълнена (kept after removing the target, not counting targets unseen since adding), folding sections in Значки and „Всички видове“ |
 | test_ask.py | 16 | „Попитай приятелите“: the box under „не съм сигурен“ (profile needed), an unnamed question saved as „Непозната птица“, your tag with the suggestion count, a friend's question on top of Приятели with the dot, the suggestion dialog (lookup, posted as readable text on „q:<id>“), accepting (names, sure, credit), „Определител“, answered questions leave the list, closing without an answer |
+| test_push.py | 14 | notifications in the app: switching on (permission, the helper's key, subscribe, saved with four kinds), the five kinds, the test message, switching off, sign-out forgets the phone, the iPhone Home Screen hint, blocked permission, „?go=friends“ and „?go=q:<id>“ from a tapped notification |
+| test_pushsql.py | 10 | the notifications' SQL on a local Postgres: each person sees and changes only their own phones, private key and memory tables, the helper woken on new journals and on new questions, answers and invitations but not on ordinary edits, knocks carry only ids, a failed knock never stops a save |
+| test_pushfn.mjs | 13 | the push helper: encryption decrypted by an independent RFC 8291 library, the VAPID signature verified by Node, who is told what (questions to followers, accepted identifications, invitations, suggestions, comments, replies, bravos), only phones that chose that kind, dead phones removed, keys made once, the test message |
+| test_swpush.mjs | 5 | the service worker: shows a message (title, text, tag, target), plain-text fallback, a tap opens Перá at the right place or brings the open one there, the cache version moved on |
+| test_pushdeno.py | 9 | the push helper end to end in Deno (Supabase's runtime), the real file unmodified, against a stand-in Supabase REST API and push service: keys made once with the service key, a suggestion to the right phones, a dead phone removed, the author's own phone quiet, decrypted by the independent library, a valid VAPID signature, the first look at a journal only remembers, a new question to a follower, the test message, a bad call refused |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

@@ -24,7 +24,7 @@ try:
     const seq=['#f-fam','.sts','#f-unsure','#beh','#f-date'].map(q),before=(a,b)=>!!(a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING);
     return [ids,seq.every((e,i)=>i===0||before(seq[i-1],e))];})()""")
   check('K1 the form runs: the three names, the count line, family, heard/saw/photographed, unsure, behaviour, date and time, place, coordinates, note, photo',
-    order, [['f-bg','f-la','f-en','f-count','f-cqs','f-bc','f-fam','f-alt-in','f-date','f-time','f-place','f-geo','f-sess','f-note','f-photo'],True])   # since 2026-11-02.2: the three names first, then the count line   # f-alt-in: „Може да е и“, under „не съм сигурен“
+    order, [['f-bg','f-la','f-en','f-count','f-cqs','f-bc','f-fam','f-ask','f-alt-in','f-date','f-time','f-place','f-geo','f-sess','f-note','f-photo'],True])   # since 2026-11-02.2: the three names first, then the count line   # f-alt-in: „Може да е и“, under „не съм сигурен“
   pg.click('#toggle');row=pg.evaluate("(()=>{const r=e=>document.getElementById(e).getBoundingClientRect();return [r('f-count').top>r('f-en').top&&r('f-la').top>r('f-bg').top,Math.abs(r('f-date').top-r('f-time').top)<2,r('f-count').width<r('f-bg').width/3,document.activeElement.id];})()");pg.click('#cancel')
   check('K1b on a phone: names one per line, the (narrow) count under them, date beside time, the cursor in the name', row, [True,True,True,'f-bg'])
   pg.click('#toggle');pg.fill('#f-bg','Кос');pg.click('#geoMap')
