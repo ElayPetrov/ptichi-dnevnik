@@ -536,7 +536,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .smtrk polyline{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round;opacity:.9}
 .trk path{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .trk .t0{fill:var(--s)} .trk .t1{fill:#c0392b}
 .rareline{font-size:13px;color:#b5651d;margin:4px 0 2px;font-weight:600}
-.pushk{display:flex;flex-direction:column;gap:2px;margin:6px 0}
+.pushk{display:flex;flex-direction:column;margin:6px 0 4px} .pushk .qtog{margin:0;padding:9px 0;border-top:1px solid var(--line)} .pushk .qtog:first-child{border-top:0}
 .askl{display:flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer} .askl input{width:18px;height:18px}
 .asktag{margin:3px 0 1px} .asklnk{background:none;border:1px solid var(--line2);border-radius:999px;padding:2px 10px;font:inherit;font-size:12.5px;color:var(--s);cursor:pointer}
 .asktag.ok{font-size:12.5px;color:var(--s)}
@@ -561,7 +561,9 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .typo{font-size:13px;color:var(--mut);margin:4px 0 0} .typo button{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--s);cursor:pointer;text-decoration:underline}
 .tag.nn{border:1px dashed var(--accent);color:var(--accent);background:none;cursor:pointer;font:inherit;font-size:inherit}
 .nnr{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid var(--line)} .nnr.bad input[data-nnf="la"],.nnr.bad input[data-nnf="en"]{border-color:var(--accent)}
-.qtog{display:flex;gap:8px;align-items:center;font-size:14px;margin-top:12px;cursor:pointer}
+.qtog{display:grid;grid-template-columns:22px minmax(0,1fr);column-gap:10px;align-items:start;font-size:14px;margin-top:12px;cursor:pointer;text-align:left;
+  text-transform:none;letter-spacing:normal;font-weight:400;color:var(--ink)}
+.qtog input{width:20px;height:20px;margin:0;justify-self:start;accent-color:var(--s)} .qtog>span{min-width:0;overflow-wrap:anywhere;line-height:22px}
 .cmpr{padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start} .cmpt{flex:1;min-width:0}
 .refbig{position:relative;display:none;margin:0 0 10px} .refbig.has{display:block}
 .refpic{position:relative;height:220px;border-radius:12px;overflow:hidden;background:var(--bg2)}
@@ -2419,7 +2421,7 @@ async function pushRender(){const el=document.getElementById('pushSlot');if(!el)
   if(!sub){el.innerHTML=note('Телефонът ще те известява, когато приятел пита какво е птица, предложи вид по твой въпрос, покани те на излет или коментира. Кое — избираш после.')+
     (pushMsg?note(esc(pushMsg)):'')+'<div class="fbtns"><button type="button" class="btn pri" data-push="on">Включи известията</button></div>';return;}
   el.innerHTML=note('Известията са включени на този телефон. Какво да идва:')+
-    '<div class="pushk">'+PUSHL.map(([k,t])=>'<label class="qtog"><input type="checkbox" data-pushk="'+k+'"'+(K.includes(k)?' checked':'')+'> '+t+'</label>').join('')+'</div>'+
+    '<div class="pushk">'+PUSHL.map(([k,t])=>'<label class="qtog"><input type="checkbox" data-pushk="'+k+'"'+(K.includes(k)?' checked':'')+'><span>'+t+'</span></label>').join('')+'</div>'+
     (pushMsg?note(esc(pushMsg)):'')+'<div class="fbtns"><button type="button" class="btn" data-push="test">Изпрати пробно</button><button type="button" class="btn" data-push="off">Спри известията тук</button></div>';}
 async function pushOn(){pushMsg='';try{
     const perm=await Notification.requestPermission();if(perm!=='granted'){pushMsg=perm==='denied'?'Телефонът отказа известията.':'Известията не бяха разрешени.';return pushRender();}
@@ -3246,7 +3248,7 @@ function acctExtras(el){const d=document.createElement('div');
     fsec('myph','📷 Снимки · '+galItems(OBS).length,galHTML(OBS))+
     (ME?'<div class="arr fr"><h3>Известия на този телефон</h3><div id="pushSlot"><div class="note2" style="max-width:none">…</div></div></div>':'')+
     '<div class="arr fr"><h3>Данни</h3><div class="note2" style="max-width:none">Износ, резервни копия и тема.</div><div id="dataSlot"></div>'+
-    '<label class="qtog"><input type="checkbox" data-quiet'+(quiet()?' checked':'')+'> Тих режим — без изскачащи поздравления и конфети</label>'+
+    '<label class="qtog"><input type="checkbox" data-quiet'+(quiet()?' checked':'')+'><span>Тих режим — без изскачащи поздравления и конфети</span></label>'+
     '<div class="note2" id="refInfo" style="max-width:none;margin-top:10px"></div><div class="fbtns"><button type="button" class="btn" data-refclear>Изчисти примерните снимки</button></div></div>'+
     '<div class="arr fr"><h3>Как се ползва</h3><div class="howto">'+Object.values(TIPTXT).map(t=>'<p>'+t+'</p>').join('')+'</div>'+
     '<div class="fbtns"><button type="button" class="btn" data-tipsreset>Покажи съветите отново</button><button type="button" class="btn" data-report>Съобщи за проблем</button></div></div>';
@@ -3427,7 +3429,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-03.5';
+const VER='2026-11-03.6';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

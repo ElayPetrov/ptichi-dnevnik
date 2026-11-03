@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-811 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+817 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -80,6 +80,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_pushfn.mjs | 13 | the push helper: encryption decrypted by an independent RFC 8291 library, the VAPID signature verified by Node, who is told what (questions to followers, accepted identifications, invitations, suggestions, comments, replies, bravos), only phones that chose that kind, dead phones removed, keys made once, the test message |
 | test_swpush.mjs | 5 | the service worker: shows a message (title, text, tag, target), plain-text fallback, a tap opens Перá at the right place or brings the open one there, the cache version moved on |
 | test_pushdeno.py | 9 | the push helper end to end in Deno (Supabase's runtime), the real file unmodified, against a stand-in Supabase REST API and push service: keys made once with the service key, a suggestion to the right phones, a dead phone removed, the author's own phone quiet, decrypted by the independent library, a valid VAPID signature, the first look at a journal only remembers, a new question to a follower, the test message, a bad call refused |
+| test_rows.py | 6 | the profile's checkbox rows (notification kinds, „Тих режим“) at 320 and 390 px: the boxes in one straight column, all 20×20, each level with its first line, the texts in one column, long texts wrap inside the card, the page doesn't widen |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 
