@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-817 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+833 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -38,7 +38,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_treats.py | 17 | first meeting of the year (with last year's date), badges (pop-up once, the strip in Моите видове), „СТО!“ at 100, the end-of-outing summary and its card, „На днешна дата“, the sky through the day (night: stars, moon phase, owl, dark hills) |
 | test_outedit.py | 15 | outings inside their day in Дневник (placed by time, foldable), „+ птица“ for forgotten birds, moving records in and out with the form's Излет field, one editor from Дневник and Излети, moving an outing's date, live outings, search, Фенология and Карта fitting a 360 px phone |
 | test_layout.py | 12 | tab order and all eight tabs on a 360 px phone, the Значки tab, Места (named first, unnamed points by coordinates, opening with a mini map and every record), Карта's style row under „Истинска карта“, every photo of a map point in a swipe strip, Приятели with friends first |
-| test_places.py | 9 | renaming a place or naming an unnamed point in Места: confirmation with the count, all records (unsure too) and outings updated, joining an existing place, „без място и координати“ left alone |
+| test_places.py | 14 | renaming a place or naming an unnamed point in Места: confirmation with the count, all records (unsure too) and outings updated, joining an existing place, „без място и координати“ left alone |
 | test_more.py | 14 | icon filters (no „Тази година“) fitting a 360 px phone, months and years folding in Дневник, an outing card's little map and photos, Фенология's order and its month grid fitting a phone with every name in full; the app uses its own address for sign-up emails and the shared code |
 | test_invite.py | 13 | outing invitations through the database stand-in: inviting someone who sees your journal, the banner and checklist, copying without photos or notes into „с …“, answers syncing, later edits staying separate, inviting again for forgotten birds, declining |
 | test_alt.py | 14 | „Може да е и“ for unsure records: hidden until unsure, same-genus suggestions from the list, adding and removing, saving, „или …“ in Дневник, no merging or counting, search, editing, dropped once sure; a long name never runs under the record's buttons |
@@ -81,6 +81,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_swpush.mjs | 5 | the service worker: shows a message (title, text, tag, target), plain-text fallback, a tap opens Перá at the right place or brings the open one there, the cache version moved on |
 | test_pushdeno.py | 9 | the push helper end to end in Deno (Supabase's runtime), the real file unmodified, against a stand-in Supabase REST API and push service: keys made once with the service key, a suggestion to the right phones, a dead phone removed, the author's own phone quiet, decrypted by the independent library, a valid VAPID signature, the first look at a journal only remembers, a new question to a follower, the test message, a bad call refused |
 | test_rows.py | 6 | the profile's checkbox rows (notification kinds, „Тих режим“) at 320 and 390 px: the boxes in one straight column, all 20×20, each level with its first line, the texts in one column, long texts wrap inside the card, the page doesn't widen |
+| test_cos.py | 11 | the 3 Nov cosmetic round: Дневник remembers folding in every filter (open at first, kept after switching and reopening, each filter its own, a new record opens its day everywhere), smaller map style buttons, the profile's header card, initials avatars, adding a friend inside the friends' card, folded how-to, sign-out last, no overflow |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

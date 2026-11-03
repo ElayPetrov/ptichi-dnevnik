@@ -29,7 +29,7 @@ try:
   pg.click('.tab[data-v="map"]');pg.wait_for_timeout(200)
   names=pg.evaluate("[...document.querySelectorAll('.pl .nm')].map(e=>e.textContent)")
   check('L4 Места: named places first, then each unnamed point by its coordinates, then the records with neither', names, ['Копринка','42.621, 25.392','42.700, 25.400','без място и координати'])
-  check('L5 ...the unnamed ones are marked „без име“', pg.locator('.pl.unnamed .tag').count(), 2)
+  check('L5 ...the unnamed ones sit folded under „Без име“', (pg.inner_text('[data-plun] span'),pg.locator('.plunb .pl.unnamed').count()), ('Без име',3))
   pg.click('.plh[data-pl="n:Копринка"]');pg.wait_for_function("document.querySelector('#plmap .leaflet-tile-loaded')",timeout=6000)
   check('L6 tapping a place opens it: a small map with its point, its species and every record, each with „промени“',
     (pg.locator('#plmap path.leaflet-interactive').count(),pg.locator('.pl.on .sl span').count(),pg.locator('.pl.on .orr').count(),pg.locator('.pl.on .orr [data-ed]').count()), (1,11,11,11))
@@ -47,8 +47,9 @@ try:
   check('L9 a point shows all 11 photos, not 8, in a strip that swipes sideways', sc, [11,True,'auto','11 снимки — плъзни настрани'])
   check('L10 nothing pushes the page sideways', pg.evaluate("document.documentElement.scrollWidth<=document.documentElement.clientWidth"), True)
   pg.evaluate("ME={id:'u1',email:'ivan@test.bg'};MYNAME='Иван';MYCODE='ABCDEFGHJKLM';FR={fol:[],fans:[]};view='acct';render()")
-  check('L11 the account view: friends first; your code, who sees you, and you with „изход“ further down',
-    pg.evaluate("[...document.querySelectorAll('.fr h3')].map(h=>h.textContent)"), ['Дневници на приятели','Добави приятел','Твоят код','Виждат твоя дневник','Ти','Твоята година','Известия на този телефон','Данни','Как се ползва'])
+  check('L11 the profile: a header card, then Приятели, Твоят код, Твоята година, Известия, Данни и настройки, Помощ, and „изход“ last',
+    (pg.locator('.phero').count(),pg.evaluate("[...document.querySelectorAll('.pcard h3')].map(h=>h.textContent)"),pg.evaluate("[...document.querySelectorAll('#view button')].pop().textContent")),
+    (1,['Приятели','Твоят код','Твоята година','Известия на този телефон','Данни и настройки','Помощ'],'Изход от профила'))
   check('L12 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

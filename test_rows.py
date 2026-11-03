@@ -10,7 +10,7 @@ def check(n,got,exp):
 FAKE="""const sub={endpoint:'https://x/1',toJSON(){return {endpoint:'https://x/1',keys:{p256dh:'P',auth:'A'}}},unsubscribe:async()=>true};
 try{Object.defineProperty(navigator.serviceWorker,'ready',{get:()=>Promise.resolve({pushManager:{getSubscription:async()=>sub,subscribe:async()=>sub}})});}catch(e){}
 window.Notification={permission:'granted',requestPermission:async()=>'granted'};"""
-GEO="""(()=>{const W=document.documentElement.clientWidth,R=[...document.querySelectorAll('#view .qtog')].map(l=>{const i=l.querySelector('input').getBoundingClientRect(),t=l.querySelector('span')||l,tr=t.getBoundingClientRect(),c=l.closest('.arr').getBoundingClientRect();
+GEO="""(()=>{const W=document.documentElement.clientWidth,R=[...document.querySelectorAll('#view .qtog')].map(l=>{const i=l.querySelector('input').getBoundingClientRect(),t=l.querySelector('span')||l,tr=t.getBoundingClientRect(),c=l.closest('.arr,.pcard').getBoundingClientRect();
   return {x:Math.round(i.left-c.left),w:Math.round(i.width),h:Math.round(i.height),dy:Math.round(Math.abs(i.top-tr.top)),tx:Math.round(tr.left-c.left),out:tr.right>c.right-10+0.5||l.getBoundingClientRect().right>c.right+0.5};});
   return {rows:R.length,xs:[...new Set(R.map(r=>r.x))].length,sizes:[...new Set(R.map(r=>r.w+'x'+r.h))],txs:[...new Set(R.map(r=>r.tx))].length,level:R.every(r=>r.dy<=3),inside:R.every(r=>!r.out),wide:document.documentElement.scrollWidth>W};})()"""
 srv=subprocess.Popen([sys.executable,'-m','http.server',str(port)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL);time.sleep(1)

@@ -40,7 +40,7 @@ try:
   iv=person(IVAN,photo=True)
   check('F1 signing up asks to confirm the address first', join(iv,'Иван','ivan@test.bg').startswith('Готово. Отвори писмото'), True)
   code=iv.evaluate("MYCODE");uI=st.uid('ivan@test.bg')
-  check('F2 signed in: name, a 12-character code shown in groups, synced', (iv.evaluate("[...document.querySelectorAll('.fr h3')].find(h=>h.textContent==='Ти').nextElementSibling.querySelector('b').textContent").strip(),len(code),iv.inner_text('.fr .code')), ('Иван',12,'-'.join([code[:4],code[4:8],code[8:]])))
+  check('F2 signed in: name, a 12-character code shown in groups, synced', (iv.inner_text('.phero h2').strip(),len(code),iv.inner_text('.fr .code')), ('Иван',12,'-'.join([code[:4],code[4:8],code[8:]])))
   j=st.journal(uI);check('F3 his journal is in the cloud copy, with all records and outings', (len(j['obs']),j['v'],'outs' in j), (4,6,True))
   ph=iv.evaluate("OBS.find(o=>o.id===2).photo");check('F4 ...and his photo is uploaded into his own folder', (uI+'/'+ph+'.jpg') in st.files, True)
   check('F5 footer now says who can see the records', 'само хората, на които си дал кода си' in iv.inner_text('#priv'), True)
@@ -62,7 +62,7 @@ try:
   pe.fill('#fr-code',pe.evaluate("MYCODE"));pe.click('[data-sb="add"]');pe.wait_for_timeout(500)
   check('F12 your own code too', pe.inner_text('.fr .msg'), 'Това е твоят код.')
   iv.click('[data-sb="refresh"]');iv.wait_for_selector('[data-unfan]')
-  check('F13 Ivan sees that Petar can view his journal', iv.locator('[data-unfan]').locator('xpath=../..').inner_text().split('\n')[0], 'Петър')
+  check('F13 Ivan sees that Petar can view his journal', iv.locator('[data-unfan]').locator('xpath=../..').locator('b').inner_text(), 'Петър')   # (the row now starts with the initials avatar)
   # ---- Ivan adds a record: it reaches Petar ----
   iv.click('.tab[data-v="log"]');iv.click('#toggle');iv.fill('#f-bg','Червеногръдка');iv.click('#savebtn');iv.wait_for_timeout(5500)
   check('F14 a new record is uploaded a few seconds after saving', len(st.journal(uI)['obs']), 5)

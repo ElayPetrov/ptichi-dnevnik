@@ -342,7 +342,24 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .acct.dot::after,.tab.dot::after{content:'';position:absolute;top:3px;right:3px;width:9px;height:9px;border-radius:50%;background:#e8822a;box-shadow:0 0 0 2px var(--bg)}
 .fc.new{border-color:#e8822a;box-shadow:0 0 0 1px #e8822a} .newtag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.03em;color:#fff;background:#e8822a;border-radius:999px;padding:1px 7px;margin-left:7px;vertical-align:2px}
 .bd.new{border-color:#e8822a;box-shadow:0 0 0 1px #e8822a}
-.acchd{display:flex;align-items:center;gap:10px;margin:0 0 10px} .acchd h2{font-family:Fraunces,Georgia,serif;font-size:20px;margin:0;font-weight:500}
+.acchd{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.phero{margin-bottom:10px} .psync i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--s);margin-right:6px;vertical-align:1px}
+.ptiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 12px}
+.ptiles>div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 2px 7px;text-align:center;min-width:0}
+.ptiles b{display:block;font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:500;line-height:1.15} .ptiles span{display:block;font-size:11px;color:var(--mut);line-height:1.2}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px 14px;margin:0 0 12px}
+.pch{display:flex;align-items:center;gap:10px;margin:0 0 6px} .pch h3{flex:1;margin:0;font-family:Fraunces,Georgia,serif;font-weight:500;font-size:17px;min-width:0}
+.pci{width:30px;height:30px;flex:0 0 30px;border-radius:50%;display:grid;place-items:center;background:var(--bg2);font-size:15px}
+.pact{background:none;border:1px solid var(--line2);border-radius:999px;padding:3px 10px;font:inherit;font-size:12.5px;color:var(--mut);cursor:pointer;white-space:nowrap}
+.pav{width:34px;height:34px;flex:0 0 34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:600;font-size:13px;background:hsl(var(--fh) 40% 45%)}
+.prow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);margin:0} .pcard .prow:first-of-type{border-top:0}
+.prow .pt{flex:1;min-width:0} .prow .pt b{display:block;font-weight:600;overflow-wrap:anywhere} .prow .pt small{display:block;color:var(--mut);font-size:12.5px;line-height:1.35}
+.padd{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)} .pcard .padd input{flex:1;min-width:0;margin:0}
+.pcard.fr .pcode,.pcode{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:21px;letter-spacing:2px;text-align:center;background:var(--bg2);border-radius:12px;padding:10px 6px;margin:4px 0 8px;font-weight:600;overflow-wrap:anywhere}
+.psub{font-family:Inter,system-ui,sans-serif;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:14px 0 2px;font-weight:600}
+.btn.sm{padding:4px 10px;font-size:12.5px} .pyear{width:100%} .pcard .fbtns{flex-wrap:wrap} .pcard .fbtns .btn{white-space:nowrap}
+.phow summary{cursor:pointer;font-weight:600;padding:4px 0;list-style:revert} .phow .howto{margin-top:6px}
+.pout{text-align:center;margin:18px 0 6px} .pout .btn{color:var(--accent)} .acchd h2{font-family:Fraunces,Georgia,serif;font-size:20px;margin:0;font-weight:500}
 .fc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin:0 0 12px;cursor:pointer}
 .fc.me{border-left:3px solid var(--h)}
 .fch{display:flex;gap:10px;align-items:center;margin-bottom:9px}
@@ -546,6 +563,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .asknote{font-size:13.5px;color:var(--ink);font-style:italic;overflow-wrap:anywhere}
 .qsum{display:flex;flex-wrap:wrap;gap:4px} .qchip{font-size:12.5px;background:var(--bg2);border-radius:999px;padding:2px 9px} .qchip small{color:var(--mut)}
 .qrow{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)} .qrow small{color:var(--mut)}
+.plun{margin-top:6px} .plunb .pl{opacity:.95}
 .bdfold{display:flex;align-items:baseline;gap:8px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 2px 6px;cursor:pointer;text-align:left;font:inherit}
 .bdfold span{flex:1;font-family:Fraunces,Georgia,serif;font-size:17px;color:var(--ink)} .bdfold small{color:var(--mut);font-size:12.5px} .bdfold i{font-style:normal;color:var(--mut)}
 .bdfold+.bdg2,.bdfold+.allsp{margin-top:8px}
@@ -554,9 +572,9 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .asp{display:flex;align-items:baseline;gap:5px;font-size:14px;padding:3px 0;min-width:0} .asp .tick{width:1em;flex:0 0 auto;color:var(--s);font-weight:700}
 .asp .nmlink{color:var(--mut);text-decoration:none;overflow-wrap:anywhere;text-align:left} .asp.got .nmlink{color:var(--ink);font-weight:600} .asp .rr{color:#b5651d;font-size:11px}
 .bdsec small{font-family:system-ui;font-size:12.5px;color:var(--mut);font-weight:400;margin-left:4px}
-.tilesub{display:flex;flex-wrap:nowrap;gap:4px;overflow-x:auto;margin:-2px 0 10px 6px;padding:2px 0 2px 8px;border-left:2px solid var(--line2);scrollbar-width:none}
+.tilesub{display:flex;flex-wrap:nowrap;gap:3px;overflow-x:auto;margin:-2px 0 10px 6px;padding:2px 0 2px 8px;border-left:2px solid var(--line2);scrollbar-width:none}
 .tilesub::-webkit-scrollbar{display:none}
-.tilesub .sub{flex:0 0 auto;font:inherit;font-size:12.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--line2);background:none;color:var(--mut);cursor:pointer;white-space:nowrap}
+.tilesub .sub{flex:0 0 auto;font:inherit;font-size:11.5px;line-height:1.3;padding:2px 8px;border-radius:999px;border:1px solid var(--line2);background:none;color:var(--mut);cursor:pointer;white-space:nowrap}
 .tilesub .sub[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)} .tilesub .sq{margin-left:auto}
 .typo{font-size:13px;color:var(--mut);margin:4px 0 0} .typo button{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--s);cursor:pointer;text-decoration:underline}
 .tag.nn{border:1px dashed var(--accent);color:var(--accent);background:none;cursor:pointer;font:inherit;font-size:inherit}
@@ -1043,7 +1061,7 @@ function spKeys(){const P=new Map(),m=new WeakMap();
 // Само при броенето: записите не се променят. Свързват се само имена, които вече са в записите.
 let SPLL=null;
 function linkList(P,f){
-  if(!SPLL)SPLL=SPL.map(s=>[['bg',s[0]],['bg',s[5]],['la',s[1]],['la',s[4]],['en',s[2]]]
+  if(!SPLL)SPLL=SPL.map(s=>[['bg',s[0]],...altsOf(s).map(a=>['bg',a]),['la',s[1]],['la',s[4]],['en',s[2]]]
     .filter(([,v])=>v).map(([k,v])=>k+'|'+String(v).trim().toLowerCase()));
   for(const g of SPLL){const h=g.filter(x=>P.has(x));
     for(let i=1;i<h.length;i++){const a=f(h[0]),b=f(h[i]);if(a!==b)P.set(b,a);}}}
@@ -1120,8 +1138,15 @@ function render(){
 // изборът се помни на това устройство. При търсене или филтър всички дни с резултати са отворени.
 const KDAYS='bird-journal-days';
 let DAYS=(()=>{try{return JSON.parse(localStorage.getItem(KDAYS))||{};}catch(e){return {};}})();
-const dayOpen=(d,newest)=>q.trim()||filt!=='all'?true:(d in DAYS?DAYS[d]:d===newest);
-function setDay(d,open){DAYS[d]=open;try{localStorage.setItem(KDAYS,JSON.stringify(DAYS));}catch(e){}}
+// филтрите (чух, видях, снимах…) помнят своето отделно; при търсене всичко е отворено и нищо не се помни
+const KDAYSF='bird-journal-days-f';let DAYSF=(()=>{try{return JSON.parse(localStorage.getItem(KDAYSF))||{};}catch(e){return {};}})();
+const foldOpen=(k,deflt)=>q.trim()?true:filt==='all'?(k in DAYS?DAYS[k]:deflt):((DAYSF[filt]||{})[k]!==false);
+const dayOpen=(d,newest)=>foldOpen(d,d===newest);
+// user=true: докосване от потребителя (помни само за „Всички“); без него: програмата отваря деня (нов запис) — във всички филтри
+function setDay(d,open,user){DAYS[d]=open;if(open&&!user)for(const f in DAYSF)if(DAYSF[f]&&DAYSF[f][d]===false)DAYSF[f][d]=true;
+  try{localStorage.setItem(KDAYS,JSON.stringify(DAYS));localStorage.setItem(KDAYSF,JSON.stringify(DAYSF));}catch(e){}}
+function foldSet(k,open){if(q.trim())return;if(filt==='all'){setDay(k,open,true);return;}
+  (DAYSF[filt]=DAYSF[filt]||{})[k]=open;try{localStorage.setItem(KDAYSF,JSON.stringify(DAYSF));}catch(e){}}
 // „На днешна дата“: тих ред най-горе в Дневника, само в дни, когато в предишни години има записи. Нищо не изскача
 // и нищо не се затваря; утре изчезва сам. Докосване отваря онзи ден.
 function onThisDay(){if(q.trim()||filt!=='all')return '';const t=today(),md=t.slice(5),y=+t.slice(0,4),by={};
@@ -1140,7 +1165,7 @@ function renderLog(el){
   // месеци и години се появяват само когато има повече от един — дотогава Дневникът изглежда както досега
   const multiY=new Set(list.map(o=>o.date.slice(0,4))).size>1,multiM=new Set(list.map(o=>o.date.slice(0,7))).size>1,
     nY=list[0].date.slice(0,4),nM=list[0].date.slice(0,7),
-    ymOpen=k=>q.trim()||filt!=='all'?true:(k in DAYS?DAYS[k]:(k==='y:'+nY||k==='m:'+nM)),
+    ymOpen=k=>foldOpen(k,k==='y:'+nY||k==='m:'+nM),
     ymHead=(k,lbl,cls)=>{const rs=list.filter(o=>o.date.startsWith(k.slice(2))),n=rs.length,sp=new Set(rs.filter(x=>!x.u).map(key).filter(Boolean)).size,op=ymOpen(k);
       return '<div class="'+cls+(op?'':' shut')+'"><button type="button" class="ymh" data-ymt="'+k+'" aria-expanded="'+op+'"><span class="dchev" aria-hidden="true">▾</span>'+lbl+
         '<span class="dcount">'+n+(n===1?' запис':' записа')+' · '+sp+(sp===1?' вид':' вида')+'</span></button><div class="ymb">';};
@@ -1205,7 +1230,7 @@ function outBlock(id,grp,F){const live=!!(SESS&&SESS.id===id),x=live?null:outing
     byT=[...grp].sort((a,b)=>(a.time||'').localeCompare(b.time||'')),
     t=live?'от '+(SESS.t0||(byT[0]&&byT[0].time)||''):x&&x.start&&x.end?x.start+'–'+x.end:'',
     pl=(live?SESS.place:x&&x.place)||(byT[0]&&byT[0].place)||'',nsp=new Set(grp.filter(o=>!o.u).map(key).filter(Boolean)).size,
-    k='o:'+id,open=q.trim()||filt!=='all'?true:(k in DAYS?DAYS[k]:true);
+    k='o:'+id,open=foldOpen(k,true);
   return '<div class="og'+(open?'':' shut')+(live?' live':'')+'"><div class="ogh"><button type="button" class="ogt" data-ogt="'+esc(id)+'" aria-expanded="'+open+'">'+
     '<span class="dchev" aria-hidden="true">▾</span><b>Излет'+(live?' · сега':'')+'</b>'+(t?' · '+esc(t):'')+(pl?' · '+esc(pl):'')+(x&&x.with?' · с '+esc(x.with):'')+
     '<span class="dcount">'+grp.length+(grp.length===1?' запис':' записа')+' · '+nsp+(nsp===1?' вид':' вида')+(x&&x.complete===true?' · пълен списък':'')+'</span></button>'+
@@ -1824,17 +1849,32 @@ function renderOuts(el){const L=outings();
 // Места: всяко място се отваря — малка карта с точките му, видовете и всички записи. Записите без име на място
 // се групират по координатите си (~100 м) и носят тях за име, за да не се слеят в едно „без място“.
 let openPl=null,plMap=null;
-function placeKey(o){const p=(o.place||'').trim();if(p)return {k:'n:'+p,name:p,named:true};
+// Места без име: точките на до 250 м една от друга (по веригата) са едно място — две точки на метър не са две места.
+const PLR=250,distM=(a,b,c,d)=>Math.hypot((d-b)*Math.cos((a+c)/360*Math.PI)*111320,(c-a)*110574);
+function plClusters(){const P=[];for(const o of OBS){if((o.place||'').trim()||!o.geo)continue;const g=o.geo.split(',').map(Number);if(g.length===2&&isFinite(g[0])&&isFinite(g[1]))P.push({o,la:g[0],lo:g[1]});}
+  const par=P.map((_,i)=>i),f=i=>par[i]===i?i:(par[i]=f(par[i])),cs=0.0025,cl=cs*1.35,cell={},ck=(a,b)=>a+','+b;
+  P.forEach((p,i)=>{const k=ck(Math.floor(p.la/cs),Math.floor(p.lo/cl));(cell[k]=cell[k]||[]).push(i);});
+  P.forEach((p,i)=>{const a=Math.floor(p.la/cs),b=Math.floor(p.lo/cl);
+    for(let x=-1;x<=1;x++)for(let y=-1;y<=1;y++)for(const j of cell[ck(a+x,b+y)]||[])if(j>i&&distM(p.la,p.lo,P[j].la,P[j].lo)<=PLR){const A=f(i),B=f(j);if(A!==B)par[B]=A;}});
+  const G={};P.forEach((p,i)=>{(G[f(i)]=G[f(i)]||[]).push(p.o.id);});
+  const m=new Map();for(const ids of Object.values(G)){const k='c:'+Math.min(...ids);for(const id of ids)m.set(id,k);}return m;}
+function placeKey(o,C){const p=(o.place||'').trim();if(p)return {k:'n:'+p,name:p,named:true};
+  if(C&&C.has(o.id))return {k:C.get(o.id),name:'',named:false};
   const g=(o.geo||'').split(',').map(Number);
   if(g.length===2&&isFinite(g[0])&&isFinite(g[1])){const t=g[0].toFixed(3)+', '+g[1].toFixed(3);return {k:'g:'+t,name:t,named:false};}
   return {k:'x',name:'без място и координати',named:false,none:true};}
-function placesList(){const m={};
-  for(const o of SURE()){const pk=placeKey(o),r=m[pk.k]||(m[pk.k]={...pk,rs:[],sp:new Set(),first:o.date,last:o.date});
+function placesList(){const m={},C=plClusters();
+  for(const o of SURE()){const pk=placeKey(o,C),r=m[pk.k]||(m[pk.k]={...pk,rs:[],sp:new Set(),first:o.date,last:o.date});
     r.rs.push(o);const k=key(o);if(k)r.sp.add(k);if(o.date<r.first)r.first=o.date;if(o.date>r.last)r.last=o.date;}
-  return Object.values(m).sort((a,b)=>(b.named-a.named)||(!!a.none-!!b.none)||(b.sp.size-a.sp.size)||a.name.localeCompare(b.name,'bg'));}
+  const L=Object.values(m),avg=a=>a.reduce((x,y)=>x+y,0)/a.length,pts=r=>r.rs.filter(o=>o.geo).map(o=>o.geo.split(',').map(Number)).filter(g=>isFinite(g[0])&&isFinite(g[1]));
+  const named=L.filter(r=>r.named).map(r=>{const g=pts(r);return g.length?{name:r.name,la:avg(g.map(x=>x[0])),lo:avg(g.map(x=>x[1]))}:null;}).filter(Boolean);
+  for(const r of L)if(!r.named&&!r.none){const g=pts(r);if(!g.length)continue;const la=avg(g.map(x=>x[0])),lo=avg(g.map(x=>x[1]));
+    r.name=la.toFixed(3)+', '+lo.toFixed(3);r.np=new Set(r.rs.map(o=>o.geo)).size;
+    for(const n of named){const d=distM(la,lo,n.la,n.lo);if(d<=3000&&(!r.near||d<r.near.d))r.near={name:n.name,d};}}
+  return L.sort((a,b)=>(b.named-a.named)||(!!a.none-!!b.none)||(b.sp.size-a.sp.size)||a.name.localeCompare(b.name,'bg'));}
 function placeDetail(r){const sp={};for(const o of r.rs){const k=key(o);if(!k)continue;(sp[k]=sp[k]||{nm:o.bg||o.en||o.la,n:0}).n++;}
   const rs=[...r.rs].sort((a,b)=>(b.date+(b.time||'')).localeCompare(a.date+(a.time||'')));
-  const ren=r.none?'':'<div class="plren"><input id="pl-name" list="places" value="'+(r.named?esc(r.name):'')+'" placeholder="'+(r.named?'ново име':'дай име на това място')+'">'+
+  const ren=r.none?'':'<div class="plren"><input id="pl-name" list="places" value="'+(r.named?esc(r.name):(r.near&&r.near.d<=300?esc(r.near.name):''))+'" placeholder="'+(r.named?'ново име':'дай име на това място')+'">'+
     '<button type="button" class="btn" data-plren="'+esc(r.k)+'">'+(r.named?'Преименувай':'Дай име')+'</button></div>';
   return '<div class="pld">'+ren+(r.rs.some(o=>o.geo)?'<div class="plmap" id="plmap"></div><div class="note2" id="plmsg" style="max-width:none"></div>':'')+
     '<div class="sl">'+Object.values(sp).sort((a,b)=>b.n-a.n||a.nm.localeCompare(b.nm,'bg')).map(x=>'<span>'+esc(x.nm)+(x.n>1?' ·'+x.n:'')+'</span>').join('')+'</div>'+
@@ -1844,17 +1884,22 @@ function appendPlaces(el){const h=document.createElement('h3');h.className='bdse
   const d=document.createElement('div');d.id='plsec';el.append(h,d);renderPlaces(d);}
 // отваряне на място прерисува само списъка — картата горе остава където си я оставил
 function redrawPlaces(){const d=document.getElementById('plsec');if(d)renderPlaces(d);else render();}
+const KPLUN='bird-journal-plun',fmtM=d=>d<1000?Math.round(d/10)*10+' м':(d/1000).toFixed(1).replace('.',',')+' км';
 function renderPlaces(el){const arr=placesList();if(plMap){try{plMap.remove();}catch(e){}plMap=null;}
-  el.innerHTML=arr.map(r=>'<div class="pl'+(openPl===r.k?' on':'')+(r.named?'':' unnamed')+'"><div class="plh" data-pl="'+esc(r.k)+'"><div>'+
-    '<div class="nm">'+esc(r.name)+'</div><div class="meta">'+(r.named?'':r.none?'':'<span class="tag h">без име</span> ')+human(r.first)+
-    (r.first!==r.last?' – '+human(r.last):'')+' · '+r.rs.length+' наблюдения</div></div>'+
-    '<div class="cnt">'+r.sp.size+'<small>вида</small></div></div>'+(openPl===r.k?placeDetail(r):'')+'</div>').join('');
+  const row=r=>'<div class="pl'+(openPl===r.k?' on':'')+(r.named?'':' unnamed')+'"><div class="plh" data-pl="'+esc(r.k)+'"><div>'+
+    '<div class="nm">'+esc(r.name)+'</div><div class="meta">'+(r.near?'до '+esc(r.near.name)+' · '+fmtM(r.near.d)+' · ':'')+human(r.first)+
+    (r.first!==r.last?' – '+human(r.last):'')+' · '+r.rs.length+' наблюдения'+(r.np>1?' · '+r.np+' точки':'')+'</div></div>'+
+    '<div class="cnt">'+r.sp.size+'<small>вида</small></div></div>'+(openPl===r.k?placeDetail(r):'')+'</div>';
+  const N=arr.filter(r=>r.named),U=arr.filter(r=>!r.named),st=lsGet(KPLUN,null),op=!N.length||U.some(r=>r.k===openPl)||(st===null?false:!!st);
+  el.innerHTML=N.map(row).join('')+(U.length?'<button type="button" class="bdsec bdfold plun" data-plun aria-expanded="'+op+'"><span>Без име</span><small>'+U.length+(U.length===1?' място':' места')+' · '+
+    U.reduce((a,r)=>a+r.rs.length,0)+' наблюдения</small><i>'+(op?'▾':'▸')+'</i></button><div class="plunb"'+(op?'':' style="display:none"')+'>'+
+    '<div class="note2" style="max-width:none;margin:2px 0 8px">Записи без име на мястото; точките на до 250 м една от друга са едно място. Отвори едно и му дай име — то ще се присъедини към списъка горе.</div>'+U.map(row).join('')+'</div>':'');
   const r=openPl&&arr.find(x=>x.k===openPl);if(r&&r.rs.some(o=>o.geo))placeMap(r);}
 // Ново име на място — за всички записи там (и несигурните), за излетите със същото място и за текущия излет.
 // Име, което вече съществува, слива двете места. Мястото „без място и координати“ не се преименува.
-function renamePlace(k,nm){nm=(nm||'').trim();const r=placesList().find(x=>x.k===k)||(()=>{const all=OBS.filter(o=>placeKey(o).k===k);return all.length?{k,...placeKey(all[0])}:null;})();
+function renamePlace(k,nm){nm=(nm||'').trim();const r=placesList().find(x=>x.k===k)||(()=>{const C=plClusters(),all=OBS.filter(o=>placeKey(o,C).k===k);return all.length?{k,...placeKey(all[0])}:null;})();
   if(!r||r.none||!nm||(r.named&&nm===r.name))return;
-  const hit=o=>placeKey(o).k===k,n=OBS.filter(hit).length,merge=OBS.some(o=>(o.place||'').trim()===nm&&!hit(o));
+  const C=plClusters(),hit=o=>placeKey(o,C).k===k,n=OBS.filter(hit).length,merge=OBS.some(o=>(o.place||'').trim()===nm&&!hit(o));
   if(!n||!confirm('„'+nm+'“ ще стане мястото на '+n+(n===1?' запис':' записа')+(merge?' — място с това име вече има и двете ще се слеят':'')+'.'))return;
   const now=Date.now();OBS=OBS.map(o=>hit(o)?{...o,place:nm,upd:now}:o);save();
   if(r.named){for(const x of OUTS.filter(y=>(y.place||'').trim()===r.name))putOut({...x,place:nm});
@@ -2471,7 +2516,7 @@ document.addEventListener('click',e=>{
   if(otdB){const d=otdB.dataset.otd;setDay(d,true);setDay('m:'+d.slice(0,7),true);setDay('y:'+d.slice(0,4),true);render();const hh=document.querySelector('[data-dayt="'+d+'"]');if(hh)hh.scrollIntoView({behavior:'smooth',block:'start'});return;}
   const dt=e.target.closest('[data-dayt]');
   if(dt){const g=dt.closest('.dayg'),open=g.classList.contains('shut');g.classList.toggle('shut',!open);dt.setAttribute('aria-expanded',open);
-    if(!q.trim()&&filt==='all')setDay(dt.dataset.dayt,open);   // при търсене не се помни
+    foldSet(dt.dataset.dayt,open);   // при търсене не се помни
     if(open)loadPhotos();return;}
   const tk=e.target.closest('[data-tk]');
   if(tk){tileKey=tk.dataset.tk;try{localStorage.setItem('bird-journal-tiles',tileKey);}catch(x){}render();return;}
@@ -2516,16 +2561,18 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#tgx-ok')){tgxSubmit();return;}
   if(e.target.closest('#tgx-no')){document.getElementById('tg-new').style.display='none';return;}
   const tgd=e.target.closest('[data-tgdel]');if(tgd){tgDel(tgd.dataset.tgdel);render();return;}
+  const plu=e.target.closest('[data-plun]');if(plu){const b=plu.nextElementSibling,op=b.style.display==='none';b.style.display=op?'':'none';lsSet(KPLUN,op);
+    plu.setAttribute('aria-expanded',String(op));plu.querySelector('i').textContent=op?'▾':'▸';return;}
   const plr=e.target.closest('[data-plren]');
   if(plr){renamePlace(plr.dataset.plren,document.getElementById('pl-name').value);return;}
   const plh=e.target.closest('[data-pl]');
   if(plh){openPl=openPl===plh.dataset.pl?null:plh.dataset.pl;redrawPlaces();if(openPl){const c=document.querySelector('.pl.on');if(c)c.scrollIntoView({block:'nearest'});}return;}
   const ymt=e.target.closest('[data-ymt]');
   if(ymt){const g=ymt.parentElement,open=g.classList.contains('shut');g.classList.toggle('shut',!open);ymt.setAttribute('aria-expanded',open);
-    if(!q.trim()&&filt==='all')setDay(ymt.dataset.ymt,open);if(open)loadPhotos();return;}
+    foldSet(ymt.dataset.ymt,open);if(open)loadPhotos();return;}
   const ogt=e.target.closest('[data-ogt]');
   if(ogt){const g=ogt.closest('.og'),open=g.classList.contains('shut');g.classList.toggle('shut',!open);ogt.setAttribute('aria-expanded',open);
-    if(!q.trim()&&filt==='all')setDay('o:'+ogt.dataset.ogt,open);if(open)loadPhotos();return;}
+    foldSet('o:'+ogt.dataset.ogt,open);if(open)loadPhotos();return;}
   const oad=e.target.closest('[data-oadd]');
   if(oad){const c=outCtx(oad.dataset.oadd);if(c){openForm(null,c);window.scrollTo({top:0,behavior:'smooth'});}return;}
   const oed=e.target.closest('[data-oedit]');if(oed){openOutDlg(oed.dataset.oedit);return;}
@@ -3243,15 +3290,16 @@ const EMPTYTXT={life:'Тук ще се събират видовете ти — 
 let FOOTB=null;   // откача се при стартиране — след като всички бутони са получили действията си
 function acctExtras(el){const d=document.createElement('div');
   const ys=yearsWith(),cy=ys.includes(String(storyYear()))?storyYear():+ys[0];   // годината с история — ако в тази още няма записи, последната с такива
-  d.innerHTML=(ys.length?'<div class="arr fr"><h3>Твоята година</h3><div class="fbtns"><button type="button" class="btn pri" data-yr="'+cy+'">✨ Твоята '+cy+'</button></div>'+
-    (ys.filter(y=>+y!==cy).length?'<div class="note2" style="max-width:none;margin-top:8px">Минали години: '+ys.filter(y=>+y!==cy).map(y=>'<button type="button" class="chip" data-yr="'+y+'">'+y+'</button>').join(' ')+'</div>':'')+'</div>':'')+
+  d.innerHTML=(ys.length?pcard('✨','Твоята година','<div class="fbtns"><button type="button" class="btn pri pyear" data-yr="'+cy+'">✨ Твоята '+cy+'</button></div>'+
+      (ys.filter(y=>+y!==cy).length?'<div class="note2" style="max-width:none;margin-top:8px">Минали години: '+ys.filter(y=>+y!==cy).map(y=>'<button type="button" class="chip" data-yr="'+y+'">'+y+'</button>').join(' ')+'</div>':'')):'')+
     fsec('myph','📷 Снимки · '+galItems(OBS).length,galHTML(OBS))+
-    (ME?'<div class="arr fr"><h3>Известия на този телефон</h3><div id="pushSlot"><div class="note2" style="max-width:none">…</div></div></div>':'')+
-    '<div class="arr fr"><h3>Данни</h3><div class="note2" style="max-width:none">Износ, резервни копия и тема.</div><div id="dataSlot"></div>'+
-    '<label class="qtog"><input type="checkbox" data-quiet'+(quiet()?' checked':'')+'><span>Тих режим — без изскачащи поздравления и конфети</span></label>'+
-    '<div class="note2" id="refInfo" style="max-width:none;margin-top:10px"></div><div class="fbtns"><button type="button" class="btn" data-refclear>Изчисти примерните снимки</button></div></div>'+
-    '<div class="arr fr"><h3>Как се ползва</h3><div class="howto">'+Object.values(TIPTXT).map(t=>'<p>'+t+'</p>').join('')+'</div>'+
-    '<div class="fbtns"><button type="button" class="btn" data-tipsreset>Покажи съветите отново</button><button type="button" class="btn" data-report>Съобщи за проблем</button></div></div>';
+    (ME?pcard('🔔','Известия на този телефон','<div id="pushSlot"><div class="note2" style="max-width:none">…</div></div>'):'')+
+    pcard('💾','Данни и настройки','<div class="note2" style="max-width:none">Износ за таблица и eBird, резервно копие и тема.</div><div id="dataSlot"></div>'+
+      '<label class="qtog"><input type="checkbox" data-quiet'+(quiet()?' checked':'')+'><span>Тих режим — без изскачащи поздравления и конфети</span></label>'+
+      '<div class="note2" id="refInfo" style="max-width:none;margin-top:10px"></div><div class="fbtns"><button type="button" class="btn" data-refclear>Изчисти примерните снимки</button></div>')+
+    pcard('❓','Помощ','<details class="phow"><summary>Как се ползва</summary><div class="howto">'+Object.values(TIPTXT).map(t=>'<p>'+t+'</p>').join('')+'</div></details>'+
+      '<div class="fbtns"><button type="button" class="btn" data-tipsreset>Покажи съветите отново</button><button type="button" class="btn" data-report>Съобщи за проблем</button></div>')+
+    (ME?'<div class="pout"><button type="button" class="btn" data-sb="out">Изход от профила</button></div>':'');
   el.appendChild(d);const sl=d.querySelector('#dataSlot');if(sl&&FOOTB)sl.appendChild(FOOTB);setTimeout(loadPhotos,0);if(ME)pushRender();   // и снимките в галерията
   const ri=d.querySelector('#refInfo'),mb=n=>(n/1e6).toFixed(1).replace('.',',')+' MB';
   (async()=>{let t='';try{const e=await navigator.storage.estimate();if(e&&e.usage!=null)t='Приложението заема '+mb(e.usage)+'. ';}catch(x){}
@@ -3429,7 +3477,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-03.6';
+const VER='2026-11-03.7';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -3746,6 +3794,10 @@ function renderFriends(el){
   if(!ME&&!(FR&&FR.fol&&FR.fol.length)){el.innerHTML='<div class="empty">Влез в профила си, за да виждаш излетите на приятелите си.<div class="fbtns" style="justify-content:center"><button type="button" class="btn pri" data-acct>Профил</button></div></div>';return;}
   renderFeed(el);}
 let prevView='log';
+// профилът: инициали, малък аватар, карта-раздел с икона
+const initials=n=>{const w=String(n||'?').trim().split(/\s+/).filter(Boolean);return ((w[0]||'?').charAt(0)+(w.length>1?w[w.length-1].charAt(0):'')).toUpperCase();};
+const pav=n=>'<span class="pav" style="--fh:'+nameHue(n||'?')+'">'+esc(initials(n))+'</span>';
+const pcard=(icon,title,body,act,cls)=>'<section class="pcard'+(cls?' '+cls:'')+'"><div class="pch"><span class="pci">'+icon+'</span><h3>'+title+'</h3>'+(act||'')+'</div>'+body+'</section>';
 const acctHead='<div class="acchd"><button type="button" class="again" data-acctback>← назад</button><h2>Профил и приятели</h2></div>';
 function renderAcct(el){
   if(!sbOn()){el.innerHTML=acctHead+'<div class="empty">Споделянето още не е настроено.</div>';return;}
@@ -3762,20 +3814,22 @@ function renderAcct(el){
       '<div class="fg"><label>Парола (поне 6 знака)</label><input id="sb-pw" type="password" autocomplete="current-password" value="'+esc(sbForm.pw)+'"></div>'+
       (sbMsg?'<div class="msg">'+esc(sbMsg)+'</div>':'')+
       '<div class="fbtns"><button type="button" class="btn pri" data-sb="in">Вход</button><button type="button" class="btn" data-sb="up">Нов профил</button></div></div>';return;}
-  const F=FR||{fol:[],fans:[]};   // първо приятелите; профилът и изходът — най-долу
-  el.innerHTML=acctHead+inviteBanner()+tipHTML('code',TIPTXT.code)+'<div class="arr fr">'+
-    '<h3>Дневници на приятели</h3>'+friendRows(F)+
-    '<div class="fbtns"><button type="button" class="btn" data-sb="refresh">Обнови</button></div>'+
-    '<h3>Добави приятел</h3><div class="geo"><input id="fr-code" placeholder="кодът, който ти е дал" style="flex:1;min-width:160px;margin:0"><button type="button" class="btn pri" data-sb="add" style="flex:0 0 auto">Добави</button></div>'+
-    (sbMsg?'<div class="msg">'+esc(sbMsg)+'</div>':'')+
-    '<h3>Твоят код</h3><div class="ar"><div><b class="code">'+esc((MYCODE.match(/.{1,4}/g)||[]).join('-'))+'</b>'+
-      '<small>С него приятел вижда дневника и снимките ти, без да може да ги променя. Дай го само на хора, на които вярваш.</small></div></div>'+
-    '<div class="fbtns"><button type="button" class="btn" data-sb="copy">Копирай</button>'+(navigator.share?'<button type="button" class="btn" data-sb="send">Изпрати</button>':'')+
-      '<button type="button" class="btn" data-sb="newcode">Нов код</button></div>'+
-    '<h3>Виждат твоя дневник</h3>'+(F.fans.length?F.fans.map(f=>'<div class="ar"><div><b>'+esc(f.name)+'</b></div><span><button type="button" class="btn" data-unfan="'+esc(f.id)+'">махни</button></span></div>').join('')
-      :'<div class="note2">Никой засега.</div>')+
-    '<h3>Ти</h3><div class="ar"><div><b>'+esc(MYNAME||ME.email)+'</b><small>'+esc(ME.email||'')+' · <span id="sbStat">'+esc(sbStat)+'</span></small></div>'+
-      '<span><button type="button" class="btn" data-sb="out">изход</button></span></div>'+'</div>';}
+  const F=FR||{fol:[],fans:[]},R=SURE(),lv=Object.values(tiersNow()).reduce((a,x)=>a+x.t,0),nm=MYNAME||(ME.email||'').split('@')[0];
+  el.innerHTML=acctHead+
+    '<div class="fhero phero" style="--fh:'+nameHue(nm)+'"><div class="fav">'+esc(initials(nm))+'</div><div class="fhn"><h2>'+esc(nm)+'</h2>'+
+      '<div class="fhs">'+esc(ME.email||'')+'</div><div class="fhs psync"><i></i><span id="sbStat">'+esc(sbStat)+'</span></div></div></div>'+
+    '<div class="ptiles"><div><b>'+fmtN(spCount(R))+'</b><span>вида</span></div><div><b>'+fmtN(R.length)+'</b><span>записа</span></div>'+
+      '<div><b>'+fmtN(outings().length)+'</b><span>излета</span></div><div><b>'+fmtN(lv)+'</b><span>нива значки</span></div></div>'+
+    inviteBanner()+tipHTML('code',TIPTXT.code)+
+    pcard('👥','Приятели',friendRows(F)+
+      '<div class="padd"><input id="fr-code" placeholder="код от приятел"><button type="button" class="btn pri" data-sb="add">Добави</button></div>'+
+      (sbMsg?'<div class="msg">'+esc(sbMsg)+'</div>':''),'<button type="button" class="pact" data-sb="refresh">↻ Обнови</button>','fr')+
+    pcard('🔑','Твоят код',(MYCODE?'<div class="pcode code">'+esc((MYCODE.match(/.{1,4}/g)||[]).join('-'))+'</div>':'<div class="note2 pcodew" style="max-width:none">Зареждам кода…</div>')+
+      '<div class="note2" style="max-width:none">С него приятел вижда дневника и снимките ти, без да може да ги променя. Дай го само на хора, на които вярваш.</div>'+
+      '<div class="fbtns"><button type="button" class="btn" data-sb="copy">Копирай</button>'+(navigator.share?'<button type="button" class="btn" data-sb="send">Изпрати</button>':'')+
+        '<button type="button" class="btn" data-sb="newcode">Нов код</button></div>'+
+      '<h4 class="psub">Виждат твоя дневник</h4>'+(F.fans.length?F.fans.map(f=>'<div class="ar prow">'+pav(f.name)+'<div class="pt"><b>'+esc(f.name)+'</b></div><span><button type="button" class="btn sm" data-unfan="'+esc(f.id)+'">махни</button></span></div>').join('')
+        :'<div class="note2" style="max-width:none">Никой засега.</div>'),'','fr');}
 function ufKeyer(list){   // вид = записи с поне едно общо име (бг, en, лат.) — както в Моите видове, но за всеки списък
   const P=new Map(),f=x=>{while(P.get(x)!==x){P.set(x,P.get(P.get(x)));x=P.get(x);}return x;};
   const tk=o=>['la','bg','en'].map(k=>{const v=nrm(o[k]);return v?k+'|'+v:'';}).filter(Boolean);
@@ -3784,9 +3838,9 @@ function ufKeyer(list){   // вид = записи с поне едно общо
   return o=>{const t=tk(o);return t.length?f(t[0]):'';};}
 const spCount=list=>{const kk=ufKeyer(list);return new Set(list.map(kk).filter(Boolean)).size;};
 function friendRows(F){return F.fol.length?F.fol.map(f=>{const d=f.data||{},ob=(d.obs||[]).filter(o=>!o.u);
-    return '<div class="ar tap" data-fr="'+esc(f.id)+'"><div><b>'+esc(f.name)+'</b><small>'+(f.data?spCount(ob)+' вида · '+ob.length+' записа · обновен '+
+    return '<div class="ar tap prow" data-fr="'+esc(f.id)+'">'+pav(f.name)+'<div class="pt"><b>'+esc(f.name)+'</b><small>'+(f.data?spCount(ob)+' вида · '+ob.length+' записа · обновен '+
       (f.updated_at?human(ymd(Date.parse(f.updated_at)))+' '+new Date(f.updated_at).toTimeString().slice(0,5):'—'):'още не е качил дневник')+'</small></div><span>›</span></div>';}).join('')
-  :'<div class="note2">Още никого. Поискай код от приятел и го въведи горе.</div>';}
+  :'<div class="note2" style="max-width:none">Още никого. Поискай код от приятел и го въведи долу.</div>';}
 function compareJ(a,b){   // общи видове между два дневника
   const all=[...a,...b],kk=ufKeyer(all),nm={},A=new Set(),B=new Set(),Y=today().slice(0,4),AY=new Set(),BY=new Set();
   for(const o of all){const k=kk(o);if(k&&(o.bg||!nm[k]))nm[k]=o.bg||o.en||o.la;}
