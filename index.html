@@ -142,7 +142,9 @@ button.day{display:block;width:100%;text-align:left;background:none;border:0;bor
 .spd .months{display:flex;gap:4px} .spd .months div{flex:1;text-align:center;font-size:10px;color:var(--mut)}
 .spd .months .cell{width:100%;height:22px;display:block;margin-bottom:3px}
 .spd .row{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:3px 0}
-.spd .row span:last-child{color:var(--mut);flex:0 0 auto}
+.spd .row span:last-child{color:var(--mut);flex:0 1 auto;min-width:0;text-align:right;overflow-wrap:anywhere}
+.row span:first-child{min-width:0;overflow-wrap:anywhere}
+.sunl{font-size:14px;padding:3px 0}
 .srow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:13.5px}
 .srow .tags{margin:0;flex:0 0 auto}
 /* годишна крива */
@@ -534,6 +536,15 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .smtrk polyline{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round;opacity:.9}
 .trk path{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .trk .t0{fill:var(--s)} .trk .t1{fill:#c0392b}
 .rareline{font-size:13px;color:#b5651d;margin:4px 0 2px;font-weight:600}
+.lifetabs{display:flex;margin:0 0 10px;width:100%} .lifetabs button{flex:1;padding:7px 8px;font-size:14px}
+.allsp{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 12px;margin-bottom:6px}
+.asp{display:flex;align-items:baseline;gap:5px;font-size:14px;padding:3px 0;min-width:0} .asp .tick{width:1em;flex:0 0 auto;color:var(--s);font-weight:700}
+.asp .nmlink{color:var(--mut);text-decoration:none;overflow-wrap:anywhere;text-align:left} .asp.got .nmlink{color:var(--ink);font-weight:600} .asp .rr{color:#b5651d;font-size:11px}
+.bdsec small{font-family:system-ui;font-size:12.5px;color:var(--mut);font-weight:400;margin-left:4px}
+.tilesub{display:flex;flex-wrap:nowrap;gap:4px;overflow-x:auto;margin:-2px 0 10px 6px;padding:2px 0 2px 8px;border-left:2px solid var(--line2);scrollbar-width:none}
+.tilesub::-webkit-scrollbar{display:none}
+.tilesub .sub{flex:0 0 auto;font:inherit;font-size:12.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--line2);background:none;color:var(--mut);cursor:pointer;white-space:nowrap}
+.tilesub .sub[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)} .tilesub .sq{margin-left:auto}
 .typo{font-size:13px;color:var(--mut);margin:4px 0 0} .typo button{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--s);cursor:pointer;text-decoration:underline}
 .tag.nn{border:1px dashed var(--accent);color:var(--accent);background:none;cursor:pointer;font:inherit;font-size:inherit}
 .nnr{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid var(--line)} .nnr.bad input[data-nnf="la"],.nnr.bad input[data-nnf="en"]{border-color:var(--accent)}
@@ -1190,8 +1201,21 @@ function rankLine(n){const t=rankOf(n),nx=RANKS[t];
 const backY={};
 function backTo(k){const y=backY[k];backY[k]=null;if(y==null)return;window.scrollTo({top:y});requestAnimationFrame(()=>window.scrollTo({top:y}));}
 function renderLifeRefs(){setTimeout(()=>{loadRefs();loadXC();},0);}
+let LIFEALL=false;
+function lifeTabs(n){return '<div class="lifetabs seg"><button type="button" data-lifeall="0" aria-pressed="'+!LIFEALL+'">Моите · '+n+'</button>'+
+  '<button type="button" data-lifeall="1" aria-pressed="'+LIFEALL+'">Всички видове · '+SPL.length+'</button></div>';}
+function renderAllSpecies(el){const ql=q.trim().toLowerCase(),mine=new Set();
+  for(const o of SURE()){const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en);if(c)mine.add(nrm(c.la));}
+  const by={};for(const e of SPL){if(ql&&!(e[0]+' '+e[1]+' '+e[2]+' '+altsOf(e).join(' ')).toLowerCase().includes(ql))continue;(by[FAMS[e[3]]]=by[FAMS[e[3]]]||[]).push(e);}
+  const X=spxAll().filter(x=>!ql||(x.bg+' '+x.la+' '+x.en).toLowerCase().includes(ql));
+  const row=(bg,la,en,rare)=>{const got=mine.has(nrm(la));return '<div class="asp'+(got?' got':'')+'"><span class="tick">'+(got?'✓':'')+'</span>'+spLink({bg,la,en})+(rare?' <small class="rr">рядък</small>':'')+'</div>';};
+  el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+'<div class="note2" style="max-width:none;margin:0 0 6px">Всички видове, установени в България — ✓ са тези, които имаш. Пипни име за картата на вида.</div>'+
+    (FAMS.filter(g=>by[g]).map(g=>{const L=by[g].sort((a,b)=>a[0].localeCompare(b[0],'bg')),n=L.filter(e=>mine.has(nrm(e[1]))).length;
+      return '<h3 class="bdsec">'+esc(g)+' <small>'+n+' / '+L.length+'</small></h3><div class="allsp">'+L.map(e=>row(e[0],e[1],e[2],e[6])).join('')+'</div>';}).join('')||'<div class="empty">Нищо не съвпада.</div>')+
+    (X.length?'<h3 class="bdsec">Добавени от групата <small>'+X.length+'</small></h3><div class="allsp">'+X.map(x=>row(x.bg,x.la,x.en,0)).join('')+'</div>':'');}
 function renderLife(el){
   if(spSel)return renderSpecies(el,spSel);
+  if(LIFEALL)return renderAllSpecies(el);
   let arr=Object.values(speciesMap());const ql=q.trim().toLowerCase();
   if(ql)arr=arr.filter(r=>((r.bg||'')+' '+(r.en||'')+' '+(r.la||'')).toLowerCase().includes(ql));
   if(filt==='h')arr=arr.filter(r=>r.L===1);
@@ -1204,9 +1228,9 @@ function renderLife(el){
   const sm=new Set(Object.keys(speciesMap())), un=new Map();
   for(const o of OBS)if(o.u&&key(o)&&!sm.has(key(o))&&(!ql||(o.bg+' '+o.en+' '+o.la).toLowerCase().includes(ql)))un.set(key(o),(o.bg||o.en||o.la)+(o.alt&&o.alt.length?' / '+o.alt.join(' / '):''));
   const unH=un.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с несигурни записи (не се броят): '+[...un.values()].map(esc).join(' · ')+'</div>':'';
-  if(!arr.length){el.innerHTML=(unH||'<div class="empty">Нищо не съвпада.</div>');return;}
+  if(!arr.length){el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+(unH||'<div class="empty">Нищо не съвпада.</div>');return;}
   const D=spDays(),rk=r=>rankOf((D[r.k]||new Set()).size);
-  el.innerHTML='<div class="spsort">Подреди: <select id="spSort">'+SPSORT.map(([k,l])=>'<option value="'+k+'"'+(SPS===k?' selected':'')+'>'+l+'</option>').join('')+'</select></div>'+
+  el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+'<div class="spsort">Подреди: <select id="spSort">'+SPSORT.map(([k,l])=>'<option value="'+k+'"'+(SPS===k?' selected':'')+'>'+l+'</option>').join('')+'</select></div>'+
     (ql||filt!=='all'?'':'<div class="splegend">Коронката до птицата показва колко добре познаваш вида: <span class="rkt rk1">Познат</span> 10 дни с него, <span class="rkt rk2">Приятел</span> 50, <span class="rkt rk3">Познавач</span> 150.</div>')+
     arr.map((r,i)=>(SPS==='grp'&&(i===0||(arr[i-1].fam||'')!==(r.fam||''))?'<h3 class="bdsec">'+esc(r.fam||'Без група')+'</h3>':'')+'<div class="sp l'+r.L+'" data-k="'+esc(r.k)+'" style="cursor:pointer">'+
     '<div class="thw">'+(r.photo?'<div class="th rk'+rk(r)+'" data-th="'+r.photo+'"></div>':'<div class="th none rk'+rk(r)+'">'+silFor(r.fam)+'</div>')+crownHTML(rk(r))+'</div>'+
@@ -1246,7 +1270,7 @@ function renderSpecies(el,k){
     '<div class="months">'+MS.map((m,i)=>{const c=r.months[i+1]||0;return '<div><span class="cell'+(c?' on v'+Math.min(3,Math.ceil(c/mx*3)):'')+'" title="'+c+'"></span>'+m+'</div>';}).join('')+'</div>'+
     '<h4>Първа среща по години</h4>'+ys.map((y,i)=>{const dd=i?doy(F[y])-doy(F[ys[i-1]]):0;
       return '<div class="row"><span>'+y+'</span><span>'+sd(F[y])+(i&&dd?' · '+dni(Math.abs(dd))+(dd<0?' по-рано':' по-късно'):'')+'</span></div>';}).join('')+
-    (morn.length>=2?'<h4>Спрямо изгрева</h4><div class="row"><span>сутрешните записи</span><span>обикновено '+(Math.round(med(morn))>=0?dur(Math.round(med(morn)))+' след':dur(-Math.round(med(morn)))+' преди')+' изгрева</span></div>':'')+
+    (morn.length>=2?'<h4>Спрямо изгрева</h4><div class="sunl">Сутрин обикновено го срещаш <b>'+(Math.round(med(morn))>=0?dur(Math.round(med(morn)))+' след':dur(-Math.round(med(morn)))+' преди')+' изгрева</b>.</div>':'')+
     '<h4>Места</h4>'+Object.entries(P).sort((a,b)=>b[1]-a[1]).map(([p,n])=>'<div class="row"><span>'+esc(p)+'</span><span>'+n+'×</span></div>').join('')+
     (rs.some(o=>o.photo)?'<h4>Снимки</h4><div class="thstrip">'+rs.filter(o=>o.photo).reverse().map(o=>'<div class="th" data-th="'+o.photo+'"></div>').join('')+'</div>':'')+
     idLinks(r,'big spbot')+'<div class="fbtns"><button type="button" class="btn" data-spcard>Картичка за споделяне</button></div></div>';
@@ -1463,8 +1487,8 @@ function renderMap(el){
     '<button class="chip" data-mm="real"'+(mapMode==='real'?' aria-pressed="true"':'')+'>Истинска карта</button>'+
     '<button class="chip" data-mm="grid"'+(mapMode==='grid'?' aria-pressed="true"':'')+'>Атлас</button>'+
     '<span class="note2" id="mapmsg" style="align-self:center;max-width:none"></span></div>'+
-    (mapMode==='real'?'<div class="mapbar tiles">'+Object.keys(TILES).map(k=>'<button class="chip" data-tk="'+k+'"'+
-      (tileKey===k?' aria-pressed="true"':'')+'>'+TILES[k].name+'</button>').join('')+'<button class="chip" data-atov aria-pressed="'+ATOV+'">▦ квадрати</button></div>':'');
+    (mapMode==='real'?'<div class="tilesub" role="group" aria-label="вид на картата">'+Object.keys(TILES).map(k=>'<button class="sub" data-tk="'+k+'"'+
+      (tileKey===k?' aria-pressed="true"':'')+' title="'+esc(TILES[k].name)+'">'+(TILES[k].short||TILES[k].name)+'</button>').join('')+'<button class="sub sq" data-atov aria-pressed="'+ATOV+'" title="квадрати 10×10 км">▦ квадрати</button></div>':'');
   const panel='<div class="mappanel" id="mp"><div style="color:var(--mut);font-size:13.5px">'+
     'Пипни или посочи кръг, за да видиш какво си намерил там. Големината е брой различни видове.</div></div>'+
     (noGeo?'<div class="note2" style="margin-top:9px;max-width:none">'+noGeo+' записа са без координати и не се показват.</div>':'');
@@ -1510,7 +1534,7 @@ const TILES={
   sat:{name:'Сателит',
     url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attr:'Esri, Maxar, Earthstar Geographics',max:19},
-  hyb:{name:'Сателит + надписи',
+  hyb:{name:'Сателит + надписи',short:'С надписи',
     url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     over:['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
           'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],
@@ -2363,6 +2387,7 @@ document.addEventListener('click',e=>{
     b.style.display=op?'':'none';ffb.setAttribute('aria-expanded',String(op));ffb.querySelector('i').textContent=op?'▾':'▸';FFOLD[k]=op;lsSet(KFF,FFOLD);if(op){loadFriendPhotos();loadPhotos();}return;}
   const nnb=e.target.closest('[data-nn]');if(nnb){openNames([nnb.dataset.nn]);return;}
   const sr=e.target.closest('[data-sprf]');if(sr){e.preventDefault();e.stopImmediatePropagation();spOpen({bg:sr.dataset.bg,la:sr.dataset.la,en:sr.dataset.en});return;}
+  const lab=e.target.closest('[data-lifeall]');if(lab){LIFEALL=lab.dataset.lifeall==='1';window.scrollTo(0,0);render();return;}
   const atq=e.target.closest('[data-atq]');if(atq){atSel=atSel===atq.dataset.atq?null:atq.dataset.atq;render();return;}
   const atv=e.target.closest('[data-atov]');if(atv){ATOV=!ATOV;lsSet(KATOV,ATOV);render();return;}
   const exb=e.target.closest('[data-exif]');if(exb){if(exb.dataset.exif==='1')exifApply();else{exifSug=null;document.getElementById('f-exif').style.display='none';}return;}
@@ -3281,7 +3306,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-02.13';
+const VER='2026-11-03.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
