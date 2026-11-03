@@ -7,8 +7,8 @@ DATA=[
  R(id=2,date='2026-06-10',place='Розариум, Казанлък',bg='Сврака',la='Pica pica',fam='Вранови',geo='42.61985,25.39560'),
  R(id=3,date='2026-04-02',place='Копринка',en='Eurasian Magpie',la='Pica pica',geo='42.60000,25.30000'),
  R(id=4,date='2026-07-01',place='Копринка',bg='Сойка',la='Garrulus glandarius',fam='Вранови',geo='42.60100,25.30100'),
- R(id=5,date='2026-03-01',place='Язовир',bg='Чайка',en='gull sp.',la='Larus',fam='Чайки и рибарки'),
- R(id=6,date='2026-03-02',place='Язовир',bg='Жълтокрака чайка',en='Yellow-legged Gull',la='Larus michahellis',fam='Чайки и рибарки'),
+ R(id=5,date='2026-03-01',place='Язовир',bg='Чайка',en='gull sp.',la='Larus',fam='Чайки'),
+ R(id=6,date='2026-03-02',place='Язовир',bg='Жълтокрака чайка',en='Yellow-legged Gull',la='Larus michahellis',fam='Чайки'),
 ]
 PORT=sys.argv[1] if len(sys.argv)>1 else '8765'
 srv=subprocess.Popen([sys.executable,'-m','http.server',PORT],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
@@ -49,12 +49,12 @@ try:
     check('T4 hand-typed English is kept', N(vals()), dict(bg='Сврака',en='My Magpie',la='Pica pica',fam='Вранови'))
 
     newform(); pick('#f-la','Larus michahellis')
-    check('T5 pick Latin fills bg/en/fam', N(vals()), dict(bg='Жълтокрака чайка',en='Yellow-legged Gull',la='Larus michahellis',fam='Чайки и рибарки'))
+    check('T5 pick Latin fills bg/en/fam', N(vals()), dict(bg='Жълтокрака чайка',en='Yellow-legged Gull',la='Larus michahellis',fam='Чайки'))
 
     newform(); typein('#f-la','Larus',blur=False)
     check('T6a typing a genus prefix does not fill yet', N(vals()), dict(bg='',en='',la='Larus',fam=''))
     pg.locator('#f-la').press_sequentially(' michahellis'); pg.keyboard.press('Tab')
-    check('T6b leaving the field fills from the full name', N(vals()), dict(bg='Жълтокрака чайка',en='Yellow-legged Gull',la='Larus michahellis',fam='Чайки и рибарки'))
+    check('T6b leaving the field fills from the full name', N(vals()), dict(bg='Жълтокрака чайка',en='Yellow-legged Gull',la='Larus michahellis',fam='Чайки'))
 
     newform(); pick('#f-place','Копринка'); v=vals()
     check('T7a place pick fills newest coords', v['geo'], '42.60100,25.30100')

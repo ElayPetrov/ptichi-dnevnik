@@ -28,9 +28,9 @@ try:
   check('B7 Голямо ято reads counts carefully: „~500“ 500, „10–20“ 10, „3+2“ 5, „1000+“ 1000 (silver)',
     val("[{bg:'Скорец',count:'~500'},{bg:'Гарван',count:'10–20'},{bg:'Сврака',count:'3+2'},{bg:'Бял щъркел',count:'1000+'}]",['flock']), [[1000,2]])
   check('B8 Летописец: a note counts from 20 characters', val("[{bg:'Кос',note:'пее'},{bg:'Сойка',note:'Пееше дълго на върха на ореха.'}]",['notes']), [[1,0]])
-  g=pg.evaluate("BDEF.filter(d=>d.id.startsWith('g:')).map(d=>[d.name,d.g])")
-  check('B9 group badges from Ivan\'s totals, 30 / 50 / 90 %: Кълвачи 3 / 5 / 8 of 9, Грабливи 12 / 20 / 35 of 39',
-    (dict(g)['Кълвачи'],dict(g)['Грабливи'],len(g)), ([3,5,8],[12,20,35],8))
+  g=pg.evaluate("BDEF.filter(d=>d.sec==='fam').map(d=>[d.name,d.g])")
+  check('B9 family badges from the field guide (the lower count), 30 / 50 / 90 %: Кълвачи 3 / 5 / 8 of 9, Грабливи птици 11 / 18 / 32 of 35',
+    (dict(g)['Кълвачи'],dict(g)['Грабливи птици'],len(g)), ([3,5,8],[11,18,32],20))   # since 2026-11-03.2
   check('B10 the Семейства badge is gone', pg.evaluate("BDEF.some(d=>d.id==='fams')"), False)
   soc=pg.evaluate("""(()=>{ME={id:'me'};FR={fol:[{id:'u2',name:'Петър',data:{obs:[],outs:[{id:'x',date:'2026-10-20',orig:{u:'me',o:'m1'}}]}}],fans:[]};
     SOC=[{owner:'u2',item:'o:x',author:'me',kind:'bravo'},{owner:'me',item:'o:m1',author:'u2',kind:'bravo'},{owner:'me',item:'o:m1',author:'me',kind:'bravo'},
@@ -60,10 +60,10 @@ try:
   if l.locator('[data-feedmore]').count():l.click('[data-feedmore]');l.wait_for_timeout(300)   # that day is older than the first 20 cards
   check('B16 the feed card of that day shows „значка: Ранобудник — сребро“', 'значка: Ранобудник — сребро' in l.inner_text('#view'), True)
   l.click('.tab[data-v="badges"]');l.wait_for_timeout(200)
-  check('B17 Значки: six sections, 30 badges, „от 90 нива“, and the new silver marked „ново“',
-    (l.evaluate("[...document.querySelectorAll('.bdsec')].map(h=>h.textContent)"),l.locator('.bd2').count(),'от 90 нива' in l.inner_text('.bdintro'),
+  check('B17 Значки: seven sections, every badge, „от N нива“ (single badges count once), and the new silver marked „ново“',
+    (l.evaluate("[...document.querySelectorAll('[data-bdf] span')].map(h=>h.textContent)"),l.locator('.bd2').count()==l.evaluate("BDEF.length"),('от '+str(l.evaluate("BDEF.reduce((a,d)=>a+d.g.length,0)"))+' нива') in l.inner_text('.bdintro'),
      l.evaluate("[...document.querySelectorAll('.bd2.new b')].map(b=>b.firstChild.textContent)")),
-    (['На терен','Списъкът','Сезони','Наука','Приятели','Семейства'],30,True,['Ранобудник']))
+    (['На терен','Списъкът','Сезони','Наука','Приятели','Семейства','Малки семейства'],True,True,['Ранобудник']))
   check('B18 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

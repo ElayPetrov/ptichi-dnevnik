@@ -17,7 +17,7 @@ try:
   ph=lambda nm:pg.locator('.sp',has_text=nm).locator('.th.none').inner_html()
   check('S1 an owl gets the owl (the one with eye holes), even if its latest record has no family', ('class="sil"' in ph('Горска улулица'),'evenodd' in ph('Горска улулица')), (True,True))
   check('S2 finches get the thick-billed songbird', ('class="sil"' in ph('Чинка'),'70,35 82,41 70,47' in ph('Чинка')), (True,True))
-  check('S3 no family, or Друго: the usual bird', ('class="sil"' in ph('Сврака'),'class="sil"' in ph('Непозната птица')), (False,False))
+  check('S3 a record without a family takes it from its species (Сврака → the crow); an unknown bird gets the usual one', ('class="sil"' in ph('Сврака'),'class="sil"' in ph('Непозната птица')), (True,False))
   pg.locator('.sp',has_text='Горска улулица').click()
   check('S4 the species page shows its silhouette by the name', pg.locator('.spd .th.none svg.sil').count(), 1)
   pg.click('[data-spcard]');pg.wait_for_function("document.getElementById('cardDlg').open&&document.getElementById('cardImg').naturalWidth>0")

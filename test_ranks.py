@@ -29,9 +29,9 @@ try:
   pg.fill('#q','');pg.wait_for_timeout(150);pg.click('.sp[data-k] >> text=Сойка');pg.wait_for_timeout(250)
   check('R8 the species page: the ring on its bird, the rank, and a bar towards the next', (pg.evaluate("[...document.querySelector('.spd .th').classList].includes('rk2')"),pg.inner_text('.rkline'),pg.locator('.rkbar').count()),
     (True,'Приятел 50 дни с вида · още 100 до „Познавач“',1))
-  pg.click('.tab[data-v="badges"]');pg.wait_for_timeout(250)
-  bd=pg.evaluate("(()=>{const c=document.querySelector('.bd2[data-bid=\"g:Кълвачи\"]');return [c.querySelector('.bdn').textContent,c.querySelector('.bdh').textContent,getComputedStyle(c.querySelector('.bdh')).fontStyle,getComputedStyle(c.querySelector('.bdn')).fontStyle];})()")
-  check('R9 badge cards: progress and description on separate lines in different styles, no list sizes', bd, ['0 / 3 до бронз','видове от групата','italic','normal'])
+  pg.click('.tab[data-v="badges"]');pg.wait_for_timeout(250);pg.click('[data-bdf="fam"]');pg.wait_for_timeout(100)   # sections fold since 2026-11-03.2
+  bd=pg.evaluate("(()=>{const c=document.querySelector('.bd2[data-bid=\"f:Кълвачи\"]');return [c.querySelector('.bdn').textContent,c.querySelector('.bdh').textContent,getComputedStyle(c.querySelector('.bdh')).fontStyle,getComputedStyle(c.querySelector('.bdn')).fontStyle];})()")
+  check('R9 badge cards: progress and description on separate lines in different styles, no list sizes', bd, ['0 / 3 до бронз','видове от групата (местни: 9)','italic','normal'])
   pg.click('.tab[data-v="life"]');pg.wait_for_timeout(200)
   cr=pg.evaluate("[...document.querySelectorAll('.sp')].map(c=>{const k=c.querySelector('.crown');return [c.querySelector('.nm').textContent,k?[...k.classList].find(x=>x.startsWith('rk')):null,getComputedStyle(c.querySelector('.th')).boxShadow];}).filter(x=>['Кос','Сойка','Червеногръдка'].includes(x[0]))")
   check('R11 a crown in the bird\'s corner instead of a ring: gold, silver, none yet', sorted([[n,c,b=='none'] for n,c,b in cr]), [['Кос','rk3',True],['Сойка','rk2',True],['Червеногръдка',None,True]])

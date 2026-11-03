@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-725 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+744 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -73,6 +73,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_rB.py | 18 | „Атлас“ in place of Схема: your square from GPS, squares in both UTM zones with species counts, a square's species with the strongest breeding code this year, squares over the real map; „📍 път“: off until switched on, points every 25 m+, jitter ignored, pause, kept with the ended outing, drawn in Излети, eBird distance, remembered for the next outing |
 | test_spl.py | 15 | the species list after the official BUNARCO list: 413 unique species (268 BSPB + 145 official), 73 rare, lookups by official name, eBird Latin, alternative and 2009 Latin, the snipe exception, the group's own species giving way (once-only note, records still counting), the rare line, unchanged group-badge totals, links, the typo check |
 | test_ux3.py | 9 | nothing sticks out past a 340 px screen (the sunrise line, long place names), „Сутрин обикновено го срещаш … след изгрева“, „Моите / Всички видове“ with the full list by group, ticks and rare marks, opening an unseen species and back, the map's style sub-tabs on one row |
+| test_fam.py | 19 | Иван's groups everywhere (41, field-guide order; old stored group names mapped), 40 family badges — 20 with levels at 30/50/90 % of the lower count (his field guide vs Перá), 20 single badges at more than half — Етолог with breeding codes, Атласист, По слух, Броячът, Квадрати, Пътят, Рядкости, Мисията изпълнена (kept after removing the target, not counting targets unseen since adding), folding sections in Значки and „Всички видове“ |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

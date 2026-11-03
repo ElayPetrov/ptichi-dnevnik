@@ -17,8 +17,8 @@ try:
   vals=lambda:pg.evaluate("['bg','en','la','fam'].map(k=>fld(k).value)")
   def name(f,v):
     pg.click('#toggle');pg.fill('#f-'+f,v);pg.locator('#f-'+f).dispatch_event('change');r=vals();pg.click('#cancel');return r
-  check('S2 a species new to the journal fills from the list', name('bg','Голям синигер'), ['Голям синигер','Great tit','Parus major','Синигери'])
-  check('S3 BSPB\'s older Latin name still finds the bird (your typed name stays)', name('la','Carduelis chloris'), ['Зеленика','European greenfinch','Carduelis chloris','Чинки'])
+  check('S2 a species new to the journal fills from the list', name('bg','Голям синигер'), ['Голям синигер','Great tit','Parus major','Синигери и др.'])
+  check('S3 BSPB\'s older Latin name still finds the bird (your typed name stays)', name('la','Carduelis chloris'), ['Зеленика','European greenfinch','Carduelis chloris','Чинкови'])
   check('S4 the second Bulgarian name from BSPB works too', name('bg','Гарга'), ['Гарга','Western jackdaw','Corvus monedula','Вранови'])
   check('S5 your own records win; the list only fills what they lack', name('bg','Сврака'), ['Сврака','Magpie','Pica pica','Вранови'])
   pg.click('#toggle');pg.fill('#f-en','my own name');pg.fill('#f-bg','Кос');pg.locator('#f-bg').dispatch_event('change');r=vals();pg.click('#cancel')
