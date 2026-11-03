@@ -536,6 +536,15 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .smtrk polyline{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round;opacity:.9}
 .trk path{fill:none;stroke:#e8822a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .trk .t0{fill:var(--s)} .trk .t1{fill:#c0392b}
 .rareline{font-size:13px;color:#b5651d;margin:4px 0 2px;font-weight:600}
+.askl{display:flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer} .askl input{width:18px;height:18px}
+.asktag{margin:3px 0 1px} .asklnk{background:none;border:1px solid var(--line2);border-radius:999px;padding:2px 10px;font:inherit;font-size:12.5px;color:var(--s);cursor:pointer}
+.asktag.ok{font-size:12.5px;color:var(--s)}
+.askc{display:flex;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;margin:0 0 10px}
+.askc .ph{width:84px;height:84px;flex:0 0 84px;border-radius:10px;background:var(--bg2) center/cover}
+.askx{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1} .askx small{color:var(--mut)} .askx .btn{align-self:flex-start;margin-top:2px}
+.asknote{font-size:13.5px;color:var(--ink);font-style:italic;overflow-wrap:anywhere}
+.qsum{display:flex;flex-wrap:wrap;gap:4px} .qchip{font-size:12.5px;background:var(--bg2);border-radius:999px;padding:2px 9px} .qchip small{color:var(--mut)}
+.qrow{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)} .qrow small{color:var(--mut)}
 .bdfold{display:flex;align-items:baseline;gap:8px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 2px 6px;cursor:pointer;text-align:left;font:inherit}
 .bdfold span{flex:1;font-family:Fraunces,Georgia,serif;font-size:17px;color:var(--ink)} .bdfold small{color:var(--mut);font-size:12.5px} .bdfold i{font-style:normal;color:var(--mut)}
 .bdfold+.bdg2,.bdfold+.allsp{margin-top:8px}
@@ -747,6 +756,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   </div>
   <div class="fg"><button type="button" class="bh" id="f-unsure" aria-pressed="false">? не съм сигурен — няма да се брои</button></div>
   <div id="tip-unsure"></div>
+  <div class="fg" id="f-askrow" style="display:none"><label class="askl"><input type="checkbox" id="f-ask"> 🔎 Попитай приятелите какво е</label><div class="note2" id="f-askhint" style="max-width:none"></div></div>
   <div class="fg" id="f-alt-row" style="display:none"><label>Може да е и <button type="button" class="cmplink" id="f-cmp">сравни ↗</button></label>
     <div class="altchips" id="f-alt"></div>
     <div class="geo"><input id="f-alt-in" list="bgnames" placeholder="друг вид, който може да е" style="flex:1;min-width:160px"><button type="button" class="btn" id="f-alt-add">+ добави</button></div>
@@ -851,6 +861,13 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <div id="nn-list"></div><div class="msg" id="nn-msg"></div></div>
   <div class="pickfoot"><span style="flex:1"></span><button type="button" class="btn" id="nn-later">По-късно</button><button type="button" class="btn pri" id="nn-save">Запази</button></div>
 </dialog>
+<dialog id="idDlg" class="sheet"><div class="dlg"><h3 id="id-t">Какво е това?</h3>
+  <div class="fg"><label for="id-bg">Вид</label><input id="id-bg" list="bgnames" autocomplete="off" placeholder="напиши или избери"></div>
+  <div class="note2" id="id-la" style="max-width:none;min-height:1.2em"></div>
+  <div class="fg"><label for="id-cm">Защо мислиш така (по желание)</label><textarea id="id-cm" rows="2" maxlength="400"></textarea></div>
+  <div class="fbtns"><button type="button" class="btn" id="id-cancel">Откажи</button><button type="button" class="btn pri" id="id-ok">Изпрати</button></div></div></dialog>
+<dialog id="qDlg" class="sheet"><div class="dlg"><h3 id="q-t">Какво е това?</h3><div id="q-list"></div>
+  <div class="fbtns"><button type="button" class="btn" id="q-close">Затвори въпроса</button><button type="button" class="btn" id="q-done">Готово</button></div></div></dialog>
 <dialog id="bcDlg" class="pickdlg outdlg" aria-label="Кодовете за гнездене">
   <div class="pickhead">Кодовете за гнездене</div>
   <div class="odb"><div class="note2" style="max-width:none">Европейските кодове на атласите на гнездящите птици (EBCC) — същите, които ползва атласът на БДЗП. Отбелязват колко сигурно е, че птицата гнезди там.</div>
@@ -1168,7 +1185,8 @@ function recHTML(o,F){
       // името и бройката заемат свободното място и се пренасят; „промени“ и „×“ стоят вдясно и не се застъпват с тях
       '<div class="oh"><div class="nm">'+recNm(o)+(sspOf(o)?' <span class="ssp">('+esc(sspOf(o))+')</span>':'')+(o.count||o.as?' <span style="color:var(--mut);font-weight:400">· '+esc(cntText(o))+'</span>':'')+'</div>'+
       '<div class="x"><button data-ed="'+o.id+'" aria-label="промени" title="промени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5 17v3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14.6 7.4l3 3" stroke="currentColor" stroke-width="2"/></svg></button><button data-del="'+o.id+'" aria-label="изтрий" title="изтрий">×</button></div></div>'+
-      (o.u&&o.alt&&o.alt.length?'<div class="altnm">или '+o.alt.map(esc).join(' или ')+'</div>':'')+   // другите възможни видове — на свой ред
+      (o.u&&o.alt&&o.alt.length?'<div class="altnm">или '+o.alt.map(esc).join(' или ')+'</div>':'')+
+      (o.askOk?'<div class="asktag ok">✓ определено от '+esc(nameOf(o.askOk.by))+'</div>':o.ask&&OBS.includes(o)?'<div class="asktag"><button type="button" class="asklnk" data-qown="'+o.id+'">🔎 питаш приятелите'+(qN(ME&&ME.id,o.id)?' · '+qN(ME.id,o.id)+' предложени'+(qN(ME.id,o.id)===1?'е':'я'):'')+'</button></div>':'')+   // другите възможни видове — на свой ред
       '<div class="meta">'+[o.en?esc(o.en):'',o.la?'<span class="la">'+esc(o.la)+'</span>':'',o.fam?esc(o.fam):''].filter(Boolean).join(' · ')+'</div>'+
       '<div class="meta">'+[o.time?'🕐 '+esc(o.time)+((r=>r?' ('+r+')':'')(sunRel(o))):'',o.place?'📍 '+esc(o.place):'',
         o.geo?'<a href="https://www.google.com/maps?q='+o.geo+'" target="_blank" rel="noopener" style="color:var(--mut)">коорд.</a>':''].filter(Boolean).join(' · ')+'</div>'+
@@ -1920,6 +1938,8 @@ const form=document.getElementById('form');
 function syncSts(){for(const b of document.querySelectorAll('.sb'))b.classList.toggle('on',!!st[b.dataset.s]);}
 function syncUnsure(){const b=document.getElementById('f-unsure');b.classList.toggle('on',unsure);b.setAttribute('aria-pressed',unsure);
   document.getElementById('f-alt-row').style.display=unsure?'':'none';drawAlts();
+  document.getElementById('f-askrow').style.display=unsure?'':'none';const ak=document.getElementById('f-ask');ak.disabled=!ME;
+  document.getElementById('f-askhint').textContent=ME?'Приятелите ти ще го видят горе в „Приятели“ и ще предложат вид; ти избираш кое да приемеш. Без име се записва като „Непозната птица“.':'Нужен е профил, за да питаш приятелите.';
   document.getElementById('tip-unsure').innerHTML=unsure?tipHTML('unsure',TIPTXT.unsure):'';}
 // „Може да е и“: при несигурен запис — другите видове, които може да е (като „Горска / Дългопръста дърволазка“).
 // Не броят и не се свързват с вида на записа (не са негови имена). Предлагат се видовете от същия род от списъка —
@@ -2048,7 +2068,7 @@ function openForm(o,seed){
   for(const k of ['place','count','bg','en','la','note'])document.getElementById('f-'+k).value=o?(o[k]||''):'';
   if(!o&&ctx&&ctx.place)document.getElementById('f-place').value=ctx.place;
   document.getElementById('f-fam').value=o?(((listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en)||{}).fam)||mapFam(o.fam)):'';
-  st=o?{h:o.h?1:0,s:o.s?1:0,p:o.p?1:0}:{h:0,s:1,p:0};unsure=!!(o&&o.u);alts=o&&o.alt?[...o.alt]:[];syncUnsure();
+  st=o?{h:o.h?1:0,s:o.s?1:0,p:o.p?1:0}:{h:0,s:1,p:0};unsure=!!(o&&o.u);alts=o&&o.alt?[...o.alt]:[];document.getElementById('f-ask').checked=!!(o&&o.ask&&!o.askOk);syncUnsure();
   syncSts();syncBeh();setGeo(o?(o.geo||null):(trkNow()||((!o&&ctx&&ctx.geo)?ctx.geo:null)));initAuto();
   const pv=document.getElementById('prev'),rm=document.getElementById('rmph');
   document.getElementById('f-photo').value='';
@@ -2177,6 +2197,8 @@ form.onsubmit=e=>{e.preventDefault();
     photoBusy.then(()=>{sb.disabled=false;sb.textContent=t0;form.requestSubmit?form.requestSubmit():form.onsubmit(new Event('submit'));});return;}
   for(const f of NM)commitName(f);commitPlace();   // ако е изписано докрай и записано без излизане от полето
   const g=i=>document.getElementById('f-'+i).value.trim();
+  const asking=unsure&&!!ME&&document.getElementById('f-ask').checked;
+  if(asking&&!g('bg')&&!g('en')&&!g('la'))document.getElementById('f-bg').value='Непозната птица';
   if(!g('bg')&&!g('en')&&!g('la')){alert('Впиши поне едно име.');return;}
   if(!st.h&&!st.s&&!st.p){alert('Отбележи чух, видях или снимах.');return;}
   const rec={id:edit||Date.now(),date:g('date')||today(),time:g('time'),place:g('place'),count:g('count'),
@@ -2184,6 +2206,7 @@ form.onsubmit=e=>{e.preventDefault();
     h:st.h?1:0,s:st.s?1:0,p:st.p?1:0,u:unsure?1:0,alt:unsure&&alts.length?[...alts]:undefined,beh:[...beh],geo:parseGeo(document.getElementById('f-geo').value)||null,photo:photo||null,upd:Date.now()};
   rec.sess=document.getElementById('f-sess').value||undefined;   // излетът се избира във формата (и после)
   countFieldsApply(rec);rec.bc=fBC||undefined;
+  {const old=edit?OBS.find(o=>o.id===edit):null;rec.ask=asking?((old&&old.ask)||Date.now()):undefined;if(old&&old.askOk)rec.askOk=old.askOk;}
   if(!edit&&SESS&&rec.sess===SESS.id&&fo.geo!=='user'){const g=trkNow();if(g)rec.geo=g;}rec.photos=photo&&phx.length?[...phx]:undefined;
   const nBefore=new Set(SURE().map(key).filter(Boolean)).size,bBefore=tiersNow();   // за поздравленията
   let ok=true;const old=edit?((OBS.find(o=>o.id===edit)||{}).photo||null):null,oldX=edit?((OBS.find(o=>o.id===edit)||{}).photos||[]):[];
@@ -2372,6 +2395,9 @@ function renderBadges(el){if(badgeVisit===null){badgeVisit=new Set(newBadges());
         return '<button type="button" class="bdsec bdfold" data-bdf="'+sec+'" aria-expanded="'+op+'"><span>'+title+'</span><small>'+got+' / '+max+'</small><i>'+(op?'▾':'▸')+'</i></button>'+
           '<div class="bdg2"'+(op?'':' style="display:none"')+'>'+L.map(d=>bdCard(d,T[d.id],badgeVisit)).join('')+'</div>';}).join('');}
 const KBDF='bird-journal-bdfold';
+document.getElementById('id-bg').addEventListener('input',idLook);document.getElementById('id-ok').onclick=idSend;document.getElementById('id-cancel').onclick=()=>document.getElementById('idDlg').close();
+document.getElementById('q-list').addEventListener('click',e=>{const b=e.target.closest('[data-qok]');if(b)qAccept(+b.dataset.qok);});
+document.getElementById('q-close').onclick=()=>{if(confirm('Да затворя ли въпроса без отговор? Записът остава несигурен.'))qClose();};document.getElementById('q-done').onclick=()=>document.getElementById('qDlg').close();
 function badgeStrip(nw){const R=SURE();return '<div class="bdg">'+BADGES.map(b=>{const st=badgeState(b,R);
   return '<div class="bd'+(st.on?' on':'')+(nw&&nw.has(b.id)?' new':'')+'" title="'+esc(b.how)+'"><span class="bdi">'+b.icon+'</span><b>'+b.name+(nw&&nw.has(b.id)?'<span class="newtag">ново</span>':'')+'</b><small>'+
     (st.on?(st.first?'от '+human(st.first):'спечелена'):(b.goal?st.n+' от '+b.goal:b.how))+'</small></div>';}).join('')+'</div>';}
@@ -2413,6 +2439,8 @@ document.addEventListener('click',e=>{
   const sr=e.target.closest('[data-sprf]');if(sr){e.preventDefault();e.stopImmediatePropagation();spOpen({bg:sr.dataset.bg,la:sr.dataset.la,en:sr.dataset.en});return;}
   const fb=e.target.closest('[data-bdf],[data-alf]');if(fb){const K=fb.dataset.bdf?KBDF:KALF,k=fb.dataset.bdf||fb.dataset.alf,o=lsGet(K,{})||{},b=fb.nextElementSibling,op=b.style.display==='none';
     b.style.display=op?'':'none';o[k]=op;lsSet(K,o);fb.setAttribute('aria-expanded',String(op));fb.querySelector('i').textContent=op?'▾':'▸';return;}
+  const qp=e.target.closest('[data-qprop]');if(qp){const [ow,id]=fdSplit(qp.dataset.qprop);openId(ow,id);return;}
+  const qo=e.target.closest('[data-qown]');if(qo){openQ(+qo.dataset.qown);return;}
   const lab=e.target.closest('[data-lifeall]');if(lab){LIFEALL=lab.dataset.lifeall==='1';window.scrollTo(0,0);render();return;}
   const atq=e.target.closest('[data-atq]');if(atq){atSel=atSel===atq.dataset.atq?null:atq.dataset.atq;render();return;}
   const atv=e.target.closest('[data-atov]');if(atv){ATOV=!ATOV;lsSet(KATOV,ATOV);render();return;}
@@ -3240,6 +3268,7 @@ const BDEF=[
     BD('squares','Квадрати','field','квадрати 10×10 км с записи',[5,15,40],R=>new Set(R.map(o=>{const q=sqOf(o.geo);return q?q.id:'';}).filter(Boolean)).size),
     BD('path','Пътят','field','км, извървени със „📍 път“',[10,50,200],R=>Math.floor(outings().reduce((a,x)=>a+(+x.dist||0),0))),
     BD('rare','Рядкости','list','редки (случайни) видове',[5,12,25],R=>new Set(R.filter(o=>isRareSp(o)).map(key)).size),
+    BD('idhelp','Определител','soc','твои определения, приети от приятели',[1,5,20],R=>ME&&FR?(FR.fol||[]).reduce((a,f)=>a+((f.data&&f.data.obs)||[]).filter(o=>o.askOk&&o.askOk.by===ME.id).length,0):0),
     Object.assign(BD('mission','Мисията изпълнена','list','постигнати цели (остават и след махане на целта)',[3,10,25],R=>tgReachedN()),{own:true}),
   BD('notes','Летописец','sci','записи с бележка (поне 20 знака)',[25,125,500],R=>new Set(R.filter(o=>(o.note||'').trim().length>=20).map(bUniq)).size),
   BD('flock','Голямо ято','sci','птици в един запис',[200,1000,10000],R=>Math.max(0,...R.map(o=>cntNum(o.count)))),
@@ -3348,7 +3377,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-03.2';
+const VER='2026-11-03.3';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -3570,7 +3599,7 @@ function renderFeed(el){let all=fdItems();
   all=[...all.filter(it=>feedVisit.has(fdKey(it))),...all.filter(it=>!feedVisit.has(fdKey(it)))];
   if(FDF!=='all')all=all.filter(it=>FDF==='me'?!!it.p.me:!it.p.me);   // „Мои“ / „На приятели“
   const its=all.slice(0,FEEDN);
-  el.innerHTML=inviteBanner()+(ME?fdfHTML():'')+(its.length?its.map(it=>fdCard(it,feedVisit.has(fdKey(it)))).join('')+(all.length>FEEDN?'<div class="fbtns"><button type="button" class="btn" data-feedmore>Покажи още</button></div>':''):
+  el.innerHTML=inviteBanner()+askSection()+(ME?fdfHTML():'')+(its.length?its.map(it=>fdCard(it,feedVisit.has(fdKey(it)))).join('')+(all.length>FEEDN?'<div class="fbtns"><button type="button" class="btn" data-feedmore>Покажи още</button></div>':''):
     '<div class="empty">Тук ще се появяват излетите и записите на приятелите ти — и твоите. Добави приятел от кръгчето горе вдясно.</div>');
   for(const d of el.querySelectorAll('[data-fmap]'))staticMap(d,(FEEDPTS[d.dataset.fmap]||[]).map(g=>g.split(',').map(Number)));
   loadThumbs();loadPhotos();loadFriendPhotos();}
@@ -3583,8 +3612,49 @@ async function loadSocial(){if(!SB||!ME)return;const ids=[ME.id,...((FR&&FR.fol)
 async function socAdd(owner,item,kind,body){if(!SB||!ME){alert('Нужни са профил и връзка.');return;}
   const r=await SB.from('social').insert({owner,item,kind,body:body||null});if(r.error){alert(errMsg(r.error));return;}await loadSocial();render();}
 async function socDel(id){if(!SB||!ME)return;const r=await SB.from('social').delete().eq('id',id);if(r.error){alert(errMsg(r.error));return;}await loadSocial();render();}
+// ---- „Попитай приятелите“: въпросът е в самия запис (ask), предложенията са коментари към „q:<id>“ ----
+// Тялото на предложение: „🔎 Име (Latin)“ и на нов ред — защо (по желание). Чете се и от по-стари версии като обикновен текст.
+const PROP=/^🔎 ([^\n(]+?)(?: \(([^)\n]+)\))?(?:\n([\s\S]*))?$/;
+function qProps(owner,id){return SOC.filter(s=>s.kind==='comment'&&s.owner===owner&&s.item==='q:'+id).map(s=>{const m=PROP.exec(s.body||'');return m?{s,bg:m[1].trim(),la:(m[2]||'').trim(),cm:(m[3]||'').trim()}:null;}).filter(Boolean);}
+const qN=(owner,id)=>owner?qProps(owner,id).length:0;
+function openAsks(){if(!ME||!FR)return [];const lim=ymd(Date.now()-60*864e5),out=[];
+  for(const f of FR.fol||[])for(const o of ((f.data&&f.data.obs)||[]))if(o.ask&&!o.askOk&&o.date>=lim)out.push({f,o});
+  return out.sort((a,b)=>(b.o.ask||0)-(a.o.ask||0));}
+function propSummary(owner,id){const P=qProps(owner,id);if(!P.length)return '<div class="note2" style="max-width:none">Още няма предложения.</div>';
+  const g={};for(const x of P){const k=nrm(x.la||x.bg);(g[k]=g[k]||{bg:x.bg,la:x.la,who:[]}).who.push(nameOf(x.s.author));}
+  return '<div class="qsum">'+Object.values(g).sort((a,b)=>b.who.length-a.who.length).map(x=>'<span class="qchip"><b>'+esc(x.bg)+'</b>'+(x.who.length>1?' ×'+x.who.length:'')+' <small>'+x.who.map(esc).join(', ')+'</small></span>').join('')+'</div>';}
+function askSection(){const A=openAsks();if(!A.length)return '';
+  return '<h3 class="bdsec">🔎 Помогни с определянето</h3>'+A.map(({f,o})=>{const mine=qProps(f.id,o.id).some(x=>x.s.author===ME.id);
+    return '<div class="askc">'+(o.photo?'<div class="ph" data-fph="'+esc(f.id+'/'+o.photo)+'"></div>':'')+'<div class="askx"><b>'+esc(f.name)+' пита: какво е това?</b>'+
+      '<small>'+esc(human(o.date))+(o.time?' · '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+' · '+esc(howTxt(o))+'</small>'+
+      (o.bg&&o.bg!=='Непозната птица'?'<div>Мисли, че може да е <b>'+esc(o.bg)+'</b>'+(o.alt&&o.alt.length?' или '+o.alt.map(esc).join(' или '):'')+'</div>':'')+
+      (o.note?'<div class="asknote">'+esc(o.note)+'</div>':'')+propSummary(f.id,o.id)+
+      '<button type="button" class="btn'+(mine?'':' pri')+'" data-qprop="'+esc(f.id+'|'+o.id)+'">'+(mine?'Предложи друг вид':'Предложи вид')+'</button></div></div>';}).join('');}
+const howTxt=o=>[o.h?'чут':'',o.s?'видян':'',o.p?'сниман':''].filter(Boolean).join(', ');
+let qAt=null;
+function openId(owner,id){qAt={owner,id};const o=(((FR&&FR.fol)||[]).find(f=>f.id===owner)||{data:{obs:[]}}).data.obs.find(o=>String(o.id)===String(id))||{};
+  document.getElementById('id-t').textContent='Какво е това? ('+esc(nameOf(owner))+', '+human(o.date||today())+')';
+  document.getElementById('id-bg').value='';document.getElementById('id-cm').value='';document.getElementById('id-la').textContent='';document.getElementById('idDlg').showModal();setTimeout(()=>document.getElementById('id-bg').focus(),50);}
+function idLook(){const v=document.getElementById('id-bg').value.trim(),c=v?listFind('bg',v)||listFind('la',v)||listFind('en',v):null;
+  document.getElementById('id-la').textContent=c?[c.la,c.en].filter(Boolean).join(' · '):(v?'Няма го в списъка — ще се изпрати както е написано.':'');return c;}
+async function idSend(){if(!qAt)return;const v=document.getElementById('id-bg').value.trim();if(!v){document.getElementById('id-bg').focus();return;}
+  const c=idLook(),cm=document.getElementById('id-cm').value.trim();
+  const body='🔎 '+(c?c.bg:v)+((c&&c.la)?' ('+c.la+')':'')+(cm?'\n'+cm:'');
+  document.getElementById('idDlg').close();await socAdd(qAt.owner,'q:'+qAt.id,'comment',body.slice(0,1000));qAt=null;}
+let qOwn=null;
+function openQ(id){const o=OBS.find(o=>o.id===id);if(!o)return;qOwn=id;const P=qProps(ME&&ME.id,id);
+  document.getElementById('q-t').textContent='Какво е това? — '+human(o.date)+(o.place?', '+o.place:'');
+  document.getElementById('q-list').innerHTML=P.length?P.map((x,i)=>'<div class="qrow"><div><b>'+esc(x.bg)+'</b>'+(x.la?' <i class="la">'+esc(x.la)+'</i>':'')+
+    '<small> — '+esc(nameOf(x.s.author))+', '+esc(relDay(String(x.s.created_at).slice(0,10)))+'</small>'+(x.cm?'<div class="asknote">'+esc(x.cm)+'</div>':'')+'</div>'+
+    '<button type="button" class="btn pri" data-qok="'+i+'">Приеми</button></div>').join(''):'<div class="note2" style="max-width:none">Още няма предложения. Приятелите ти виждат въпроса горе в „Приятели“.</div>';
+  document.getElementById('qDlg').showModal();}
+function qAccept(i){const o=OBS.find(o=>o.id===qOwn),x=qProps(ME&&ME.id,qOwn)[i];if(!o||!x)return;
+  const c=listFind('la',x.la)||listFind('bg',x.bg);const was=o.bg||o.la||o.en||'';
+  Object.assign(o,{bg:c?c.bg:x.bg,la:c?c.la:(x.la||''),en:c?c.en:'',fam:c?c.fam:'',u:0,alt:undefined,askOk:{by:x.s.author,at:Date.now(),was},upd:Date.now()});
+  save();document.getElementById('qDlg').close();qOwn=null;render();}
+function qClose(){const o=OBS.find(o=>o.id===qOwn);if(o){delete o.ask;o.upd=Date.now();save();}document.getElementById('qDlg').close();qOwn=null;render();}
 const fdSplit=k=>{const i=k.indexOf('|');return [k.slice(0,i),k.slice(i+1)];};
-const pendingSocial=()=>ME?SOC.filter(s=>s.kind==='there'&&s.owner===ME.id).length+invites().length:0;
+const pendingSocial=()=>ME?SOC.filter(s=>s.kind==='there'&&s.owner===ME.id).length+invites().length+openAsks().filter(({f,o})=>!qProps(f.id,o.id).some(x=>x.s.author===ME.id)).length:0;
 // ---- „ново“: оранжева точка на Приятели и Значки, докато не ги отвориш ----
 // Приятели: нов запис на приятел (нова карта или нова птица в стара) или „Браво“/коментар от друг на твой излет или ден.
 // При отваряне новото е най-отгоре с „ново“; щом излезеш от раздела, се помни като видяно и застава на мястото си.

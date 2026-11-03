@@ -61,6 +61,7 @@ run releaseB python3 test_rB.py 8993
 run species  python3 test_spl.py 8994
 run ux1103   python3 test_ux3.py 8995
 run families python3 test_fam.py 8996
+run ask      python3 test_ask.py 8997
 run dayrule  python3 test_dayrule.py 8989
 run xcfn     sh -c 'cp supabase/functions/xc/index.ts /tmp/xcfn.mjs && node test_xcfn.mjs'
 printf '%-9s %s of 4 save taps landed\n' tap "$(python3 tap_test.py 8950 ptichi-dnevnik.html | grep -c "'saved'")"
