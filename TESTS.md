@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-926 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+927 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -87,7 +87,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_ios.py | 8 | iPhone (from the Home Screen): the first open's welcome → „Запиши първата“ leaves the form usable, no field focused by code (it can stay without a keyboard on iPhone), the voice panel explains the keyboard's language, „J“ → jay; Android still focuses the name field |
 | test_where.py | 15 | „📍 Къде да го търся“ from GBIF: folded, nothing fetched until opened; 12 month bars from GBIF's counts for Bulgaria; the nearest places to your latest GPS record, grouped, with last date and source; heat-map tiles for the species and country, drawn above the map (not hidden under it); the source linked; kept a week; unknown species; the button in Цели; tapping the map: the place's name, this bird's finds, years and best months there, every other bird found there (✓ yours, „ново за теб“), a hexagon-sized circle, no repeat questions, birds in the list open their cards |
 | test_explore.py | 20 | Карта → „Изследвай“ (GBIF): there even with an empty journal; the all-birds map near your latest record (dot mode opens zoomed in); ● точка: Перá's own visible dots (bigger where more finds), a tap snaps to the nearest find point, 100 m around it (none near → says so); ▦ квадрат 1–20 km by slider on the atlas grid (10 with its atlas code), closed polygon, true size, letting go recounts; every species of a place (first 30 + „Покажи всички“); „+ Цел“ beside new birds; choosing a species; remembering mode, size and species; Карта still starts on the personal map |
-| test_osm.py | 13 | „🏞 място“: Nominatim first (the natural feature here, with its outline; a lake the tap isn't inside is ignored); Overpass for reserves and parks (names first, outline only when chosen; a refusing server → the next; Nominatim alone still works if all refuse); everything failing → says so and logs what each source answered and how long it took; the shape to GBIF closed, anticlockwise, ≤ 61 points, +300 m containing the whole edge, never self-crossing; a two-piece area joined; a C-shaped lake falling back safely |
+| test_osm.py | 14 | „🏞 място“: Nominatim first (only water bodies and wetlands — not „Балкански полуостров“ — and not a lake the tap isn't inside); nothing over 3000 km²; Overpass for reserves and parks (names first, outline only when chosen; a refusing server → the next; Nominatim alone still works if all refuse); everything failing → says so and logs what each source answered and how long it took; the shape to GBIF closed, anticlockwise, ≤ 61 points, +300 m containing the whole edge, never self-crossing; a two-piece area joined; a C-shaped lake falling back safely |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

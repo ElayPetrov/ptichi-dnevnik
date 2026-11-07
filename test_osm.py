@@ -37,6 +37,8 @@ def nominatim(route):   # Nominatim: the natural feature here, with its outline
   NOMQ.append(route.request.url)
   if NOM[0]=='fail': return route.fulfill(status=503,body='busy')
   if NOM[0]=='none': return route.fulfill(body=json.dumps({'error':'Unable to geocode'}),content_type='application/json')
+  if NOM[0]=='pen':   # what Nominatim really answered outside the lake: the Balkan Peninsula, which does contain the tap
+    return route.fulfill(body=json.dumps({'osm_type':'relation','osm_id':9,'name':'Балкански полуостров','type':'peninsula','category':'natural','geojson':{'type':'Polygon','coordinates':[[[13.5,36.0],[30.0,36.0],[30.0,46.5],[13.5,46.5],[13.5,36.0]]]},'namedetails':{'name':'Балкански полуостров'}}),content_type='application/json')
   ring=[[r['lon'],r['lat']] for r in res] if NOM[0]=='res' else [[25.0,42.0],[25.05,42.0],[25.05,42.05],[25.0,42.05],[25.0,42.0]]   # 'far': a lake somewhere else
   route.fulfill(body=json.dumps({'osm_type':'way','osm_id':22,'name':'Язовир Копринка','type':'reservoir','category':'natural','geojson':{'type':'Polygon','coordinates':[ring]},'namedetails':{'name':'Язовир Копринка'}}),content_type='application/json')
 def gbif(route):
@@ -96,6 +98,8 @@ try:
   check('O2b with nothing from Nominatim and the first Overpass server refusing („too many requests“), Перá asks the next one', ([h for h,b in OSMQ[:2]],pg.locator('[data-exarea]').count()), (['overpass-api.de','overpass.kumi.systems'],2))
   REFUSE.discard('overpass-api.de');NOM[0]='far';OSMQ.clear();pg.evaluate("OSMC.clear()");EMPTY[0]=True;tap(pg,.6,.7);pg.wait_for_timeout(2200)
   check('O12 a lake Nominatim offers that the tap is NOT inside (its nearest) is not shown', 'Тук няма именувано място' in pg.inner_text('#explace'), True)
+  NOM[0]='pen';EMPTY[0]=False;OSMQ.clear();pg.evaluate("OSMC.clear()");tap(pg);pg.wait_for_timeout(2500)
+  check('O14 Nominatim\'s „Балкански полуостров“ (it does contain the spot) is not a place — the reservoir and the reserve from Overpass are offered instead', (pg.evaluate("[...document.querySelectorAll('[data-exarea]')].map(b=>b.textContent)"),'полуостров' in pg.inner_text('#explace')), (['Язовир Копринка язовир','Копринка защитена територия'],False))
   NOM[0]='res';EMPTY[0]=False;REFUSE.add('all');pg.evaluate("OSMC.clear()");tap(pg);pg.wait_for_timeout(2500)
   check('O13 even with every Overpass server refusing, Nominatim alone still gives the lake', (pg.inner_text('#explace .whpl b'),'не отговаря' in pg.inner_text('#explace')), ('Язовир Копринка · язовир',False))
   NOM[0]='fail';pg.evaluate("OSMC.clear()");tap(pg,.52,.52);pg.wait_for_timeout(2500)

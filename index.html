@@ -1659,18 +1659,21 @@ async function osmQ(q,log,servers,ms){for(const u of servers||OSMS){const h=u.sp
     try{const r=await fetchT(u+'?data='+encodeURIComponent(q),ms||15000);if(r.ok){const d=await r.json();(log||[]).push(h+': ok '+sec());return d;}(log||[]).push(h+': '+r.status+' '+sec());}
     catch(e){(log||[]).push(h+': '+((e&&e.name)||e)+' '+sec());}}
   throw new Error('overpass');}
+const NOMOK=new Set(['water','reservoir','lake','lagoon','pond','basin','oxbow','wetland','marsh','swamp','reedbed','bog','riverbank']),AREAMAX=3000;   // км²
+const ringKm2=r=>{const k=Math.cos(r[0][0]*Math.PI/180)*111.32;return Math.abs(ringArea(r))*k*110.57;};   // [lat,lon] → км² (приблизително)
 async function nomArea(lat,lon,log){const t0=Date.now(),sec=()=>((Date.now()-t0)/1000).toFixed(1)+' с';   // Nominatim: „кое природно място е тук“ — с очертанията
-  try{const r=await fetchT('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+lat.toFixed(5)+'&lon='+lon.toFixed(5)+'&zoom=14&layer=natural&polygon_geojson=1&polygon_threshold=0.0002&namedetails=1&accept-language=bg',12000);
+  try{const r=await fetchT('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+lat.toFixed(5)+'&lon='+lon.toFixed(5)+'&zoom=14&layer=natural&polygon_geojson=1&polygon_threshold=0.0002&namedetails=1&extratags=1&accept-language=bg',12000);
     if(!r.ok){log.push('nominatim: '+r.status+' '+sec());return {err:1};}const d=await r.json();log.push('nominatim: ok '+sec());
-    const g=d&&d.geojson;if(!g||!/Polygon/.test(g.type))return null;
+    const g=d&&d.geojson,wt=d&&d.extratags&&d.extratags.water;if(!g||!/Polygon/.test(g.type))return null;
+    if(!NOMOK.has(d.type)&&!NOMOK.has(wt))return null;   // „природно място“ тук може да е и полуостров или планина — те не са място за птици
     for(const P of (g.type==='Polygon'?[g.coordinates]:g.coordinates)){const ring=(P[0]||[]).map(c=>[c[1],c[0]]);
-      if(ring.length>3&&pip(lat,lon,ring))return {type:d.osm_type,oid:d.osm_id,name:(d.namedetails&&d.namedetails['name:bg'])||d.name||String(d.display_name||'').split(',')[0],kind:OSMT[d.type]||OSMT[d.category]||'място',ring,a:Math.abs(ringArea(ring))};}
+      if(ring.length>3&&pip(lat,lon,ring)&&ringKm2(ring)<=AREAMAX)return {type:d.osm_type,oid:d.osm_id,name:(d.namedetails&&d.namedetails['name:bg'])||d.name||String(d.display_name||'').split(',')[0],kind:OSMT[wt]||OSMT[d.type]||OSMT[d.category]||'място',ring,a:Math.abs(ringArea(ring))};}
     return null;}
   catch(e){log.push('nominatim: '+((e&&e.name)||e)+' '+sec());return {err:1};}}
 async function osmGeom(a){if(a.ring)return a.ring;const log=[];let d;try{d=await osmQ('[out:json][timeout:25];'+(a.type==='way'?'way':'rel')+'('+a.oid+');out geom;',log);}
   catch(e){logErr('OpenStreetMap не отговаря — '+log.join('; '),'osm');throw e;}
   const e=(d.elements||[])[0];a.ring=e?osmRing(e):null;return a.ring;}
-const OSMT={reservoir:'язовир',lake:'езеро',lagoon:'лагуна',pond:'водоем',basin:'водоем',water:'водоем',wetland:'влажна зона',nature_reserve:'резерват',protected_area:'защитена територия',park:'парк'};
+const OSMT={reservoir:'язовир',lake:'езеро',lagoon:'лагуна',pond:'водоем',basin:'водоем',oxbow:'старица',water:'водоем',wetland:'влажна зона',marsh:'блато',swamp:'блато',reedbed:'тръстики',bog:'торфище',riverbank:'река',nature_reserve:'резерват',protected_area:'защитена територия',park:'парк'};
 const ringArea=r=>{let a=0;for(let i=0;i<r.length-1;i++)a+=r[i][1]*r[i+1][0]-r[i+1][1]*r[i][0];return a/2;};   // [lat,lon]: x=lon, y=lat; >0 — обратно на часовника
 function osmRing(e){const eq=(a,b)=>Math.abs(a[0]-b[0])<1e-7&&Math.abs(a[1]-b[1])<1e-7;
   if(e.type==='way'){const r=(e.geometry||[]).map(g=>[g.lat,g.lon]);return r.length>3&&eq(r[0],r[r.length-1])?r:null;}
@@ -1686,6 +1689,7 @@ async function osmAreas(lat,lon){const k=lat.toFixed(4)+','+lon.toFixed(4);if(OS
   let d=null;try{d=await osmQ('[out:json][timeout:15];is_in('+lat.toFixed(5)+','+lon.toFixed(5)+')->.a;(way(pivot.a)'+f+';rel(pivot.a)'+f+';);out tags bb;',log,out.length?OSMS.slice(0,1):OSMS,out.length?5000:15000);}catch(e){}   // само имената и рамката
   if(!d&&!out.length){logErr('OpenStreetMap не отговаря — '+log.join('; '),'osm');throw new Error('osm');}
   for(const e of (d&&d.elements)||[]){const t=e.tags||{},b=e.bounds;if(!t.name||!b)continue;if(nom&&!nom.err&&e.type===nom.type&&e.id===nom.oid)continue;
+    if((b.maxlat-b.minlat)*110.57*(b.maxlon-b.minlon)*Math.cos(b.minlat*Math.PI/180)*111.32>AREAMAX)continue;   // твърде голямо, за да е „място“
     out.push({type:e.type,oid:e.id,name:t['name:bg']||t.name,kind:OSMT[t.water]||OSMT[t.landuse]||OSMT[t.leisure]||OSMT[t.boundary]||OSMT[t.natural]||'място',a:(b.maxlat-b.minlat)*(b.maxlon-b.minlon)});}
   out.sort((x,y)=>x.a-y.a);OSMC.set(k,out);return out;}
 // към заявка в GBIF: опростяване (до ~60 точки), +300 м за брега, без самопресичане (иначе — изпъкналата обвивка), обратно на часовника
@@ -3901,7 +3905,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-07.12';
+const VER='2026-11-07.13';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
