@@ -7,6 +7,11 @@ port=int(sys.argv[1]) if len(sys.argv)>1 else 9006;fails=0
 def check(n,got,exp):
   global fails;ok=got==exp;fails+=not ok
   print(('PASS ' if ok else 'FAIL ')+n+('' if ok else f'\n     got {got!r}\n     exp {exp!r}'))
+import io
+from PIL import Image
+def _png(c,a=255):
+  b=io.BytesIO();Image.new('RGBA',(256,256),c+(a,)).save(b,'PNG');return b.getvalue()
+GREEN,RED=_png((40,160,60)),_png((220,30,30),200)   # the map green, GBIF's layer red — to see which one is on top
 TILE=bytes.fromhex('89504e470d0a1a0a0000000d4948445200000001000000010806000000'+'1f15c489'+'0000000d49444154789c6360f8cf000000030101007a2d0a1b0000000049454e44ae426082')
 CALLS=[]
 def gbif(route):
@@ -19,7 +24,7 @@ def gbif(route):
     body={'results':[{'decimalLatitude':42.66,'decimalLongitude':25.40,'eventDate':'2025-05-03T07:00','locality':'Казанлък, парк Тюлбето','datasetName':'EOD - eBird Observation Dataset'},
                      {'decimalLatitude':42.661,'decimalLongitude':25.401,'eventDate':'2025-06-10','locality':'Казанлък, парк Тюлбето','datasetName':'EOD - eBird Observation Dataset'},
                      {'decimalLatitude':42.80,'decimalLongitude':25.10,'eventDate':'2024-09-01','locality':'','datasetName':'iNaturalist research-grade observations'}]}
-  elif '/v2/map/' in u: return route.fulfill(body=TILE,content_type='image/png')
+  elif '/v2/map/' in u: return route.fulfill(body=RED,content_type='image/png')
   else: body={}
   route.fulfill(body=json.dumps(body),content_type='application/json')
 data=[{'id':1,'date':T,'time':'08:00','place':'Тюлбето','count':'','bg':'Кос','en':'','la':'','fam':'','note':'','h':0,'s':1,'p':0,'beh':[],'geo':'42.65000,25.39000','photo':None}]
@@ -29,7 +34,7 @@ try:
   b=p.chromium.launch();ctx=b.new_context(viewport={'width':390,'height':844})
   ctx.route('https://api.gbif.org/**',gbif)
   ctx.route('https://cdnjs.cloudflare.com/ajax/libs/leaflet/**',lambda r:r.fulfill(path='/home/claude/sb/leaflet/'+('leaflet.css' if r.request.url.endswith('.css') else 'leaflet.js'),content_type='text/css' if r.request.url.endswith('.css') else 'application/javascript'))
-  ctx.route('https://server.arcgisonline.com/**',lambda r:r.fulfill(body=TILE,content_type='image/png'))
+  ctx.route('https://server.arcgisonline.com/**',lambda r:r.fulfill(body=GREEN,content_type='image/png'))
   pg=ctx.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
   pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-tips','{\"all\":1}');localStorage.setItem('bird-journal-quiet','true');sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400)
@@ -41,6 +46,10 @@ try:
   rows=pg.evaluate("[...document.querySelectorAll('.whn .row')].map(r=>r.innerText.replace(/\\s+/g,' ').trim())")
   check('W3 the nearest places to your latest GPS record, nearest first, grouped by place, with the last date and the source', (len(rows),rows[0].startswith('Казанлък, парк Тюлбето'),'2×' in rows[0],'eBird' in rows[0],'iNaturalist' in rows[1]), (2,True,True,True,True))
   check('W4 a heat map of Bulgaria from GBIF (map tiles for this species and country)', (pg.locator('.whmap.leaflet-container').count(),any('/v2/map/occurrence/density/' in u and 'taxonKey=2490384' in u and 'country=BG' in u for u in CALLS)), (1,True))
+  pg.locator('.whmap').scroll_into_view_if_needed();pg.wait_for_timeout(300)
+  top=pg.evaluate("(()=>{const p=document.querySelector('.whmap .leaflet-gbif-pane'),t=document.querySelector('.whmap .leaflet-tile-pane');return !!p&&+getComputedStyle(p).zIndex>+getComputedStyle(t).zIndex&&!!p.querySelector('img[src*=\"api.gbif.org\"]')})()")
+  pg.locator('.whmap').screenshot(path='/tmp/whmap_t.png');px=Image.open('/tmp/whmap_t.png').convert('RGB');cx=px.getpixel((px.width//2,px.height//2))
+  check('W4b GBIF\'s layer is drawn ON the map, not hidden under it (what\'s on top is GBIF\'s tile; the colour is mostly GBIF\'s)', (top,cx[0]>cx[1]), (True,True))
   check('W5 the source is named and linked', ('GBIF.org' in pg.inner_text('.whsrc'),pg.evaluate("document.querySelector('.whsrc a').href").startswith('https://www.gbif.org/occurrence/map?taxon_key=2490384')), (True,True))
   n0=len([u for u in CALLS if '/v1/' in u]);pg.click("[data-spback]");pg.wait_for_timeout(100);pg.evaluate("spOpen({bg:'Сойка',la:'Garrulus glandarius',en:'Eurasian jay'})");pg.wait_for_timeout(200)
   pg.click('details.where summary');pg.wait_for_timeout(600)

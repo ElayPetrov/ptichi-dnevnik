@@ -1252,8 +1252,10 @@ function whereHTML(r){const la=r.la||refLatin(r);if(!la)return '';
   return '<details class="where" data-where="'+esc(la)+'"'+(WHEREOPEN===la?' open':'')+'><summary>📍 Къде да го търся</summary><div class="whb"></div></details>';}
 async function whereMap(el,key){if(!el||!await loadLeaflet()||!el.isConnected){if(el)el.remove();return;}
   const m=L.map(el,{zoomControl:true,attributionControl:false,scrollWheelZoom:false});
+  // слоят на GBIF е в свой „пласт“ над картата: прозрачен слой в общия пласт се рисува ПОД плочките на картата (и само проблясва при мащабиране)
+  m.createPane('gbif');const gp=m.getPane('gbif');gp.style.zIndex=250;gp.style.pointerEvents='none';
   L.tileLayer(TILES.topo.url,{maxZoom:12}).addTo(m);
-  L.tileLayer(GBA+'/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?srs=EPSG:3857&taxonKey='+key+'&country=BG&bin=hex&hexPerTile=36&style=classic.poly',{maxZoom:12,opacity:.85}).addTo(m);
+  L.tileLayer(GBA+'/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?srs=EPSG:3857&taxonKey='+key+'&country=BG&bin=hex&hexPerTile=36&style=classic.poly',{maxZoom:12,opacity:.85,pane:'gbif'}).addTo(m);
   m.fitBounds([[41.2,22.3],[44.25,28.7]]);}
 async function whereLoad(det){if(!det||det.dataset.done)return;det.dataset.done='1';const la=det.dataset.where,b=det.querySelector('.whb'),nt=t=>'<div class="note2" style="max-width:none">'+t+'</div>';
   if(navigator.onLine===false){b.innerHTML=nt('Нужен е интернет.');det.dataset.done='';return;}
@@ -3705,7 +3707,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-07.5';
+const VER='2026-11-07.6';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
