@@ -18,6 +18,13 @@ def gbif(route):
   u=route.request.url;CALLS.append(u)
   if '/v1/species/match' in u:
     body={'usageKey':2490384,'matchType':'EXACT'} if 'Garrulus' in u or 'Corvus' in u else {'matchType':'NONE'}
+  elif 'geoDistance' in u and 'facet=year' in u:   # the tapped spot: this bird there
+    body={'count':37,'facets':[{'field':'YEAR','counts':[{'name':'2014','count':3},{'name':'2025','count':10}]},{'field':'MONTH','counts':[{'name':'5','count':12},{'name':'6','count':8},{'name':'1','count':2}]}]}
+  elif 'geoDistance' in u and 'facet=speciesKey' in u:   # ...every bird there
+    body={'count':60,'facets':[{'field':'SPECIES_KEY','counts':[{'name':'2490384','count':37},{'name':'2482507','count':20},{'name':'9999999','count':3}]}]}
+  elif 'geoDistance' in u and 'classKey=212' in u:   # ...a sample with names and place names
+    body={'results':[{'speciesKey':2490384,'species':'Garrulus glandarius','locality':'Казанлък, парк Тюлбето'},{'speciesKey':2482507,'species':'Turdus merula','locality':'Казанлък, парк Тюлбето'}]}
+  elif '/v1/species/9999999' in u: body={'species':'Aquila nipalensis'}
   elif 'facet=month' in u:
     body={'count':1234,'facets':[{'field':'MONTH','counts':[{'name':'5','count':300},{'name':'6','count':150},{'name':'1','count':20}]}]}
   elif 'geoDistance' in u:
@@ -60,6 +67,19 @@ try:
   pg.click("[data-spback]");pg.evaluate("tgAdd({bg:'Сива врана',la:'Corvus cornix',en:'Hooded crow'})");pg.click('.tab[data-v="goals"]');pg.wait_for_timeout(200)
   pg.click('[data-tgwhere="Corvus cornix"]');pg.wait_for_timeout(1500)
   check('W8 Цели: „📍 Къде да го търся“ opens the bird’s card with the section open and loaded', (pg.evaluate("document.querySelector('details.where').open"),pg.locator('.whmb').count()), (True,12))
+  pg.click('[data-spback]');pg.wait_for_timeout(100);pg.click('.tab[data-v="log"]');pg.wait_for_timeout(100)
+  pg.evaluate("spOpen({bg:'Сойка',la:'Garrulus glandarius',en:'Eurasian jay'})");pg.wait_for_timeout(200);pg.click('details.where summary');pg.wait_for_timeout(1500)
+  m=pg.locator('.whmap');m.scroll_into_view_if_needed();pg.wait_for_timeout(200);box=m.bounding_box();n1=len(CALLS)
+  pg.mouse.click(box['x']+box['width']/2,box['y']+box['height']/2);pg.wait_for_timeout(1500)
+  t1=pg.inner_text('.whpl')
+  check('W10 tapping the map: the place\'s name, and this bird there — finds, years, best months', (t1.startswith('Казанлък, парк Тюлбето и наоколо'),'Сойка тук: 37 находки · 2014–2025 · най-често май и юни' in t1), (True,True))
+  rows=pg.evaluate("[...document.querySelectorAll('.whpl .asp')].map(a=>[a.querySelector('.nmlink,i').textContent,a.classList.contains('got'),a.innerText.includes('ново за теб')])")
+  check('W11 ...and every other bird found there, most found first: ✓ on yours, „ново за теб“ on the rest (names looked up when GBIF\'s sample lacks them)', rows, [['Кос',True,False],['Степен орел',False,True]])
+  check('W12 ...with a hexagon-sized circle where you tapped', pg.locator('.whmap path.leaflet-interactive').count(), 1)
+  n2=len(CALLS);pg.mouse.click(box['x']+box['width']/2,box['y']+box['height']/2);pg.wait_for_timeout(500)
+  check('W13 tapping the same spot again asks GBIF nothing new', len(CALLS)-n2, 0)
+  pg.locator('.whpl .nmlink',has_text='Степен орел').click();pg.wait_for_timeout(300)
+  check('W14 tapping a bird in the list opens its card', 'Степен орел' in pg.inner_text('#view'), True)
   check('W9 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

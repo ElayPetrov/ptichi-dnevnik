@@ -374,6 +374,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .whmb{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
 .whmb i{display:block;width:100%;background:var(--s);border-radius:3px 3px 0 0} .whmb small{font-size:10.5px;color:var(--mut);margin-top:2px} .whmb.now small{color:var(--ink);font-weight:700}
 .whmap{height:220px;border-radius:12px;overflow:hidden;margin:8px 0;background:var(--bg2)} .whsrc{font-size:11.5px;color:var(--mut);margin-top:8px} .whsrc a{color:inherit}
+.whpl{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:6px 0 10px;background:var(--bg)} .whpl small{color:var(--mut)} .whplme{margin:4px 0 2px;font-size:14px}
 .tgwhere{display:inline-block;background:none;border:1px solid var(--line2);border-radius:999px;padding:2px 10px;font:inherit;font-size:12.5px;color:var(--s);cursor:pointer;margin-top:5px}
 .pout{text-align:center;margin:18px 0 6px} .pout .btn{color:var(--accent)}
 .linkbtn{background:none;border:0;padding:6px 0 0;font:inherit;font-size:13px;color:var(--mut);text-decoration:underline;cursor:pointer}
@@ -1250,22 +1251,54 @@ async function gbNear(la,key,pos){const pk=pos[0].toFixed(2)+','+pos[1].toFixed(
 function myPos(){if(SESS&&SESS.geo){const g=ll(SESS.geo);if(g)return g;}const o=[...OBS].sort((a,b)=>(b.date+(b.time||'')).localeCompare(a.date+(a.time||''))).find(o=>o.geo&&ll(o.geo));return o?ll(o.geo):null;}
 function whereHTML(r){const la=r.la||refLatin(r);if(!la)return '';
   return '<details class="where" data-where="'+esc(la)+'"'+(WHEREOPEN===la?' open':'')+'><summary>📍 Къде да го търся</summary><div class="whb"></div></details>';}
-async function whereMap(el,key){if(!el||!await loadLeaflet()||!el.isConnected){if(el)el.remove();return;}
+// докоснато място: кръг колкото шестоъгълник при този мащаб (~6 км радиус на цяла България, ~1 км отблизо)
+const GBR=z=>Math.max(.8,Math.min(15,(360/Math.pow(2,z)/36)*Math.cos(42.7*Math.PI/180)*111.32/2)),GBP=new Map();
+const ntH=t=>'<div class="note2" style="max-width:none">'+t+'</div>';
+async function gbName(k,known){if(known[k])return known[k];const N=lsGet('bird-journal-gbnames',{})||{};if(N[k])return N[k];
+  try{const d=await gbJ(GBA+'/v1/species/'+k);if(d&&(d.species||d.canonicalName)){N[k]=d.species||d.canonicalName;lsSet('bird-journal-gbnames',N);return N[k];}}catch(e){}return '';}
+async function gbPlace(key,lat,lng,r){const id=key+'|'+lat.toFixed(3)+','+lng.toFixed(3)+'|'+r.toFixed(1);if(GBP.has(id))return GBP.get(id);
+  const g='&country=BG&hasCoordinate=true&geoDistance='+lat.toFixed(4)+','+lng.toFixed(4)+','+r.toFixed(1)+'km';
+  const [me,all,smp]=await Promise.all([gbJ(GBA+'/v1/occurrence/search?taxonKey='+key+g+'&limit=0&facet=year&facet=month&facetLimit=60'),
+    gbJ(GBA+'/v1/occurrence/search?classKey=212'+g+'&limit=0&facet=speciesKey&facetLimit=100'),gbJ(GBA+'/v1/occurrence/search?classKey=212'+g+'&limit=300')]);
+  const fc=(d,f)=>(((d.facets||[]).find(x=>String(x.field).toUpperCase().replace(/_/g,'')===f))||{}).counts||[];   // GBIF казва „SPECIES_KEY“
+  const ys=fc(me,'YEAR').map(x=>+x.name).filter(Boolean),mo=Array(12).fill(0);for(const x of fc(me,'MONTH'))if(+x.name>=1&&+x.name<=12)mo[+x.name-1]=x.count;
+  const known={},loc={};for(const o of smp.results||[]){if(o.speciesKey&&o.species)known[o.speciesKey]=o.species;const l=String(o.locality||'').trim();if(l)loc[l]=(loc[l]||0)+1;}
+  const sp=[];for(const x of fc(all,'SPECIESKEY').slice(0,100)){const la=await gbName(x.name,known);if(la)sp.push({la,n:x.count,k:+x.name});}
+  const res={n:me.count||0,y0:ys.length?Math.min(...ys):0,y1:ys.length?Math.max(...ys):0,mo,sp,loc:Object.entries(loc).sort((a,b)=>b[1]-a[1]).map(x=>x[0])[0]||''};
+  GBP.set(id,res);return res;}
+function placeHTML(P,la,key,r){const me=listFind('la',la)||{bg:la},mine=new Set();
+  for(const o of SURE()){const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en);if(c)mine.add(nrm(c.la));}
+  const MN=['януари','февруари','март','април','май','юни','юли','август','септември','октомври','ноември','декември'];
+  const top=P.mo.map((v,i)=>[v,i]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,2).map(x=>MN[x[1]]);
+  const others=P.sp.filter(x=>x.k!==+key).map(x=>{const c=listFind('la',x.la);return {...x,bg:c?c.bg:'',la2:c?c.la:x.la,en:c?c.en:'',got:c?mine.has(nrm(c.la)):false};});
+  const row=x=>'<div class="asp'+(x.got?' got':'')+'"><span class="tick">'+(x.got?'✓':'')+'</span>'+(x.bg?spLink({bg:x.bg,la:x.la2,en:x.en}):'<i class="la">'+esc(x.la)+'</i>')+
+    ' <small>'+x.n+'</small>'+(x.got||!x.bg?'':' <small class="rr">ново за теб</small>')+'</div>';
+  return '<div class="whpl"><b>'+(P.loc?esc(P.loc)+' и наоколо':'Това място')+'</b><small> · кръг ~'+(r<1.5?r.toFixed(1).replace('.',','):Math.round(r))+' км</small>'+
+    '<div class="whplme">'+(P.n?'<b>'+esc(me.bg)+'</b> тук: '+P.n+' '+(P.n===1?'находка':'находки')+(P.y0?' · '+P.y0+(P.y1!==P.y0?'–'+P.y1:''):'')+(top.length?' · най-често '+top.join(' и '):''):
+      'Тук няма находки на <b>'+esc(me.bg)+'</b>.')+'</div>'+
+    (others.length?'<h4 class="psub">Птици, намирани тук · '+others.length+' вида · '+others.filter(x=>!x.got&&x.bg).length+' нови за теб</h4><div class="allsp">'+others.slice(0,40).map(row).join('')+'</div>'+
+      (others.length>40?ntH('и още '+(others.length-40)+' вида — приближи картата за по-точно място.'):''):ntH('Тук GBIF няма други находки на птици.'))+'</div>';}
+async function whereMap(el,key,la){if(!el||!await loadLeaflet()||!el.isConnected){if(el)el.remove();return;}
   const m=L.map(el,{zoomControl:true,attributionControl:false,scrollWheelZoom:false});
   // слоят на GBIF е в свой „пласт“ над картата: прозрачен слой в общия пласт се рисува ПОД плочките на картата (и само проблясва при мащабиране)
   m.createPane('gbif');const gp=m.getPane('gbif');gp.style.zIndex=250;gp.style.pointerEvents='none';
   L.tileLayer(TILES.topo.url,{maxZoom:12}).addTo(m);
   L.tileLayer(GBA+'/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?srs=EPSG:3857&taxonKey='+key+'&country=BG&bin=hex&hexPerTile=36&style=classic.poly',{maxZoom:12,opacity:.85,pane:'gbif'}).addTo(m);
-  m.fitBounds([[41.2,22.3],[44.25,28.7]]);}
+  m.fitBounds([[41.2,22.3],[44.25,28.7]]);el._lmap=m;
+  let circ=null,busy=0;
+  m.on('click',async e=>{const r=GBR(m.getZoom()),p=e.latlng,box=el.parentElement.querySelector('.whplace'),my=++busy;if(!box)return;
+    if(circ)circ.remove();circ=L.circle(p,{radius:r*1000,color:'#c0392b',weight:2,fillOpacity:.06}).addTo(m);
+    box.innerHTML=ntH('Търся какво има тук…');
+    try{const P=await gbPlace(key,p.lat,p.lng,r);if(my===busy)box.innerHTML=placeHTML(P,la,key,r);}catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря — опитай пак.');}});}
 async function whereLoad(det){if(!det||det.dataset.done)return;det.dataset.done='1';const la=det.dataset.where,b=det.querySelector('.whb'),nt=t=>'<div class="note2" style="max-width:none">'+t+'</div>';
   if(navigator.onLine===false){b.innerHTML=nt('Нужен е интернет.');det.dataset.done='';return;}
   b.innerHTML=nt('Зареждам…');
   try{const key=await gbKey(la);if(!key){b.innerHTML=nt('Няма данни за този вид в GBIF.');return;}
     const M=await gbMonths(la,key),mx=Math.max(1,...M.months),cm=new Date().getMonth(),pos=myPos();
     b.innerHTML='<div class="whm" aria-label="находки по месеци">'+M.months.map((v,i)=>'<div class="whmb'+(i===cm?' now':'')+'" title="'+v+'"><i style="height:'+Math.round(3+57*v/mx)+'px'+(v?'':';opacity:.25')+'"></i><small>'+GBMON[i]+'</small></div>').join('')+'</div>'+
-      nt(fmtN(M.total)+' находки в България — колко по месеци; на картата: къде.')+'<div class="whmap"></div><div class="whn"></div>'+
+      nt(fmtN(M.total)+' находки в България — колко по месеци; на картата: къде.')+'<div class="whmap"></div>'+nt('Докосни място на картата — ще видиш кога е намиран там и какви други птици има. Приближи за по-точно място.')+'<div class="whplace"></div><div class="whn"></div>'+
       '<div class="whsrc">Данни: <a href="https://www.gbif.org/occurrence/map?taxon_key='+key+'&country=BG" target="_blank" rel="noopener">GBIF.org</a> — eBird, iNaturalist, БДЗП и др. Редките и защитените видове са с приблизително място.</div>';
-    whereMap(b.querySelector('.whmap'),key);
+    whereMap(b.querySelector('.whmap'),key,la);
     const nb=b.querySelector('.whn');
     if(!pos){nb.innerHTML=nt('Запиши птица с GPS — тогава тук ще са най-близките места до теб.');return;}
     nb.innerHTML=nt('Търся най-близките места…');
@@ -3707,7 +3740,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-07.6';
+const VER='2026-11-07.7';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
