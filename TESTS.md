@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-877 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+887 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -82,9 +82,10 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_pushdeno.py | 9 | the push helper end to end in Deno (Supabase's runtime), the real file unmodified, against a stand-in Supabase REST API and push service: keys made once with the service key, a suggestion to the right phones, a dead phone removed, the author's own phone quiet, decrypted by the independent library, a valid VAPID signature, the first look at a journal only remembers, a new question to a follower, the test message, a bad call refused |
 | test_rows.py | 6 | the profile's checkbox rows (notification kinds, „Тих режим“) at 320 and 390 px: the boxes in one straight column, all 20×20, each level with its first line, the texts in one column, long texts wrap inside the card, the page doesn't widen |
 | test_cos.py | 11 | the 3 Nov cosmetic round: Дневник remembers folding in every filter (open at first, kept after switching and reopening, each filter its own, a new record opens its day everywhere), smaller map style buttons, the profile's header card, initials avatars, adding a friend inside the friends' card, folded how-to, sign-out last, no overflow |
-| test_pw.py | 10 | forgotten password: „Забравена парола?“ asks for the e-mail first, then has Supabase send the recovery letter back to Перá; the link opens „Нова парола“ on top of the profile (even signed out on that phone); length and matching checks; saving; „Смени паролата“ folded above „Изход“ |
+| test_pw.py | 11 | forgotten password: „Забравена парола?“ asks for the e-mail first, then has Supabase send the recovery letter back to Перá; the link opens „Нова парола“ on top of the profile (even signed out on that phone); length and matching checks; saving; „Смени паролата“ folded above „Изход“ |
 | test_voice.py | 26 | voice recording: the parser (either order, no punctuation, plurals and counted forms, numbers in words, „около/поне“, everyday and plain-noun names, ambiguous or unknown words kept, never guessed), the 🎙 panel saving drafts at once with time, place, outing and position, drafts not counting, review in Дневник (banner, tags, ✓, editing a draft), live Bulgarian dictation with vibration and auto-restart, voice notes kept on the phone, the iPhone home-screen case |
 | test_ios.py | 8 | iPhone (from the Home Screen): the first open's welcome → „Запиши първата“ leaves the form usable, no field focused by code (it can stay without a keyboard on iPhone), the voice panel explains the keyboard's language, „J“ → jay; Android still focuses the name field |
+| test_where.py | 9 | „📍 Къде да го търся“ from GBIF: folded, nothing fetched until opened; 12 month bars from GBIF's counts for Bulgaria; the nearest places to your latest GPS record, grouped, with last date and source; heat-map tiles for the species and country; the source linked; kept a week; unknown species; the button in Цели |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

@@ -23,9 +23,9 @@ try:
   pg.fill('#tg-in','Черен щъркел');pg.click('#tg-add');pg.wait_for_timeout(200)
   card=lambda:pg.evaluate("[...document.querySelectorAll('.tgc')].map(c=>{const k=c.cloneNode(true);k.querySelectorAll('.idl').forEach(x=>x.remove());document.body.appendChild(k);const s=k.innerText.replace(/\\n+/g,' | ');k.remove();return s;})")   # the identification links are checked in test_idlinks
   check('G3 a species from the list: its names filled in, Петър\'s last sighting with distance, and that he is after it too', card(),
-    ['Черен щъркел | Ciconia nigra · Black stork | × | Последно: Петър, преди 3 дни, Копринка, 12 км | И Петър го търси.'])
+    ['Черен щъркел | Ciconia nigra · Black stork📍 Къде да го търся | × | Последно: Петър, преди 3 дни, Копринка, 12 км | И Петър го търси.'])
   pg.fill('#tg-in','Тестова птица');pg.click('#tg-add');pg.wait_for_timeout(200)
-  check('G4 a species a friend added to the group\'s list is found too', card()[0].split(' | ')[:2], ['Тестова птица','Avis testa · Test Bird'])   # (the flamingo is in the official list since 2026-11-02.13)
+  check('G4 a species a friend added to the group\'s list is found too', card()[0].split(' | ')[:2], ['Тестова птица','Avis testa · Test Bird📍 Къде да го търся'])   # (the flamingo is in the official list since 2026-11-02.13)
   pg.fill('#tg-in','Императорски пингвин');pg.click('#tg-add');pg.wait_for_timeout(150)
   check('G5 a name not in any list asks for all three names', (pg.is_visible('#tg-new'),pg.input_value('#tgx-bg')), (True,'Императорски пингвин'))
   pg.fill('#tgx-la','aptenodytes');pg.click('#tgx-ok');pg.wait_for_timeout(100)

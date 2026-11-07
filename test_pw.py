@@ -20,6 +20,10 @@ try:
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400);pg.evaluate(FAKE)
   pg.click('#acct');pg.wait_for_timeout(300)
   check('W1 the sign-in form offers „Забравена парола?“', pg.locator('[data-sb="forgot"]').inner_text(), 'Забравена парола?')
+  pg.fill('#sb-mail','ivan@example.bg');pg.click('[data-sb="forgot"]');pg.wait_for_timeout(200)
+  check('W1b without an e-mail sender of our own (Supabase only mails the project team): it says to write to Иван for a temporary password, and sends nothing',
+    (pg.inner_text('.fr .msg').startswith('Пиши на Иван'),[c for c in pg.evaluate("CALLS") if c[0]=='reset']), (True,[]))
+  pg.fill('#sb-mail','');pg.evaluate("SMTP_ON=true;sbMsg='';render()");pg.wait_for_timeout(150)   # the e-mail path, as it will work once there's a sender
   pg.click('[data-sb="forgot"]');pg.wait_for_timeout(200)
   check('W2 without an e-mail it asks for one, and sends nothing', ('Впиши имейла си' in pg.inner_text('.fr .msg'),[c for c in pg.evaluate("CALLS") if c[0]=='reset']), (True,[]))
   pg.fill('#sb-mail','ivan@example.bg');pg.click('[data-sb="forgot"]');pg.wait_for_timeout(300)

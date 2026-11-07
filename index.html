@@ -369,6 +369,12 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .rvbar,.vmemos{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:9px 12px;margin:0 0 10px;font-size:14px}
 .rvbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px} .rvbar .btn{margin-left:auto}
 .vmemos small{color:var(--mut)} .vmrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 0;border-top:1px solid var(--line);margin-top:6px} .vmrow span{flex:1;min-width:120px}
+.where{margin:12px 0 4px;border:1px solid var(--line);border-radius:14px;padding:8px 12px;background:var(--card)} .where summary{cursor:pointer;font-weight:600}
+.whm{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;align-items:end;height:84px;margin:10px 0 4px}
+.whmb{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.whmb i{display:block;width:100%;background:var(--s);border-radius:3px 3px 0 0} .whmb small{font-size:10.5px;color:var(--mut);margin-top:2px} .whmb.now small{color:var(--ink);font-weight:700}
+.whmap{height:220px;border-radius:12px;overflow:hidden;margin:8px 0;background:var(--bg2)} .whsrc{font-size:11.5px;color:var(--mut);margin-top:8px} .whsrc a{color:inherit}
+.tgwhere{display:inline-block;background:none;border:1px solid var(--line2);border-radius:999px;padding:2px 10px;font:inherit;font-size:12.5px;color:var(--s);cursor:pointer;margin-top:5px}
 .pout{text-align:center;margin:18px 0 6px} .pout .btn{color:var(--accent)}
 .linkbtn{background:none;border:0;padding:6px 0 0;font:inherit;font-size:13px;color:var(--mut);text-decoration:underline;cursor:pointer}
 .pwf input{display:block;width:100%;margin:8px 0 0} .pwchg summary{cursor:pointer;font-weight:600;padding:4px 0} .pwrec{border-color:var(--s);box-shadow:0 0 0 2px var(--sb)} .acchd h2{font-family:Fraunces,Georgia,serif;font-size:20px;margin:0;font-weight:500}
@@ -1219,6 +1225,56 @@ function spOpen(ref){spBack={v:view,f:fsel,y:window.scrollY};
   if(m){spSel=key(m);spInfo=null;}else{spSel='~';spInfo=ref;}
   view='life';fsel=null;for(const x of document.querySelectorAll('.tab'))x.setAttribute('aria-selected',x.dataset.v==='life');render();
   window.scrollTo({top:document.getElementById('view').offsetTop-90});}
+// ---- „Къде да го търся“ (2026-11-07): данни от GBIF — световната база за находки (в т.ч. eBird, iNaturalist, БДЗП), без ключ.
+// Зарежда се само при отваряне и се пази 7 дни на телефона. Редките и защитените видове там са с приблизително място.
+const GBA='https://api.gbif.org',KGB='bird-journal-gbif',GBDAY=7*864e5,GBMON=['Я','Ф','М','А','М','Ю','Ю','А','С','О','Н','Д'];
+let GBC=lsGet(KGB,{})||{},WHEREOPEN='';
+const gbPut=(la,o)=>{GBC[la]={...(GBC[la]||{}),...o};try{lsSet(KGB,GBC);}catch(e){}};
+async function gbJ(u){const r=await fetch(u);if(!r.ok)throw new Error('GBIF '+r.status);return r.json();}
+async function gbKey(la){const c=GBC[la];if(c&&'key' in c)return c.key;
+  const d=await gbJ(GBA+'/v1/species/match?class=Aves&name='+encodeURIComponent(la));
+  const k=d&&d.matchType&&d.matchType!=='NONE'?(d.acceptedUsageKey||d.usageKey||null):null;gbPut(la,{key:k});return k;}
+async function gbMonths(la,key){const c=GBC[la];if(c&&c.months&&Date.now()-(c.mt||0)<GBDAY)return c;
+  const d=await gbJ(GBA+'/v1/occurrence/search?taxonKey='+key+'&country=BG&limit=0&facet=month&facetLimit=12');
+  const m=Array(12).fill(0);for(const f of (((d.facets||[])[0]||{}).counts||[]))if(+f.name>=1&&+f.name<=12)m[+f.name-1]=f.count;
+  gbPut(la,{months:m,total:d.count||0,mt:Date.now()});return GBC[la];}
+async function gbNear(la,key,pos){const pk=pos[0].toFixed(2)+','+pos[1].toFixed(2),c=GBC[la];if(c&&c.near&&c.npk===pk&&Date.now()-(c.nt||0)<GBDAY)return c.near;
+  const d=await gbJ(GBA+'/v1/occurrence/search?taxonKey='+key+'&country=BG&hasCoordinate=true&hasGeospatialIssue=false&year=2010,'+new Date().getFullYear()+
+    '&geoDistance='+pos[0].toFixed(3)+','+pos[1].toFixed(3)+',60km&limit=300');
+  const G={};for(const o of d.results||[]){const a=o.decimalLatitude,b=o.decimalLongitude;if(a==null||b==null)continue;
+    const nm=String(o.locality||o.verbatimLocality||'').trim(),k=nm?'n:'+nm.toLowerCase():'g:'+(+a).toFixed(2)+','+(+b).toFixed(2);
+    const g=G[k]||(G[k]={name:nm,la:+a,lo:+b,n:0,last:'',src:new Set()});g.n++;const dt=String(o.eventDate||'').slice(0,10);if(dt>g.last)g.last=dt;
+    const ds=String(o.datasetName||'');g.src.add(/ebird/i.test(ds)||o.institutionCode==='CLO'?'eBird':/inaturalist/i.test(ds)?'iNaturalist':String(o.institutionCode||ds||'GBIF').slice(0,24));}
+  const N=Object.values(G).map(g=>({...g,src:[...g.src].join(', '),d:distM(pos[0],pos[1],g.la,g.lo)})).sort((x,y)=>x.d-y.d).slice(0,6);
+  gbPut(la,{near:N,npk:pk,nt:Date.now()});return N;}
+function myPos(){if(SESS&&SESS.geo){const g=ll(SESS.geo);if(g)return g;}const o=[...OBS].sort((a,b)=>(b.date+(b.time||'')).localeCompare(a.date+(a.time||''))).find(o=>o.geo&&ll(o.geo));return o?ll(o.geo):null;}
+function whereHTML(r){const la=r.la||refLatin(r);if(!la)return '';
+  return '<details class="where" data-where="'+esc(la)+'"'+(WHEREOPEN===la?' open':'')+'><summary>📍 Къде да го търся</summary><div class="whb"></div></details>';}
+async function whereMap(el,key){if(!el||!await loadLeaflet()||!el.isConnected){if(el)el.remove();return;}
+  const m=L.map(el,{zoomControl:true,attributionControl:false,scrollWheelZoom:false});
+  L.tileLayer(TILES.topo.url,{maxZoom:12}).addTo(m);
+  L.tileLayer(GBA+'/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?srs=EPSG:3857&taxonKey='+key+'&country=BG&bin=hex&hexPerTile=36&style=classic.poly',{maxZoom:12,opacity:.85}).addTo(m);
+  m.fitBounds([[41.2,22.3],[44.25,28.7]]);}
+async function whereLoad(det){if(!det||det.dataset.done)return;det.dataset.done='1';const la=det.dataset.where,b=det.querySelector('.whb'),nt=t=>'<div class="note2" style="max-width:none">'+t+'</div>';
+  if(navigator.onLine===false){b.innerHTML=nt('Нужен е интернет.');det.dataset.done='';return;}
+  b.innerHTML=nt('Зареждам…');
+  try{const key=await gbKey(la);if(!key){b.innerHTML=nt('Няма данни за този вид в GBIF.');return;}
+    const M=await gbMonths(la,key),mx=Math.max(1,...M.months),cm=new Date().getMonth(),pos=myPos();
+    b.innerHTML='<div class="whm" aria-label="находки по месеци">'+M.months.map((v,i)=>'<div class="whmb'+(i===cm?' now':'')+'" title="'+v+'"><i style="height:'+Math.round(3+57*v/mx)+'px'+(v?'':';opacity:.25')+'"></i><small>'+GBMON[i]+'</small></div>').join('')+'</div>'+
+      nt(fmtN(M.total)+' находки в България — колко по месеци; на картата: къде.')+'<div class="whmap"></div><div class="whn"></div>'+
+      '<div class="whsrc">Данни: <a href="https://www.gbif.org/occurrence/map?taxon_key='+key+'&country=BG" target="_blank" rel="noopener">GBIF.org</a> — eBird, iNaturalist, БДЗП и др. Редките и защитените видове са с приблизително място.</div>';
+    whereMap(b.querySelector('.whmap'),key);
+    const nb=b.querySelector('.whn');
+    if(!pos){nb.innerHTML=nt('Запиши птица с GPS — тогава тук ще са най-близките места до теб.');return;}
+    nb.innerHTML=nt('Търся най-близките места…');
+    const N=await gbNear(la,key,pos);
+    nb.innerHTML='<h4 class="psub">Най-близо до теб (до 60 км)</h4>'+(N.length?N.map(g=>'<div class="row"><span>'+esc(g.name||g.la.toFixed(3)+', '+g.lo.toFixed(3))+
+      '<small> · '+fmtM(g.d)+(g.last?' · последно '+esc(human(g.last)):'')+'</small></span><span>'+g.n+'× · '+esc(g.src)+'</span></div>').join(''):nt('Няма находки до 60 км.'));
+  }catch(e){det.dataset.done='';b.innerHTML=nt('GBIF не отговаря — опитай пак по-късно.');}}
+document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.matches&&d.matches('details.where')&&d.open)whereLoad(d);},true);   // toggle не се разпространява — затова capture
+document.addEventListener('click',e=>{const tw=e.target.closest('[data-tgwhere]');if(!tw)return;
+  WHEREOPEN=tw.dataset.tgwhere;spOpen({bg:tw.dataset.bg,la:tw.dataset.tgwhere,en:tw.dataset.en});
+  setTimeout(()=>{const d=document.querySelector('details.where[open]');if(d){whereLoad(d);d.scrollIntoView({block:'start'});}WHEREOPEN='';},60);});
 function renderUnseen(el,o){const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en)||{},
     r={bg:c.bg||o.bg,la:c.la||o.la,en:c.en||o.en,fam:c.fam||o.fam||''},la=refLatin(r);
   renderLifeRefs();
@@ -1227,7 +1283,7 @@ function renderUnseen(el,o){const c=listFind('la',o.la)||listFind('bg',o.bg)||li
     '<div class="sphd"><div class="thw"><div class="th none" style="width:60px;height:60px">'+silFor(r.fam)+'</div></div><div class="big" style="min-width:0">'+esc(r.bg||r.en||r.la)+'</div></div>'+
     (la?'<div class="xcw" data-xc="'+esc(la)+'"></div>':'')+
     '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':'',r.fam?esc(r.fam):''].filter(Boolean).join(' · ')+'</div>'+
-    '<div class="note2" style="max-width:none;margin-top:10px">Още нямаш сигурни записи на този вид.</div>'+idLinks(r,'big spbot')+'</div>';}
+    '<div class="note2" style="max-width:none;margin-top:10px">Още нямаш сигурни записи на този вид.</div>'+whereHTML(r)+idLinks(r,'big spbot')+'</div>';}
 function recHTML(o,F){
     return '<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
       // името и бройката заемат свободното място и се пренасят; „промени“ и „×“ стоят вдясно и не се застъпват с тях
@@ -1342,7 +1398,7 @@ function renderSpecies(el,k){
     (morn.length>=2?'<h4>Спрямо изгрева</h4><div class="sunl">Сутрин обикновено го срещаш <b>'+(Math.round(med(morn))>=0?dur(Math.round(med(morn)))+' след':dur(-Math.round(med(morn)))+' преди')+' изгрева</b>.</div>':'')+
     '<h4>Места</h4>'+Object.entries(P).sort((a,b)=>b[1]-a[1]).map(([p,n])=>'<div class="row"><span>'+esc(p)+'</span><span>'+n+'×</span></div>').join('')+
     (rs.some(o=>o.photo)?'<h4>Снимки</h4><div class="thstrip">'+rs.filter(o=>o.photo).reverse().map(o=>'<div class="th" data-th="'+o.photo+'"></div>').join('')+'</div>':'')+
-    idLinks(r,'big spbot')+'<div class="fbtns"><button type="button" class="btn" data-spcard>Картичка за споделяне</button></div></div>';
+    whereHTML(r)+idLinks(r,'big spbot')+'<div class="fbtns"><button type="button" class="btn" data-spcard>Картичка за споделяне</button></div></div>';
   h+=rs.slice().reverse().map(o=>'<div class="srow"><div>'+human(o.date)+(o.time?' · '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+
     (o.note?'<div class="meta">'+esc(o.note)+'</div>':'')+'</div><div class="tags">'+(o.h?'<span class="tag h">чух</span>':'')+
     (o.s?'<span class="tag s">видях</span>':'')+(o.p?'<span class="tag p">снимах</span>':'')+'</div></div>').join('');
@@ -2439,7 +2495,8 @@ function renderGoals(el){tgSeed();
         nw=tgVisit.has(t.k);
       const rl=refLatin(t);
       return '<div class="tgc'+(mine.length?' done':'')+(nw?' new':'')+'"><div class="tgh">'+(rl?'<div class="refsm" data-ref="'+esc(rl)+'"></div>':'')+'<div class="tgn"><b>'+spLink(t)+(nw?'<span class="newtag">ново</span>':'')+'</b>'+
-          '<small>'+[t.la,t.en].filter(Boolean).map(esc).join(' · ')+'</small>'+idLinks(t)+'</div><button type="button" class="tgx-del" data-tgdel="'+esc(t.k)+'" aria-label="махни целта">×</button></div>'+
+          '<small>'+[t.la,t.en].filter(Boolean).map(esc).join(' · ')+'</small>'+idLinks(t)+
+          (t.la?'<button type="button" class="tgwhere" data-tgwhere="'+esc(t.la)+'" data-bg="'+esc(t.bg||'')+'" data-en="'+esc(t.en||'')+'">📍 Къде да го търся</button>':'')+'</div><button type="button" class="tgx-del" data-tgdel="'+esc(t.k)+'" aria-label="махни целта">×</button></div>'+
         (mine.length?'<div class="tgs ok">✓ видян на '+human(mine[0].date)+'</div>':'')+
         (b?'<div class="tgs">Последно: '+esc(b.f.name)+', '+relDay(b.o.date)+(b.o.place?', '+esc(b.o.place):'')+(b.km!=null?', '+(b.km<10?b.km.toFixed(1).replace('.',','):Math.round(b.km))+' км':'')+'</div>':
           (mine.length?'':'<div class="tgs mut">Никой от приятелите ти още не го е записал.</div>'))+
@@ -3648,7 +3705,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-07.4';
+const VER='2026-11-07.5';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -3969,7 +4026,9 @@ let prevView='log';
 const initials=n=>{const w=String(n||'?').trim().split(/\s+/).filter(Boolean);return ((w[0]||'?').charAt(0)+(w.length>1?w[w.length-1].charAt(0):'')).toUpperCase();};
 const pav=n=>'<span class="pav" style="--fh:'+nameHue(n||'?')+'">'+esc(initials(n))+'</span>';
 // паролата: нова след линка за възстановяване (PWREC) или смяна от профила
-let PWREC=false,pwMsg='';const RECLINK=/(^|[#&?])type=recovery(&|$)/.test(location.hash+'&'+location.search);
+let PWREC=false,pwMsg='';
+// без собствен изпращач на имейли Supabase праща само до екипа на проекта — затова засега: „пиши на Иван“
+let SMTP_ON=false;const PWHELP='Пиши на Иван — той ще ти даде временна парола, после я смениш в профила (Профил → Парола).';const RECLINK=/(^|[#&?])type=recovery(&|$)/.test(location.hash+'&'+location.search);
 const pwForm=()=>'<div class="pwf"><input id="pw-new" type="password" autocomplete="new-password" placeholder="нова парола (поне 6 знака)">'+
   '<input id="pw-new2" type="password" autocomplete="new-password" placeholder="още веднъж"><div class="fbtns"><button type="button" class="btn pri" data-sb="pwset">Запази паролата</button></div>'+
   (pwMsg?'<div class="msg">'+esc(pwMsg)+'</div>':'')+'</div>';
@@ -4107,6 +4166,7 @@ document.addEventListener('click',async e=>{
         if(!data.session){sbMsg='Готово. Отвори писмото от Supabase, потвърди адреса и после натисни „Вход“.';return render();}ME=data.user;}
       else{const {data,error}=await sb.auth.signInWithPassword({email:mail,password:pw});if(error)throw error;ME=data.user;}
       sbStat='';sbForm.pw='';render();await afterSignIn();return render();}
+    if(act==='forgot'&&!SMTP_ON){sbMsg=PWHELP;return render();}
     if(act==='forgot'){const mail=v('sb-mail').trim();sbForm.mail=mail;
       if(!mail){sbMsg='Впиши имейла си горе и натисни отново „Забравена парола?“.';return render();}
       a.disabled=true;const sb=await sbClient();const {error}=await sb.auth.resetPasswordForEmail(mail,{redirectTo:SB_SITE});if(error)throw error;
