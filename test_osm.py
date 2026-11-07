@@ -26,15 +26,24 @@ def osm(route):
   u=route.request.url;host=u.split('/')[2]
   body=urllib.parse.unquote_plus(route.request.post_data or (u.split('data=',1)[1] if 'data=' in u else ''));OSMQ.append((host,body))
   if host in REFUSE or 'all' in REFUSE: return route.fulfill(status=429,body='Too Many Requests')
-  if 'out tags bb' in body:   # step 1: only names and frames
-    els=[] if EMPTY[0] else [{'type':'relation','id':11,'tags':{'name':'Копринка','boundary':'protected_area'},'bounds':{'minlat':42.58,'minlon':25.34,'maxlat':42.66,'maxlon':25.46}},
-                             {'type':'way','id':22,'tags':{'name':'Язовир Копринка','natural':'water','water':'reservoir'},'bounds':{'minlat':42.59,'minlon':25.36,'maxlat':42.65,'maxlon':25.44}}]
+  if 'is_in(' in body and 'area.a' in body:   # step 1 (light): only the names of the areas containing the point
+    els=[] if EMPTY[0] else [{'type':'area','id':3600000011,'tags':{'name':'Копринка','boundary':'protected_area'}},
+                             {'type':'area','id':2400000022,'tags':{'name':'Язовир Копринка','natural':'water','water':'reservoir'}}]
   elif 'way(22)' in body: els=[OSM['elements'][1]]
   elif 'rel(11)' in body: els=[OSM['elements'][0]]
   else: els=[]
   route.fulfill(body=json.dumps({'elements':els}),content_type='application/json')
-def nominatim(route):   # Nominatim: the natural feature here, with its outline
+BIG=[False]
+def nominatim(route):   # Nominatim: the natural feature here (reverse), or a place's ready outline (lookup)
   NOMQ.append(route.request.url)
+  if '/lookup' in route.request.url:
+    if NOM[0]=='fail': return route.fulfill(status=503,body='busy')
+    u=route.request.url
+    if 'osm_ids=R11' in u:
+      ring=[[25.0,41.5],[26.5,41.5],[26.5,43.0],[25.0,43.0],[25.0,41.5]] if BIG[0] else [[b,a] for a,b in A+B[1:]]
+    elif 'osm_ids=W22' in u: ring=[[r['lon'],r['lat']] for r in res]
+    else: return route.fulfill(body='[]',content_type='application/json')
+    return route.fulfill(body=json.dumps([{'geojson':{'type':'Polygon','coordinates':[ring]}}]),content_type='application/json')
   if NOM[0]=='fail': return route.fulfill(status=503,body='busy')
   if NOM[0]=='none': return route.fulfill(body=json.dumps({'error':'Unable to geocode'}),content_type='application/json')
   if NOM[0]=='pen':   # what Nominatim really answered outside the lake: the Balkan Peninsula, which does contain the tap
@@ -80,7 +89,8 @@ try:
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400);pg.click('.tab[data-v="map"]');pg.click('[data-mm="gbif"]');pg.wait_for_timeout(1200)
   check('O1 three ways to tap: ● точка, ▦ квадрат and 🏞 място', pg.evaluate("[...document.querySelectorAll('[data-exm]')].map(b=>b.textContent)"), ['● точка','▦ квадрат','🏞 място'])
   pg.click('[data-exm="pl"]');pg.wait_for_timeout(1200);n0=len(CALLS);tap(pg);pg.wait_for_timeout(2400)
-  check('O2 the tap asks Nominatim first (the natural feature here, with its outline), then Overpass only for the names of other areas', (len(NOMQ)>0 and 'layer=natural' in NOMQ[0] and 'polygon_geojson=1' in NOMQ[0],any('out tags bb' in b for h,b in OSMQ)), (True,True))
+  ov=[b for h,b in OSMQ if 'is_in(' in b]
+  check('O2 Nominatim first (the natural feature here); Overpass only for the NAMES of the areas around — a light question, no outlines or frames', (len(NOMQ)>0 and 'layer=natural' in NOMQ[0],bool(ov) and 'area.a' in ov[0] and 'out tags;' in ov[0] and ' bb' not in ov[0] and 'geom' not in ov[0]), (True,True))
   check('O3 the lake (from Nominatim) and the protected area (from Overpass) are both offered, smallest first — the reservoir not duplicated, and chosen', pg.evaluate("[...document.querySelectorAll('[data-exarea]')].map(b=>[b.textContent,b.getAttribute('aria-pressed')])"), [['Язовир Копринка язовир','true'],['Копринка защитена територия','false']])
   check('O4 the place is outlined on the map, and named in the panel', (pg.locator('#exmap path.leaflet-interactive').count(),pg.inner_text('#explace .whpl b')), (1,'Язовир Копринка · язовир'))
   q=[u for u in CALLS[n0:] if 'geometry=POLYGON' in u];P=poly(q[0]) if q else []
@@ -88,7 +98,7 @@ try:
   check('O6 ...widened for the shore: every point of the reservoir’s edge lies inside what was sent, and it never crosses itself', (all(inside((r['lon'],r['lat']),P) for r in res[:-1]),selfcross(P)), (True,False))
   pg.click('[data-exarea="1"]');pg.wait_for_timeout(1200)
   q2=[u for u in CALLS if 'geometry=POLYGON' in u][-1];P2=poly(q2)
-  check('O7 choosing the protected area: its two pieces joined into one outline (+300 m), sent and named', (P2[0]==P2[-1],len(P2),pg.inner_text('#explace .whpl b')), (True,5,'Копринка · защитена територия'))
+  check('O7 choosing the protected area: its outline comes from Nominatim (ready and simplified), +300 m, sent and named', (any('/lookup' in u and 'osm_ids=R11' in u for u in NOMQ),P2[0]==P2[-1],len(P2),pg.inner_text('#explace .whpl b')), (True,True,5,'Копринка · защитена територия'))
   sh=pg.evaluate("""(()=>{const c=[];for(let i=0;i<=40;i++){const a=Math.PI*(0.15+1.7*i/40);c.push([42.62+0.02*Math.sin(a),25.40+0.03*Math.cos(a)]);}
     for(let i=40;i>=0;i--){const a=Math.PI*(0.15+1.7*i/40);c.push([42.62+0.018*Math.sin(a),25.40+0.027*Math.cos(a)]);}c.push(c[0]);return gbShape(c,300).map(x=>[x[1],x[0]]);})()""")
   check('O8 a C-shaped lake with a narrow gap: widening would cross itself — the outline falls back to a safe one', selfcross([tuple(x) for x in sh]), False)
@@ -102,9 +112,14 @@ try:
   check('O14 Nominatim\'s „Балкански полуостров“ (it does contain the spot) is not a place — the reservoir and the reserve from Overpass are offered instead', (pg.evaluate("[...document.querySelectorAll('[data-exarea]')].map(b=>b.textContent)"),'полуостров' in pg.inner_text('#explace')), (['Язовир Копринка язовир','Копринка защитена територия'],False))
   NOM[0]='res';EMPTY[0]=False;REFUSE.add('all');pg.evaluate("OSMC.clear()");tap(pg);pg.wait_for_timeout(2500)
   check('O13 even with every Overpass server refusing, Nominatim alone still gives the lake', (pg.inner_text('#explace .whpl b'),'не отговаря' in pg.inner_text('#explace')), ('Язовир Копринка · язовир',False))
+  NOM[0]='none';pg.evaluate("OSMC.clear()");tap(pg,.53,.53);pg.wait_for_timeout(2500)
+  check('O15 Nominatim fine but every Overpass server failing: it says honestly what it could and couldn\'t check', 'Тук няма езеро или язовир; резерватите и парковете не можах да проверя' in pg.inner_text('#explace'), True)
   NOM[0]='fail';pg.evaluate("OSMC.clear()");tap(pg,.52,.52);pg.wait_for_timeout(2500)
-  log=pg.evaluate("[...errSeen].find(k=>k.startsWith('OpenStreetMap не отговаря — '))||''")
+  log=pg.evaluate("[...errSeen].find(k=>k.startsWith('OpenStreetMap не отговаря — ')&&k.includes('nominatim: 503'))||''")
   check('O11 if everything fails, it says so — and the log tells what EACH source answered and how long it took', ('OpenStreetMap не отговаря' in pg.inner_text('#explace'),'nominatim: 503' in log,'overpass-api.de: 429' in log,'overpass.kumi.systems: 429' in log,'overpass.private.coffee: 429' in log,' с' in log), (True,True,True,True,True,True))
+  NOM[0]='none';REFUSE.clear();BIG[0]=True;pg.evaluate("OSMC.clear()");tap(pg,.54,.54);pg.wait_for_timeout(2500)
+  pg.click('[data-exarea="1"]');pg.wait_for_timeout(2000)
+  check('O16 a place bigger than 3000 km² is refused once its outline is known — choose another or use the square', 'е твърде голямо място' in pg.inner_text('#explace'), True)
   check('O10 no page errors', errs, [])
   b.close()
 finally: srv.terminate()
