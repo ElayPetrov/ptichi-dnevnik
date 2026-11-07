@@ -15,4 +15,5 @@ mkdir -p sb && cd sb
 [ -x postgrest ] || { curl -sSL -o pg.tar.xz https://github.com/PostgREST/postgrest/releases/download/v12.2.12/postgrest-v12.2.12-linux-static-x86-64.tar.xz && tar xJf pg.tar.xz; }
 [ -f package/dist/umd/supabase.js ] || { npm pack @supabase/supabase-js@2.117.3 >/dev/null 2>&1 && tar xzf supabase-supabase-js-2.117.3.tgz; }
 [ -f leaflet/leaflet.js ] || { mkdir -p leaflet && cd leaflet && npm pack leaflet@1.9.4 >/dev/null 2>&1 && tar xzf leaflet-1.9.4.tgz && cp package/dist/leaflet.js . && cd ..; }   # the map tests serve this in place of cdnjs
+[ -f silence.wav ] || python3 -c "import wave;w=wave.open('silence.wav','wb');w.setnchannels(1);w.setsampwidth(2);w.setframerate(8000);w.writeframes(b'\\x00\\x00'*8000);w.close()"   # test_sounds plays this in place of xeno-canto
 echo "ready: run bash run_all.sh"

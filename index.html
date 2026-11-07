@@ -359,6 +359,15 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .psub{font-family:Inter,system-ui,sans-serif;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:14px 0 2px;font-weight:600}
 .btn.sm{padding:4px 10px;font-size:12.5px} .pyear{width:100%} .pcard .fbtns{flex-wrap:wrap} .pcard .fbtns .btn{white-space:nowrap}
 .phow summary{cursor:pointer;font-weight:600;padding:4px 0;list-style:revert} .phow .howto{margin-top:6px}
+.vcbtn{font-size:18px;padding-left:12px;padding-right:12px}
+.vcmic{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:84px;border-radius:18px;border:2px solid var(--s);background:var(--card);font:inherit;font-size:17px;cursor:pointer;margin:6px 0}
+.vcmic .vcdot{width:18px;height:18px;border-radius:50%;background:var(--s)} .vcmic.on{background:var(--s);color:#fff} .vcmic.on .vcdot{background:#fff;animation:vcp 1s infinite}
+@keyframes vcp{50%{opacity:.25}} .vclive{min-height:1.3em;color:var(--mut);font-style:italic;margin:0 0 6px} #vc-memo.on{border-color:#c0392b;color:#c0392b}
+.vcrow{padding:6px 0;border-top:1px solid var(--line)} .vcrow small{display:block;color:var(--mut)} .vcrow.unk b{color:#b5651d}
+.rvtag{font-size:12.5px;color:#b5651d;margin:0 0 2px} .rvok{background:none;border:1px solid var(--line2);border-radius:999px;padding:1px 9px;font:inherit;font-size:12px;color:var(--s);cursor:pointer;margin-left:6px}
+.rvbar,.vmemos{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:9px 12px;margin:0 0 10px;font-size:14px}
+.rvbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px} .rvbar .btn{margin-left:auto}
+.vmemos small{color:var(--mut)} .vmrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 0;border-top:1px solid var(--line);margin-top:6px} .vmrow span{flex:1;min-width:120px}
 .pout{text-align:center;margin:18px 0 6px} .pout .btn{color:var(--accent)}
 .linkbtn{background:none;border:0;padding:6px 0 0;font:inherit;font-size:13px;color:var(--mut);text-decoration:underline;cursor:pointer}
 .pwf input{display:block;width:100%;margin:8px 0 0} .pwchg summary{cursor:pointer;font-weight:600;padding:4px 0} .pwrec{border-color:var(--s);box-shadow:0 0 0 2px var(--sb)} .acchd h2{font-family:Fraunces,Georgia,serif;font-size:20px;margin:0;font-weight:500}
@@ -747,7 +756,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   </div>
   <div class="addrow">
     <button class="add" id="toggle">+ Ново наблюдение</button>
-    <button class="add sec" id="sessStart">Излет</button>
+    <button class="add sec" id="sessStart">Излет</button> <button class="add sec vcbtn" id="vcOpen" aria-label="Запис с глас" title="Запис с глас">🎙</button>
 <button class="add sec ckbtn" id="ckOpen" aria-label="Списък" title="Списък"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:22px;height:22px;display:block"><path d="M9 6.5h11M9 12h11M9 17.5h11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M3.6 6.4l1.3 1.3 2.3-2.5M3.6 11.9l1.3 1.3 2.3-2.5M3.6 17.4l1.3 1.3 2.3-2.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </div>
 </div>
@@ -884,12 +893,20 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <div id="nn-list"></div><div class="msg" id="nn-msg"></div></div>
   <div class="pickfoot"><span style="flex:1"></span><button type="button" class="btn" id="nn-later">По-късно</button><button type="button" class="btn pri" id="nn-save">Запази</button></div>
 </dialog>
-<dialog id="idDlg" class="sheet"><div class="dlg"><h3 id="id-t">Какво е това?</h3>
+<dialog id="vcDlg" class="pickdlg outdlg" aria-label="Запис с глас"><div class="pickhead">🎙 Запис с глас</div><div class="odb vcdlg">
+  <div id="vc-livebox"><button type="button" class="vcmic" id="vc-mic"><span class="vcdot"></span><b id="vc-mict">Натисни и говори</b></button><div class="vclive" id="vc-live"></div></div>
+  <div class="note2" id="vc-hint" style="max-width:none"></div>
+  <div class="fg"><label for="vc-text">или напиши / диктувай с микрофона на клавиатурата</label><textarea id="vc-text" rows="2" placeholder="напр. сойка две, кос три, чух авлига"></textarea></div>
+  <div class="fbtns"><button type="button" class="btn pri" id="vc-add">Добави</button><button type="button" class="btn" id="vc-memo">● Гласова бележка</button></div>
+  <div class="msg" id="vc-msg"></div><div id="vc-list"></div>
+  <div class="note2" style="max-width:none">Записите се пазят веднага — с часа, мястото и излета — като „за преглед“: не се броят, докато не ги потвърдиш в Дневника.</div>
+  <div class="fbtns"><button type="button" class="btn" id="vc-done">Готово</button></div></div></dialog>
+<dialog id="idDlg" class="pickdlg outdlg" aria-label="Предложи вид"><div class="pickhead" id="id-t">Какво е това?</div><div class="odb">
   <div class="fg"><label for="id-bg">Вид</label><input id="id-bg" list="bgnames" autocomplete="off" placeholder="напиши или избери"></div>
   <div class="note2" id="id-la" style="max-width:none;min-height:1.2em"></div>
   <div class="fg"><label for="id-cm">Защо мислиш така (по желание)</label><textarea id="id-cm" rows="2" maxlength="400"></textarea></div>
   <div class="fbtns"><button type="button" class="btn" id="id-cancel">Откажи</button><button type="button" class="btn pri" id="id-ok">Изпрати</button></div></div></dialog>
-<dialog id="qDlg" class="sheet"><div class="dlg"><h3 id="q-t">Какво е това?</h3><div id="q-list"></div>
+<dialog id="qDlg" class="pickdlg outdlg" aria-label="Предложенията"><div class="pickhead" id="q-t">Какво е това?</div><div class="odb"><div id="q-list"></div>
   <div class="fbtns"><button type="button" class="btn" id="q-close">Затвори въпроса</button><button type="button" class="btn" id="q-done">Готово</button></div></div></dialog>
 <dialog id="bcDlg" class="pickdlg outdlg" aria-label="Кодовете за гнездене">
   <div class="pickhead">Кодовете за гнездене</div>
@@ -1162,7 +1179,7 @@ function renderLog(el){
   const tk=o=>{const m=tmin(o.time);if(m!=null)return m;const d=new Date(o.id);return d.getHours()*60+d.getMinutes();};
   const list=OBS.filter(pass).sort((a,b)=>a.date===b.date?(tk(b)-tk(a)||b.id-a.id):b.date.localeCompare(a.date));
   if(!list.length){el.innerHTML='<div class="empty">Нищо не съвпада.</div>';return;}
-  const F=firsts();let h='',cur='',curM='',curY='';const seen=new Set();
+  const F=firsts();let h=vcLogTop(),cur='',curM='',curY='';const seen=new Set();
   const byDay={};for(const o of list)(byDay[o.date]=byDay[o.date]||[]).push(o);
   // месеци и години се появяват само когато има повече от един — дотогава Дневникът изглежда както досега
   const multiY=new Set(list.map(o=>o.date.slice(0,4))).size>1,multiM=new Set(list.map(o=>o.date.slice(0,7))).size>1,
@@ -1213,6 +1230,7 @@ function renderUnseen(el,o){const c=listFind('la',o.la)||listFind('bg',o.bg)||li
 function recHTML(o,F){
     return '<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
       // името и бройката заемат свободното място и се пренасят; „промени“ и „×“ стоят вдясно и не се застъпват с тях
+      (o.rv?'<div class="rvtag">🎙 за преглед'+(o.la?' <button type="button" class="rvok" data-rvok="'+o.id+'">✓ потвърди</button>':' · не разпознах „'+esc(o.vraw||o.bg)+'“ — натисни „промени“')+'</div>':'')+
       '<div class="oh"><div class="nm">'+recNm(o)+(sspOf(o)?' <span class="ssp">('+esc(sspOf(o))+')</span>':'')+(o.count||o.as?' <span style="color:var(--mut);font-weight:400">· '+esc(cntText(o))+'</span>':'')+'</div>'+
       '<div class="x"><button data-ed="'+o.id+'" aria-label="промени" title="промени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5 17v3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14.6 7.4l3 3" stroke="currentColor" stroke-width="2"/></svg></button><button data-del="'+o.id+'" aria-label="изтрий" title="изтрий">×</button></div></div>'+
       (o.u&&o.alt&&o.alt.length?'<div class="altnm">или '+o.alt.map(esc).join(' или ')+'</div>':'')+
@@ -2118,7 +2136,7 @@ function openForm(o,seed){
   for(const k of ['place','count','bg','en','la','note'])document.getElementById('f-'+k).value=o?(o[k]||''):'';
   if(!o&&ctx&&ctx.place)document.getElementById('f-place').value=ctx.place;
   document.getElementById('f-fam').value=o?(((listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en)||{}).fam)||mapFam(o.fam)):'';
-  st=o?{h:o.h?1:0,s:o.s?1:0,p:o.p?1:0}:{h:0,s:1,p:0};unsure=!!(o&&o.u);alts=o&&o.alt?[...o.alt]:[];document.getElementById('f-ask').checked=!!(o&&o.ask&&!o.askOk);syncUnsure();
+  st=o?{h:o.h?1:0,s:o.s?1:0,p:o.p?1:0}:{h:0,s:1,p:0};unsure=!!(o&&o.u&&!o.rv);alts=o&&o.alt?[...o.alt]:[];document.getElementById('f-ask').checked=!!(o&&o.ask&&!o.askOk);syncUnsure();
   syncSts();syncBeh();setGeo(o?(o.geo||null):(trkNow()||((!o&&ctx&&ctx.geo)?ctx.geo:null)));initAuto();
   const pv=document.getElementById('prev'),rm=document.getElementById('rmph');
   document.getElementById('f-photo').value='';
@@ -2257,6 +2275,7 @@ form.onsubmit=e=>{e.preventDefault();
   rec.sess=document.getElementById('f-sess').value||undefined;   // излетът се избира във формата (и после)
   countFieldsApply(rec);rec.bc=fBC||undefined;
   {const old=edit?OBS.find(o=>o.id===edit):null;rec.ask=asking?((old&&old.ask)||Date.now()):undefined;if(old&&old.askOk)rec.askOk=old.askOk;}
+  rec.rv=undefined;rec.vraw=undefined;   // запис от гласа, прегледан във формата — вече е обикновен запис
   if(!edit&&SESS&&rec.sess===SESS.id&&fo.geo!=='user'){const g=trkNow();if(g)rec.geo=g;}rec.photos=photo&&phx.length?[...phx]:undefined;
   const nBefore=new Set(SURE().map(key).filter(Boolean)).size,bBefore=tiersNow();   // за поздравленията
   let ok=true;const old=edit?((OBS.find(o=>o.id===edit)||{}).photo||null):null,oldX=edit?((OBS.find(o=>o.id===edit)||{}).photos||[]):[];
@@ -2445,6 +2464,133 @@ function renderBadges(el){if(badgeVisit===null){badgeVisit=new Set(newBadges());
         return '<button type="button" class="bdsec bdfold" data-bdf="'+sec+'" aria-expanded="'+op+'"><span>'+title+'</span><small>'+got+' / '+max+'</small><i>'+(op?'▾':'▸')+'</i></button>'+
           '<div class="bdg2"'+(op?'':' style="display:none"')+'>'+L.map(d=>bdCard(d,T[d.id],badgeVisit)).join('')+'</div>';}).join('');}
 const KBDF='bird-journal-bdfold';
+// ---- гласово въвеждане (2026-11-07): „сойка две, кос три, чух авлига“ → записи „за преглед“ ----
+// Пазят се веднага (час, място, излет), но като несигурни (u) с белег rv: не се броят, докато не ги потвърдиш.
+// На живо — с разпознаването на браузъра (Chrome на Android); навсякъде — текст от микрофона на клавиатурата;
+// без връзка — гласова бележка (звук, остава само на този телефон).
+const VNUM={нула:0,един:1,една:1,едно:1,два:2,две:2,двама:2,двойка:2,чифт:2,три:3,трима:3,четири:4,четирима:4,пет:5,петима:5,шест:6,седем:7,осем:8,девет:9,десет:10,
+  единайсет:11,единадесет:11,дванайсет:12,дванадесет:12,тринайсет:13,тринадесет:13,четиринайсет:14,четиринадесет:14,петнайсет:15,петнадесет:15,шестнайсет:16,шестнадесет:16,
+  седемнайсет:17,седемнадесет:17,осемнайсет:18,осемнадесет:18,деветнайсет:19,деветнадесет:19,двайсет:20,двадесет:20,трийсет:30,тридесет:30,четирийсет:40,четиридесет:40,
+  петдесет:50,шейсет:60,шестдесет:60,седемдесет:70,осемдесет:80,деветдесет:90,сто:100,двеста:200,триста:300,четиристотин:400,петстотин:500,хиляда:1000};
+const VEST={десетина:10,дузина:12,петнайсетина:15,двайсетина:20,двадесетина:20,трийсетина:30,тридесетина:30,четирийсетина:40,петдесетина:50,стотина:100};
+const VAPX=new Set(['около','към','приблизително','горе-долу','май']),VMIN=new Set(['поне','над','повече','минимум']);
+const VHEARD=new Set(['чух','чухме','чувам','чуваме','чува','пее','пеят','пееше','пееха','пеещ','пеещи','зов','глас','песен']),VSEEN=new Set(['видях','видяхме','виждам','видя']),VPHOTO=new Set(['снимах','снимахме','снимка','снимки']);
+const VSKIP=new Set(['и','още','също','после','а','при','на','в','във','от','с','със','бяха','беше','има','имаше','летят','лети','кацнал','кацна','там','тук','отново','пак','ето','летящ','летящи','една-две']);
+const vn=w=>String(w||'').toLowerCase().replace(/ё/g,'е').replace(/я/g,'е').replace(/[^0-9a-zа-ю-]/g,'');
+// дума спрямо дума от името: еднакви — 3; общо начало (поне 3 букви, до 2 различни в края: „сойки“~„сойка“, „кълвача“~„кълвач“) — по-малко
+const vwm=(a,b)=>{if(a===b)return 3;const L=Math.min(a.length,b.length);let p=0;while(p<L&&a[p]===b[p])p++;
+  return (p>=3&&p>=L-2)||(L===3&&p===3)?1+p/10:0;};
+const VGEN=new Set(['обикновен','обикновена','обикновено','европейски','европейска','европейско'].map(vn));
+let VIDX=null;
+function vIdx(){if(VIDX)return VIDX;const L=[],add=(name,sp,main)=>{const w=String(name).trim().split(/\s+/).map(vn).filter(Boolean);if(w.length)L.push({w,sp,main});};
+  for(const e of SPL){const sp={bg:e[0],la:e[1],en:e[2],fam:FAMS[e[3]]},w=e[0].split(/\s+/);add(e[0],sp,1);for(const a of altsOf(e))add(a,sp,0);
+    if(w.length===2&&VGEN.has(vn(w[0])))add(w[1],sp,0);}   // „скорец“ за „Обикновен скорец“, „козодой“ за „Европейски козодой“
+  for(const x of spxAll())if(x&&x.bg)add(x.bg,{bg:x.bg,la:x.la||'',en:x.en||'',fam:mapFam(x.fam)},1);
+  return VIDX=L;}
+// думите в речниците се сравняват в същия вид като казаното (я→е и пр.), иначе „видях“ и „хиляда“ не се познават
+const vnSet=S=>new Set([...S].map(vn)),vnObj=O=>Object.fromEntries(Object.entries(O).map(([k,v])=>[vn(k),v]));
+const VNUMn=vnObj(VNUM),VESTn=vnObj(VEST),VAPXn=vnSet(VAPX),VMINn=vnSet(VMIN),VHEARDn=vnSet(VHEARD),VSEENn=vnSet(VSEEN),VPHOTOn=vnSet(VPHOTO),VSKIPn=vnSet(VSKIP);
+function vcParse(text){
+  const raw=String(text||'').replace(/[.;!?\n]+/g,' , ').replace(/,/g,' , ').split(/\s+/).filter(Boolean),T=[];
+  for(let i=0;i<raw.length;i++){const r=raw[i],w=vn(r);
+    if(r===','){T.push({t:'b'});continue;}
+    if(/^\d+$/.test(w)||w in VNUMn){let v=0,j=i,any=false;   // числа: „двайсет и пет“ → 25
+      while(j<raw.length){const x=vn(raw[j]);if(/^\d+$/.test(x)){v+=+x;any=true;j++;continue;}if(x in VNUMn){v+=VNUMn[x];any=true;j++;continue;}
+        if(x==='и'&&j+1<raw.length&&(vn(raw[j+1]) in VNUMn||/^\d+$/.test(vn(raw[j+1])))){j++;continue;}break;}
+      T.push({t:'n',v,raw:raw.slice(i,j).join(' ')});i=j-1;continue;}
+    if(w in VESTn){T.push({t:'n',v:VESTn[w],cq:'est',raw:r});continue;}
+    if(VAPXn.has(w)){T.push({t:'q',cq:'est',raw:r});continue;}
+    if(VMINn.has(w)){T.push({t:'q',cq:'min',raw:r});continue;}
+    if(VHEARDn.has(w)){T.push({t:'m',k:'h'});continue;}
+    if(VSEENn.has(w)){T.push({t:'m',k:'s'});continue;}
+    if(VPHOTOn.has(w)){T.push({t:'m',k:'p'});continue;}
+    if(VSKIPn.has(w)||!w){T.push({t:'k'});continue;}
+    T.push({t:'w',w,raw:r});}
+  for(let i=0;i<T.length;i++)if(T[i].t==='q'&&T[i+1]&&T[i+1].t==='n'&&!T[i+1].cq)T[i+1].cq=T[i].cq;   // „около двайсет“, „поне пет“
+  // видовете: най-доброто съвпадение за всяко начало, после без застъпване, най-сигурните първи
+  const I=vIdx(),C=[];
+  for(let i=0;i<T.length;i++){if(T[i].t!=='w')continue;let best=null;
+    for(const n of I){const k=n.w.length;if(i+k>T.length)continue;let sc=0,ok=true;
+      for(let j=0;j<k;j++){const tk=T[i+j];if(tk.t!=='w'){ok=false;break;}const m=vwm(tk.w,n.w[j]);if(!m){ok=false;break;}sc+=m;}
+      if(!ok)continue;sc+=(k-1)*.5+(n.main?.2:0);if(!best||sc>best.sc)best={i,k,sc,sp:n.sp};}
+    if(best)C.push(best);}
+  C.sort((a,b)=>b.sc-a.sc);const used=new Set(),M=[];
+  for(const c of C){let free=true;for(let j=c.i;j<c.i+c.k;j++)if(used.has(j))free=false;if(!free)continue;for(let j=c.i;j<c.i+c.k;j++)used.add(j);M.push(c);}
+  M.sort((a,b)=>a.i-b.i);
+  // останалите думи — „не разпознах“
+  const out=M.map(m=>({...m.sp,pos:m.i,end:m.i+m.k-1,raw:T.slice(m.i,m.i+m.k).map(t=>t.raw).join(' ')}));
+  for(let i=0;i<T.length;i++)if(T[i].t==='w'&&!used.has(i)){let j=i;while(j+1<T.length&&T[j+1].t==='w'&&!used.has(j+1))j++;
+    out.push({bg:'',la:'',en:'',fam:'',pos:i,end:j,raw:T.slice(i,j+1).map(t=>t.raw).join(' '),unk:1});i=j;}
+  out.sort((a,b)=>a.pos-b.pos);
+  // бройките: „две сойки“ (числото преди) или „сойка две“ (след) — редът се взима от първия вид
+  const claimed=new Set(),num=i=>T[i]&&T[i].t==='n'&&!claimed.has(i)?i:-1;
+  const before=e=>num(e.pos-1),after=e=>num(e.end+1);
+  const sp0=out.find(e=>!e.unk),mode=sp0&&before(sp0)<0&&after(sp0)>=0?'after':'before';
+  for(const e of out){if(e.unk)continue;let k=mode==='before'?before(e):after(e);if(k<0)k=mode==='before'?after(e):before(e);
+    if(k>=0){claimed.add(k);e.count=String(T[k].v);if(T[k].cq)e.cq=T[k].cq;e.raw=(k<e.pos?T[k].raw+' '+e.raw:e.raw+' '+T[k].raw);}}
+  // чух / видях / снимах — за следващия вид (или за предишния, ако е последно)
+  for(let i=0;i<T.length;i++)if(T[i].t==='m'){const e=out.find(e=>!e.unk&&e.pos>i)||[...out].reverse().find(e=>!e.unk&&e.pos<i);if(e)(e.mk=e.mk||[]).push(T[i].k);}
+  for(const e of out){const mk=e.mk||[];e.h=mk.includes('h')?1:0;e.p=mk.includes('p')?1:0;e.s=mk.includes('s')||e.p||!e.h?1:0;delete e.mk;delete e.pos;delete e.end;}
+  return out;}
+const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
+const vcLive=()=>!!SRC&&!(isIOS&&standalone());   // на iPhone от началния екран разпознаването не е надеждно
+let VREC=null,VON=false,VCPOS=null,VCLIST=[],VMR=null,VMT0=0,VMTI=null;
+const KVM='bird-journal-vmemos';let VMEMO=lsGet(KVM,[])||[];
+const vcMsg=t=>{const m=document.getElementById('vc-msg');if(m)m.textContent=t||'';};
+function vcPaint(){const live=vcLive();document.getElementById('vc-livebox').style.display=live?'':'none';
+  document.getElementById('vc-mic').classList.toggle('on',VON);document.getElementById('vc-mict').textContent=VON?'Слушам… натисни за край':'Натисни и говори';
+  document.getElementById('vc-hint').textContent=live?'Кажи вида и бройката, напр. „сойка две, кос три, чух авлига“. Всеки разпознат вид — кратко вибриране.':
+    (isIOS?'На iPhone разпознаването става с микрофона на клавиатурата: докосни полето долу и натисни микрофона.':'Този браузър не разпознава реч сам — ползвай микрофона на клавиатурата в полето долу.');
+  const mb=document.getElementById('vc-memo');mb.textContent=VMR?'■ Спри бележката ('+Math.round((Date.now()-VMT0)/1000)+' с)':'● Гласова бележка';mb.classList.toggle('on',!!VMR);
+  document.getElementById('vc-list').innerHTML=VCLIST.length?'<h4 class="psub">Добавени сега · '+VCLIST.length+'</h4>'+VCLIST.map(o=>'<div class="vcrow'+(o.la?'':' unk')+'"><b>'+esc(o.la?o.bg:'„'+(o.vraw||o.bg)+'“')+'</b>'+
+    (o.count?' · '+esc(cntText(o)):'')+'<small>'+(o.h&&!o.s?'чут':o.p?'сниман':'видян')+(o.la?'':' · не разпознах — оправи го после')+'</small></div>').join(''):'';}
+function vcAdd(text){const E=vcParse(text);if(!E.length){vcMsg('Не чух птица в „'+String(text).trim()+'“.');return [];}
+  const now=Date.now(),t=nowTime(),g=trkNow()||VCPOS||(SESS&&SESS.geo)||null,out=[];
+  E.forEach((x,i)=>{const r={id:now+i,date:today(),time:t,place:(SESS&&SESS.place)||'',count:x.count||'',bg:x.unk?x.raw:x.bg,en:x.en||'',la:x.la||'',fam:x.fam||'',note:'',
+    h:x.h,s:x.s,p:x.p,u:1,rv:1,vraw:x.raw,beh:[],geo:g,photo:null,upd:now};if(x.cq)r.cq=x.cq;if(SESS)r.sess=SESS.id;OBS.push(r);out.push(r);});
+  save();VCLIST=[...out,...VCLIST];try{navigator.vibrate&&navigator.vibrate(out.map(()=>[60,80]).flat());}catch(e){}
+  vcMsg('');vcPaint();render();return out;}
+function vcMic(){if(VON){VON=false;try{VREC&&VREC.stop();}catch(e){}vcPaint();return;}
+  VON=true;VREC=new SRC();VREC.lang='bg-BG';VREC.continuous=true;VREC.interimResults=true;
+  VREC.onresult=e=>{let fin='',tmp='';for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript+' ';else tmp+=r[0].transcript;}
+    document.getElementById('vc-live').textContent=tmp;if(fin.trim())vcAdd(fin);};
+  VREC.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){VON=false;vcMsg('Микрофонът не е разрешен за Перá.');}
+    else if(e.error==='network'){VON=false;vcMsg('Няма връзка — разпознаването иска интернет. Запиши гласова бележка и я превърни после.');}vcPaint();};
+  VREC.onend=()=>{if(VON)try{VREC.start();}catch(e){VON=false;vcPaint();}};   // Chrome спира след пауза — продължаваме, докато не натиснеш
+  try{VREC.start();}catch(e){VON=false;vcMsg('Не успях да пусна микрофона.');}vcPaint();}
+async function vcMemo(){if(VMR){VMR.stop();return;}
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true}),ch=[];VMR=new MediaRecorder(st);VMT0=Date.now();
+    VMR.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data);};
+    VMR.onstop=async()=>{st.getTracks().forEach(t=>t.stop());clearInterval(VMTI);const b=new Blob(ch,{type:(VMR&&VMR.mimeType)||'audio/webm'}),id=Date.now();
+      if(!idb)await openDB();await putPhoto('v:'+id,b);
+      VMEMO.unshift({id,date:today(),time:nowTime(),dur:Math.max(1,Math.round((Date.now()-VMT0)/1000)),geo:trkNow()||VCPOS||null,sess:SESS?SESS.id:undefined});lsSet(KVM,VMEMO);
+      VMR=null;vcMsg('Бележката е запазена — ще я намериш най-горе в Дневника.');vcPaint();render();};
+    VMR.start();VMTI=setInterval(vcPaint,1000);vcPaint();}
+  catch(e){VMR=null;vcMsg('Микрофонът не е разрешен за Перá.');vcPaint();}}
+async function vmPlay(id){if(!idb)await openDB();const b=await getPhoto('v:'+id);if(!b){alert('Звукът на тази бележка липсва на този телефон.');return;}
+  const a=new Audio(URL.createObjectURL(b));a.play().catch(()=>{});}
+function vmDel(id){VMEMO=VMEMO.filter(m=>m.id!==id);lsSet(KVM,VMEMO);try{if(idb)idb.transaction('p','readwrite').objectStore('p').delete('v:'+id);}catch(e){}render();}
+function vcOpenDlg(text){VCLIST=[];vcMsg('');const d=document.getElementById('vcDlg');document.getElementById('vc-text').value=text||'';
+  try{navigator.geolocation.getCurrentPosition(p=>{VCPOS=p.coords.latitude.toFixed(5)+','+p.coords.longitude.toFixed(5);},()=>{},{enableHighAccuracy:true,maximumAge:60000,timeout:15000});}catch(e){}
+  VIDX=null;vcPaint();d.showModal();}
+function vcClose(){if(VON){VON=false;try{VREC&&VREC.stop();}catch(e){}}if(VMR)VMR.stop();document.getElementById('vcDlg').close();}
+// Дневник: какво чака преглед и гласовите бележки
+function vcLogTop(){const P=OBS.filter(o=>o.rv),ok=P.filter(o=>o.la).length;let h='';
+  if(P.length)h+='<div class="rvbar">🎙 <b>'+P.length+'</b> '+(P.length===1?'гласов запис чака':'гласови записа чакат')+' преглед'+(ok?'<button type="button" class="btn sm" data-rvall>✓ потвърди разпознатите ('+ok+')</button>':'')+'</div>';
+  if(VMEMO.length)h+='<div class="vmemos"><b>🎙 Гласови бележки · '+VMEMO.length+'</b><small> — само на този телефон</small>'+VMEMO.map(m=>'<div class="vmrow"><span>'+esc(human(m.date))+' '+esc(m.time)+' · '+m.dur+' с</span>'+
+    '<button type="button" class="btn sm" data-vplay="'+m.id+'">▶</button><button type="button" class="btn sm" data-vconv="'+m.id+'">превърни в записи</button><button type="button" class="btn sm" data-vdel="'+m.id+'" aria-label="изтрий">×</button></div>').join('')+'</div>';
+  return h;}
+function rvOk(o){if(!o||!o.rv)return;delete o.rv;delete o.vraw;o.u=0;o.upd=Date.now();}
+document.getElementById('vcOpen').onclick=()=>vcOpenDlg('');
+document.getElementById('vc-mic').onclick=vcMic;document.getElementById('vc-memo').onclick=vcMemo;document.getElementById('vc-done').onclick=vcClose;
+document.getElementById('vcDlg').addEventListener('close',()=>{if(VON){VON=false;try{VREC&&VREC.stop();}catch(e){}}});
+document.getElementById('vc-add').onclick=()=>{const t=document.getElementById('vc-text');if(!t.value.trim())return;if(vcAdd(t.value).length)t.value='';};
+document.addEventListener('click',e=>{const a=e.target.closest('[data-rvok],[data-rvall],[data-vplay],[data-vconv],[data-vdel]');if(!a)return;
+  if(a.dataset.rvok){rvOk(OBS.find(o=>o.id===+a.dataset.rvok));save();render();return;}
+  if(a.hasAttribute('data-rvall')){for(const o of OBS.filter(o=>o.rv&&o.la))rvOk(o);save();render();return;}
+  if(a.dataset.vplay){vmPlay(+a.dataset.vplay);return;}
+  if(a.dataset.vconv){vmPlay(+a.dataset.vconv);vcOpenDlg('');setTimeout(()=>document.getElementById('vc-text').focus(),100);return;}
+  if(a.dataset.vdel){if(confirm('Да изтрия ли тази гласова бележка?'))vmDel(+a.dataset.vdel);return;}});
 // ---- известия на телефона (Web Push): абонаментът е в push_subs, изпраща помощникът „push“ ----
 const KPUSHK='bird-journal-pushkinds',KPUSHKEY='bird-journal-pushkey',pushFn=()=>SB_URL+'/functions/v1/push';
 const PUSHL=[['ask','Приятел пита какво е птица'],['idp','Предложение по твой въпрос · прието твое определение'],['inv','Покана за излет'],['comment','Коментари и отговори'],['bravo','„Браво“']];
@@ -3481,7 +3627,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-03.8';
+const VER='2026-11-07.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
