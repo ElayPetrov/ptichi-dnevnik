@@ -32,8 +32,15 @@ def proxy(route):
 def gbif(route):
   u=urllib.parse.unquote(route.request.url);CALLS.append(u)
   if '/v2/map/' in u: return route.fulfill(body=png((230,120,40),40),content_type='image/png')
-  if 'geometry=POLYGON' in u and 'limit=300' in u and 'taxonKey=212' in u and 'facet' not in u:   # finds in view (for the hot spots)
-    body={'results':PTS if 'offset=0' in u else [],'endOfRecords':'offset=0' not in u}
+  if 'facet=locality' in u:   # the most frequent location names among the bird finds in view, with exact counts
+    body={'count':999,'facets':[{'field':'LOCALITY','counts':[{'name':'Бургас','count':60},{'name':'Atanasovsko Lake--Saltpans','count':40},{'name':'Rare spot','count':12}]}]}
+  elif 'locality=' in u:   # where the finds under one name lie
+    loc=urllib.parse.unquote_plus(u.split('locality=',1)[1].split('&')[0])
+    if loc=='Atanasovsko Lake--Saltpans': res=PTS[:40]
+    elif loc=='Бургас': res=[{'decimalLatitude':42.50+i*.01,'decimalLongitude':27.40+i*.012} for i in range(10)]   # a whole town, spread ~15 km
+    elif loc=='Rare spot': res=[{'decimalLatitude':42.61,'decimalLongitude':25.415}]*12   # one shared point (an eBird hotspot)
+    else: res=[]
+    body={'results':res}
   elif 'facet=year' in u: body={'count':321,'facets':[{'field':'YEAR','counts':[{'name':'2012','count':4},{'name':'2025','count':40}]},{'field':'MONTH','counts':[{'name':'4','count':50},{'name':'10','count':40}]}]}
   elif 'facet=speciesKey' in u: body={'facets':[{'field':'SPECIES_KEY','counts':[{'name':'2482507','count':30}]}]}
   else: body={'results':[{'speciesKey':2482507,'species':'Turdus merula'}],'count':1}
@@ -70,10 +77,12 @@ try:
   pg.click('[data-exm="pl"]');pg.wait_for_timeout(1800);pg.locator('#exmap').scroll_into_view_if_needed()
   zones=pg.evaluate("document.getElementById('exmap')._places.LZ.getLayers().map(l=>l.getTooltip().getContent())")
   check('Q2 the Natura 2000 bird areas in view are drawn (green), with their names — only the Bulgarian ones', sorted(zones), ['Atanasovsko ezero','Burgasko ezero'])
-  check('Q3 at zoom 10 no hot spots yet — the hint says to zoom in for them', (pg.evaluate("document.getElementById('exmap')._places.LH.getLayers().length"),'Приближи още' in pg.inner_text('#exhint')), (0,True))
-  pg.evaluate("document.getElementById('exmap')._lmap.setView([%f,%f],13)"%H0);pg.wait_for_timeout(2200)
   hs=pg.evaluate("document.getElementById('exmap')._places.LH.getLayers().map(l=>l.getTooltip().getContent())")
-  check('Q4 zoomed in: the dense finds become one orange place, named after their most frequent location; scattered finds don’t', hs, ['Atanasovsko Lake--Saltpans'])
+  check('Q3 at zoom 10 the hot spots are there (orange), most finds first: a shared eBird point becomes a circle; a name spread over a whole town („Бургас“) is not a place', hs, ['Atanasovsko Lake--Saltpans','Rare spot'])
+  check('Q3b ...found by asking GBIF for the most frequent location names in view (exact counts), not by sampling finds; and no hexagons in this mode', (any('facet=locality' in u and 'facetMincount=12' in u for u in CALLS),any('offset=300' in u for u in CALLS),pg.evaluate("document.querySelectorAll('#exmap .leaflet-gbif-pane img').length")), (True,False,0))
+  pg.evaluate("document.getElementById('exmap')._lmap.setZoom(9)");pg.wait_for_timeout(1500)
+  check('Q3c at zoom 9 only the bird areas — the hint says to zoom in for the hot spots', (pg.evaluate("document.getElementById('exmap')._places.LH.getLayers().length"),'Приближи още' in pg.inner_text('#exhint')), (0,True))
+  pg.evaluate("document.getElementById('exmap')._lmap.setView([%f,%f],13)"%H0);pg.wait_for_timeout(2200)
   n0=len(CALLS);click_ll(pg,*H0);pg.wait_for_timeout(1500)
   check('Q5 tapping the orange place: its birds, under its name and number of finds', pg.inner_text('#explace .whpl b'), 'Atanasovsko Lake--Saltpans · 40 находки тук')
   q=[u for u in CALLS[n0:] if 'facet=year' in u];R=ringsOf(wkt(q[0])) if q else [[]]
