@@ -375,7 +375,8 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .whmb i{display:block;width:100%;background:var(--s);border-radius:3px 3px 0 0} .whmb small{font-size:10.5px;color:var(--mut);margin-top:2px} .whmb.now small{color:var(--ink);font-weight:700}
 .whmap{height:220px;border-radius:12px;overflow:hidden;margin:8px 0;background:var(--bg2)} .whsrc{font-size:11.5px;color:var(--mut);margin-top:8px} .whsrc a{color:inherit}
 .whpl{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:6px 0 10px;background:var(--bg)} .whpl small{color:var(--mut)} .whplme{margin:4px 0 2px;font-size:14px}
-.explbar{display:flex;gap:8px;margin:6px 0} .explbar input{flex:1;min-width:0;margin:0} .seg.exmode{display:flex;width:100%;margin:0 0 8px} .seg.exmode button{flex:1;white-space:nowrap}
+.explbar{display:flex;gap:8px;margin:6px 0} .explbar input{flex:1;min-width:0;margin:0} .seg.exmode,.seg.exsz{display:flex;width:100%;margin:0 0 8px} .seg.exmode button,.seg.exsz button{flex:1;white-space:nowrap} .seg.exsz button{font-size:12.5px;padding-left:2px;padding-right:2px}
+.tgadd{background:none;border:1px solid var(--line2);border-radius:999px;padding:0 8px;font:inherit;font-size:11.5px;color:var(--s);cursor:pointer;margin-left:4px} .tgin{font-size:11.5px;color:var(--s);margin-left:4px}
 .tgwhere{display:inline-block;background:none;border:1px solid var(--line2);border-radius:999px;padding:2px 10px;font:inherit;font-size:12.5px;color:var(--s);cursor:pointer;margin-top:5px}
 .pout{text-align:center;margin:18px 0 6px} .pout .btn{color:var(--accent)}
 .linkbtn{background:none;border:0;padding:6px 0 0;font:inherit;font-size:13px;color:var(--mut);text-decoration:underline;cursor:pointer}
@@ -1274,8 +1275,10 @@ function placeHTML(P,la,key,r,title){const all=+key===212,me=all?{bg:'Птици
   const MN=['януари','февруари','март','април','май','юни','юли','август','септември','октомври','ноември','декември'];
   const top=P.mo.map((v,i)=>[v,i]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,2).map(x=>MN[x[1]]);
   const others=P.sp.filter(x=>all||x.k!==+key).map(x=>{const c=listFind('la',x.la);return {...x,bg:c?c.bg:'',la2:c?c.la:x.la,en:c?c.en:'',got:c?mine.has(nrm(c.la)):false};});
+  const inTg=x=>{const t=TG[tgKey({la:x.la2,bg:x.bg})];return !!(t&&!t.del);};
   const row=x=>'<div class="asp'+(x.got?' got':'')+'"><span class="tick">'+(x.got?'✓':'')+'</span>'+(x.bg?spLink({bg:x.bg,la:x.la2,en:x.en}):'<i class="la">'+esc(x.la)+'</i>')+
-    ' <small>'+x.n+'</small>'+(x.got||!x.bg?'':' <small class="rr">ново за теб</small>')+'</div>';
+    ' <small>'+x.n+'</small>'+(x.got||!x.bg?'':' <small class="rr">ново за теб</small>'+(inTg(x)?' <span class="tgin">✓ в целите</span>':
+      ' <button type="button" class="tgadd" data-tgadd="'+esc(x.la2)+'" data-bg="'+esc(x.bg)+'" data-en="'+esc(x.en)+'">+ Цел</button>'))+'</div>';
   return '<div class="whpl"><b>'+(title?esc(title):(P.loc?esc(P.loc)+' и наоколо':'Това място'))+'</b><small>'+(r?' · кръг ~'+(r<1.5?r.toFixed(1).replace('.',','):Math.round(r))+' км':title&&P.loc?' · '+esc(P.loc):'')+'</small>'+
     '<div class="whplme">'+(P.n?'<b>'+esc(me.bg)+'</b> тук: '+P.n+' '+(P.n===1?'находка':'находки')+(all?' · '+P.sp.length+' вида':'')+(P.y0?' · '+P.y0+(P.y1!==P.y0?'–'+P.y1:''):'')+(top.length?' · '+(all?'най-много ':'най-често ')+top.join(' и '):''):
       (all?'Тук GBIF няма находки на птици.':'Тук няма находки на <b>'+esc(me.bg)+'</b>.'))+'</div>'+
@@ -1643,7 +1646,8 @@ const KEXP='bird-journal-explore';let EXP=lsGet(KEXP,null)||{mode:'pt',sp:null},
 function renderExplore(el,bar){if(EXM){try{EXM.remove();}catch(e){}EXM=null;}
   el.innerHTML=bar+'<div class="explbar"><input id="ex-sp" list="bgnames" placeholder="всички птици — или избери вид" value="'+esc(EXP.sp?EXP.sp.bg:'')+'">'+
     (EXP.sp?'<button type="button" class="btn sm" data-exclr aria-label="всички птици">×</button>':'')+'</div>'+
-    '<div class="seg exmode"><button type="button" data-exm="pt" aria-pressed="'+(EXP.mode!=='sq')+'">● точка</button><button type="button" data-exm="sq" aria-pressed="'+(EXP.mode==='sq')+'">▦ квадрат 10×10 км</button></div>'+
+    '<div class="seg exmode"><button type="button" data-exm="pt" aria-pressed="'+(EXP.mode!=='sq')+'">● точка</button><button type="button" data-exm="sq" aria-pressed="'+(EXP.mode==='sq')+'">▦ квадрат</button></div>'+
+    (EXP.mode==='sq'?'<div class="seg exsz" role="group" aria-label="големина на квадрата">'+[1,2,5,10,20].map(k=>'<button type="button" data-exsz="'+k+'" aria-pressed="'+((EXP.sq||10)===k)+'">'+k+' км</button>').join('')+'</div>':'')+
     '<div class="mapwrap" style="padding:0;overflow:hidden"><div id="exmap" style="height:'+(innerWidth<600?380:500)+'px;width:100%;border-radius:12px"></div></div>'+
     ntH('Находките на '+(EXP.sp?'<b>'+esc(EXP.sp.bg)+'</b>':'всички птици')+' в България от GBIF — eBird, iNaturalist, БДЗП и др. Докосни '+(EXP.mode==='sq'?'квадрат':'място')+', за да видиш какво е намирано там.')+
     '<div class="whplace" id="explace"></div>';
@@ -1658,15 +1662,19 @@ async function exploreMap(el){if(!el||!await loadLeaflet()||!el.isConnected)retu
   const pos=myPos();if(pos)m.setView(pos,10);else m.fitBounds([[41.2,22.3],[44.25,28.7]]);
   let shape=null,busy=0;
   m.on('click',async e=>{if(!key)return;const p=e.latlng,box=document.getElementById('explace'),my=++busy;if(!box)return;if(shape)shape.remove();let where,title='',r=0;
-    if(EXP.mode==='sq'){const q=sqOf(p.lat.toFixed(5)+','+p.lng.toFixed(5));if(!q){box.innerHTML=ntH('Тук няма атласен квадрат.');return;}
-      const C=[[q.E0,q.N0],[q.E0+1e4,q.N0],[q.E0+1e4,q.N0+1e4],[q.E0,q.N0+1e4]].map(([E,N])=>fromUTM(q.z,E,N));   // ЮЗ, ЮИ, СИ, СЗ — обратно на часовника, както иска GBIF
-      shape=L.polygon(C,{color:'#c0392b',weight:2,fillOpacity:.06}).addTo(m);title='Квадрат '+q.id;
+    if(EXP.mode==='sq'){const S=(EXP.sq||10)*1000,u=toUTM(p.lat,p.lng),E0=Math.floor(u.E/S)*S,N0=Math.floor(u.N/S)*S;
+      const C=[[E0,N0],[E0+S,N0],[E0+S,N0+S],[E0,N0+S]].map(([E,N])=>fromUTM(u.z,E,N));   // ЮЗ, ЮИ, СИ, СЗ — обратно на часовника, както иска GBIF; по мрежата на атласа
+      const q=S===1e4?sqOf(p.lat.toFixed(5)+','+p.lng.toFixed(5)):null;
+      shape=L.polygon(C,{color:'#c0392b',weight:2,fillOpacity:.06}).addTo(m);title='Квадрат '+(S/1000)+'×'+(S/1000)+' км'+(q?' · '+q.id:'');
       where='&geometry='+encodeURIComponent('POLYGON(('+[...C,C[0]].map(c=>c[1].toFixed(5)+' '+c[0].toFixed(5)).join(', ')+'))');}
     else{r=GBR(m.getZoom());shape=L.circle(p,{radius:r*1000,color:'#c0392b',weight:2,fillOpacity:.06}).addTo(m);
       where='&geoDistance='+p.lat.toFixed(4)+','+p.lng.toFixed(4)+','+r.toFixed(1)+'km';}
     box.innerHTML=ntH('Търся какво има тук…');
     try{const P=await gbArea(key,where);if(my===busy)box.innerHTML=placeHTML(P,EXP.sp?EXP.sp.la:'',key,r,title);}catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря — опитай пак.');}});}
-document.addEventListener('click',e=>{const a=e.target.closest('[data-exm],[data-exclr]');if(!a)return;
+document.addEventListener('click',e=>{const ta=e.target.closest('[data-tgadd]');if(ta){   // „+ Цел“ — на място, без да се пречертава картата
+    tgAdd({bg:ta.dataset.bg,la:ta.dataset.tgadd,en:ta.dataset.en});const sp=document.createElement('span');sp.className='tgin';sp.textContent='✓ в целите';ta.replaceWith(sp);return;}
+  const a=e.target.closest('[data-exm],[data-exclr],[data-exsz]');if(!a)return;
+  if(a.dataset.exsz){EXP.sq=+a.dataset.exsz;lsSet(KEXP,EXP);render();return;}
   if(a.dataset.exm){EXP.mode=a.dataset.exm;lsSet(KEXP,EXP);render();return;}
   EXP.sp=null;lsSet(KEXP,EXP);render();});
 document.addEventListener('change',e=>{if(e.target.id!=='ex-sp')return;const v=e.target.value.trim();if(!v){EXP.sp=null;lsSet(KEXP,EXP);render();return;}
@@ -3781,7 +3789,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-07.8';
+const VER='2026-11-07.9';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
