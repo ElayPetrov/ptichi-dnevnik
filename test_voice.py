@@ -10,7 +10,9 @@ def check(n,got,exp):
   global fails;ok=got==exp;fails+=not ok
   print(('PASS ' if ok else 'FAIL ')+n+('' if ok else f'\n     got {got!r}\n     exp {exp!r}'))
 MOCK="""window.SRLOG=[];window.SpeechRecognition=class{constructor(){SRLOG.push('new');window.LASTSR=this;}
-  start(){SRLOG.push('start:'+this.lang);setTimeout(()=>{this.onresult&&this.onresult({resultIndex:0,results:[Object.assign([{transcript:'сойка две кос три'}],{isFinal:true})]});},60);}
+  start(){SRLOG.push('start:'+this.lang+(this.continuous?':cont':':one'));const F=x=>Object.assign([{transcript:x}],{isFinal:true});   // like Chrome on Android: the same final, again and again
+    setTimeout(()=>{if(!this.onresult)return;this.onresult({resultIndex:0,results:[F('сойка две кос три')]});this.onresult({resultIndex:0,results:[F('сойка две кос три')]});
+      this.onresult({resultIndex:0,results:[F('сойка две кос три'),F('сойка две кос три')]});},60);}
   stop(){SRLOG.push('stop');}};
   navigator.vibrate=p=>{(window.VIB=window.VIB||[]).push(p);return true;};
   navigator.mediaDevices.getUserMedia=async()=>({getTracks:()=>[{stop(){}}]});
@@ -28,6 +30,7 @@ try:
   check('V3 numbers in words, approximate and minimum counts', (P(pg,'двайсет и пет скорци'),P(pg,'около двайсет речни чайки'),P(pg,'поне петдесет гугутки'),P(pg,'десетина домашни врабчета')),
     (['Обикновен скорец ×25'],['Речна чайка ×20(est)'],['Гугутка ×50(min)'],['Домашно врабче ×10(est)']))
   check('V4 everyday names and the plain noun for „обикновен…“ species: „козодой“, „чинка“, „мишелов“', (P(pg,'чух козодой'),P(pg,'десет чинки'),P(pg,'мишелов')), (['Европейски козодой чут'],['Обикновена чинка ×10'],['Обикновен мишелов']))
+  check('V5b how you met it, in its other forms: „кос, два, сниман“, „чут кос“', (P(pg,'кос, два, сниман'),P(pg,'чут кос')), (['Кос ×2'],['Кос чут']))
   check('V5 what it can’t tell apart, or doesn’t know, is kept for you to fix — never guessed', (P(pg,'три щъркела'),P(pg,'сойка две гос')), (['?щъркела'],['Сойка ×2','?гос']))
   pg.evaluate("SESS={id:'s1',date:'%s',time:'08:00',place:'Копринка',geo:null,at:Date.now(),t0:'08:00'};VCPOS='42.61000,25.30000'"%T)
   pg.click('#vcOpen');pg.wait_for_timeout(150);pg.evaluate("VCPOS='42.61000,25.30000'")
@@ -51,7 +54,7 @@ try:
   pg.click('#vcOpen');pg.wait_for_timeout(150)
   check('V13 Android: the big microphone is there', pg.is_visible('#vc-mic'), True)
   pg.click('#vc-mic');pg.wait_for_timeout(400)
-  check('V14 live: Bulgarian recognition, each species saved as you speak, with a vibration each', (pg.evaluate("SRLOG.slice(0,2)"),pg.evaluate("OBS.filter(o=>o.rv&&(o.bg==='Сойка'||o.bg==='Кос')).length"),pg.evaluate("(window.VIB||[]).length>0")), (['new','start:bg-BG'],2,True))
+  check('V14 live: Bulgarian, one phrase at a time; the browser re-sending the same phrase doesn\'t add it again (one „кос“ stays one), vibration for each', (pg.evaluate("SRLOG.slice(0,2)"),pg.evaluate("OBS.filter(o=>o.rv&&(o.bg==='Сойка'||o.bg==='Кос')).length"),pg.evaluate("(window.VIB||[]).length>0")), (['new','start:bg-BG:one'],2,True))
   pg.evaluate("LASTSR.onend()");pg.wait_for_timeout(100)
   check('V15 if the browser stops listening after a pause, it starts again until you tap', pg.evaluate("SRLOG.filter(x=>x.startsWith('start')).length"), 2)
   pg.click('#vc-mic');pg.wait_for_timeout(100)
@@ -62,6 +65,16 @@ try:
   check('V18 ...its sound is stored', pg.evaluate("getPhoto('v:'+VMEMO[0].id).then(b=>!!b&&b.size)"), 3)
   pg.click('[data-vdel]');pg.wait_for_timeout(150)
   check('V19 × deletes it', pg.evaluate("VMEMO.length"), 0)
+  check('V22 English too: „two jays blackbird three heard golden oriole“, with Eurasian/Common left out as people say it', P(pg,'two jays blackbird three heard golden oriole'), ['Сойка ×2','Кос ×3','Авлига чут'])
+  check('V23 English counts and plurals: „about twenty black-headed gulls“, „five greylag geese“, „a pair of mallards“, „twenty-five starlings“',
+    (P(pg,'about twenty black-headed gulls'),P(pg,'five greylag geese'),P(pg,'a pair of mallards'),P(pg,'twenty-five starlings')),
+    (['Речна чайка ×20(est)'],['Сива гъска ×5'],['Зеленоглава патица ×2'],['Обикновен скорец ×25']))
+  check('V24 Latin names and mixed sentences; an English word that only looks alike is not guessed („heron“ is not „herring gull“)',
+    (P(pg,'Turdus merula 2'),P(pg,'две сойки three blackbirds'),P(pg,'heron two')), (['Кос ×2'],['Сойка ×2','Кос ×3'],['?heron']))
+  pg.click('#vcOpen');pg.wait_for_timeout(150);pg.click('[data-vclang="en"]');pg.wait_for_timeout(80);pg.click('#vc-mic');pg.wait_for_timeout(200)
+  check('V25 live dictation in English when switched to „English“ — remembered for next time', (pg.evaluate("SRLOG.filter(x=>x.startsWith('start')).pop()"),pg.evaluate("localStorage.getItem('bird-journal-vclang')"),'two jays' in pg.inner_text('#vc-hint')),
+    ('start:en-GB:one','"en"',True))
+  pg.click('#vc-mic');pg.click('[data-vclang="bg"]');pg.click('#vc-done')
   check('V20 no page errors', errs, [])
   ctx2=b.new_context(viewport={'width':390,'height':844},user_agent='Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148')
   ctx2.route('https://**',lambda r:r.abort());q=ctx2.new_page()
