@@ -21,10 +21,23 @@ OSM={'elements':[
     {'type':'way','role':'outer','geometry':[{'lat':a,'lon':b} for a,b in A]},{'type':'way','role':'outer','geometry':[{'lat':a,'lon':b} for a,b in B]}]},
   {'type':'way','id':22,'tags':{'name':'Язовир Копринка','natural':'water','water':'reservoir'},'geometry':res}]}
 CALLS=[];OSMQ=[];EMPTY=[False];NOMQ=[]
-REFUSE=set();NOM=['res'];NOMQ=[]
+REFUSE=set();NOM=['res'];NOMQ=[];HANG=[False];PENDING=[];PROXY=['missing'];PROXYQ=[]
+def osm_body(body):
+  if 'is_in(' in body and 'area.a' in body:
+    els=[] if EMPTY[0] else [{'type':'area','id':3600000011,'tags':{'name':'Копринка','boundary':'protected_area'}},{'type':'area','id':2400000022,'tags':{'name':'Язовир Копринка','natural':'water','water':'reservoir'}}]
+  elif 'way(22)' in body: els=[OSM['elements'][1]]
+  elif 'rel(11)' in body: els=[OSM['elements'][0]]
+  else: els=[]
+  return json.dumps({'elements':els})
+def proxy(route):   # Перá's own Supabase helper „osm“
+  u=route.request.url;PROXYQ.append(u)
+  if PROXY[0]=='missing': return route.fulfill(status=404,body='{"code":"NOT_FOUND"}')
+  if PROXY[0]=='fail': return route.fulfill(status=502,body='{"error":"overpass"}')
+  route.fulfill(body=osm_body(urllib.parse.unquote_plus(u.split('data=',1)[1])),content_type='application/json')
 def osm(route):
   u=route.request.url;host=u.split('/')[2]
   body=urllib.parse.unquote_plus(route.request.post_data or (u.split('data=',1)[1] if 'data=' in u else ''));OSMQ.append((host,body))
+  if HANG[0]: PENDING.append((route,body));return   # Overpass silent: no answer until the test releases it
   if host in REFUSE or 'all' in REFUSE: return route.fulfill(status=429,body='Too Many Requests')
   if 'is_in(' in body and 'area.a' in body:   # step 1 (light): only the names of the areas containing the point
     els=[] if EMPTY[0] else [{'type':'area','id':3600000011,'tags':{'name':'Копринка','boundary':'protected_area'}},
@@ -81,7 +94,7 @@ srv=subprocess.Popen([sys.executable,'-m','http.server',str(port)],stdout=subpro
 try:
  with sync_playwright() as p:
   b=p.chromium.launch();ctx=b.new_context(viewport={'width':390,'height':844})
-  [ctx.route(h,osm) for h in ['https://overpass-api.de/**','https://overpass.kumi.systems/**','https://overpass.private.coffee/**']];ctx.route('https://nominatim.openstreetmap.org/**',nominatim);ctx.route('https://api.gbif.org/**',gbif)
+  [ctx.route(h,osm) for h in ['https://overpass-api.de/**','https://overpass.kumi.systems/**','https://overpass.private.coffee/**']];ctx.route('https://nominatim.openstreetmap.org/**',nominatim);ctx.route('https://szyituwdlbwpqkfuklxq.supabase.co/functions/v1/osm**',proxy);ctx.route('https://api.gbif.org/**',gbif)
   ctx.route('https://cdnjs.cloudflare.com/ajax/libs/leaflet/**',lambda r:r.fulfill(path='/home/claude/sb/leaflet/'+('leaflet.css' if r.request.url.endswith('.css') else 'leaflet.js'),content_type='text/css' if r.request.url.endswith('.css') else 'application/javascript'))
   for pat in ['https://server.arcgisonline.com/**','https://*.basemaps.cartocdn.com/**','https://*.tile.openstreetmap.org/**']:ctx.route(pat,lambda r:r.fulfill(body=G,content_type='image/png'))
   pg=ctx.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
@@ -120,6 +133,18 @@ try:
   NOM[0]='none';REFUSE.clear();BIG[0]=True;pg.evaluate("OSMC.clear()");tap(pg,.54,.54);pg.wait_for_timeout(2500)
   pg.click('[data-exarea="1"]');pg.wait_for_timeout(2000)
   check('O16 a place bigger than 3000 km² is refused once its outline is known — choose another or use the square', 'е твърде голямо място' in pg.inner_text('#explace'), True)
+  NOM[0]='res';BIG[0]=False;REFUSE.clear();HANG[0]=True;PENDING.clear();pg.evaluate("OSMC.clear()");t0=time.time();tap(pg);pg.wait_for_timeout(1500)
+  check('O17 the lake from Nominatim shows at once, while Overpass is still silent', (pg.inner_text('#explace .whpl b'),pg.locator('[data-exarea]').count(),len(PENDING)>0), ('Язовир Копринка · язовир',0,True))
+  HANG[0]=False
+  for rt,bd in PENDING: rt.fulfill(body=osm_body(bd),content_type="application/json")
+  pg.wait_for_timeout(1500)
+  check('O17b ...and when Overpass does answer, the reserve is added as a button — the lake stays chosen', pg.evaluate("[...document.querySelectorAll('[data-exarea]')].map(b=>[b.textContent,b.getAttribute('aria-pressed')])"), [['Язовир Копринка язовир','true'],['Копринка защитена територия','false']])
+  check('O18 without the Supabase helper (404), Перá asks the Overpass servers directly — and stops asking the helper', (pg.evaluate("OSMPROXY"),len(PROXYQ)), (False,1))
+  pg.evaluate("OSMPROXY=null;OSMC.clear()");PROXY[0]='ok';PROXYQ.clear();OSMQ.clear();NOM[0]='none';tap(pg,.55,.45);pg.wait_for_timeout(2000)
+  check('O18b with the helper deployed, the phone doesn\'t contact the Overpass servers itself — the helper does', (len(PROXYQ)>0,[h for h,b in OSMQ],pg.locator('[data-exarea]').count()), (True,[],2))
+  PROXY[0]='missing';pg.evaluate("OSMPROXY=null;OSMC.clear()");NOM[0]='pen';REFUSE.add('all');tap(pg,.45,.55);pg.wait_for_timeout(2500)
+  why=pg.evaluate("[...errSeen].filter(k=>k.includes('Балкански полуостров')).pop()||''")
+  check('O19 when Nominatim\'s answer isn\'t used, the log says what it was and why', 'natural/peninsula „Балкански полуостров“ — не е водоем' in why, True)
   check('O10 no page errors', errs, [])
   b.close()
 finally: srv.terminate()
