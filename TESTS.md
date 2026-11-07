@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-919 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+923 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -86,8 +86,8 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_voice.py | 26 | voice recording: the parser (either order, no punctuation, plurals and counted forms, numbers in words, „около/поне“, everyday and plain-noun names, ambiguous or unknown words kept, never guessed), the 🎙 panel saving drafts at once with time, place, outing and position, drafts not counting, review in Дневник (banner, tags, ✓, editing a draft), live Bulgarian dictation with vibration and auto-restart, voice notes kept on the phone, the iPhone home-screen case |
 | test_ios.py | 8 | iPhone (from the Home Screen): the first open's welcome → „Запиши първата“ leaves the form usable, no field focused by code (it can stay without a keyboard on iPhone), the voice panel explains the keyboard's language, „J“ → jay; Android still focuses the name field |
 | test_where.py | 15 | „📍 Къде да го търся“ from GBIF: folded, nothing fetched until opened; 12 month bars from GBIF's counts for Bulgaria; the nearest places to your latest GPS record, grouped, with last date and source; heat-map tiles for the species and country, drawn above the map (not hidden under it); the source linked; kept a week; unknown species; the button in Цели; tapping the map: the place's name, this bird's finds, years and best months there, every other bird found there (✓ yours, „ново за теб“), a hexagon-sized circle, no repeat questions, birds in the list open their cards |
-| test_explore.py | 16 | Карта → „Изследвай“ (GBIF): there even with an empty journal; the all-birds map above the map, near your latest record; ● точка: place, finds, species, years, busiest months, every bird (✓ / „ново за теб“); ▦ квадрат 1/2/5/10/20 km on the atlas grid (10 with its atlas code), sent as a closed polygon, drawn, measuring true size; „+ Цел“ beside new birds, one tap into Цели; choosing a species; remembering mode, size and species; Карта still starts on the personal map |
-| test_osm.py | 10 | „🏞 място“ (OpenStreetMap + GBIF): three ways to tap; the named areas containing the tap, smallest first; outlined and named; the shape sent to GBIF closed, anticlockwise, ≤ 61 points, +300 m containing the whole edge, never self-crossing; a two-piece area joined; a C-shaped lake falling back safely; no named place → says so |
+| test_explore.py | 18 | Карта → „Изследвай“ (GBIF): there even with an empty journal; the all-birds map above the map, near your latest record; ● точка shows GBIF's find points, a tap snaps to the nearest one and asks about 100 m around it (a dot marks it; none near → says so); ▦ квадрат 1–20 km by slider on the atlas grid (10 with its atlas code), sent as a closed polygon, drawn, true size, letting go recounts the same square; „+ Цел“ beside new birds, one tap into Цели; choosing a species; remembering mode, size and species; Карта still starts on the personal map |
+| test_osm.py | 12 | „🏞 място“ (OpenStreetMap + GBIF): names first (light), the outline only for the chosen place; a refusing server → the next one; all refusing → says so and logs the reason; areas smallest first; outlined and named; the shape to GBIF closed, anticlockwise, ≤ 61 points, +300 m containing the whole edge, never self-crossing; a two-piece area joined; a C-shaped lake falling back safely; no named place → says so |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

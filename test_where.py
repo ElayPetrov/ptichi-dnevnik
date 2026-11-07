@@ -73,7 +73,7 @@ try:
   pg.mouse.click(box['x']+box['width']/2,box['y']+box['height']/2);pg.wait_for_timeout(1500)
   t1=pg.inner_text('.whpl')
   check('W10 tapping the map: the place\'s name, and this bird there — finds, years, best months', (t1.startswith('Казанлък, парк Тюлбето и наоколо'),'Сойка тук: 37 находки · 2014–2025 · най-често май и юни' in t1), (True,True))
-  rows=pg.evaluate("[...document.querySelectorAll('.whpl .asp')].map(a=>[a.querySelector('.nmlink,i').textContent,a.classList.contains('got'),a.innerText.includes('ново за теб')])")
+  rows=pg.evaluate("[...document.querySelectorAll('.whpl .prw')].map(a=>[a.querySelector('.nmlink,i').textContent,a.classList.contains('got'),a.innerText.includes('ново за теб')])")
   check('W11 ...and every other bird found there, most found first: ✓ on yours, „ново за теб“ on the rest (names looked up when GBIF\'s sample lacks them)', rows, [['Кос',True,False],['Степен орел',False,True]])
   check('W12 ...with a hexagon-sized circle where you tapped', pg.locator('.whmap path.leaflet-interactive').count(), 1)
   n2=len(CALLS);pg.mouse.click(box['x']+box['width']/2,box['y']+box['height']/2);pg.wait_for_timeout(500)

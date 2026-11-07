@@ -21,9 +21,17 @@ OSM={'elements':[
     {'type':'way','role':'outer','geometry':[{'lat':a,'lon':b} for a,b in A]},{'type':'way','role':'outer','geometry':[{'lat':a,'lon':b} for a,b in B]}]},
   {'type':'way','id':22,'tags':{'name':'Язовир Копринка','natural':'water','water':'reservoir'},'geometry':res}]}
 CALLS=[];OSMQ=[];EMPTY=[False]
+REFUSE=set()
 def osm(route):
-  body=urllib.parse.unquote_plus(route.request.post_data or '');OSMQ.append(body)
-  route.fulfill(body=json.dumps({'elements':[]} if EMPTY[0] else OSM),content_type='application/json')
+  body=urllib.parse.unquote_plus(route.request.post_data or '');host=route.request.url.split('/')[2];OSMQ.append((host,body))
+  if host in REFUSE or 'all' in REFUSE: return route.fulfill(status=429,body='Too Many Requests')
+  if 'out tags bb' in body:   # step 1: only names and frames
+    els=[] if EMPTY[0] else [{'type':'relation','id':11,'tags':{'name':'Копринка','boundary':'protected_area'},'bounds':{'minlat':42.58,'minlon':25.34,'maxlat':42.66,'maxlon':25.46}},
+                             {'type':'way','id':22,'tags':{'name':'Язовир Копринка','natural':'water','water':'reservoir'},'bounds':{'minlat':42.59,'minlon':25.36,'maxlat':42.65,'maxlon':25.44}}]
+  elif 'way(22)' in body: els=[OSM['elements'][1]]
+  elif 'rel(11)' in body: els=[OSM['elements'][0]]
+  else: els=[]
+  route.fulfill(body=json.dumps({'elements':els}),content_type='application/json')
 def gbif(route):
   u=urllib.parse.unquote(route.request.url);CALLS.append(u)
   if '/v2/map/' in u: return route.fulfill(body=G,content_type='image/png')
@@ -55,15 +63,17 @@ srv=subprocess.Popen([sys.executable,'-m','http.server',str(port)],stdout=subpro
 try:
  with sync_playwright() as p:
   b=p.chromium.launch();ctx=b.new_context(viewport={'width':390,'height':844})
-  ctx.route('https://overpass-api.de/**',osm);ctx.route('https://api.gbif.org/**',gbif)
+  [ctx.route(h,osm) for h in ['https://overpass-api.de/**','https://overpass.kumi.systems/**','https://overpass.private.coffee/**']];ctx.route('https://api.gbif.org/**',gbif)
   ctx.route('https://cdnjs.cloudflare.com/ajax/libs/leaflet/**',lambda r:r.fulfill(path='/home/claude/sb/leaflet/'+('leaflet.css' if r.request.url.endswith('.css') else 'leaflet.js'),content_type='text/css' if r.request.url.endswith('.css') else 'application/javascript'))
   for pat in ['https://server.arcgisonline.com/**','https://*.basemaps.cartocdn.com/**','https://*.tile.openstreetmap.org/**']:ctx.route(pat,lambda r:r.fulfill(body=G,content_type='image/png'))
   pg=ctx.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
   pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-tips','{\"all\":1}');localStorage.setItem('bird-journal-quiet','true');sessionStorage.setItem('s','1')}"%json.dumps(json.dumps([{'id':7,'date':T,'time':'08:00','place':'','count':'','bg':'Кос','en':'','la':'','fam':'','note':'','h':0,'s':1,'p':0,'beh':[],'geo':'%.5f,%.5f'%C0,'photo':None}],ensure_ascii=False)))
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400);pg.click('.tab[data-v="map"]');pg.click('[data-mm="gbif"]');pg.wait_for_timeout(1200)
-  check('O1 three ways to tap: ● точка, ▦ квадрат and 🏞 място (the hexagons stay in all)', pg.evaluate("[...document.querySelectorAll('[data-exm]')].map(b=>b.textContent)"), ['● точка','▦ квадрат','🏞 място'])
-  pg.click('[data-exm="pl"]');pg.wait_for_timeout(1200);n0=len(CALLS);tap(pg);pg.wait_for_timeout(1800)
-  check('O2 the tap asks OpenStreetMap which named areas contain that point', ('is_in(42.6' in (OSMQ[-1] if OSMQ else ''),'nature_reserve' in (OSMQ[-1] if OSMQ else '')), (True,True))
+  check('O1 three ways to tap: ● точка, ▦ квадрат and 🏞 място', pg.evaluate("[...document.querySelectorAll('[data-exm]')].map(b=>b.textContent)"), ['● точка','▦ квадрат','🏞 място'])
+  REFUSE.add('overpass-api.de');pg.click('[data-exm="pl"]');pg.wait_for_timeout(1200);n0=len(CALLS);tap(pg);pg.wait_for_timeout(2400)
+  first=[b for h,b in OSMQ if 'is_in(' in b]
+  check('O2 the tap first asks OpenStreetMap only for the names around that point (light); the outline only for the chosen place', (bool(first) and 'out tags bb' in first[0] and 'geom' not in first[0],any('way(22)' in b and 'out geom' in b for h,b in OSMQ)), (True,True))
+  check('O2b the first server refuses („too many requests“, as busy free servers do) — Перá asks the next one', [h for h,b in OSMQ[:2]], ['overpass-api.de','overpass.kumi.systems'])
   chips=pg.evaluate("[...document.querySelectorAll('[data-exarea]')].map(b=>[b.textContent,b.getAttribute('aria-pressed')])")
   check('O3 both areas offered, the smallest (the reservoir) first and chosen', chips, [['Язовир Копринка язовир','true'],['Копринка защитена територия','false']])
   check('O4 the place is outlined on the map, and named in the panel', (pg.locator('#exmap path.leaflet-interactive').count(),pg.inner_text('#explace .whpl b')), (1,'Язовир Копринка · язовир'))
@@ -78,6 +88,8 @@ try:
   check('O8 a C-shaped lake with a narrow gap: widening would cross itself — the outline falls back to a safe one', selfcross([tuple(x) for x in sh]), False)
   EMPTY[0]=True;pg.evaluate("OSMC.clear()");tap(pg,.75,.8);pg.wait_for_timeout(1200)
   check('O9 tapping outside any named place says so (and suggests point or square)', 'Тук няма именувано място' in pg.inner_text('#explace'), True)
+  EMPTY[0]=False;REFUSE.add('all');pg.evaluate("OSMC.clear()");tap(pg,.6,.7);pg.wait_for_timeout(2000)
+  check('O11 if every server refuses, it says so — and the reason goes into the error log', ('OpenStreetMap не отговаря' in pg.inner_text('#explace'),pg.evaluate("[...errSeen].some(k=>k.startsWith('OpenStreetMap не отговаря — ')&&k.includes('429'))")), (True,True))
   check('O10 no page errors', errs, [])
   b.close()
 finally: srv.terminate()
