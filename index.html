@@ -377,6 +377,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .whpl{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:6px 0 10px;background:var(--bg)} .whpl small{color:var(--mut)} .whplme{margin:4px 0 2px;font-size:14px}
 .explbar{display:flex;gap:8px;margin:6px 0} .explbar input{flex:1;min-width:0;margin:0} .seg.exmode{display:flex;width:100%;margin:0 0 8px} .seg.exmode button{flex:1;white-space:nowrap}
 .exsz{display:grid;grid-template-columns:auto minmax(0,1fr) 54px;align-items:center;gap:10px;margin:0 0 8px;font-size:13.5px} .exsz input{width:100%;accent-color:var(--s)} .exsz b{text-align:right}
+.prmorebtn{margin-top:8px}
 .exareas{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px} .exareas small{color:var(--mut)} .exareas [aria-pressed="true"] small{color:inherit;opacity:.85}
 .prw{display:grid;grid-template-columns:16px minmax(0,1fr) 86px;column-gap:6px;align-items:center;padding:6px 0;border-top:1px solid var(--line)} .prw:first-child{border-top:0}
 .prw .tick{color:var(--s);font-weight:700} .pnm{min-width:0} .pnm .nmlink,.pnm .la{overflow-wrap:anywhere} .pnm .pc{display:block;color:var(--mut);font-size:12px;line-height:1.3} .pnm .rr{color:#b5651d}
@@ -1262,17 +1263,20 @@ function whereHTML(r){const la=r.la||refLatin(r);if(!la)return '';
 // докоснато място: кръг колкото шестоъгълник при този мащаб (~6 км радиус на цяла България, ~1 км отблизо)
 const GBR=z=>Math.max(.8,Math.min(15,(360/Math.pow(2,z)/36)*Math.cos(42.7*Math.PI/180)*111.32/2)),GBP=new Map();
 const ntH=t=>'<div class="note2" style="max-width:none">'+t+'</div>';
-async function gbName(k,known){if(known[k])return known[k];const N=lsGet('bird-journal-gbnames',{})||{};if(N[k])return N[k];
-  try{const d=await gbJ(GBA+'/v1/species/'+k);if(d&&(d.species||d.canonicalName)){N[k]=d.species||d.canonicalName;lsSet('bird-journal-gbnames',N);return N[k];}}catch(e){}return '';}
+let GBN=null;   // ключ на вид в GBIF → латинско име (не се мени — пази се завинаги)
+async function gbName(k,known){if(known[k])return known[k];if(!GBN)GBN=lsGet('bird-journal-gbnames',{})||{};if(GBN[k])return GBN[k];
+  try{const d=await gbJ(GBA+'/v1/species/'+k);if(d&&(d.species||d.canonicalName)){GBN[k]=d.species||d.canonicalName;return GBN[k];}}catch(e){}return '';}
 const gbPlace=(key,lat,lng,r)=>gbArea(key,'&geoDistance='+lat.toFixed(4)+','+lng.toFixed(4)+','+r.toFixed(1)+'km');
 async function gbArea(key,where){const id=key+'|'+where;if(GBP.has(id))return GBP.get(id);
   const g='&country=BG&hasCoordinate=true'+where;
   const [me,all,smp]=await Promise.all([gbJ(GBA+'/v1/occurrence/search?taxonKey='+key+g+'&limit=0&facet=year&facet=month&facetLimit=60'),
-    gbJ(GBA+'/v1/occurrence/search?classKey=212'+g+'&limit=0&facet=speciesKey&facetLimit=100'),gbJ(GBA+'/v1/occurrence/search?classKey=212'+g+'&limit=300')]);
+    gbJ(GBA+'/v1/occurrence/search?classKey=212'+g+'&limit=0&facet=speciesKey&facetLimit=1000'),gbJ(GBA+'/v1/occurrence/search?classKey=212'+g+'&limit=300')]);
   const fc=(d,f)=>(((d.facets||[]).find(x=>String(x.field).toUpperCase().replace(/_/g,'')===f))||{}).counts||[];   // GBIF казва „SPECIES_KEY“
   const ys=fc(me,'YEAR').map(x=>+x.name).filter(Boolean),mo=Array(12).fill(0);for(const x of fc(me,'MONTH'))if(+x.name>=1&&+x.name<=12)mo[+x.name-1]=x.count;
   const known={},loc={};for(const o of smp.results||[]){if(o.speciesKey&&o.species)known[o.speciesKey]=o.species;const l=String(o.locality||'').trim();if(l)loc[l]=(loc[l]||0)+1;}
-  const sp=[];for(const x of fc(all,'SPECIESKEY').slice(0,100)){const la=await gbName(x.name,known);if(la)sp.push({la,n:x.count,k:+x.name});}
+  const F=fc(all,'SPECIESKEY'),sp=[];   // всички видове; имената — по 8 наведнъж
+  for(let i=0;i<F.length;i+=8){const part=await Promise.all(F.slice(i,i+8).map(async x=>({x,la:await gbName(x.name,known)})));for(const {x,la} of part)if(la)sp.push({la,n:x.count,k:+x.name});}
+  if(GBN)lsSet('bird-journal-gbnames',GBN);
   const res={n:me.count||0,y0:ys.length?Math.min(...ys):0,y1:ys.length?Math.max(...ys):0,mo,sp,loc:Object.entries(loc).sort((a,b)=>b[1]-a[1]).map(x=>x[0])[0]||''};
   GBP.set(id,res);return res;}
 function placeHTML(P,la,key,r,title){const all=+key===212,me=all?{bg:'Птици'}:(listFind('la',la)||{bg:la}),mine=new Set();
@@ -1287,8 +1291,8 @@ function placeHTML(P,la,key,r,title){const all=+key===212,me=all?{bg:'Птици
   return '<div class="whpl"><b>'+(title?esc(title):(P.loc?esc(P.loc)+' и наоколо':'Това място'))+'</b><small>'+(r?(r<.15?' · точка, ~100 м около нея':' · кръг ~'+(r<1.5?r.toFixed(1).replace('.',','):Math.round(r))+' км'):title&&P.loc?' · '+esc(P.loc):'')+'</small>'+
     '<div class="whplme">'+(P.n?'<b>'+esc(me.bg)+'</b> тук: '+P.n+' '+(P.n===1?'находка':'находки')+(all?' · '+P.sp.length+' вида':'')+(P.y0?' · '+P.y0+(P.y1!==P.y0?'–'+P.y1:''):'')+(top.length?' · '+(all?'най-много ':'най-често ')+top.join(' и '):''):
       (all?'Тук GBIF няма находки на птици.':'Тук няма находки на <b>'+esc(me.bg)+'</b>.'))+'</div>'+
-    (others.length?'<h4 class="psub">Птици, намирани тук · '+others.length+' вида · '+others.filter(x=>!x.got&&x.bg).length+' нови за теб</h4><div class="prws">'+others.slice(0,40).map(row).join('')+'</div>'+
-      (others.length>40?ntH('и още '+(others.length-40)+' вида — приближи картата за по-точно място.'):''):ntH('Тук GBIF няма други находки на птици.'))+'</div>';}
+    (others.length?'<h4 class="psub">Птици, намирани тук · '+others.length+' вида · '+others.filter(x=>!x.got&&x.bg).length+' нови за теб</h4><div class="prws">'+others.slice(0,30).map(row).join('')+(others.length>30?'<div class="prmore" hidden>'+others.slice(30).map(row).join('')+'</div>':'')+'</div>'+
+      (others.length>30?'<button type="button" class="btn sm prmorebtn" data-prmore>Покажи всички '+others.length+' вида</button>':''):ntH('Тук GBIF няма други находки на птици.'))+'</div>';}
 async function whereMap(el,key,la){if(!el||!await loadLeaflet()||!el.isConnected){if(el)el.remove();return;}
   const m=L.map(el,{zoomControl:true,attributionControl:false,scrollWheelZoom:false});
   // слоят на GBIF е в свой „пласт“ над картата: прозрачен слой в общия пласт се рисува ПОД плочките на картата (и само проблясва при мащабиране)
@@ -1648,11 +1652,23 @@ function bounds(C){
 }
 // ---- „🏞 място“ (2026-11-07): именувани места от OpenStreetMap — езера, язовири, резервати, защитени територии, паркове ----
 const OSMS=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://overpass.private.coffee/api/interpreter'],OSMC=new Map();
-async function osmQ(q){let last='';for(const u of OSMS){try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),20000);   // безплатните сървъри ограничават заявките — опитва следващия
-    const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(q),signal:ac.signal});clearTimeout(tm);
-    if(r.ok)return await r.json();last=u.split('/')[2]+': '+r.status;}catch(e){last=u.split('/')[2]+': '+((e&&e.name)||e);}}
-  logErr('OpenStreetMap не отговаря — '+last,'osm');throw new Error(last);}
-async function osmGeom(a){if(a.ring)return a.ring;const d=await osmQ('[out:json][timeout:25];'+(a.type==='way'?'way':'rel')+'('+a.oid+');out geom;');
+const fetchT=async(u,ms,o)=>{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),ms);try{return await fetch(u,{...(o||{}),signal:ac.signal});}finally{clearTimeout(tm);}};
+const pip=(la,lo,r)=>{let c=false;for(let i=0,j=r.length-1;i<r.length;j=i++){const [ya,xa]=r[i],[yb,xb]=r[j];if((ya>la)!==(yb>la)&&lo<(xb-xa)*(la-ya)/(yb-ya)+xa)c=!c;}return c;};
+// безплатните сървъри ограничават заявките — опитва следващия; всеки опит (и колко е траял) отива в log
+async function osmQ(q,log,servers,ms){for(const u of servers||OSMS){const h=u.split('/')[2],t0=Date.now(),sec=()=>((Date.now()-t0)/1000).toFixed(1)+' с';
+    try{const r=await fetchT(u+'?data='+encodeURIComponent(q),ms||15000);if(r.ok){const d=await r.json();(log||[]).push(h+': ok '+sec());return d;}(log||[]).push(h+': '+r.status+' '+sec());}
+    catch(e){(log||[]).push(h+': '+((e&&e.name)||e)+' '+sec());}}
+  throw new Error('overpass');}
+async function nomArea(lat,lon,log){const t0=Date.now(),sec=()=>((Date.now()-t0)/1000).toFixed(1)+' с';   // Nominatim: „кое природно място е тук“ — с очертанията
+  try{const r=await fetchT('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+lat.toFixed(5)+'&lon='+lon.toFixed(5)+'&zoom=14&layer=natural&polygon_geojson=1&polygon_threshold=0.0002&namedetails=1&accept-language=bg',12000);
+    if(!r.ok){log.push('nominatim: '+r.status+' '+sec());return {err:1};}const d=await r.json();log.push('nominatim: ok '+sec());
+    const g=d&&d.geojson;if(!g||!/Polygon/.test(g.type))return null;
+    for(const P of (g.type==='Polygon'?[g.coordinates]:g.coordinates)){const ring=(P[0]||[]).map(c=>[c[1],c[0]]);
+      if(ring.length>3&&pip(lat,lon,ring))return {type:d.osm_type,oid:d.osm_id,name:(d.namedetails&&d.namedetails['name:bg'])||d.name||String(d.display_name||'').split(',')[0],kind:OSMT[d.type]||OSMT[d.category]||'място',ring,a:Math.abs(ringArea(ring))};}
+    return null;}
+  catch(e){log.push('nominatim: '+((e&&e.name)||e)+' '+sec());return {err:1};}}
+async function osmGeom(a){if(a.ring)return a.ring;const log=[];let d;try{d=await osmQ('[out:json][timeout:25];'+(a.type==='way'?'way':'rel')+'('+a.oid+');out geom;',log);}
+  catch(e){logErr('OpenStreetMap не отговаря — '+log.join('; '),'osm');throw e;}
   const e=(d.elements||[])[0];a.ring=e?osmRing(e):null;return a.ring;}
 const OSMT={reservoir:'язовир',lake:'езеро',lagoon:'лагуна',pond:'водоем',basin:'водоем',water:'водоем',wetland:'влажна зона',nature_reserve:'резерват',protected_area:'защитена територия',park:'парк'};
 const ringArea=r=>{let a=0;for(let i=0;i<r.length-1;i++)a+=r[i][1]*r[i+1][0]-r[i+1][1]*r[i][0];return a/2;};   // [lat,lon]: x=lon, y=lat; >0 — обратно на часовника
@@ -1666,8 +1682,10 @@ function osmRing(e){const eq=(a,b)=>Math.abs(a[0]-b[0])<1e-7&&Math.abs(a[1]-b[1]
   return rings.sort((a,b)=>Math.abs(ringArea(b))-Math.abs(ringArea(a)))[0]||null;}
 async function osmAreas(lat,lon){const k=lat.toFixed(4)+','+lon.toFixed(4);if(OSMC.has(k))return OSMC.get(k);
   const f='["name"][~"^(natural|water|landuse|boundary|leisure)$"~"^(water|reservoir|lake|lagoon|pond|basin|wetland|nature_reserve|protected_area|park)$"]';
-  const d=await osmQ('[out:json][timeout:20];is_in('+lat.toFixed(5)+','+lon.toFixed(5)+')->.a;(way(pivot.a)'+f+';rel(pivot.a)'+f+';);out tags bb;'),out=[];   // само имената и рамката
-  for(const e of d.elements||[]){const t=e.tags||{},b=e.bounds;if(!t.name||!b)continue;
+  const log=[],nom=await nomArea(lat,lon,log),out=nom&&!nom.err?[nom]:[];
+  let d=null;try{d=await osmQ('[out:json][timeout:15];is_in('+lat.toFixed(5)+','+lon.toFixed(5)+')->.a;(way(pivot.a)'+f+';rel(pivot.a)'+f+';);out tags bb;',log,out.length?OSMS.slice(0,1):OSMS,out.length?5000:15000);}catch(e){}   // само имената и рамката
+  if(!d&&!out.length){logErr('OpenStreetMap не отговаря — '+log.join('; '),'osm');throw new Error('osm');}
+  for(const e of (d&&d.elements)||[]){const t=e.tags||{},b=e.bounds;if(!t.name||!b)continue;if(nom&&!nom.err&&e.type===nom.type&&e.id===nom.oid)continue;
     out.push({type:e.type,oid:e.id,name:t['name:bg']||t.name,kind:OSMT[t.water]||OSMT[t.landuse]||OSMT[t.leisure]||OSMT[t.boundary]||OSMT[t.natural]||'място',a:(b.maxlat-b.minlat)*(b.maxlon-b.minlon)});}
   out.sort((x,y)=>x.a-y.a);OSMC.set(k,out);return out;}
 // към заявка в GBIF: опростяване (до ~60 точки), +300 м за брега, без самопресичане (иначе — изпъкналата обвивка), обратно на часовника
@@ -1702,18 +1720,18 @@ function renderExplore(el,bar){if(EXM){try{EXM.remove();}catch(e){}EXM=null;}
     '<div class="seg exmode"><button type="button" data-exm="pt" aria-pressed="'+(EXP.mode!=='sq'&&EXP.mode!=='pl')+'">● точка</button><button type="button" data-exm="sq" aria-pressed="'+(EXP.mode==='sq')+'">▦ квадрат</button><button type="button" data-exm="pl" aria-pressed="'+(EXP.mode==='pl')+'">🏞 място</button></div>'+
     (EXP.mode==='sq'?'<div class="exsz"><span>Квадрат</span><input type="range" id="ex-sz" min="0" max="4" step="1" value="'+Math.max(0,EXSZ.indexOf(EXP.sq||10))+'" aria-label="големина на квадрата"><b id="ex-szv">'+(EXP.sq||10)+' км</b></div>':'')+
     '<div class="mapwrap" style="padding:0;overflow:hidden"><div id="exmap" style="height:'+(innerWidth<600?380:500)+'px;width:100%;border-radius:12px"></div></div>'+
-    ntH('Находките на '+(EXP.sp?'<b>'+esc(EXP.sp.bg)+'</b>':'всички птици')+' в България от GBIF — eBird, iNaturalist, БДЗП и др. '+(EXP.mode!=='sq'&&EXP.mode!=='pl'?'Всяка точка е място с находки — докосни я, за да видиш какво е намирано на 100 м от нея. Приближи, за да ги виждаш една по една.':EXP.mode==='pl'?'Докосни езеро, язовир, резерват или парк — ще видиш птиците на цялото място (с 300 м бряг около него; очертанията са от OpenStreetMap).':'Докосни '+(EXP.mode==='sq'?'квадрат':'място')+', за да видиш какво е намирано там.'))+
-    '<div class="whplace" id="explace"></div>';
+    ntH('Находките на '+(EXP.sp?'<b>'+esc(EXP.sp.bg)+'</b>':'всички птици')+' в България от GBIF — eBird, iNaturalist, БДЗП и др. '+(EXP.mode!=='sq'&&EXP.mode!=='pl'?'Всяка червена точка е място с находки — докосни я, за да видиш какво е намирано на 100 м от нея. По-голямата точка — повече находки.':EXP.mode==='pl'?'Докосни езеро, язовир, резерват или парк — ще видиш птиците на цялото място (с 300 м бряг около него; очертанията са от OpenStreetMap).':'Докосни '+(EXP.mode==='sq'?'квадрат':'място')+', за да видиш какво е намирано там.'))+
+    '<div class="note2" id="exhint" style="max-width:none"></div><div class="whplace" id="explace"></div>';
   exploreMap(document.getElementById('exmap'));}
 async function exploreMap(el){if(!el||!await loadLeaflet()||!el.isConnected)return;
   let key=212;if(EXP.sp){try{key=await gbKey(EXP.sp.la);}catch(e){key=null;}}if(!el.isConnected)return;
   const m=L.map(el,{zoomControl:true,attributionControl:false});EXM=m;el._lmap=m;
   m.createPane('gbif');const gp=m.getPane('gbif');gp.style.zIndex=250;gp.style.pointerEvents='none';
   const T=TILES[tileKey]||TILES.topo;L.tileLayer(T.url,{maxZoom:T.max||18,crossOrigin:true}).addTo(m);
-  const pt=EXP.mode!=='sq'&&EXP.mode!=='pl';   // при „точка“ — самите точки с находки; иначе шестоъгълниците
-  if(key)L.tileLayer(GBA+'/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?srs=EPSG:3857&taxonKey='+key+'&country=BG&'+(pt?'style=classic.point':'bin=hex&hexPerTile=36&style=classic.poly'),{maxZoom:18,opacity:.85,pane:'gbif'}).addTo(m);
+  const pt=EXP.mode!=='sq'&&EXP.mode!=='pl';   // при „точка“ — отблизо Перá рисува самите точки с находки (тези на GBIF са по 1–2 пиксела)
+  if(key)L.tileLayer(GBA+'/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?srs=EPSG:3857&taxonKey='+key+'&country=BG&bin=hex&hexPerTile=36&style=classic.poly',{maxZoom:18,opacity:pt?.55:.85,pane:'gbif'}).addTo(m);
   else document.getElementById('explace').innerHTML=ntH('Няма данни за този вид в GBIF.');
-  const pos=myPos();if(pos)m.setView(pos,10);else m.fitBounds([[41.2,22.3],[44.25,28.7]]);
+  const pos=myPos();if(pos)m.setView(pos,pt?12:10);else m.fitBounds([[41.2,22.3],[44.25,28.7]]);
   let shape=null,busy=0;
   const tapAt=async p=>{if(!key)return;const box=document.getElementById('explace'),my=++busy;if(!box)return;if(shape){shape.remove();shape=null;}let where,title='',r=0;
     if(EXP.mode==='sq'){const S=(EXP.sq||10)*1000,u=toUTM(p.lat,p.lng),E0=Math.floor(u.E/S)*S,N0=Math.floor(u.N/S)*S;
@@ -1747,8 +1765,22 @@ async function exploreMap(el){if(!el||!await loadLeaflet()||!el.isConnected)retu
       r=.1;title=best.loc;where='&geoDistance='+best.la.toFixed(5)+','+best.lo.toFixed(5)+',0.1km';}
     box.innerHTML=ntH('Търся какво има тук…');
     try{const P=await gbArea(key,where);if(my===busy)box.innerHTML=placeHTML(P,EXP.sp?EXP.sp.la:'',key,r,title);}catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря — опитай пак.');}};
-  el._extap=tapAt;m.on('click',e=>{el._exlast=e.latlng;tapAt(e.latlng);});}
-document.addEventListener('click',e=>{const ta=e.target.closest('[data-tgadd]');if(ta){   // „+ Цел“ — на място, без да се пречертава картата
+  el._extap=tapAt;m.on('click',e=>{el._exlast=e.latlng;tapAt(e.latlng);});
+  if(pt&&key){const dots=L.layerGroup().addTo(m),DC=new Map();let tmr=0,seq=0;el._dots=dots;
+    const hint=()=>{const h=document.getElementById('exhint');if(h)h.textContent=m.getZoom()<11?'Приближи картата, за да видиш точките с находки една по една.':'';};
+    const loadDots=async()=>{hint();if(m.getZoom()<11){dots.clearLayers();return;}const b=m.getBounds(),my=++seq,W=b.getWest(),S=b.getSouth(),E=b.getEast(),N=b.getNorth(),k=[W,S,E,N].map(x=>x.toFixed(3)).join(',');
+      let pts=DC.get(k);
+      if(!pts){try{const wkt='POLYGON(('+[[W,S],[E,S],[E,N],[W,N],[W,S]].map(c=>c[0].toFixed(5)+' '+c[1].toFixed(5)).join(', ')+'))';
+          const d=await gbJ(GBA+'/v1/occurrence/search?taxonKey='+key+'&country=BG&hasCoordinate=true&hasGeospatialIssue=false&geometry='+encodeURIComponent(wkt)+'&limit=300');
+          const U={};for(const o of d.results||[]){if(o.decimalLatitude==null||o.decimalLongitude==null)continue;const kk=(+o.decimalLatitude).toFixed(4)+','+(+o.decimalLongitude).toFixed(4);
+            (U[kk]=U[kk]||{la:+o.decimalLatitude,lo:+o.decimalLongitude,n:0}).n++;}
+          pts=Object.values(U);DC.set(k,pts);}catch(e){return;}}
+      if(my!==seq||!el.isConnected)return;dots.clearLayers();
+      for(const q of pts)L.circleMarker([q.la,q.lo],{radius:Math.min(10,5+Math.log2(q.n)),color:'#fff',weight:2,fillColor:'#c0392b',fillOpacity:.9})
+        .on('click',ev=>{L.DomEvent.stopPropagation(ev);const ll=L.latLng(q.la,q.lo);el._exlast=ll;tapAt(ll);}).addTo(dots);};
+    m.on('moveend',()=>{clearTimeout(tmr);tmr=setTimeout(loadDots,350);});loadDots();}}
+document.addEventListener('click',e=>{const pm=e.target.closest('[data-prmore]');if(pm){const r=pm.parentElement.querySelector('.prmore');if(r)r.hidden=false;pm.remove();return;}
+  const ta=e.target.closest('[data-tgadd]');if(ta){   // „+ Цел“ — на място, без да се пречертава картата
     tgAdd({bg:ta.dataset.bg,la:ta.dataset.tgadd,en:ta.dataset.en});const sp=document.createElement('span');sp.className='tgin';sp.textContent='✓ в целите';ta.replaceWith(sp);return;}
   const a=e.target.closest('[data-exm],[data-exclr],[data-exsz]');if(!a)return;
   if(a.dataset.exsz){EXP.sq=+a.dataset.exsz;lsSet(KEXP,EXP);render();return;}
@@ -3869,7 +3901,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-07.11';
+const VER='2026-11-07.12';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

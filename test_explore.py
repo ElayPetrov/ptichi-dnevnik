@@ -11,7 +11,7 @@ def check(n,got,exp):
 def png(c,a=255):
   b=io.BytesIO();Image.new('RGBA',(256,256),c+(a,)).save(b,'PNG');return b.getvalue()
 GREEN,RED=png((40,160,60)),png((220,30,30),200)
-CALLS=[];NOPOINTS=[False]
+CALLS=[];NOPOINTS=[False];MANY=[False]
 def gbif(route):
   u=urllib.parse.unquote(route.request.url);CALLS.append(u)
   if '/v2/map/' in u: return route.fulfill(body=RED,content_type='image/png')
@@ -23,6 +23,9 @@ def gbif(route):
     body={'count':540,'facets':[{'field':'YEAR','counts':[{'name':'2010','count':5},{'name':'2025','count':90}]},{'field':'MONTH','counts':[{'name':'5','count':120},{'name':'4','count':90},{'name':'1','count':10}]}]}
   elif area and 'facet=year' in u and 'taxonKey=2482513' in u:
     body={'count':12,'facets':[{'field':'YEAR','counts':[{'name':'2019','count':2},{'name':'2024','count':10}]},{'field':'MONTH','counts':[{'name':'3','count':6},{'name':'2','count':4}]}]}
+  elif area and 'facet=speciesKey' in u and MANY[0]:   # a busy place: 45 species
+    body={'facets':[{'field':'SPECIES_KEY','counts':[{'name':str(1000+i),'count':100-i} for i in range(45)]}]}
+  elif '/v1/species/10' in u and MANY[0]: body={'species':'Avis numero'+u.rsplit('/',1)[1]}
   elif area and 'facet=speciesKey' in u:
     body={'facets':[{'field':'SPECIES_KEY','counts':[{'name':'2482507','count':200},{'name':'2482513','count':12},{'name':'9999999','count':3}]}]}
   elif area and 'classKey=212' in u:
@@ -48,13 +51,13 @@ try:
   check('E1 Карта offers „Изследвай“ even with no records of your own (the personal map stays first)', pg.evaluate("[...document.querySelectorAll('[data-mm]')].map(b=>b.textContent)"), ['Истинска карта','Атлас','Изследвай'])
   pg.evaluate("OBS.push({id:7,date:'%s',time:'08:00',place:'Тюлбето',count:'',bg:'Кос',en:'',la:'',fam:'',note:'',h:0,s:1,p:0,beh:[],geo:'42.62000,25.40000',photo:null});save()"%T)
   pg.click('[data-mm="gbif"]');pg.wait_for_timeout(1500)
-  check('E2 a map of where all birds have been found in Bulgaria, drawn above the map, near your latest record',
-    (any('/v2/map/' in u and 'taxonKey=212' in u and 'country=BG' in u for u in CALLS),pg.evaluate("!!document.querySelector('#exmap .leaflet-gbif-pane img')"),pg.evaluate("document.getElementById('exmap')._lmap.getZoom()")), (True,True,10))
+  check('E2 a map of where all birds have been found in Bulgaria, drawn above the map, near your latest record (zoomed in, so the dots show)',
+    (any('/v2/map/' in u and 'taxonKey=212' in u and 'country=BG' in u for u in CALLS),pg.evaluate("!!document.querySelector('#exmap .leaflet-gbif-pane img')"),pg.evaluate("document.getElementById('exmap')._lmap.getZoom()")), (True,True,12))
   tap(pg);pg.wait_for_timeout(1500)
   t=pg.inner_text('#explace')
   pts=[u for u in CALLS if 'geoDistance=' in u and '0.1km' in u]
   check('E3 ● точка: a tap snaps to the nearest find point and asks about 100 m around it — the place, „Птици тук: 540 находки · 3 вида…“', (t.startswith('Розова долина · точка, ~100 м около нея'),'Птици тук: 540 находки · 3 вида · 2010–2025 · най-много май и април' in t,any('42.62030,25.40040,0.1km' in u for u in pts)), (True,True,True))
-  check('E3b ...the point is marked with a dot, and in this mode the map shows GBIF’s find points, not hexagons', (pg.locator('#exmap path.leaflet-interactive').count()>=2,any('/v2/map/' in u and 'style=classic.point' in u and 'bin=hex' not in u for u in CALLS)), (True,True))
+  check('E3b ...the point is marked; in this mode Перá draws the find points itself as clearly visible, tappable dots (zoomed in)', (pg.locator('#exmap path.leaflet-interactive').count()>=3,pg.evaluate("document.getElementById('exmap')._dots.getLayers().length"),pg.inner_text('#exhint')), (True,2,''))
   rows=pg.evaluate("[...document.querySelectorAll('#explace .prw')].map(a=>[a.querySelector('.nmlink,i').textContent,a.classList.contains('got'),a.innerText.includes('ново за теб')])")
   check('E4 ...and every bird found there, most found first, ✓ yours, „ново за теб“ the rest', rows, [['Кос',True,False],['Сврака',False,True],['Степен орел',False,True]])
   pg.click('[data-exm="sq"]');pg.wait_for_timeout(1500);n0=len(CALLS)
@@ -83,6 +86,11 @@ try:
   pg.click('[data-exclr]');pg.wait_for_timeout(300)
   pg.click('[data-exm="pt"]');pg.wait_for_timeout(1300);NOPOINTS[0]=True;tap(pg);pg.wait_for_timeout(1200)
   check('E16 ● точка with no find point near the finger says so', 'Тук няма точка с находки' in pg.inner_text('#explace'), True)
+  NOPOINTS[0]=False;MANY[0]=True;pg.click('[data-exm="sq"]');pg.wait_for_timeout(1300);tap(pg);pg.wait_for_timeout(2500)
+  check('E17 a busy place: the first 30 species shown and „Покажи всички 45 вида“ — no „и още…“', (pg.locator('#explace .prw:visible').count(),pg.inner_text('[data-prmore]'),'и още' in pg.inner_text('#explace')), (30,'Покажи всички 45 вида',False))
+  pg.click('[data-prmore]');pg.wait_for_timeout(200)
+  check('E18 ...and it opens all of them, names looked up where GBIF\'s sample lacked them', (pg.locator('#explace .prw:visible').count(),pg.locator('[data-prmore]').count(),'Avis numero1044' in pg.inner_text('#explace')), (45,0,True))
+  MANY[0]=False;pg.click('[data-exm="pt"]');pg.wait_for_timeout(800)
   pg.click('[data-mm="real"]');pg.wait_for_timeout(800)
   check('E10 the personal map is still there as before', pg.locator('#lmap').count(), 1)
   check('E11 no page errors', errs, [])
