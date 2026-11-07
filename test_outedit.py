@@ -60,7 +60,7 @@ try:
     for k in n.evaluate(f"[...document.querySelectorAll('{sel}')].map(e=>e.getAttribute('{sel[1:-1]}'))"):
       n.click(f'[{sel[1:-1]}="{k}"]');n.wait_for_timeout(700)
       res[f'{tab}:{k}']=n.evaluate("document.documentElement.scrollWidth<=document.documentElement.clientWidth")
-  check('E14 at 360 px wide, Фенология and Карта (both modes) fit the screen', all(res.values()) and len(res)==5, True)
+  check('E14 at 360 px wide, Фенология and Карта (all its modes, „Изследвай“ too) fit the screen', (all(res.values()),len(res)), (True,6))
   check('E15 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

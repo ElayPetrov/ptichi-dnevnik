@@ -74,6 +74,7 @@ run password python3 test_pw.py 9003
 run voice    python3 test_voice.py 9004
 run iphone   python3 test_ios.py 9005
 run where    python3 test_where.py 9006
+run explore  python3 test_explore.py 9007
 run pushdeno sh -c '[ -x /tmp/denobin/deno ] || (cd /tmp && curl -sSL -o deno.zip https://github.com/denoland/deno/releases/download/v2.1.4/deno-x86_64-unknown-linux-gnu.zip && unzip -o -q deno.zip -d /tmp/denobin); python3 test_pushdeno.py 8999'
 printf '%-9s %s of 4 save taps landed\n' tap "$(python3 tap_test.py 8950 ptichi-dnevnik.html | grep -c "'saved'")"
 printf '%-9s ' sun; python3 sun_check.py | tail -1

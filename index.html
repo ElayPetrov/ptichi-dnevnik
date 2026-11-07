@@ -375,6 +375,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .whmb i{display:block;width:100%;background:var(--s);border-radius:3px 3px 0 0} .whmb small{font-size:10.5px;color:var(--mut);margin-top:2px} .whmb.now small{color:var(--ink);font-weight:700}
 .whmap{height:220px;border-radius:12px;overflow:hidden;margin:8px 0;background:var(--bg2)} .whsrc{font-size:11.5px;color:var(--mut);margin-top:8px} .whsrc a{color:inherit}
 .whpl{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:6px 0 10px;background:var(--bg)} .whpl small{color:var(--mut)} .whplme{margin:4px 0 2px;font-size:14px}
+.explbar{display:flex;gap:8px;margin:6px 0} .explbar input{flex:1;min-width:0;margin:0} .seg.exmode{display:flex;width:100%;margin:0 0 8px} .seg.exmode button{flex:1;white-space:nowrap}
 .tgwhere{display:inline-block;background:none;border:1px solid var(--line2);border-radius:999px;padding:2px 10px;font:inherit;font-size:12.5px;color:var(--s);cursor:pointer;margin-top:5px}
 .pout{text-align:center;margin:18px 0 6px} .pout .btn{color:var(--accent)}
 .linkbtn{background:none;border:0;padding:6px 0 0;font:inherit;font-size:13px;color:var(--mut);text-decoration:underline;cursor:pointer}
@@ -1150,7 +1151,8 @@ function render(){
   if(view==='friends')return renderFriends(el);   // работи и с празен дневник: нов телефон, нов приятел
   if(view==='badges')return renderBadges(el);
   if(view==='goals')return renderGoals(el);       // и целите — работят и с празен дневник     // и значките — новият човек вижда какво може да спечели
-  if(!OBS.length){const ih=instHTML();el.innerHTML=(view==='log'?inviteBanner():'')+'<div class="empty"><div class="emptybird">'+BIRDGLYPH+'</div>'+
+  if(view==='map'&&mapMode==='gbif')return renderMap(el);   // „Изследвай“ показва находките в GBIF — работи и с празен дневник
+  if(!OBS.length){const ih=instHTML();el.innerHTML=(view==='log'?inviteBanner():'')+(view==='map'?'<div class="mapbar"><button class="chip" data-mm="real" aria-pressed="true">Истинска карта</button><button class="chip" data-mm="grid">Атлас</button><button class="chip" data-mm="gbif">Изследвай</button></div>':'')+'<div class="empty"><div class="emptybird">'+BIRDGLYPH+'</div>'+
     (EMPTYTXT[view]?EMPTYTXT[view]+'<div class="fbtns" style="justify-content:center;margin-top:12px"><button type="button" class="btn" data-first>Запиши първата птица</button></div>':
      'Още няма записи.<br>Натисни <b>+ Ново наблюдение</b> и впиши първата птица.')+
     (ih?'<div class="inst" style="margin-top:20px">'+ih+'</div>':'')+'</div>';return;}
@@ -1256,8 +1258,9 @@ const GBR=z=>Math.max(.8,Math.min(15,(360/Math.pow(2,z)/36)*Math.cos(42.7*Math.P
 const ntH=t=>'<div class="note2" style="max-width:none">'+t+'</div>';
 async function gbName(k,known){if(known[k])return known[k];const N=lsGet('bird-journal-gbnames',{})||{};if(N[k])return N[k];
   try{const d=await gbJ(GBA+'/v1/species/'+k);if(d&&(d.species||d.canonicalName)){N[k]=d.species||d.canonicalName;lsSet('bird-journal-gbnames',N);return N[k];}}catch(e){}return '';}
-async function gbPlace(key,lat,lng,r){const id=key+'|'+lat.toFixed(3)+','+lng.toFixed(3)+'|'+r.toFixed(1);if(GBP.has(id))return GBP.get(id);
-  const g='&country=BG&hasCoordinate=true&geoDistance='+lat.toFixed(4)+','+lng.toFixed(4)+','+r.toFixed(1)+'km';
+const gbPlace=(key,lat,lng,r)=>gbArea(key,'&geoDistance='+lat.toFixed(4)+','+lng.toFixed(4)+','+r.toFixed(1)+'km');
+async function gbArea(key,where){const id=key+'|'+where;if(GBP.has(id))return GBP.get(id);
+  const g='&country=BG&hasCoordinate=true'+where;
   const [me,all,smp]=await Promise.all([gbJ(GBA+'/v1/occurrence/search?taxonKey='+key+g+'&limit=0&facet=year&facet=month&facetLimit=60'),
     gbJ(GBA+'/v1/occurrence/search?classKey=212'+g+'&limit=0&facet=speciesKey&facetLimit=100'),gbJ(GBA+'/v1/occurrence/search?classKey=212'+g+'&limit=300')]);
   const fc=(d,f)=>(((d.facets||[]).find(x=>String(x.field).toUpperCase().replace(/_/g,'')===f))||{}).counts||[];   // GBIF казва „SPECIES_KEY“
@@ -1266,16 +1269,16 @@ async function gbPlace(key,lat,lng,r){const id=key+'|'+lat.toFixed(3)+','+lng.to
   const sp=[];for(const x of fc(all,'SPECIESKEY').slice(0,100)){const la=await gbName(x.name,known);if(la)sp.push({la,n:x.count,k:+x.name});}
   const res={n:me.count||0,y0:ys.length?Math.min(...ys):0,y1:ys.length?Math.max(...ys):0,mo,sp,loc:Object.entries(loc).sort((a,b)=>b[1]-a[1]).map(x=>x[0])[0]||''};
   GBP.set(id,res);return res;}
-function placeHTML(P,la,key,r){const me=listFind('la',la)||{bg:la},mine=new Set();
+function placeHTML(P,la,key,r,title){const all=+key===212,me=all?{bg:'Птици'}:(listFind('la',la)||{bg:la}),mine=new Set();
   for(const o of SURE()){const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en);if(c)mine.add(nrm(c.la));}
   const MN=['януари','февруари','март','април','май','юни','юли','август','септември','октомври','ноември','декември'];
   const top=P.mo.map((v,i)=>[v,i]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,2).map(x=>MN[x[1]]);
-  const others=P.sp.filter(x=>x.k!==+key).map(x=>{const c=listFind('la',x.la);return {...x,bg:c?c.bg:'',la2:c?c.la:x.la,en:c?c.en:'',got:c?mine.has(nrm(c.la)):false};});
+  const others=P.sp.filter(x=>all||x.k!==+key).map(x=>{const c=listFind('la',x.la);return {...x,bg:c?c.bg:'',la2:c?c.la:x.la,en:c?c.en:'',got:c?mine.has(nrm(c.la)):false};});
   const row=x=>'<div class="asp'+(x.got?' got':'')+'"><span class="tick">'+(x.got?'✓':'')+'</span>'+(x.bg?spLink({bg:x.bg,la:x.la2,en:x.en}):'<i class="la">'+esc(x.la)+'</i>')+
     ' <small>'+x.n+'</small>'+(x.got||!x.bg?'':' <small class="rr">ново за теб</small>')+'</div>';
-  return '<div class="whpl"><b>'+(P.loc?esc(P.loc)+' и наоколо':'Това място')+'</b><small> · кръг ~'+(r<1.5?r.toFixed(1).replace('.',','):Math.round(r))+' км</small>'+
-    '<div class="whplme">'+(P.n?'<b>'+esc(me.bg)+'</b> тук: '+P.n+' '+(P.n===1?'находка':'находки')+(P.y0?' · '+P.y0+(P.y1!==P.y0?'–'+P.y1:''):'')+(top.length?' · най-често '+top.join(' и '):''):
-      'Тук няма находки на <b>'+esc(me.bg)+'</b>.')+'</div>'+
+  return '<div class="whpl"><b>'+(title?esc(title):(P.loc?esc(P.loc)+' и наоколо':'Това място'))+'</b><small>'+(r?' · кръг ~'+(r<1.5?r.toFixed(1).replace('.',','):Math.round(r))+' км':title&&P.loc?' · '+esc(P.loc):'')+'</small>'+
+    '<div class="whplme">'+(P.n?'<b>'+esc(me.bg)+'</b> тук: '+P.n+' '+(P.n===1?'находка':'находки')+(all?' · '+P.sp.length+' вида':'')+(P.y0?' · '+P.y0+(P.y1!==P.y0?'–'+P.y1:''):'')+(top.length?' · '+(all?'най-много ':'най-често ')+top.join(' и '):''):
+      (all?'Тук GBIF няма находки на птици.':'Тук няма находки на <b>'+esc(me.bg)+'</b>.'))+'</div>'+
     (others.length?'<h4 class="psub">Птици, намирани тук · '+others.length+' вида · '+others.filter(x=>!x.got&&x.bg).length+' нови за теб</h4><div class="allsp">'+others.slice(0,40).map(row).join('')+'</div>'+
       (others.length>40?ntH('и още '+(others.length-40)+' вида — приближи картата за по-точно място.'):''):ntH('Тук GBIF няма други находки на птици.'))+'</div>';}
 async function whereMap(el,key,la){if(!el||!await loadLeaflet()||!el.isConnected){if(el)el.remove();return;}
@@ -1635,17 +1638,55 @@ function bounds(C){
   if(spanX<spanY*.9){const need=(spanY*.9-spanX)/2/kx;n1-=need;n2+=need;spanX=(n2-n1)*kx;}
   return {m1,m2,n1,n2,spanY,spanX,kx};
 }
+// ---- Карта → „Изследвай“ (2026-11-07): находките на птици в България от GBIF; докосни точка или 10×10 км квадрат ----
+const KEXP='bird-journal-explore';let EXP=lsGet(KEXP,null)||{mode:'pt',sp:null},EXM=null;
+function renderExplore(el,bar){if(EXM){try{EXM.remove();}catch(e){}EXM=null;}
+  el.innerHTML=bar+'<div class="explbar"><input id="ex-sp" list="bgnames" placeholder="всички птици — или избери вид" value="'+esc(EXP.sp?EXP.sp.bg:'')+'">'+
+    (EXP.sp?'<button type="button" class="btn sm" data-exclr aria-label="всички птици">×</button>':'')+'</div>'+
+    '<div class="seg exmode"><button type="button" data-exm="pt" aria-pressed="'+(EXP.mode!=='sq')+'">● точка</button><button type="button" data-exm="sq" aria-pressed="'+(EXP.mode==='sq')+'">▦ квадрат 10×10 км</button></div>'+
+    '<div class="mapwrap" style="padding:0;overflow:hidden"><div id="exmap" style="height:'+(innerWidth<600?380:500)+'px;width:100%;border-radius:12px"></div></div>'+
+    ntH('Находките на '+(EXP.sp?'<b>'+esc(EXP.sp.bg)+'</b>':'всички птици')+' в България от GBIF — eBird, iNaturalist, БДЗП и др. Докосни '+(EXP.mode==='sq'?'квадрат':'място')+', за да видиш какво е намирано там.')+
+    '<div class="whplace" id="explace"></div>';
+  exploreMap(document.getElementById('exmap'));}
+async function exploreMap(el){if(!el||!await loadLeaflet()||!el.isConnected)return;
+  let key=212;if(EXP.sp){try{key=await gbKey(EXP.sp.la);}catch(e){key=null;}}if(!el.isConnected)return;
+  const m=L.map(el,{zoomControl:true,attributionControl:false});EXM=m;el._lmap=m;
+  m.createPane('gbif');const gp=m.getPane('gbif');gp.style.zIndex=250;gp.style.pointerEvents='none';
+  const T=TILES[tileKey]||TILES.topo;L.tileLayer(T.url,{maxZoom:T.max||18,crossOrigin:true}).addTo(m);
+  if(key)L.tileLayer(GBA+'/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?srs=EPSG:3857&taxonKey='+key+'&country=BG&bin=hex&hexPerTile=36&style=classic.poly',{maxZoom:18,opacity:.85,pane:'gbif'}).addTo(m);
+  else document.getElementById('explace').innerHTML=ntH('Няма данни за този вид в GBIF.');
+  const pos=myPos();if(pos)m.setView(pos,10);else m.fitBounds([[41.2,22.3],[44.25,28.7]]);
+  let shape=null,busy=0;
+  m.on('click',async e=>{if(!key)return;const p=e.latlng,box=document.getElementById('explace'),my=++busy;if(!box)return;if(shape)shape.remove();let where,title='',r=0;
+    if(EXP.mode==='sq'){const q=sqOf(p.lat.toFixed(5)+','+p.lng.toFixed(5));if(!q){box.innerHTML=ntH('Тук няма атласен квадрат.');return;}
+      const C=[[q.E0,q.N0],[q.E0+1e4,q.N0],[q.E0+1e4,q.N0+1e4],[q.E0,q.N0+1e4]].map(([E,N])=>fromUTM(q.z,E,N));   // ЮЗ, ЮИ, СИ, СЗ — обратно на часовника, както иска GBIF
+      shape=L.polygon(C,{color:'#c0392b',weight:2,fillOpacity:.06}).addTo(m);title='Квадрат '+q.id;
+      where='&geometry='+encodeURIComponent('POLYGON(('+[...C,C[0]].map(c=>c[1].toFixed(5)+' '+c[0].toFixed(5)).join(', ')+'))');}
+    else{r=GBR(m.getZoom());shape=L.circle(p,{radius:r*1000,color:'#c0392b',weight:2,fillOpacity:.06}).addTo(m);
+      where='&geoDistance='+p.lat.toFixed(4)+','+p.lng.toFixed(4)+','+r.toFixed(1)+'km';}
+    box.innerHTML=ntH('Търся какво има тук…');
+    try{const P=await gbArea(key,where);if(my===busy)box.innerHTML=placeHTML(P,EXP.sp?EXP.sp.la:'',key,r,title);}catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря — опитай пак.');}});}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-exm],[data-exclr]');if(!a)return;
+  if(a.dataset.exm){EXP.mode=a.dataset.exm;lsSet(KEXP,EXP);render();return;}
+  EXP.sp=null;lsSet(KEXP,EXP);render();});
+document.addEventListener('change',e=>{if(e.target.id!=='ex-sp')return;const v=e.target.value.trim();if(!v){EXP.sp=null;lsSet(KEXP,EXP);render();return;}
+  const c=listFind('bg',v)||listFind('la',v)||listFind('en',v);if(!c||!c.la){const b=document.getElementById('explace');if(b)b.innerHTML=ntH('Не намирам „'+esc(v)+'“ в списъка с видове.');return;}
+  EXP.sp={bg:c.bg,la:c.la,en:c.en};lsSet(KEXP,EXP);render();});
 function renderMap(el){
   const C=clusters();
   const noGeo=SURE().filter(o=>!o.geo).length;
+  const bar0='<div class="mapbar"><button class="chip" data-mm="real"'+(mapMode==='real'?' aria-pressed="true"':'')+'>Истинска карта</button>'+
+    '<button class="chip" data-mm="grid"'+(mapMode==='grid'?' aria-pressed="true"':'')+'>Атлас</button><button class="chip" data-mm="gbif"'+(mapMode==='gbif'?' aria-pressed="true"':'')+'>Изследвай</button></div>';
+  if(mapMode==='gbif')return renderExplore(el,bar0);   // не зависи от твоите записи
   if(!C.length){
-    el.innerHTML='<div class="empty">Няма записи с координати.<br><br>'+
+    el.innerHTML=bar0+'<div class="empty">Няма записи с координати.<br><br>'+
       'Добави координати към няколко наблюдения и тук ще се появи карта на местата ти.'+
       (noGeo?'<br><span style="opacity:.7">'+noGeo+' записа са без координати.</span>':'')+'</div>';
     return;}
   const bar='<div class="mapbar">'+
     '<button class="chip" data-mm="real"'+(mapMode==='real'?' aria-pressed="true"':'')+'>Истинска карта</button>'+
     '<button class="chip" data-mm="grid"'+(mapMode==='grid'?' aria-pressed="true"':'')+'>Атлас</button>'+
+    '<button class="chip" data-mm="gbif">Изследвай</button>'+
     '<span class="note2" id="mapmsg" style="align-self:center;max-width:none"></span></div>'+
     (mapMode==='real'?'<div class="tilesub" role="group" aria-label="вид на картата">'+Object.keys(TILES).map(k=>'<button class="sub" data-tk="'+k+'"'+
       (tileKey===k?' aria-pressed="true"':'')+' title="'+esc(TILES[k].name)+'">'+(TILES[k].short||TILES[k].name)+'</button>').join('')+'<button class="sub sq" data-atov aria-pressed="'+ATOV+'" title="квадрати 10×10 км">▦ квадрати</button></div>':'');
@@ -3740,7 +3781,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-07.7';
+const VER='2026-11-07.8';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

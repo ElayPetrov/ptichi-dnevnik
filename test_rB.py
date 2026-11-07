@@ -21,7 +21,7 @@ try:
   pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-v3',%s);localStorage.setItem('bird-journal-tips','{\"all\":1}');localStorage.setItem('bird-journal-quiet','true');sessionStorage.setItem('s','1')}"%json.dumps(json.dumps(data,ensure_ascii=False)))
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400)
   pg.click('.tab[data-v="map"]');pg.wait_for_timeout(300)
-  check('B1 Карта: „Атлас“ instead of „Схема“', pg.evaluate("[...document.querySelectorAll('[data-mm]')].map(b=>b.textContent)"), ['Истинска карта','Атлас'])
+  check('B1 Карта: „Атлас“ instead of „Схема“ (and, since 2026-11-07.8, „Изследвай“)', pg.evaluate("[...document.querySelectorAll('[data-mm]')].map(b=>b.textContent)"), ['Истинска карта','Атлас','Изследвай'])
   pg.click('[data-mm="grid"]');pg.wait_for_timeout(1200)
   check('B2 your position’s square at the top (from the phone’s GPS)', pg.inner_text('.athead b'), '35T LH 61')
   sq=pg.evaluate("[...document.querySelectorAll('.atq:not(.none)')].map(g=>g.dataset.atq+':'+g.querySelector('.atn').textContent).sort()")
