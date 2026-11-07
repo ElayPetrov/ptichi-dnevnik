@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-869 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+877 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -84,6 +84,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_cos.py | 11 | the 3 Nov cosmetic round: Дневник remembers folding in every filter (open at first, kept after switching and reopening, each filter its own, a new record opens its day everywhere), smaller map style buttons, the profile's header card, initials avatars, adding a friend inside the friends' card, folded how-to, sign-out last, no overflow |
 | test_pw.py | 10 | forgotten password: „Забравена парола?“ asks for the e-mail first, then has Supabase send the recovery letter back to Перá; the link opens „Нова парола“ on top of the profile (even signed out on that phone); length and matching checks; saving; „Смени паролата“ folded above „Изход“ |
 | test_voice.py | 26 | voice recording: the parser (either order, no punctuation, plurals and counted forms, numbers in words, „около/поне“, everyday and plain-noun names, ambiguous or unknown words kept, never guessed), the 🎙 panel saving drafts at once with time, place, outing and position, drafts not counting, review in Дневник (banner, tags, ✓, editing a draft), live Bulgarian dictation with vibration and auto-restart, voice notes kept on the phone, the iPhone home-screen case |
+| test_ios.py | 8 | iPhone (from the Home Screen): the first open's welcome → „Запиши първата“ leaves the form usable, no field focused by code (it can stay without a keyboard on iPhone), the voice panel explains the keyboard's language, „J“ → jay; Android still focuses the name field |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

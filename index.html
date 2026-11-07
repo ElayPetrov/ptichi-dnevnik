@@ -2152,7 +2152,7 @@ function openForm(o,seed){
   fBC=o&&o.bc?o.bc:0;document.getElementById('f-bcbox').style.display=fBC?'':'none';bcDraw();
   document.getElementById('savebtn').textContent=o?'Запази промените':'Запиши';
   form.classList.add('on');document.getElementById('toggle').textContent='− Скрий формата';
-  document.getElementById('f-bg').focus();}
+  if(!isIOS)document.getElementById('f-bg').focus();}   // на iPhone полето се докосва — фокус от кода там може да остане без клавиатура
 function closeForm(){dropNew();form.classList.remove('on');document.getElementById('toggle').textContent='+ Ново наблюдение';edit=null;}
 document.getElementById('toggle').onclick=()=>{if(form.classList.contains('on'))return closeForm();sessFresh();openForm(null);};
 document.getElementById('cancel').onclick=closeForm;
@@ -2297,7 +2297,7 @@ form.onsubmit=e=>{e.preventDefault();
     const near=rec.time?Math.abs(new Date(rec.date+'T'+rec.time)-Date.now())<=30*6e4:rec.date===today();
     if(SESS.live==null||near)SESS.live=near;
     saveSess();render();openForm(null);
-    document.getElementById('f-bg').focus();
+    if(!isIOS)document.getElementById('f-bg').focus();
   } else {closeForm();render();}
   if(saved)ckSaved(saved.id);
   if(saved&&!saved.u&&!listFind('bg',saved.bg)&&!listFind('la',saved.la)&&LAT_OK(saved.la)&&(saved.en||'').trim())spxAdd({bg:saved.bg.trim(),la:saved.la.trim(),en:saved.en.trim()});   // описана в „Списък“ партида се затваря — следващите докосвания са нов запис
@@ -2481,7 +2481,7 @@ const VHEARD=new Set(['чух','чухме','чувам','чуваме','чув�
   VSEEN=new Set(['видях','видяхме','виждам','видя','видян','видяна','видени','видяно','saw','seen','see','spotted']),VPHOTO=new Set(['снимах','снимахме','снимка','снимки','сниман','снимана','снимани','снимано','photographed','photo','photos','picture','pictures']);
 const VSKIP=new Set(['и','още','също','после','а','при','на','в','във','от','с','със','бяха','беше','има','имаше','летят','лети','кацнал','кацна','там','тук','отново','пак','ето','летящ','летящи',
   'and','a','an','the','of','at','than','also','then','there','here','flying','plus','another','just','i','we','in','on','by','with']);
-const VIRR={geese:'goose'},VGLUE=new Set(['of','a','an','the']);   // English plurals the prefix rule can't see
+const VIRR={geese:'goose',j:'jay',js:'jays',jays:'jays'},VGLUE=new Set(['of','a','an','the']);   // English plurals the prefix rule can't see
 const vn=w=>String(w||'').toLowerCase().replace(/ё/g,'е').replace(/я/g,'е').replace(/[^0-9a-zа-ю-]/g,'');
 // дума спрямо дума от името: еднакви — 3; общо начало (поне 3 букви, до 2 различни в края: „сойки“~„сойка“, „кълвача“~„кълвач“) — по-малко
 const vwm=(a,b)=>{if(a===b)return 3;const L=Math.min(a.length,b.length);let p=0;while(p<L&&a[p]===b[p])p++;
@@ -2556,7 +2556,7 @@ function vcPaint(){const live=vcLive();document.getElementById('vc-livebox').sty
   for(const b of document.querySelectorAll('[data-vclang]'))b.setAttribute('aria-pressed',String(b.dataset.vclang===VCL));
   document.getElementById('vc-hint').textContent=live?(VCL==='en'?'Say the species and the count, e.g. “two jays, blackbird three, heard golden oriole”. A short vibration for each one.':
     'Кажи вида и бройката, напр. „сойка две, кос три, чух авлига“. Всеки разпознат вид — кратко вибриране.'):
-    (isIOS?'На iPhone разпознаването става с микрофона на клавиатурата: докосни полето долу и натисни микрофона.':'Този браузър не разпознава реч сам — ползвай микрофона на клавиатурата в полето долу.');
+    (isIOS?'На iPhone разпознаването става с микрофона на клавиатурата: докосни полето долу и натисни микрофона. Езикът е този на клавиатурата — Apple няма диктовка на български, затова смени клавиатурата на English (🌐) и казвай имената на английски.':'Този браузър не разпознава реч сам — ползвай микрофона на клавиатурата в полето долу.');
   const mb=document.getElementById('vc-memo');mb.textContent=VMR?'■ Спри бележката ('+Math.round((Date.now()-VMT0)/1000)+' с)':'● Гласова бележка';mb.classList.toggle('on',!!VMR);
   document.getElementById('vc-list').innerHTML=VCLIST.length?'<h4 class="psub">Добавени сега · '+VCLIST.length+'</h4>'+VCLIST.map(o=>'<div class="vcrow'+(o.la?'':' unk')+'"><b>'+esc(o.la?o.bg:'„'+(o.vraw||o.bg)+'“')+'</b>'+
     (o.count?' · '+esc(cntText(o)):'')+'<small>'+(o.h&&!o.s?'чут':o.p?'сниман':'видян')+(o.la?'':' · не разпознах — оправи го после')+'</small></div>').join(''):'';}
@@ -3450,7 +3450,7 @@ document.getElementById('wlDlg').addEventListener('click',e=>{const b=e.target.c
   if(a==='next'){wlI=Math.min(WLC.length-1,wlI+1);wlDraw();return;}
   wlEnd();
   if(a==='acct')document.getElementById('acct').click();
-  if(a==='first'){openForm(null);window.scrollTo({top:0,behavior:'smooth'});}});
+  if(a==='first')setTimeout(()=>{window.scrollTo(0,0);openForm(null);},80);});   // след като диалогът се е затворил (iPhone иначе „заключва“ полето)
 // празните раздели обясняват за какво са
 const EMPTYTXT={life:'Тук ще се събират видовете ти — всеки с коронка, която показва колко добре го познаваш.',
   outs:'Тук ще са излетите ти. Преди разходка за птици натисни „Излет“ — записите ще се съберат заедно.',
@@ -3648,7 +3648,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-07.3';
+const VER='2026-11-07.4';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
