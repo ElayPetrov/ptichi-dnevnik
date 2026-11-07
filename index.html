@@ -1687,17 +1687,19 @@ async function hotspots(b,key){   // „горещите точки“: най-�
   const W=b.getWest(),S2=b.getSouth(),E=b.getEast(),N=b.getNorth(),ck=key+'|'+[W,S2,E,N].map(x=>x.toFixed(3)).join(',');if(HSC.has(ck))return HSC.get(ck);
   const g='&country=BG&hasCoordinate=true&hasGeospatialIssue=false&geometry='+encodeURIComponent('POLYGON(('+[[W,S2],[E,S2],[E,N],[W,N],[W,S2]].map(c=>c[0].toFixed(5)+' '+c[1].toFixed(5)).join(', ')+'))');
   const d=await gbJ(GBA+'/v1/occurrence/search?taxonKey='+key+g+'&limit=0&facet=locality&facetLimit=25&facetMincount=12');
-  const F=(((d.facets||[]).find(x=>/LOCALITY/i.test(String(x.field))))||{}).counts||[],out=[];
+  const F=(((d.facets||[]).find(x=>/LOCALITY/i.test(String(x.field))))||{}).counts||[],out=[],why=[];
   for(let i=0;i<F.length;i+=6){
     const part=await Promise.all(F.slice(i,i+6).map(async f=>{try{   // къде са находките под това име
       const r=await gbJ(GBA+'/v1/occurrence/search?taxonKey='+key+g+'&locality='+encodeURIComponent(f.name)+'&limit=100');
       const U=[...new Map((r.results||[]).filter(o=>o.decimalLatitude!=null&&o.decimalLongitude!=null).map(o=>[(+o.decimalLatitude).toFixed(4)+','+(+o.decimalLongitude).toFixed(4),[+o.decimalLatitude,+o.decimalLongitude]])).values()];
-      if(!U.length)return null;let span=0;for(let a=0;a<U.length;a++)for(let c=a+1;c<U.length;c++)span=Math.max(span,distM(U[a][0],U[a][1],U[c][0],U[c][1]));
-      if(span>4000)return null;   // цял град или община под едно име — не е място
+      if(!U.length){why.push(f.name+': без координати');return null;}let span=0;for(let a=0;a<U.length;a++)for(let c=a+1;c<U.length;c++)span=Math.max(span,distM(U[a][0],U[a][1],U[c][0],U[c][1]));
+      if(span>4000){why.push(f.name+': '+U.length+' точки на '+Math.round(span/1000)+' км');return null;}   // цял град или община под едно име — не е място
       const cen=[U.reduce((x,u)=>x+u[0],0)/U.length,U.reduce((x,u)=>x+u[1],0)/U.length];
-      return {name:f.name,n:f.count,ring:U.length>=3?gbShape(hullRing(U),250):circleRing(cen,250+span/2)};}catch(e){return null;}}));
+      return {name:f.name,n:f.count,cen,ring:U.length>=3?gbShape(hullRing(U),250):circleRing(cen,250+span/2)};}catch(e){why.push(f.name+': '+((e&&e.message)||e));return null;}}));
     for(const x of part)if(x)out.push(x);}
+  if(F.length&&!out.length)logErr('Горещи точки: '+F.length+' имена, нито едно място — '+why.slice(0,6).join('; '),'hs');
   out.sort((x,y)=>y.n-x.n);HSC.set(ck,out);return out;}
+const hsName=h=>/^L\d+$/.test(h.name)?'eBird място '+h.name:h.name;   // eBird дава в GBIF само кода на мястото
 // към заявка в GBIF: опростяване (до ~60 точки), +300 м за брега, без самопресичане (иначе — изпъкналата обвивка), обратно на часовника
 function gbShape(ring,buf){const lat0=ring[0][0]*Math.PI/180,KX=Math.cos(lat0)*111320,KY=110574,P=ring.slice(0,-1).map(([a,b])=>[b*KX,a*KY]);
   const dp=(pts,eps)=>{if(pts.length<3)return pts;const [a,b]=[pts[0],pts[pts.length-1]];let mi=0,md=0;
@@ -1784,19 +1786,21 @@ async function exploreMap(el){if(!el||!await loadLeaflet()||!el.isConnected)retu
     const hint2=t=>{const h=document.getElementById('exhint');if(h)h.textContent=t;};
     const showArea=async a=>{const box=document.getElementById('explace'),my=++busy;if(!box)return;if(shape){shape.remove();shape=null;}
       shape=L.polygon(a.rings,{color:'#c0392b',weight:3,fill:false}).addTo(m);box.innerHTML=ntH('Търся какво има тук…');
-      try{const P=await gbArea(key,'&geometry='+encodeURIComponent(gbWKTm(a.rings,a.buf)));if(my===busy)box.innerHTML=placeHTML(P,EXP.sp?EXP.sp.la:'',key,0,a.name+' · '+a.kind);}
+      try{const P=await gbArea(key,'&geometry='+encodeURIComponent(gbWKTm(a.rings,a.buf)));if(my===busy)box.innerHTML=placeHTML(P,EXP.sp?EXP.sp.la:'',key,0,a.name+' · '+a.kind)+
+          (a.ebird?'<div class="note2" style="max-width:none"><a href="https://ebird.org/hotspot/'+esc(a.ebird)+'" target="_blank" rel="noopener">Виж мястото в eBird ↗</a> — там е истинското му име.</div>':'');}
       catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря — опитай пак.');}};
     el._showArea=showArea;
     const drawPl=async()=>{if(!el.isConnected)return;const z=m.getZoom(),my=++seq2;
       if(z<9){LZ.clearLayers();LH.clearLayers();hint2('Приближи картата, за да видиш местата.');return;}
       const b=m.getBounds(),log=[];let S=[],H=[];
       try{S=await eeaSites(b,log);}catch(e){logErr('Натура 2000 не отговаря — '+log.join('; '),'eea');}
-      if(z>=10){try{H=await hotspots(b,key);}catch(e){}}
+      if(z>=10){try{H=await hotspots(b,key);}catch(e){logErr('Горещи точки не отговарят — '+((e&&e.message)||e),'hs');}}
       if(my!==seq2||!el.isConnected)return;LZ.clearLayers();LH.clearLayers();
       for(const z2 of S)L.polygon(z2.rings,{color:'#2e7d32',weight:2,dashArray:'6 4',fillColor:'#2e7d32',fillOpacity:.06}).bindTooltip(z2.name,{sticky:true})
         .on('click',ev=>{L.DomEvent.stopPropagation(ev);showArea({name:z2.name,kind:'зона за птици (Натура 2000)',rings:z2.rings,buf:0});}).addTo(LZ);
-      for(const h of H)L.polygon(h.ring,{color:'#e67e22',weight:2,fillColor:'#e67e22',fillOpacity:.22}).bindTooltip(h.name,{sticky:true})
-        .on('click',ev=>{L.DomEvent.stopPropagation(ev);showArea({name:h.name,kind:h.n+' находки тук',rings:[h.ring],buf:0});}).addTo(LH);
+      for(const h of H){const go=ev=>{L.DomEvent.stopPropagation(ev);showArea({name:hsName(h),kind:h.n+' находки тук',rings:[h.ring],buf:0,ebird:/^L\d+$/.test(h.name)?h.name:''});};
+        if(z>=13)L.polygon(h.ring,{color:'#e67e22',weight:2,fillColor:'#e67e22',fillOpacity:.18}).on('click',go).addTo(LH);   // истинските очертания — отблизо
+        L.circleMarker(h.cen,{radius:Math.max(7,Math.min(16,4+Math.log2(h.n))),color:'#fff',weight:2,fillColor:'#e67e22',fillOpacity:.95}).bindTooltip(hsName(h),{sticky:true}).on('click',go).addTo(LH);}
       hint2(z<10?'Приближи още, за да видиш и местата с много находки (оранжево).':!S.length&&!H.length?'Тук няма очертани места — опитай с точка или квадрат.':H.length?'':'Тук няма места с много находки.');};
     m.on('moveend',()=>{clearTimeout(tmr2);tmr2=setTimeout(drawPl,400);});drawPl();}}
 document.addEventListener('click',e=>{const pm=e.target.closest('[data-prmore]');if(pm){const r=pm.parentElement.querySelector('.prmore');if(r)r.hidden=false;pm.remove();return;}
@@ -3921,7 +3925,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-07.17';
+const VER='2026-11-07.18';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

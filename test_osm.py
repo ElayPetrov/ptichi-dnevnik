@@ -20,7 +20,7 @@ EEAF={'type':'FeatureCollection','features':[
   {'type':'Feature','properties':{'SITECODE':'GR1110001','SITENAME':'Elsewhere'},'geometry':{'type':'Polygon','coordinates':[sq(42.55,25.30,42.57,25.32)]}}]}
 PTS=[{'decimalLatitude':H0[0]+random.uniform(-.0012,.0012),'decimalLongitude':H0[1]+random.uniform(-.0015,.0015),'locality':'Atanasovsko Lake--Saltpans' if i<30 else 'Атанасовско езеро'} for i in range(40)]
 PTS+=[{'decimalLatitude':42.55+i*.02,'decimalLongitude':25.20+i*.03,'locality':'Някъде'} for i in range(8)]
-CALLS=[];EEAQ=[];PROXYQ=[];EEA_MODE=['ok'];PROXY_MODE=['ok']
+CALLS=[];EEAQ=[];PROXYQ=[];EEA_MODE=['ok'];PROXY_MODE=['ok'];ONLYTOWN=[False]
 def eea(route):
   EEAQ.append(route.request.url)
   if EEA_MODE[0]=='fail': return route.abort()   # e.g. the browser refusing it
@@ -33,12 +33,13 @@ def gbif(route):
   u=urllib.parse.unquote(route.request.url);CALLS.append(u)
   if '/v2/map/' in u: return route.fulfill(body=png((230,120,40),40),content_type='image/png')
   if 'facet=locality' in u:   # the most frequent location names among the bird finds in view, with exact counts
-    body={'count':999,'facets':[{'field':'LOCALITY','counts':[{'name':'Бургас','count':60},{'name':'Atanasovsko Lake--Saltpans','count':40},{'name':'Rare spot','count':12}]}]}
+    body={'count':999,'facets':[{'field':'LOCALITY','counts':[{'name':'Бургас','count':60}] if ONLYTOWN[0] else [{'name':'Бургас','count':60},{'name':'Atanasovsko Lake--Saltpans','count':40},{'name':'L2205561','count':30},{'name':'Rare spot','count':12}]}]}
   elif 'locality=' in u:   # where the finds under one name lie
     loc=urllib.parse.unquote_plus(u.split('locality=',1)[1].split('&')[0])
     if loc=='Atanasovsko Lake--Saltpans': res=PTS[:40]
     elif loc=='Бургас': res=[{'decimalLatitude':42.50+i*.01,'decimalLongitude':27.40+i*.012} for i in range(10)]   # a whole town, spread ~15 km
     elif loc=='Rare spot': res=[{'decimalLatitude':42.61,'decimalLongitude':25.415}]*12   # one shared point (an eBird hotspot)
+    elif loc=='L2205561': res=[{'decimalLatitude':42.605,'decimalLongitude':25.425}]*30   # eBird gives GBIF only the location's code
     else: res=[]
     body={'results':res}
   elif 'facet=year' in u: body={'count':321,'facets':[{'field':'YEAR','counts':[{'name':'2012','count':4},{'name':'2025','count':40}]},{'field':'MONTH','counts':[{'name':'4','count':50},{'name':'10','count':40}]}]}
@@ -77,8 +78,9 @@ try:
   pg.click('[data-exm="pl"]');pg.wait_for_timeout(1800);pg.locator('#exmap').scroll_into_view_if_needed()
   zones=pg.evaluate("document.getElementById('exmap')._places.LZ.getLayers().map(l=>l.getTooltip().getContent())")
   check('Q2 the Natura 2000 bird areas in view are drawn (green), with their names — only the Bulgarian ones', sorted(zones), ['Atanasovsko ezero','Burgasko ezero'])
-  hs=pg.evaluate("document.getElementById('exmap')._places.LH.getLayers().map(l=>l.getTooltip().getContent())")
-  check('Q3 at zoom 10 the hot spots are there (orange), most finds first: a shared eBird point becomes a circle; a name spread over a whole town („Бургас“) is not a place', hs, ['Atanasovsko Lake--Saltpans','Rare spot'])
+  hs=pg.evaluate("document.getElementById('exmap')._places.LH.getLayers().filter(l=>l.getTooltip&&l.getTooltip()).map(l=>l.getTooltip().getContent())")
+  check('Q3 at zoom 10 the hot spots are there (orange), most finds first — an eBird code shown as „eBird място …“; a name spread over a whole town („Бургас“) is not a place', hs, ['Atanasovsko Lake--Saltpans','eBird място L2205561','Rare spot'])
+  check('Q3d ...each drawn as a dot you can actually see at this zoom (7–16 px), not a 3-pixel speck', pg.evaluate("document.getElementById('exmap')._places.LH.getLayers().filter(l=>l.getRadius).every(l=>l.getRadius()>=7&&l.getRadius()<=16)"), True)
   check('Q3b ...found by asking GBIF for the most frequent location names in view (exact counts), not by sampling finds; and no hexagons in this mode', (any('facet=locality' in u and 'facetMincount=12' in u for u in CALLS),any('offset=300' in u for u in CALLS),pg.evaluate("document.querySelectorAll('#exmap .leaflet-gbif-pane img').length")), (True,False,0))
   pg.evaluate("document.getElementById('exmap')._lmap.setZoom(9)");pg.wait_for_timeout(1500)
   check('Q3c at zoom 9 only the bird areas — the hint says to zoom in for the hot spots', (pg.evaluate("document.getElementById('exmap')._places.LH.getLayers().length"),'Приближи още' in pg.inner_text('#exhint')), (0,True))
@@ -94,6 +96,12 @@ try:
   check('Q8 an area in two parts goes to GBIF as both parts (MULTIPOLYGON)', (wkt(q[0]).startswith('MULTIPOLYGON') if q else None,len(ringsOf(wkt(q[0]))) if q else 0), (True,2))
   click_ll(pg,42.6555,25.43);pg.wait_for_timeout(600)
   check('Q9 tapping outside every outline tells you what to tap', 'Докосни очертано място' in pg.inner_text('#explace'), True)
+  pg.evaluate("document.getElementById('exmap')._lmap.setView([42.605,25.425],13)");pg.wait_for_timeout(1800);click_ll(pg,42.605,25.425);pg.wait_for_timeout(1500)
+  check('Q9b tapping an eBird spot: its birds, and a link to the place in eBird (where its real name is)', (pg.inner_text('#explace .whpl b'),pg.evaluate("(document.querySelector('#explace a[href*=\"ebird.org\"]')||{}).href||''")), ('eBird място L2205561 · 30 находки тук','https://ebird.org/hotspot/L2205561'))
+  ONLYTOWN[0]=True;pg.evaluate("HSC.clear()");pg.evaluate("document.getElementById('exmap')._lmap.setView([42.5,27.45],11)");pg.wait_for_timeout(2500)
+  why=pg.evaluate("[...errSeen].find(k=>k.startsWith('Горещи точки: '))||''")
+  check('Q9c when GBIF has names but none is a place, the log says why (here: one name spread over a town)', why.startswith('Горещи точки: 1 имена, нито едно място — Бургас: 10 точки на ') and 'км' in why, True)
+  ONLYTOWN[0]=False
   EEA_MODE[0]='fail';pg.evaluate("SPAC.clear()");PROXYQ.clear();pg.evaluate("document.getElementById('exmap')._lmap.setView([42.62,25.40],10)");pg.wait_for_timeout(2500)
   check('Q10 if the phone can’t reach the EEA itself, the areas come through the Supabase helper', (len(PROXYQ)>0 and '?eea=' in PROXYQ[0],len(pg.evaluate("document.getElementById('exmap')._places.LZ.getLayers()"))), (True,2))
   PROXY_MODE[0]='fail';pg.evaluate("SPAC.clear()");pg.evaluate("document.getElementById('exmap')._lmap.setView([42.621,25.401],10)");pg.wait_for_timeout(2500)
