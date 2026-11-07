@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-941 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+935 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -87,8 +87,8 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_ios.py | 8 | iPhone (from the Home Screen): the first open's welcome → „Запиши първата“ leaves the form usable, no field focused by code (it can stay without a keyboard on iPhone), the voice panel explains the keyboard's language, „J“ → jay; Android still focuses the name field |
 | test_where.py | 15 | „📍 Къде да го търся“ from GBIF: folded, nothing fetched until opened; 12 month bars from GBIF's counts for Bulgaria; the nearest places to your latest GPS record, grouped, with last date and source; heat-map tiles for the species and country, drawn above the map (not hidden under it); the source linked; kept a week; unknown species; the button in Цели; tapping the map: the place's name, this bird's finds, years and best months there, every other bird found there (✓ yours, „ново за теб“), a hexagon-sized circle, no repeat questions, birds in the list open their cards |
 | test_explore.py | 20 | Карта → „Изследвай“ (GBIF): there even with an empty journal; the all-birds map near your latest record (dot mode opens zoomed in); ● точка: Перá's own visible dots (bigger where more finds), a tap snaps to the nearest find point, 100 m around it (none near → says so); ▦ квадрат 1–20 km by slider on the atlas grid (10 with its atlas code), closed polygon, true size, letting go recounts; every species of a place (first 30 + „Покажи всички“); „+ Цел“ beside new birds; choosing a species; remembering mode, size and species; Карта still starts on the personal map |
-| test_osm.py | 22 | „🏞 място“: Nominatim first (only water bodies and wetlands, the tap inside, not „Балкански полуостров“) — the lake shows at once, reserves and parks from Overpass arrive in the background as extra buttons; Overpass asked only for area names (light), through Перá's Supabase helper „osm“ when deployed (no direct calls), straight to the servers when not (404, then no more helper calls); a refusing server → the next; outlines from Nominatim's ready copy; over 3000 km² refused; honest messages; every source's answer, time and Nominatim's unused answer logged; the shape to GBIF closed, anticlockwise, ≤ 61 points, +300 m, never self-crossing |
-| test_osmfn.py | 6 | the „osm“ helper in Deno, against stand-in Overpass servers: only Перá's short [out:json] questions; all servers asked at once, the fast one wins over a slow one; a week of caching and CORS; the preflight; every server's reason when all fail |
+| test_osm.py | 14 | „🏞 място“: the Natura 2000 bird areas in view (EEA; Bulgarian only; names) in green; „hot spots“ from dense GBIF finds (≥12 within 400 m, from zoom 11, named after their most frequent location; scattered finds aren't) in orange; tapping either gives its birds; an area in two parts sent as both (MULTIPOLYGON); the shape to GBIF closed, anticlockwise, never self-crossing; empty map → what to tap; EEA through the Supabase helper when the phone can't reach it; both failing logged; nothing drawn far out; the C-shaped fallback |
+| test_osmfn.py | 8 | the „osm“ helper in Deno, against stand-ins: only Перá's short [out:json] questions; all servers asked at once, the fast one wins; a week of caching and CORS; the preflight; every reason when all fail; ?eea= passes only Natura 2000 questions to the EEA service, cached a month |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

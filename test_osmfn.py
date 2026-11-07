@@ -8,6 +8,9 @@ def check(n,got,exp):
   print(('PASS ' if ok else 'FAIL ')+n+('' if ok else f'\n     got {got!r}\n     exp {exp!r}'))
 class H(BaseHTTPRequestHandler):
   def log_message(self,*a):pass
+  def do_GET(self):   # stand-in EEA service
+    self.send_response(200);self.send_header('Content-Type','application/json');self.end_headers()
+    self.wfile.write(json.dumps({'type':'FeatureCollection','features':[{'properties':{'SITECODE':'BG0000270','SITENAME':'Atanasovsko ezero'},'path':self.path}]}).encode())
   def do_POST(self):
     n=int(self.headers.get('Content-Length') or 0);self.rfile.read(n);k=self.path.strip('/')
     if k=='slow':time.sleep(3)
@@ -16,7 +19,7 @@ class H(BaseHTTPRequestHandler):
     self.send_response(200);self.send_header('Content-Type','application/json');self.end_headers();self.wfile.write(json.dumps({'elements':[{'type':'area','id':3600000011,'tags':{'name':k}}]}).encode())
 srv=ThreadingHTTPServer(('localhost',P),H);threading.Thread(target=srv.serve_forever,daemon=True).start()
 def run(servers):
-  env={**os.environ,'OSM_SERVERS':','.join(f'http://localhost:{P}/{s}' for s in servers)}
+  env={**os.environ,'OSM_SERVERS':','.join(f'http://localhost:{P}/{s}' for s in servers),'EEA_URL':f'http://localhost:{P}/eea/query'}
   d=subprocess.Popen(['/tmp/denobin/deno','run','--allow-net','--allow-env','supabase/functions/osm/index.ts'],env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
   for _ in range(60):
     try:urllib.request.urlopen('http://localhost:8000/',timeout=1);break
@@ -40,6 +43,12 @@ try:
   check('F2 all servers asked at once — the fast one answers, without waiting for the slow one', (st,json.loads(b)['elements'][0]['tags']['name'],dt<2.5,h.get('x-pera-via','').split(' ')[0]), (200,'fast',True,f'localhost:{P}'))
   check('F3 the phone may keep the answer for a week; any page may call it (CORS)', (h.get('cache-control'),h.get('access-control-allow-origin')), ('public, max-age=604800','*'))
   check('F4 the browser’s preflight is answered', get(None,'OPTIONS')[0], 200)
+  u='http://localhost:8000/?eea='+urllib.parse.quote('?where=1%3D1&geometry=27.3,42.4,27.6,42.65&f=geojson')
+  r=urllib.request.urlopen(u,timeout=20);o=json.loads(r.read());hh={k.lower():v for k,v in r.headers.items()}
+  check('F6 ?eea= passes a Natura 2000 question to the EEA service (only that one), cached for a month', (o['features'][0]['properties']['SITENAME'],o['features'][0]['path'].startswith('/eea/query?where=1%3D1'),hh.get('cache-control')), ('Atanasovsko ezero',True,'public, max-age=2592000'))
+  try:urllib.request.urlopen('http://localhost:8000/?eea='+urllib.parse.quote('http://evil.example/x'),timeout=10);bad=None
+  except urllib.error.HTTPError as e2:bad=e2.code
+  check('F7 ...anything else after ?eea= is refused', bad, 400)
 finally:
   d.terminate();d.wait()
 d=run(['broken','plain','broken'])
