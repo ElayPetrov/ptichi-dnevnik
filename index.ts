@@ -1,4 +1,4 @@
-// osm — помощник на Перá: пита Overpass (OpenStreetMap) и зоните за птици на ЕАОС от сървъра на Supabase, не от телефона.
+// osm — помощник на Перá: пита eBird (с ключа), зоните за птици на ЕАОС и Overpass от сървъра на Supabase, не от телефона.
 // Нужен е, защото на някои мобилни мрежи безплатните сървъри на Overpass не отговарят на телефоните (виж app_errors, ноември 2026).
 // Пита и трите сървъра наведнъж и връща първия добър отговор; приема само кратки заявки на Перá ([out:json]…);
 // телефонът пази отговора за седмица (Cache-Control), така че едно и също място се пита веднъж.
@@ -46,8 +46,45 @@ async function eea(q: string): Promise<Response> {
   } finally { clearTimeout(tm); }
 }
 
+// eBird (api.ebird.org/v2) с ключа от Supabase → Edge Functions → Secrets → EBIRD_KEY. Ключът не излиза от сървъра.
+// Само няколко въпроса: имената на местата, наскорошните наблюдения на място или около точка, и кодовете на видовете.
+const EBIRD = (typeof Deno !== "undefined" && Deno.env.get("EBIRD_URL")) || "https://api.ebird.org/v2/";
+const EBIRD_OK = [
+  /^ref\/hotspot\/info\/L\d+$/,
+  /^data\/obs\/L\d+\/recent\?back=\d{1,2}$/,
+  /^data\/obs\/geo\/recent(\/[a-z0-9]+)?\?lat=-?\d{1,2}(\.\d+)?&lng=-?\d{1,3}(\.\d+)?&dist=\d{1,2}&back=\d{1,2}$/,
+];
+let TAX: Map<string, string> | null = null;   // научно име → код на вида в eBird (докато сървърът е „топъл“)
+async function ebird(path: string): Promise<Response> {
+  const key = typeof Deno !== "undefined" ? Deno.env.get("EBIRD_KEY") : "";
+  if (!key) return json({ error: "no key" }, 503);
+  const H = { "X-eBirdApiToken": key, "User-Agent": "Pera-bird-journal (https://elaypetrov.github.io/ptichi-dnevnik/)" };
+  try {
+    if (path.startsWith("codes?")) {   // кодовете на eBird за няколко научни имена наведнъж
+      const names = (new URLSearchParams(path.slice(6)).get("la") || "").split("|").filter(Boolean).slice(0, 500);
+      if (!TAX) {
+        const r = await fetch(EBIRD + "ref/taxonomy/ebird?fmt=json&cat=species", { headers: H });
+        if (!r.ok) return json({ error: "ebird", why: [String(r.status)] }, 502);
+        TAX = new Map((await r.json()).map((x: { sciName: string; speciesCode: string }) => [x.sciName.toLowerCase(), x.speciesCode]));
+      }
+      const out: Record<string, string> = {};
+      for (const n of names) { const c = TAX.get(n.toLowerCase()); if (c) out[n] = c; }
+      return json(out, 200, { "Cache-Control": "public, max-age=2592000" });
+    }
+    if (!EBIRD_OK.some((rx) => rx.test(path))) return json({ error: "bad query" }, 400);
+    const r = await fetch(EBIRD + path, { headers: H });
+    const body = await r.text();
+    if (!r.ok) return json({ error: "ebird", why: [String(r.status)] }, 502);
+    return new Response(body, { headers: { ...CORS, "Content-Type": "application/json", "Cache-Control": path.startsWith("ref/") ? "public, max-age=2592000" : "public, max-age=3600" } });
+  } catch (e) {
+    return json({ error: "ebird", why: [String((e as Error)?.name || e)] }, 502);
+  }
+}
+
 export async function handle(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
+  const eb = new URL(req.url).searchParams.get("ebird");
+  if (eb !== null) return ebird(eb);
   const e = new URL(req.url).searchParams.get("eea");
   if (e !== null) return eea(e);
   const q = new URL(req.url).searchParams.get("data") || "";

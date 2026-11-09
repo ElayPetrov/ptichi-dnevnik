@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-939 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+950 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -88,7 +88,8 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_where.py | 15 | „📍 Къде да го търся“ from GBIF: folded, nothing fetched until opened; 12 month bars from GBIF's counts for Bulgaria; the nearest places to your latest GPS record, grouped, with last date and source; heat-map tiles for the species and country, drawn above the map (not hidden under it); the source linked; kept a week; unknown species; the button in Цели; tapping the map: the place's name, this bird's finds, years and best months there, every other bird found there (✓ yours, „ново за теб“), a hexagon-sized circle, no repeat questions, birds in the list open their cards |
 | test_explore.py | 20 | Карта → „Изследвай“ (GBIF): there even with an empty journal; the all-birds map near your latest record (dot mode opens zoomed in); ● точка: Перá's own visible dots (bigger where more finds), a tap snaps to the nearest find point, 100 m around it (none near → says so); ▦ квадрат 1–20 km by slider on the atlas grid (10 with its atlas code), closed polygon, true size, letting go recounts; every species of a place (first 30 + „Покажи всички“); „+ Цел“ beside new birds; choosing a species; remembering mode, size and species; Карта still starts on the personal map |
 | test_osm.py | 18 | „🏞 място“: the Natura 2000 bird areas in view (EEA; Bulgarian only; names) in green; „hot spots“ from zoom 10 — GBIF's most frequent location names in view (exact counts, ≥12), each a visible orange dot (7–16 px by finds; true outline from zoom 13), eBird codes shown as „eBird място L…“ with a link to eBird; a name spread over a whole town skipped, and the log says why when no name becomes a place; no hexagons in this mode; tapping gives the birds; an area in two parts sent as both (MULTIPOLYGON); the shape to GBIF closed, anticlockwise, never self-crossing; empty map → what to tap; EEA through the Supabase helper when needed; failures logged; nothing drawn far out; the C-shaped fallback |
-| test_osmfn.py | 8 | the „osm“ helper in Deno, against stand-ins: only Перá's short [out:json] questions; all servers asked at once, the fast one wins; a week of caching and CORS; the preflight; every reason when all fail; ?eea= passes only Natura 2000 questions to the EEA service, cached a month |
+| test_osmfn.py | 12 | the „osm“ helper in Deno, against stand-ins: only Перá's short [out:json] questions; all servers asked at once, the fast one wins; a week of caching and CORS; the preflight; every reason when all fail; ?eea= passes only Natura 2000 questions to the EEA service, cached a month; ?ebird= — without a key 503 „no key“, with the key (Supabase secret EBIRD_KEY) only the allowed questions pass and carry it, species codes from eBird's taxonomy by Latin name |
+| test_ebirdapi.py | 7 | eBird through the helper: real names for the orange eBird spots; „Наскоро тук“ (30 days) in a spot's panel, in Bulgarian, with when, ✓ / „ново за теб“; „eBird наблизо“ on each target in Цели (when, how far, where); without a key nothing changes and Перá stops asking after one try |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 
