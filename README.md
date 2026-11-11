@@ -12,7 +12,7 @@ Everything sits in this one folder, and GitHub Pages publishes it as it is from 
 - The app: `index.html` is the whole app, `sw.js` keeps it working offline, and `manifest.webmanifest` with the three icons makes it installable.
 - The database: `setup.sql` sets up sharing and sync. Safe to re-run in the Supabase SQL editor.
 - The species list: built into `index.html` (`SPL`). 268 species from BSPB's Определител (Bulgarian and Latin names), with the Latin name checked against Wikipedia's „List of birds of Bulgaria“ (IOC 9.2), which also gives the English name and the family. It suggests names, fills empty fields, and links names that belong to one species when counting; it never changes a record. `species.csv` is the same list as a spreadsheet, with BSPB's older Latin names where they differ.
-- The tests: `prepare.sh`, `setup.sh`, `run_all.sh`, `sbstack.py`, `sun.js`, `sun_check.py`, `tap_test.py`, the `test_*.py` files and two test photos. 958 automated checks and a sunrise check, built to run in a Claude sandbox; see `TESTS.md`.
+- The tests: `prepare.sh`, `setup.sh`, `run_all.sh`, `sbstack.py`, `sun.js`, `sun_check.py`, `tap_test.py`, the `test_*.py` files and two test photos. 975 automated checks and a sunrise check, built to run in a Claude sandbox; see `TESTS.md`.
 
 The Supabase key in `index.html` is the publishable key, meant to sit in a browser. What each person can read or change is enforced by the database rules in `setup.sql`.
 
@@ -41,3 +41,7 @@ Map tiles: Esri (satellite, topo, labels and roads over satellite) and OpenStree
 Species list (since 2026-11-02.13): 413 species — the 268 of BSPB's guide (Определител) plus 145 from the official „List of the Birds Recorded in Bulgaria“ (BUNARCO, Acta Zoologica Bulgarica 61(1), 2009), Bulgarian names as the committee recommends, Latin and English from eBird's list for Bulgaria (Clements); variants from Bulgarian Wikipedia and the Ministry of Environment's lists are kept as alternative names; 73 accidental visitors are marked rare.
 
 Phone notifications (since 2026-11-03.4): one-time Supabase setup in SETUP-PUSH.md (SQL `2026-11-03-push.sql`, Edge Function `supabase/functions/push`).
+
+## „Какво видях?“ — белезите
+Белезите на видовете (размер, цветове, къде) идват от `pera-belezi-za-pregled.xlsx`. След промяна в таблицата:
+`python3 belezi_to_js.py pera-belezi-za-pregled.xlsx index.html` — непознати думи или размери спират всичко и се изписват с номера на реда.

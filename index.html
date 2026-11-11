@@ -220,6 +220,22 @@ textarea{resize:vertical;min-height:54px}
 .filt .chip.ic{display:inline-flex;align-items:center;gap:6px;padding:6px 11px}
 .filt .chip.ic svg{width:19px;height:19px;flex:0 0 auto}
 .dbtlist{display:grid;gap:2px} .dbtrow{display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line)} .dbtrow small{color:var(--mut)}
+.iddlg{width:min(560px,96vw);height:min(720px,90vh)}
+.iddlg .idhead{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;font-weight:600;border-bottom:1px solid var(--line)}
+.iddlg .idhead button{border:none;background:none;font-size:24px;line-height:1;color:var(--ink);cursor:pointer;padding:0 4px}
+#idBody{flex:1;overflow:auto;padding:12px 14px 18px}
+.idstep{font-size:12.5px;color:var(--mut)} #idBody h3{margin:4px 0 12px;font-size:18px} #idBody h3 small{font-weight:400;color:var(--mut);font-size:13px}
+.idchips{display:flex;flex-wrap:wrap;gap:8px} .idchips .chip{font-size:15px;padding:8px 13px}
+.idnav{display:flex;gap:8px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.idrow0{padding:9px 11px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px}
+.idlist{display:grid;gap:8px} .idr{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:12px}
+.idph{position:relative;width:52px;height:52px;border-radius:8px;overflow:hidden;background:var(--line);display:flex;align-items:center;justify-content:center}
+.idph>svg{width:34px;height:34px;opacity:.45} .idph .refsm{position:absolute;inset:0} .idph .refsm img{width:52px;height:52px;border-radius:0}
+.idr .btn{white-space:nowrap}
+.idn{min-width:0} .idn b{font-size:15px} .idn small{display:block;color:var(--mut);font-size:12.5px;line-height:1.35;margin-top:2px}
+.idn .xcw{margin-top:4px}
+.idbtn{margin:0 0 10px;border:1px dashed var(--line);background:none;border-radius:10px;padding:7px 11px;color:var(--ink);font-size:14px;cursor:pointer}
+.idsrc{margin-top:14px;font-size:11.5px}
 .filt .chip.ic .lbl{display:none} .filt .chip.ic[aria-pressed="true"] .lbl{display:inline}
 .filt::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);
@@ -788,6 +804,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <div class="fg"><label>Latin</label><input id="f-la" list="lanames" placeholder="напр. Phoenicurus ochruros"></div>
     <div class="fg"><label>English</label><input id="f-en" list="ennames" placeholder="напр. Black Redstart"></div>
   </div>
+  <button type="button" class="idbtn" id="f-idbtn">🔍 Не знам — какво видях?</button>
   <datalist id="bgnames"></datalist>
   <div class="cntline">
     <label class="cntf">Брой<input id="f-count" inputmode="numeric" placeholder="1"></label>
@@ -964,6 +981,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <button type="button" class="btn" id="pickCancel">Отказ</button>
     <button type="button" class="btn pri" id="pickOk" disabled>Готово</button></div>
 </dialog>
+<dialog id="whatDlg" class="pickdlg iddlg" aria-label="Какво видях?"><div class="idhead"><span>🔍 Какво видях?</span><button type="button" data-idclose aria-label="Затвори">×</button></div><div id="idBody"></div></dialog>
 <dialog id="cardDlg"><img id="cardImg" alt="Картичка за споделяне">
   <div class="fbtns"><button type="button" class="btn pri" id="cardShare">Сподели</button>
     <button type="button" class="btn" id="cardSave">Изтегли</button><button type="button" class="btn" id="cardClose">Затвори</button></div></dialog>
@@ -1736,6 +1754,70 @@ async function goalsEbird(el){if(EBOK===false||!sbOn())return;const pos=myPos(),
     const d=await ebird('data/obs/geo/recent/'+c+'?lat='+pos[0].toFixed(2)+'&lng='+pos[1].toFixed(2)+'&dist=50&back=30');if(!Array.isArray(d)||!d.length||!x.isConnected)return;
     let b=null;for(const o of d){const dd=distM(pos[0],pos[1],+o.lat,+o.lng),dt=String(o.obsDt||'').slice(0,10);if(!b||dt>b.dt||(dt===b.dt&&dd<b.d))b={d:dd,dt,loc:o.locName||''};}
     x.innerHTML='eBird наблизо: '+ebAgo(b.dt)+' · '+fmtM(b.d)+(b.loc?' · '+esc(b.loc):'');}));}
+// ---- „Какво видях?“ (2026-11-11): разпознаване стъпка по стъпка, като в Merlin ----
+// 1) кога и къде → кои птици са намирани наоколо (30 км) в този и съседните месеци (GBIF); 2) размер; 3) до 3 цвята; 4) къде.
+// Подредба: колко е честа тук сега × колко пасва на всеки отговор. Несъвпадение сваля птицата надолу, не я маха.
+// Белезите идват от pera-belezi-za-pregled.xlsx чрез belezi_to_js.py (до index.html) — не ги пипай на ръка:
+// 'размер|цветове ♂ или общо (в реда, в който се забелязват)|цветове ♀|къде'; размер 1 врабче · 2 кос · 3 гълъб · 4 врана · 5 гъска/чапла,
+// две цифри = на границата (и двете важат). Цветове: k черно w бяло g сиво b кафяво e бежово r ръждиво y жълто z зелено s синьо c червено p розово.
+// Къде: V вода A въздух Z земя D дървета/храсти J жица/ограда T тръстика S скали.
+// <KV>
+const KV={"Aythya nyroca":"4|rbw||V","Tadorna tadorna":"5|wkr||V","Anas platyrhynchos":"4|zgb|be|V","Anas crecca":"3|grz|be|V","Aythya ferina":"4|rgk|bg|V","Spatula clypeata":"4|zwr|be|V","Spatula querquedula":"3|bwg|be|V","Cygnus olor":"5|w||V","Somateria mollissima":"4|wkz|b|V","Anser anser":"5|gb||VZ","Mareca strepera":"4|gkb|be|V","Mareca penelope":"4|rge|b|V","Tadorna ferruginea":"5|re||VZ","Netta rufina":"4|rkc|be|V","Aythya fuligula":"4|kw|b|V","Anas acuta":"5|bwg|be|V","Mergus merganser":"5|wzkc|grw|V","Anser albifrons":"5|gbw||VZ","Melanitta fusca":"4|kw|b|V","Clangula hyemalis":"4|wkb||V","Anser erythropus":"5|gbw||VZ","Mergellus albellus":"4|wk|grw|V","Bucephala clangula":"4|wkz|gbw|V","Aythya marila":"4|kgw|bw|V","Cygnus cygnus":"5|wy||V","Anser fabalis":"5|bg||VZ","Mergus serrator":"4|zrw|gr|V","Melanitta nigra":"4|k|be|V","Oxyura leucocephala":"4|wrs|b|V","Cygnus columbianus":"5|wy||V","Branta ruficollis":"4|krw||VZ","Tetrao urogallus":"5|kz|br|ZD","Phasianus colchicus":"5|rzc|be|Z","Tetrastes bonasia":"3|gbr||ZD","Alectoris graeca":"3|gec||ZS","Perdix perdix":"3|grb||Z","Coturnix coturnix":"1|be||Z","Alectoris chukar":"3|gec||ZS","Lyrurus tetrix":"4|kw|br|ZD","Podiceps cristatus":"4|wbr||V","Tachybaptus ruficollis":"2|br||VT","Podiceps grisegena":"4|rgw||V","Podiceps nigricollis":"3|kyr||V","Podiceps auritus":"3|rky||V","Gavia stellata":"5|grw||V","Gavia arctica":"5|kwg||V","Pelecanus crispus":"5|wg||VA","Pelecanus onocrotalus":"5|wk||VA","Puffinus yelkouan":"3|bw||VA","Phalacrocorax carbo":"5|kw||VD","Microcarbo pygmeus":"4|kb||VDT","Gulosus aristotelis":"5|k||V","Bubulcus ibis":"4|we||Z","Plegadis falcinellus":"5|brz||VT","Ciconia ciconia":"5|wkc||ZA","Botaurus stellaris":"5|be||T","Ardea alba":"5|w||V","Ardeola ralloides":"4|ew||VT","Platalea leucorodia":"5|w||V","Egretta garzetta":"5|wk||V","Ixobrychus minutus":"3|ke|be|T","Nycticorax nycticorax":"5|gkw||VD","Ardea cinerea":"5|gwk||V","Ardea purpurea":"5|rg||TV","Ciconia nigra":"5|kwc||VD","Gyps fulvus":"5|be||AS","Buteo rufinus":"4|reb||AZ","Falco naumanni":"3|rg|be|AJ","Accipiter gentilis":"4|gw||AD","Falco biarmicus":"4|grw||AS","Neophron percnopterus":"5|wky||AS","Accipiter brevipes":"3|grw||AD","Circus pygargus":"4|gk|b|A","Falco cherrug":"4|be||A","Clanga pomarina":"5|b||A","Hieraaetus pennatus":"4|bw||A","Accipiter nisus":"3|grw||AD","Haliaeetus albicilla":"5|bwy||AV","Buteo buteo":"4|bw||AJD","Circaetus gallicus":"5|wb||A","Pandion haliaetus":"4|bw||AV","Pernis apivorus":"4|bgw||AD","Circus cyaneus":"4|gwk|b|AZ","Aquila chrysaetos":"5|b||AS","Falco subbuteo":"3|gwr||A","Falco peregrinus":"4|gwk||AS","Falco eleonorae":"3|bkgwr||AV","Circus aeruginosus":"4|bge|be|AT","Aquila heliaca":"5|bw||A","Falco vespertinus":"3|grckw|rge|AJ","Aegypius monachus":"5|bk||A","Milvus migrans":"4|b||AV","Falco tinnunculus":"3|rg|rb|AJ","Aquila fasciata":"5|bw||AS","Clanga clanga":"5|bk||A","Falco columbarius":"2|gr|be|AZ","Buteo lagopus":"4|bwe||AJ","Circus macrourus":"4|gw|b|A","Aquila nipalensis":"5|b||A","Milvus milvus":"5|rgw||A","Porzana porzana":"2|bgw||T","Gallinula chloropus":"3|kcw||VT","Rallus aquaticus":"2|bgc||T","Crex crex":"3|ber||Z","Fulica atra":"3|kw||V","Zapornia pusilla":"2|bg||T","Zapornia parva":"2|gb|be|T","Otis tarda":"5|regw||Z","Grus grus":"5|gkc||ZA","Tringa ochropus":"2|bw||V","Scolopax rusticola":"3|bre||ZD","Vanellus vanellus":"3|kwz||Z","Glareola pratincola":"2|be||ZA","Himantopus himantopus":"3|kwc||V","Actitis hypoleucos":"2|bw||V","Tringa totanus":"3|bwc||V","Charadrius alexandrinus":"1|ewk||VZ","Charadrius dubius":"1|bwk||VZ","Recurvirostra avosetta":"4|wk||V","Gallinago gallinago":"2|be||VT","Haematopus ostralegus":"4|kwc||V","Burhinus oedicnemus":"4|eby||Z","Glareola nordmanni":"2|bk||ZA","Calidris falcinellus":"1|bw||V","Calidris pugnax":"3|bre|be|VZ","Calidris canutus":"2|rg||V","Tringa nebularia":"3|gw||V","Numenius arquata":"4|be||VZ","Tringa erythropus":"3|kgc||V","Gallinago media":"2|be||ZT","Pluvialis apricaria":"2|ybkg||Z","Arenaria interpres":"2|rkw||V","Calidris ferruginea":"2|rgw||V","Lymnocryptes minimus":"2|be||T","Calidris minuta":"1|rbw||V","Tringa glareola":"2|bw||V","Tringa stagnatilis":"2|gw||V","Numenius phaeopus":"4|be||VZ","Xenus cinereus":"2|gw||V","Charadrius morinellus":"2|rgw||Z","Limosa lapponica":"3|rb||V","Charadrius hiaticula":"2|bwk||V","Calidris temminckii":"1|gb||V","Pluvialis squatarola":"3|kwg||V","Calidris alba":"2|wg||V","Calidris alpina":"2|bkw||V","Phalaropus lobatus":"2|grw||V","Limosa limosa":"4|rbw||V","Stercorarius skua":"4|b||VA","Stercorarius longicaudus":"4|gwk||VA","Stercorarius parasiticus":"4|bw||VA","Stercorarius pomarinus":"4|bwk||VA","Larus cachinnans":"5|wgy||VA","Ichthyaetus melanocephalus":"3|wkc||VA","Chroicocephalus ridibundus":"3|wgc||VA","Larus michahellis":"4|wgy||VA","Chroicocephalus genei":"4|wgc||V","Hydrocoloeus minutus":"2|wgk||VA","Larus fuscus":"4|wky||VA","Larus argentatus":"4|wgyk||VA","Larus canus":"4|wgy||VA","Chlidonias hybrida":"2|gkw||VAT","Chlidonias leucopterus":"2|kw||VA","Sternula albifrons":"2|wgy||VA","Thalasseus sandvicensis":"4|wk||VA","Gelochelidon nilotica":"3|wgk||VA","Sterna hirundo":"3|wkc||VA","Chlidonias niger":"2|kg||VA","Hydroprogne caspia":"4|wkc||VA","Columba palumbus":"4|gw||DZ","Streptopelia decaocto":"3|egk||ZJD","Streptopelia turtur":"2|rgb||DJ","Columba livia":"3|gk||ZS","Columba oenas":"3|g||D","Clamator glandarius":"4|gwe||D","Cuculus canorus":"3|gw||DJ","Asio flammeus":"3|eby||ZA","Bubo bubo":"5|br||SD","Glaucidium passerinum":"1|bw||D","Strix aluco":"3|bgr||D","Asio otus":"3|br||D","Tyto alba":"3|we||A","Athene noctua":"2|bw||ZJ","Aegolius funereus":"2|bw||D","Strix uralensis":"4|gw||D","Otus scops":"2|gb||D","Caprimulgus europaeus":"2|gb||ZA","Tachymarptis melba":"2|bw||AS","Apus pallidus":"1|b||A","Apus apus":"1|k||A","Alcedo atthis":"1|sr||V","Merops apiaster":"2|ysrz||AJ","Upupa epops":"2|rkw||Z","Coracias garrulus":"3|sr||JA","Dendrocopos leucotos":"2|kwc||D","Jynx torquilla":"1|gb||D","Dendrocopos major":"2|kwc||D","Picus viridis":"3|zyc||DZ","Dryobates minor":"1|kwc||D","Picus canus":"2|zgc|zg|D","Dendrocopos syriacus":"2|kwc||D","Dendrocoptes medius":"2|kwc||D","Picoides tridactylus":"2|kwy|kw|D","Dryocopus martius":"4|kc||D","Eremophila alpestris":"1|eyk||Z","Lullula arborea":"1|be||ZD","Melanocorypha calandra":"2|bek||Z","Galerida cristata":"1|be||Z","Alauda arvensis":"2|be||ZA","Alaudala rufescens":"1|be||Z","Calandrella brachydactyla":"1|eb||Z","Riparia riparia":"1|bw||AV","Delichon urbicum":"1|kws||AJ","Hirundo rustica":"2|srw||AJ","Ptyonoprogne rupestris":"1|b||AS","Cecropis rufula":"1|sre||AJS","Motacilla alba":"2|kwg||ZV","Anthus spinoletta":"1|gbe||VZ","Anthus trivialis":"1|be||DZ","Motacilla flava":"1|ykzgw||ZJ","Motacilla cinerea":"2|gyk||V","Anthus campestris":"1|eb||Z","Motacilla citreola":"1|ygk||VZ","Anthus pratensis":"1|be||Z","Anthus cervinus":"1|rb||ZV","Cinclus cinclus":"2|bw||V","Bombycilla garrulus":"2|pky||D","Regulus regulus":"1|zy||D","Troglodytes troglodytes":"1|b||DZ","Regulus ignicapillus":"1|zyw||D","Prunella collaris":"2|grb||SZ","Prunella modularis":"1|gb||DZ","Phoenicurus phoenicurus":"1|grk|br|D","Phoenicurus ochruros":"1|kgr|gr|SJZ","Saxicola rubicola":"1|krw|br|JZ","Oenanthe melanoleuca":"1|kwe|be|ZS","Oenanthe isabellina":"1|ewk||Z","Saxicola rubetra":"1|brw||JZ","Luscinia luscinia":"1|bg||D","Oenanthe oenanthe":"1|gwk|be|ZS","Cercotrichas galactotes":"1|rew||ZD","Erithacus rubecula":"1|rbg||DZ","Oenanthe pleschanka":"1|kw|b|SZ","Luscinia megarhynchos":"1|br||D","Luscinia svecica":"1|srb|bw|T","Turdus torquatus":"2|kw||ZD","Turdus viscivorus":"2|gbe||DZ","Turdus merula":"2|ky|b|ZD","Turdus philomelos":"2|bew||DZ","Monticola saxatilis":"2|srw|b|S","Monticola solitarius":"2|s|b|S","Turdus pilaris":"2|grb||DZ","Turdus iliacus":"2|brw||DZ","Acrocephalus scirpaceus":"1|be||T","Phylloscopus trochilus":"1|zy||D","Phylloscopus sibilatrix":"1|zyw||D","Hippolais olivetorum":"1|gw||D","Curruca communis":"1|gbwr||D","Sylvia atricapilla":"1|gk|gr|D","Hippolais icterina":"1|zy||D","Sylvia borin":"1|bg||D","Phylloscopus collybita":"1|zb||D","Phylloscopus orientalis":"1|gwz||D","Curruca crassirostris":"1|gkw||D","Acrocephalus agricola":"1|be||T","Acrocephalus schoenobaenus":"1|bew||T","Curruca curruca":"1|gbw||D","Curruca melanocephala":"1|kgc|gb|D","Iduna pallida":"1|ge||D","Acrocephalus palustris":"1|bz||TD","Acrocephalus melanopogon":"1|brw||T","Locustella naevia":"1|bz||TZ","Locustella fluviatilis":"1|b||DT","Cettia cetti":"1|rbg||TD","Locustella luscinioides":"1|rb||T","Acrocephalus arundinaceus":"2|be||T","Curruca cantillans":"1|grw|gb|D","Curruca nisoria":"1|gwy||D","Acrocephalus paludicola":"1|ebk||T","Ficedula albicollis":"1|kw|bw|D","Ficedula hypoleuca":"1|kw|bw|D","Ficedula semitorquata":"1|kw|bw|D","Muscicapa striata":"1|gbw||DJ","Ficedula parva":"1|gr|gb|D","Parus major":"1|ykz||D","Aegithalos caudatus":"1|wkp||D","Poecile lugubris":"1|gkw||D","Lophophanes cristatus":"1|bkw||D","Poecile palustris":"1|gkw||D","Poecile montana":"1|gkw||D","Panurus biarmicus":"1|rgk|rb|T","Cyanistes caeruleus":"1|syw||D","Remiz pendulinus":"1|krg||TD","Periparus ater":"1|kwg||D","Certhia familiaris":"1|bw||D","Sitta europaea":"1|srkg||D","Certhia brachydactyla":"1|bw||D","Sitta neumayer":"1|gwe||S","Tichodroma muraria":"1|gck||S","Oriolus oriolus":"2|yk|zy|D","Lanius nubicus":"1|kwr||DJ","Lanius excubitor":"2|gkw||JD","Lanius senator":"2|rkw||JD","Lanius collurio":"1|rgk|be|JD","Lanius minor":"2|gkw||J","Corvus corax":"5|k||ASZ","Pyrrhocorax graculus":"3|ky||ASZ","Corvus frugilegus":"4|kg||Z","Pica pica":"4|kw||ZD","Corvus cornix":"4|gk||ZD","Garrulus glandarius":"3|eskw||D","Nucifraga caryocatactes":"3|bw||D","Corvus monedula":"3|kg||ZJ","Sturnus vulgaris":"2|kzw||ZJ","Pastor roseus":"2|kp||ZD","Passer domesticus":"1|bgk|be|ZJ","Passer hispaniolensis":"1|rkw|be|ZD","Passer italiae":"1|rbk|be|Z","Passer montanus":"1|rbw||ZD","Petronia petronia":"1|be||SZ","Serinus serinus":"1|yz||DJ","Spinus spinus":"1|yzk||D","Chloris chloris":"1|zy||DJ","Fringilla coelebs":"1|pgw|bw|DZ","Linaria cannabina":"1|bc|b|ZD","Carpodacus erythrinus":"1|cb|b|D","Pyrrhula pyrrhula":"1|ckg|gk|D","Coccothraustes coccothraustes":"1|brg||D","Carduelis carduelis":"1|cyk||DZ","Acanthis flammea":"1|bc||D","Linaria flavirostris":"1|be||Z","Fringilla montifringilla":"1|rkw||DZ","Loxia curvirostra":"1|cb|zy|D","Emberiza hortulana":"1|gyr||Z","Emberiza citrinella":"1|yb||ZJ","Emberiza cirlus":"1|ykz||DJ","Emberiza calandra":"2|be||JZ","Emberiza cia":"1|grk||SZ","Emberiza schoeniclus":"1|kwb|be|T","Emberiza melanocephala":"1|ykr|ye|JD"};
+// </KV>
+const IDC=[['k','черно'],['w','бяло'],['g','сиво'],['b','кафяво'],['e','бежово'],['r','ръждиво'],['y','жълто'],['z','зелено'],['s','синьо'],['c','червено'],['p','розово']],
+  IDW=[['V','на вода'],['A','летеше'],['Z','на земята'],['D','в дървета / храсти'],['J','на жица / ограда'],['T','в тръстика'],['S','по скали']],
+  IDS=[[1,'врабче'],[2,'кос'],[3,'гълъб'],[4,'врана'],[5,'гъска / чапла']],
+  MONG=['януари','февруари','март','април','май','юни','юли','август','септември','октомври','ноември','декември'];
+let ID=null;
+const idMonths=m=>m===1?'&month=12&month=1,2':m===12?'&month=11,12&month=1':'&month='+(m-1)+','+(m+1);   // този и съседните месеци
+function idOpen(from){const fd=document.getElementById('f-date'),d=from==='form'&&fd&&fd.value?fd.value:today(),g=from==='form'&&geo?ll(geo):null,pos=g||myPos();
+  ID={from,step:0,size:0,cols:[],where:[],date:d,pos,prior:null,pmax:1,pst:pos?'load':'none',more:0};
+  if(pos)idPrior();
+  const dl=document.getElementById('whatDlg');idDraw();if(!dl.open)dl.showModal();}
+async function idPrior(){const my=ID,m=+my.date.slice(5,7);
+  try{const P=await gbArea(212,'&geoDistance='+my.pos[0].toFixed(3)+','+my.pos[1].toFixed(3)+',30km'+idMonths(m));
+    const M=new Map();let mx=1;for(const x of P.sp){const c=listFind('la',x.la);if(!c||!KV[c.la])continue;const n=(M.get(c.la)||0)+x.n;M.set(c.la,n);if(n>mx)mx=n;}
+    if(ID!==my)return;my.prior=M;my.pmax=mx;my.pst=M.size?'ok':'empty';}
+  catch(e){if(ID===my)my.pst='fail';}
+  if(ID===my)idDraw();}
+function idRank(){const out=[],P=ID.prior&&ID.prior.size?ID.prior:null;
+  for(const [la,t] of Object.entries(KV)){const [sz,cm,cf,wh]=t.split('|'),c=listFind('la',la);if(!c)continue;let sc=1;const n=P?(P.get(la)||0):null;
+    if(P)sc*=n?0.05+0.95*Math.pow(Math.log1p(n)/Math.log1p(ID.pmax),0.7):0.03;   // наоколо по това време — най-силното
+    if(ID.size&&sz){const d=Math.min(...[...sz].map(x=>Math.abs(+x-ID.size)));sc*=d===0?1:d===1?0.45:0.08;}
+    if(ID.cols.length){const f=L=>ID.cols.reduce((a,k)=>{const i=L.indexOf(k);return a+(i<0?0:i<2?1:0.6);},0)/ID.cols.length;   // първите два цвята тежат повече
+      sc*=0.12+0.88*Math.max(f(cm),cf?f(cf):0);}
+    if(ID.where.length&&wh)sc*=ID.where.some(w=>wh.includes(w))?1:0.3;
+    out.push({la,c,sc,n,sz,cm,cf,wh});}
+  return out.sort((a,b)=>b.sc-a.sc||a.c.bg.localeCompare(b.c.bg,'bg'));}
+const idCol=x=>[...x].map(k=>(IDC.find(c=>c[0]===k)||[0,''])[1]).join(', ');
+function idWhy(r){const fr=r.n==null?'':r.n===0?'не е намирана наоколо по това време':r.n>=ID.pmax*0.2?'честа тук сега':r.n>=ID.pmax*0.02?'среща се тук сега':'рядка тук сега';
+  return [[...r.sz].map(x=>IDS[+x-1][1]).join('–'),idCol(r.cm)+(r.cf?' (♀ '+idCol(r.cf)+')':''),[...r.wh].map(k=>(IDW.find(w=>w[0]===k)||[0,''])[1]).join(', '),fr].filter(Boolean).join(' · ');}
+function idDraw(){const b=document.getElementById('idBody');if(!b||!ID)return;const s=ID.step,m=+ID.date.slice(5,7);
+  const chip=(a,v,on,t)=>'<button type="button" class="chip" '+a+'="'+v+'" aria-pressed="'+on+'">'+esc(t)+'</button>';
+  const nav=(next,skip,back)=>'<div class="idnav">'+(back?'<button type="button" class="btn" data-idback>‹ Назад</button>':'')+'<span style="flex:1"></span>'+
+    (skip?'<button type="button" class="btn" data-idskip>Не знам</button>':'')+'<button type="button" class="btn pri" data-idnext>'+next+'</button></div>';
+  let h='<div class="idstep">'+(s<4?'Стъпка '+(s+1)+' от 4':'Най-вероятно е…')+'</div>';
+  if(s===0)h+='<h3>Кога и къде?</h3><div class="idrow0">🗓 '+esc(human(ID.date))+'</div><div class="idrow0">📍 '+(ID.pos?'тук и до 30 км наоколо':'без местоположение')+'</div>'+
+    '<p class="note2" style="max-width:none">'+({load:'Търся кои птици са намирани тук през '+MONG[m-1]+' и съседните месеци (GBIF)…',
+      ok:(ID.prior?ID.prior.size:0)+' вида са намирани наоколо през '+MONG[m-1]+' и съседните месеци — те ще са първи.',
+      empty:'Наоколо няма находки за този сезон — ще подредя само по белезите.',fail:'GBIF не отговаря — ще подредя само по белезите.',
+      none:'Без местоположение — ще подредя само по белезите. Сложи място в записа, за да се вземат и сезонът, и мястото.'})[ID.pst]+'</p>'+nav('Напред',false,false);
+  else if(s===1)h+='<h3>Колко голяма?</h3><div class="idchips">'+IDS.map(([v,t])=>chip('data-idsize',v,ID.size===v,t)).join('')+'</div><p class="note2" style="max-width:none">Спрямо птиците, които познаваш — както изглеждаше, с опашката.</p>'+nav('Напред',true,true);
+  else if(s===2)h+='<h3>Какви цветове? <small>до 3, първо най-видимия</small></h3><div class="idchips">'+IDC.map(([k,t])=>chip('data-idcol',k,ID.cols.includes(k),t)).join('')+'</div>'+nav('Напред',true,true);
+  else if(s===3)h+='<h3>Къде беше? <small>до 2</small></h3><div class="idchips">'+IDW.map(([k,t])=>chip('data-idwh',k,ID.where.includes(k),t)).join('')+'</div>'+nav('Покажи',true,true);
+  else{const R=idRank(),N=12*(ID.more+1);
+    h+=(ID.pst==='load'?'<p class="note2" style="max-width:none">Още питам GBIF кои са тук по това време — списъкът ще се подреди отново, щом отговори.</p>':'')+
+      '<div class="idlist">'+R.slice(0,N).map(r=>'<div class="idr"><div class="idph">'+silFor(r.c.fam)+'<div class="refsm" data-ref="'+esc(r.la)+'"></div></div><div class="idn"><b>'+esc(r.c.bg)+'</b><small>'+esc(idWhy(r))+'</small><div class="xcw" data-xc="'+esc(r.la)+'"></div></div>'+
+        '<button type="button" class="btn pri" data-idpick="'+esc(r.la)+'">Това е</button></div>').join('')+'</div>'+
+      (R.length>N?'<button type="button" class="btn" data-idmore style="margin-top:10px">Покажи още</button>':'')+
+      '<div class="idnav"><button type="button" class="btn" data-idback>‹ Промени отговорите</button></div>'+
+      '<p class="note2 idsrc" style="max-width:none">Подредбата: какво е намирано наоколо по това време (GBIF) и белезите. Размерите са сверени с AVONET (Tobias et al. 2022, CC BY 4.0).</p>';}
+  b.innerHTML=h;b.scrollTop=0;if(s===4){loadRefs();loadXC();}}
+function idPick(la){const c=listFind('la',la);if(!c)return;const from=ID&&ID.from;idClose();
+  if(from!=='form'||!document.getElementById('form').classList.contains('on')){sessFresh();openForm(null);}
+  for(const f of ['la','en']){fld(f).value='';fo[f]='';}
+  fld('bg').value=c.bg;fo.bg='user';fc.bg='';commitName('bg');}
+function idClose(){const dl=document.getElementById('whatDlg');if(dl&&dl.open)dl.close();ID=null;}
 const hsName=h=>/^L\d+$/.test(h.name)?(EBN[h.name]||'eBird място '+h.name):h.name;   // eBird дава в GBIF само кода на мястото; името — от eBird, ако има ключ
 // към заявка в GBIF: опростяване (до ~60 точки), +300 м за брега, без самопресичане (иначе — изпъкналата обвивка), обратно на часовника
 function gbShape(ring,buf){const lat0=ring[0][0]*Math.PI/180,KX=Math.cos(lat0)*111320,KY=110574,P=ring.slice(0,-1).map(([a,b])=>[b*KX,a*KY]);
@@ -2471,6 +2553,20 @@ function openForm(o,seed){
 function closeForm(){dropNew();form.classList.remove('on');document.getElementById('toggle').textContent='+ Ново наблюдение';edit=null;}
 document.getElementById('toggle').onclick=()=>{if(form.classList.contains('on'))return closeForm();sessFresh();openForm(null);};
 document.getElementById('cancel').onclick=closeForm;
+document.getElementById('f-idbtn').onclick=()=>idOpen('form');
+document.getElementById('whatDlg').addEventListener('close',()=>{ID=null;});
+document.getElementById('whatDlg').addEventListener('click',e=>{const t=e.target.closest('button');if(!t||!ID)return;
+  if(t.hasAttribute('data-idclose')){idClose();return;}
+  if(t.dataset.idpick){idPick(t.dataset.idpick);return;}
+  if(t.dataset.idsize){const v=+t.dataset.idsize;ID.size=ID.size===v?0:v;if(ID.size)ID.step=2;}   // един избор — направо напред
+  else if(t.dataset.idcol){const k=t.dataset.idcol,i=ID.cols.indexOf(k);if(i>=0)ID.cols.splice(i,1);else if(ID.cols.length<3)ID.cols.push(k);}
+  else if(t.dataset.idwh){const k=t.dataset.idwh,i=ID.where.indexOf(k);if(i>=0)ID.where.splice(i,1);else if(ID.where.length<2)ID.where.push(k);}
+  else if(t.hasAttribute('data-idnext'))ID.step++;
+  else if(t.hasAttribute('data-idskip')){if(ID.step===1)ID.size=0;else if(ID.step===2)ID.cols=[];else if(ID.step===3)ID.where=[];ID.step++;}
+  else if(t.hasAttribute('data-idback'))ID.step=ID.step===4?1:Math.max(0,ID.step-1);
+  else if(t.hasAttribute('data-idmore'))ID.more++;
+  else return;
+  idDraw();});
 // Запиши/Отказ не вземат фокуса: иначе излизането от полето сменя подсказката под координатите,
 // бутоните подскачат и натискането пада извън тях. Записът сам довършва автопопълването.
 document.addEventListener('mousedown',e=>{if(e.target.closest('.fbtns button'))e.preventDefault();});
@@ -3965,7 +4061,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-11.1';
+const VER='2026-11-11.2';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
