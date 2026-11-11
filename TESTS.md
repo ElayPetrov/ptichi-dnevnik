@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-950 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+958 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -90,6 +90,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_osm.py | 18 | „🏞 място“: the Natura 2000 bird areas in view (EEA; Bulgarian only; names) in green; „hot spots“ from zoom 10 — GBIF's most frequent location names in view (exact counts, ≥12), each a visible orange dot (7–16 px by finds; true outline from zoom 13), eBird codes shown as „eBird място L…“ with a link to eBird; a name spread over a whole town skipped, and the log says why when no name becomes a place; no hexagons in this mode; tapping gives the birds; an area in two parts sent as both (MULTIPOLYGON); the shape to GBIF closed, anticlockwise, never self-crossing; empty map → what to tap; EEA through the Supabase helper when needed; failures logged; nothing drawn far out; the C-shaped fallback |
 | test_osmfn.py | 12 | the „osm“ helper in Deno, against stand-ins: only Перá's short [out:json] questions; all servers asked at once, the fast one wins; a week of caching and CORS; the preflight; every reason when all fail; ?eea= passes only Natura 2000 questions to the EEA service, cached a month; ?ebird= — without a key 503 „no key“, with the key (Supabase secret EBIRD_KEY) only the allowed questions pass and carry it, species codes from eBird's taxonomy by Latin name |
 | test_ebirdapi.py | 7 | eBird through the helper: real names for the orange eBird spots; „Наскоро тук“ (30 days) in a spot's panel, in Bulgarian, with when, ✓ / „ново за теб“; „eBird наблизо“ on each target in Цели (when, how far, where); without a key nothing changes and Перá stops asking after one try |
+| test_doubt.py | 8 | Дневник „Несигурни“ filter: a chip after „Годишен списък“; shows records with „?“, only to group („sp.“) or asked friends and not yet answered — not sure or answered ones; a line counting each kind; the label while pressed; „по видове“ lists them by name with counts (alternatives shown); back to all; an honest empty message |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

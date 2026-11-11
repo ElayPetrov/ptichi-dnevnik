@@ -219,6 +219,7 @@ textarea{resize:vertical;min-height:54px}
 /* иконите са с линия като останалите в приложението; избраният бутон показва и думата си */
 .filt .chip.ic{display:inline-flex;align-items:center;gap:6px;padding:6px 11px}
 .filt .chip.ic svg{width:19px;height:19px;flex:0 0 auto}
+.dbtlist{display:grid;gap:2px} .dbtrow{display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line)} .dbtrow small{color:var(--mut)}
 .filt .chip.ic .lbl{display:none} .filt .chip.ic[aria-pressed="true"] .lbl{display:inline}
 .filt::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);
@@ -846,6 +847,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <button class="chip ic" data-f="s" aria-label="Видени" title="Видени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="currentColor"/></svg><span class="lbl">Видени</span></button>
   <button class="chip ic" data-f="p" aria-label="Снимани" title="Снимани"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13.2" r="3.3" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="lbl">Снимани</span></button>
   <button class="chip ic" data-f="ylist" aria-label="Годишен списък" title="Годишен списък"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 9.6h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8.6 14.6l2.2 2.2 4.6-4.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Годишен списък</span></button>
+  <button class="chip ic" data-f="q" aria-label="Несигурни" title="Несигурни — „?“, „sp.“ и питани приятели"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.9" r="1.2" fill="currentColor"/></svg><span class="lbl">Несигурни</span></button>
 </div>
 <div class="fg" style="margin-bottom:12px"><input id="q" placeholder="Търси вид, място или бележка…"></div>
 
@@ -1137,6 +1139,7 @@ function pass(o){const ql=q.trim().toLowerCase();
   if(filt==='h'&&!(o.h&&!o.s&&!o.p))return false;
   if(filt==='s'&&lvl(o)<2)return false;
   if(filt==='p'&&lvl(o)<3)return false;
+  if(filt==='q'&&!isDoubt(o))return false;
   if(filt==='ylist'){const y=String(new Date().getFullYear());
     if(o.date.slice(0,4)!==y)return false;
     if(yearFirsts()[key(o)]!==o.id)return false;}
@@ -1192,13 +1195,16 @@ function onThisDay(){if(q.trim()||filt!=='all')return '';const t=today(),md=t.sl
   const ds=Object.keys(by).sort().reverse();if(!ds.length)return '';
   return '<div class="otd"><span class="otdt">На днешна дата:</span>'+ds.map(d=>{const ns=[...new Set(by[d].map(o=>o.bg||o.en||o.la))];
     return '<button type="button" class="otdy" data-otd="'+d+'"><b>'+d.slice(0,4)+'</b> '+esc(ns.slice(0,3).join(', '))+(ns.length>3?' и още '+(ns.length-3):'')+'</button>';}).join('')+'</div>';}
+function doubtNote(L){const n=k=>L.filter(k).length,u=n(o=>o.u&&!isSp(o)),sp=n(isSp),ak=n(o=>o.ask&&!o.askOk);
+  return '<div class="note2 dbtnote" style="max-width:none;margin-bottom:10px">'+L.length+(L.length===1?' несигурен запис':' несигурни записа')+': '+
+    [u?u+' с „?“':'',sp?sp+' само до група („sp.“)':'',ak?ak+(ak===1?' чака':' чакат')+' отговор от приятели':''].filter(Boolean).join(' · ')+'. Докосни запис, за да го определиш.</div>';}
 function renderLog(el){
   // в деня — по час, най-късното горе (без час — по кога е записано); така и излетът стои на мястото си във времето,
   // дори ако после му добавиш забравена птица
   const tk=o=>{const m=tmin(o.time);if(m!=null)return m;const d=new Date(o.id);return d.getHours()*60+d.getMinutes();};
   const list=OBS.filter(pass).sort((a,b)=>a.date===b.date?(tk(b)-tk(a)||b.id-a.id):b.date.localeCompare(a.date));
-  if(!list.length){el.innerHTML='<div class="empty">Нищо не съвпада.</div>';return;}
-  const F=firsts();let h=vcLogTop(),cur='',curM='',curY='';const seen=new Set();
+  if(!list.length){el.innerHTML='<div class="empty">'+(filt==='q'&&!q.trim()?'Няма несигурни записи — всичко е определено.':'Нищо не съвпада.')+'</div>';return;}
+  const F=firsts();let h=vcLogTop()+(filt==='q'?doubtNote(list):''),cur='',curM='',curY='';const seen=new Set();
   const byDay={};for(const o of list)(byDay[o.date]=byDay[o.date]||[]).push(o);
   // месеци и години се появяват само когато има повече от един — дотогава Дневникът изглежда както досега
   const multiY=new Set(list.map(o=>o.date.slice(0,4))).size>1,multiM=new Set(list.map(o=>o.date.slice(0,7))).size>1,
@@ -1394,6 +1400,12 @@ function renderLife(el){
   if(spSel)return renderSpecies(el,spSel);
   if(LIFEALL)return renderAllSpecies(el);
   let arr=Object.values(speciesMap());const ql=q.trim().toLowerCase();
+  if(filt==='q'){const m=new Map();
+    for(const o of OBS)if(isDoubt(o)){const nm=(o.bg||o.en||o.la||'неопределена птица')+(o.alt&&o.alt.length?' / '+o.alt.join(' / '):'');if(ql&&!nm.toLowerCase().includes(ql))continue;m.set(nm,(m.get(nm)||0)+1);}
+    const L=[...m.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'bg'));
+    el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+(L.length?'<div class="note2" style="max-width:none;margin:10px 0">Несигурните записи по птица — не се броят, докато не ги определиш (в „Записи“).</div><div class="dbtlist">'+
+      L.map(([nm,c])=>'<div class="dbtrow"><span>'+esc(nm)+'</span><small>'+c+'</small></div>').join('')+'</div>':'<div class="empty">'+(ql?'Нищо не съвпада.':'Няма несигурни записи — всичко е определено.')+'</div>');
+    return;}
   if(ql)arr=arr.filter(r=>((r.bg||'')+' '+(r.en||'')+' '+(r.la||'')).toLowerCase().includes(ql));
   if(filt==='h')arr=arr.filter(r=>r.L===1);
   if(filt==='s')arr=arr.filter(r=>r.L>=2);
@@ -3309,6 +3321,7 @@ function countFieldsApply(rec){const a={};for(const [k] of AS)if(fAS[k]>0)a[k]=f
 // се попълват (английското по обичая на eBird — с рода). Броят се като запис, не като вид — както несигурните.
 // Подвид: трета дума в латинското име („Motacilla flava feldegg“); брои се към вида, а записът показва „(feldegg)“.
 const isSp=o=>[o.la,o.bg,o.en].some(v=>/\ssp\.?$/i.test(String(v||'').trim()));
+const isDoubt=o=>!!(o.u||isSp(o)||(o.ask&&!o.askOk));   // за филтъра „Несигурни“ (2026-11-11)
 const sspOf=o=>{const w=String(o.la||'').trim().split(/\s+/);return w.length>=3&&!/^sp\.?$/i.test(w[1])?w.slice(2).join(' '):'';};
 // родовете: общата дума в българските и английските имена на видовете им — „чайка“, „gull“
 const GEN=(()=>{const m={};for(const e of SPL){const g=e[1].trim().split(/\s+/)[0],r=m[g]||(m[g]={bg:{},en:{},n:0,fam:FAMS[e[3]]});r.n++;
@@ -3952,7 +3965,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-09.1';
+const VER='2026-11-11.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

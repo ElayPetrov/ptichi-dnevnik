@@ -22,8 +22,8 @@ try:
   pg.reload();pg.wait_for_timeout(300)
   # filters
   ch=pg.evaluate("[...document.querySelectorAll('#filters .chip')].map(c=>[c.dataset.f,!!c.querySelector('svg'),c.getAttribute('aria-label')])")
-  check('Q1 the filters: Всички, then ear, eye, camera and calendar icons; „Тази година“ is gone',
-    ch, [['all',False,None],['h',True,'Само чути'],['s',True,'Видени'],['p',True,'Снимани'],['ylist',True,'Годишен списък']])
+  check('Q1 the filters: Всички, then ear, eye, camera, calendar and question-mark („Несигурни“) icons; „Тази година“ is gone',
+    ch, [['all',False,None],['h',True,'Само чути'],['s',True,'Видени'],['p',True,'Снимани'],['ylist',True,'Годишен списък'],['q',True,'Несигурни']])
   fit=pg.evaluate("(()=>{const W=document.documentElement.clientWidth;return [...document.querySelectorAll('#filters .chip')].every(c=>{const r=c.getBoundingClientRect();return r.left>=0&&r.right<=W;});})()")
   check('Q2 all five show on a 360 px phone without swiping', fit, True)
   pg.click('#filters [data-f="h"]');pg.wait_for_timeout(150)
