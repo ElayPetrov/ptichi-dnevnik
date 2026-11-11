@@ -234,6 +234,20 @@ textarea{resize:vertical;min-height:54px}
 .idr .btn{white-space:nowrap}
 .idn{min-width:0} .idn b{font-size:15px} .idn small{display:block;color:var(--mut);font-size:12.5px;line-height:1.35;margin-top:2px}
 .idn .xcw{margin-top:4px}
+.idlab{display:block;font-size:13px;color:var(--mut);margin:6px 0 4px;text-transform:none;letter-spacing:normal;font-weight:400} .idlab small{color:var(--mut)} .idlab input{display:block;margin-top:4px;width:100%;max-width:220px}
+.idplc{margin:2px 0 6px} .idplc .chip{font-size:14px;padding:7px 11px}
+.idsz{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.idszb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 7px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);cursor:pointer;font:inherit}
+.idszb .idszp{height:62px;display:flex;align-items:flex-end;justify-content:center} .idszb svg{fill:currentColor;width:auto;opacity:.82}
+.idszb b{font-size:12.5px;font-weight:600;line-height:1.15;text-align:center} .idszb small{font-size:10.5px;color:var(--mut)}
+.idszb[aria-pressed="true"],.idcolb[aria-pressed="true"],.idwhb[aria-pressed="true"]{border-color:var(--s);box-shadow:0 0 0 2px var(--s) inset;color:var(--s)}
+.idcolg{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:7px}
+.idcolb{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.idcolb small{margin-left:auto;font-weight:700;font-size:12px}
+.idsw{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:1px solid rgba(0,0,0,.18);box-shadow:inset 0 -2px 4px rgba(0,0,0,.12)}
+.idwhg{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px}
+.idwhb{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.idwhb .idwi{width:30px;height:30px;flex:0 0 auto;opacity:.85}
 .idbtn{margin:0 0 10px;border:1px dashed var(--line);background:none;border-radius:10px;padding:7px 11px;color:var(--ink);font-size:14px;cursor:pointer}
 .idsrc{margin-top:14px;font-size:11.5px}
 .filt .chip.ic .lbl{display:none} .filt .chip.ic[aria-pressed="true"] .lbl{display:inline}
@@ -1764,6 +1778,16 @@ async function goalsEbird(el){if(EBOK===false||!sbOn())return;const pos=myPos(),
 // <KV>
 const KV={"Aythya nyroca":"4|rbw||V","Tadorna tadorna":"5|wkr||V","Anas platyrhynchos":"4|zgb|be|V","Anas crecca":"3|grz|be|V","Aythya ferina":"4|rgk|bg|V","Spatula clypeata":"4|zwr|be|V","Spatula querquedula":"3|bwg|be|V","Cygnus olor":"5|w||V","Somateria mollissima":"4|wkz|b|V","Anser anser":"5|gb||VZ","Mareca strepera":"4|gkb|be|V","Mareca penelope":"4|rge|b|V","Tadorna ferruginea":"5|re||VZ","Netta rufina":"4|rkc|be|V","Aythya fuligula":"4|kw|b|V","Anas acuta":"5|bwg|be|V","Mergus merganser":"5|wzkc|grw|V","Anser albifrons":"5|gbw||VZ","Melanitta fusca":"4|kw|b|V","Clangula hyemalis":"4|wkb||V","Anser erythropus":"5|gbw||VZ","Mergellus albellus":"4|wk|grw|V","Bucephala clangula":"4|wkz|gbw|V","Aythya marila":"4|kgw|bw|V","Cygnus cygnus":"5|wy||V","Anser fabalis":"5|bg||VZ","Mergus serrator":"4|zrw|gr|V","Melanitta nigra":"4|k|be|V","Oxyura leucocephala":"4|wrs|b|V","Cygnus columbianus":"5|wy||V","Branta ruficollis":"4|krw||VZ","Tetrao urogallus":"5|kz|br|ZD","Phasianus colchicus":"5|rzc|be|Z","Tetrastes bonasia":"3|gbr||ZD","Alectoris graeca":"3|gec||ZS","Perdix perdix":"3|grb||Z","Coturnix coturnix":"1|be||Z","Alectoris chukar":"3|gec||ZS","Lyrurus tetrix":"4|kw|br|ZD","Podiceps cristatus":"4|wbr||V","Tachybaptus ruficollis":"2|br||VT","Podiceps grisegena":"4|rgw||V","Podiceps nigricollis":"3|kyr||V","Podiceps auritus":"3|rky||V","Gavia stellata":"5|grw||V","Gavia arctica":"5|kwg||V","Pelecanus crispus":"5|wg||VA","Pelecanus onocrotalus":"5|wk||VA","Puffinus yelkouan":"3|bw||VA","Phalacrocorax carbo":"5|kw||VD","Microcarbo pygmeus":"4|kb||VDT","Gulosus aristotelis":"5|k||V","Bubulcus ibis":"4|we||Z","Plegadis falcinellus":"5|brz||VT","Ciconia ciconia":"5|wkc||ZA","Botaurus stellaris":"5|be||T","Ardea alba":"5|w||V","Ardeola ralloides":"4|ew||VT","Platalea leucorodia":"5|w||V","Egretta garzetta":"5|wk||V","Ixobrychus minutus":"3|ke|be|T","Nycticorax nycticorax":"5|gkw||VD","Ardea cinerea":"5|gwk||V","Ardea purpurea":"5|rg||TV","Ciconia nigra":"5|kwc||VD","Gyps fulvus":"5|be||AS","Buteo rufinus":"4|reb||AZ","Falco naumanni":"3|rg|be|AJ","Accipiter gentilis":"4|gw||AD","Falco biarmicus":"4|grw||AS","Neophron percnopterus":"5|wky||AS","Accipiter brevipes":"3|grw||AD","Circus pygargus":"4|gk|b|A","Falco cherrug":"4|be||A","Clanga pomarina":"5|b||A","Hieraaetus pennatus":"4|bw||A","Accipiter nisus":"3|grw||AD","Haliaeetus albicilla":"5|bwy||AV","Buteo buteo":"4|bw||AJD","Circaetus gallicus":"5|wb||A","Pandion haliaetus":"4|bw||AV","Pernis apivorus":"4|bgw||AD","Circus cyaneus":"4|gwk|b|AZ","Aquila chrysaetos":"5|b||AS","Falco subbuteo":"3|gwr||A","Falco peregrinus":"4|gwk||AS","Falco eleonorae":"3|bkgwr||AV","Circus aeruginosus":"4|bge|be|AT","Aquila heliaca":"5|bw||A","Falco vespertinus":"3|grckw|rge|AJ","Aegypius monachus":"5|bk||A","Milvus migrans":"4|b||AV","Falco tinnunculus":"3|rg|rb|AJ","Aquila fasciata":"5|bw||AS","Clanga clanga":"5|bk||A","Falco columbarius":"2|gr|be|AZ","Buteo lagopus":"4|bwe||AJ","Circus macrourus":"4|gw|b|A","Aquila nipalensis":"5|b||A","Milvus milvus":"5|rgw||A","Porzana porzana":"2|bgw||T","Gallinula chloropus":"3|kcw||VT","Rallus aquaticus":"2|bgc||T","Crex crex":"3|ber||Z","Fulica atra":"3|kw||V","Zapornia pusilla":"2|bg||T","Zapornia parva":"2|gb|be|T","Otis tarda":"5|regw||Z","Grus grus":"5|gkc||ZA","Tringa ochropus":"2|bw||V","Scolopax rusticola":"3|bre||ZD","Vanellus vanellus":"3|kwz||Z","Glareola pratincola":"2|be||ZA","Himantopus himantopus":"3|kwc||V","Actitis hypoleucos":"2|bw||V","Tringa totanus":"3|bwc||V","Charadrius alexandrinus":"1|ewk||VZ","Charadrius dubius":"1|bwk||VZ","Recurvirostra avosetta":"4|wk||V","Gallinago gallinago":"2|be||VT","Haematopus ostralegus":"4|kwc||V","Burhinus oedicnemus":"4|eby||Z","Glareola nordmanni":"2|bk||ZA","Calidris falcinellus":"1|bw||V","Calidris pugnax":"3|bre|be|VZ","Calidris canutus":"2|rg||V","Tringa nebularia":"3|gw||V","Numenius arquata":"4|be||VZ","Tringa erythropus":"3|kgc||V","Gallinago media":"2|be||ZT","Pluvialis apricaria":"2|ybkg||Z","Arenaria interpres":"2|rkw||V","Calidris ferruginea":"2|rgw||V","Lymnocryptes minimus":"2|be||T","Calidris minuta":"1|rbw||V","Tringa glareola":"2|bw||V","Tringa stagnatilis":"2|gw||V","Numenius phaeopus":"4|be||VZ","Xenus cinereus":"2|gw||V","Charadrius morinellus":"2|rgw||Z","Limosa lapponica":"3|rb||V","Charadrius hiaticula":"2|bwk||V","Calidris temminckii":"1|gb||V","Pluvialis squatarola":"3|kwg||V","Calidris alba":"2|wg||V","Calidris alpina":"2|bkw||V","Phalaropus lobatus":"2|grw||V","Limosa limosa":"4|rbw||V","Stercorarius skua":"4|b||VA","Stercorarius longicaudus":"4|gwk||VA","Stercorarius parasiticus":"4|bw||VA","Stercorarius pomarinus":"4|bwk||VA","Larus cachinnans":"5|wgy||VA","Ichthyaetus melanocephalus":"3|wkc||VA","Chroicocephalus ridibundus":"3|wgc||VA","Larus michahellis":"4|wgy||VA","Chroicocephalus genei":"4|wgc||V","Hydrocoloeus minutus":"2|wgk||VA","Larus fuscus":"4|wky||VA","Larus argentatus":"4|wgyk||VA","Larus canus":"4|wgy||VA","Chlidonias hybrida":"2|gkw||VAT","Chlidonias leucopterus":"2|kw||VA","Sternula albifrons":"2|wgy||VA","Thalasseus sandvicensis":"4|wk||VA","Gelochelidon nilotica":"3|wgk||VA","Sterna hirundo":"3|wkc||VA","Chlidonias niger":"2|kg||VA","Hydroprogne caspia":"4|wkc||VA","Columba palumbus":"4|gw||DZ","Streptopelia decaocto":"3|egk||ZJD","Streptopelia turtur":"2|rgb||DJ","Columba livia":"3|gk||ZS","Columba oenas":"3|g||D","Clamator glandarius":"4|gwe||D","Cuculus canorus":"3|gw||DJ","Asio flammeus":"3|eby||ZA","Bubo bubo":"5|br||SD","Glaucidium passerinum":"1|bw||D","Strix aluco":"3|bgr||D","Asio otus":"3|br||D","Tyto alba":"3|we||A","Athene noctua":"2|bw||ZJ","Aegolius funereus":"2|bw||D","Strix uralensis":"4|gw||D","Otus scops":"2|gb||D","Caprimulgus europaeus":"2|gb||ZA","Tachymarptis melba":"2|bw||AS","Apus pallidus":"1|b||A","Apus apus":"1|k||A","Alcedo atthis":"1|sr||V","Merops apiaster":"2|ysrz||AJ","Upupa epops":"2|rkw||Z","Coracias garrulus":"3|sr||JA","Dendrocopos leucotos":"2|kwc||D","Jynx torquilla":"1|gb||D","Dendrocopos major":"2|kwc||D","Picus viridis":"3|zyc||DZ","Dryobates minor":"1|kwc||D","Picus canus":"2|zgc|zg|D","Dendrocopos syriacus":"2|kwc||D","Dendrocoptes medius":"2|kwc||D","Picoides tridactylus":"2|kwy|kw|D","Dryocopus martius":"4|kc||D","Eremophila alpestris":"1|eyk||Z","Lullula arborea":"1|be||ZD","Melanocorypha calandra":"2|bek||Z","Galerida cristata":"1|be||Z","Alauda arvensis":"2|be||ZA","Alaudala rufescens":"1|be||Z","Calandrella brachydactyla":"1|eb||Z","Riparia riparia":"1|bw||AV","Delichon urbicum":"1|kws||AJ","Hirundo rustica":"2|srw||AJ","Ptyonoprogne rupestris":"1|b||AS","Cecropis rufula":"1|sre||AJS","Motacilla alba":"2|kwg||ZV","Anthus spinoletta":"1|gbe||VZ","Anthus trivialis":"1|be||DZ","Motacilla flava":"1|ykzgw||ZJ","Motacilla cinerea":"2|gyk||V","Anthus campestris":"1|eb||Z","Motacilla citreola":"1|ygk||VZ","Anthus pratensis":"1|be||Z","Anthus cervinus":"1|rb||ZV","Cinclus cinclus":"2|bw||V","Bombycilla garrulus":"2|pky||D","Regulus regulus":"1|zy||D","Troglodytes troglodytes":"1|b||DZ","Regulus ignicapillus":"1|zyw||D","Prunella collaris":"2|grb||SZ","Prunella modularis":"1|gb||DZ","Phoenicurus phoenicurus":"1|grk|br|D","Phoenicurus ochruros":"1|kgr|gr|SJZ","Saxicola rubicola":"1|krw|br|JZ","Oenanthe melanoleuca":"1|kwe|be|ZS","Oenanthe isabellina":"1|ewk||Z","Saxicola rubetra":"1|brw||JZ","Luscinia luscinia":"1|bg||D","Oenanthe oenanthe":"1|gwk|be|ZS","Cercotrichas galactotes":"1|rew||ZD","Erithacus rubecula":"1|rbg||DZ","Oenanthe pleschanka":"1|kw|b|SZ","Luscinia megarhynchos":"1|br||D","Luscinia svecica":"1|srb|bw|T","Turdus torquatus":"2|kw||ZD","Turdus viscivorus":"2|gbe||DZ","Turdus merula":"2|ky|b|ZD","Turdus philomelos":"2|bew||DZ","Monticola saxatilis":"2|srw|b|S","Monticola solitarius":"2|s|b|S","Turdus pilaris":"2|grb||DZ","Turdus iliacus":"2|brw||DZ","Acrocephalus scirpaceus":"1|be||T","Phylloscopus trochilus":"1|zy||D","Phylloscopus sibilatrix":"1|zyw||D","Hippolais olivetorum":"1|gw||D","Curruca communis":"1|gbwr||D","Sylvia atricapilla":"1|gk|gr|D","Hippolais icterina":"1|zy||D","Sylvia borin":"1|bg||D","Phylloscopus collybita":"1|zb||D","Phylloscopus orientalis":"1|gwz||D","Curruca crassirostris":"1|gkw||D","Acrocephalus agricola":"1|be||T","Acrocephalus schoenobaenus":"1|bew||T","Curruca curruca":"1|gbw||D","Curruca melanocephala":"1|kgc|gb|D","Iduna pallida":"1|ge||D","Acrocephalus palustris":"1|bz||TD","Acrocephalus melanopogon":"1|brw||T","Locustella naevia":"1|bz||TZ","Locustella fluviatilis":"1|b||DT","Cettia cetti":"1|rbg||TD","Locustella luscinioides":"1|rb||T","Acrocephalus arundinaceus":"2|be||T","Curruca cantillans":"1|grw|gb|D","Curruca nisoria":"1|gwy||D","Acrocephalus paludicola":"1|ebk||T","Ficedula albicollis":"1|kw|bw|D","Ficedula hypoleuca":"1|kw|bw|D","Ficedula semitorquata":"1|kw|bw|D","Muscicapa striata":"1|gbw||DJ","Ficedula parva":"1|gr|gb|D","Parus major":"1|ykz||D","Aegithalos caudatus":"1|wkp||D","Poecile lugubris":"1|gkw||D","Lophophanes cristatus":"1|bkw||D","Poecile palustris":"1|gkw||D","Poecile montana":"1|gkw||D","Panurus biarmicus":"1|rgk|rb|T","Cyanistes caeruleus":"1|syw||D","Remiz pendulinus":"1|krg||TD","Periparus ater":"1|kwg||D","Certhia familiaris":"1|bw||D","Sitta europaea":"1|srkg||D","Certhia brachydactyla":"1|bw||D","Sitta neumayer":"1|gwe||S","Tichodroma muraria":"1|gck||S","Oriolus oriolus":"2|yk|zy|D","Lanius nubicus":"1|kwr||DJ","Lanius excubitor":"2|gkw||JD","Lanius senator":"2|rkw||JD","Lanius collurio":"1|rgk|be|JD","Lanius minor":"2|gkw||J","Corvus corax":"5|k||ASZ","Pyrrhocorax graculus":"3|ky||ASZ","Corvus frugilegus":"4|kg||Z","Pica pica":"4|kw||ZD","Corvus cornix":"4|gk||ZD","Garrulus glandarius":"3|eskw||D","Nucifraga caryocatactes":"3|bw||D","Corvus monedula":"3|kg||ZJ","Sturnus vulgaris":"2|kzw||ZJ","Pastor roseus":"2|kp||ZD","Passer domesticus":"1|bgk|be|ZJ","Passer hispaniolensis":"1|rkw|be|ZD","Passer italiae":"1|rbk|be|Z","Passer montanus":"1|rbw||ZD","Petronia petronia":"1|be||SZ","Serinus serinus":"1|yz||DJ","Spinus spinus":"1|yzk||D","Chloris chloris":"1|zy||DJ","Fringilla coelebs":"1|pgw|bw|DZ","Linaria cannabina":"1|bc|b|ZD","Carpodacus erythrinus":"1|cb|b|D","Pyrrhula pyrrhula":"1|ckg|gk|D","Coccothraustes coccothraustes":"1|brg||D","Carduelis carduelis":"1|cyk||DZ","Acanthis flammea":"1|bc||D","Linaria flavirostris":"1|be||Z","Fringilla montifringilla":"1|rkw||DZ","Loxia curvirostra":"1|cb|zy|D","Emberiza hortulana":"1|gyr||Z","Emberiza citrinella":"1|yb||ZJ","Emberiza cirlus":"1|ykz||DJ","Emberiza calandra":"2|be||JZ","Emberiza cia":"1|grk||SZ","Emberiza schoeniclus":"1|kwb|be|T","Emberiza melanocephala":"1|ykr|ye|JD"};
 // </KV>
+const IDSZ=[['finch',20,'до 17 см'],['songbird',27,'18–27 см'],['pigeon',35,'28–38 см'],['crow',45,'39–60 см'],['heron',58,'над 60 см']],   // силует, височина в px, дължина
+  IDSW={k:'#2f2b27',w:'#eeeadf',g:'#9a978f',b:'#7a5737',e:'#d5c3a0',r:'#ad6132',y:'#d2ac3e',z:'#6f8542',s:'#567a99',c:'#a3402f',p:'#cf9d96'},   // приглушени, „природни“
+  IDWI={V:'<path d="M3 10c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 15.5c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>',
+    A:'<path d="M2 10c2.4-2.2 5-2.2 7.2.9 2.2-3.1 4.8-3.1 7.2-.9"/><path d="M12.5 16.5c1.4-1.3 2.9-1.3 4.2.5 1.3-1.8 2.8-1.8 4.2-.5"/>',
+    Z:'<path d="M2 19.5h20M6 19.5l-1.2-4.5M6 19.5l1.2-4.5M12 19.5l-1.6-5.5M12 19.5l1.6-5.5M18 19.5l-1.1-4M18 19.5l1.1-4"/>',
+    D:'<path d="M14 21v-5.5M14 15.5c-3.6 0-5.5-2.4-5.5-5.2S10.8 4 14 4s5.5 3.3 5.5 6.3-1.9 5.2-5.5 5.2zM2.5 21c0-2.6 1.6-4.2 3.6-4.2S9.7 18.4 9.7 21"/>',
+    J:'<path d="M4 4v17M20 4v17M4 8.5c5.3 3.2 10.7 3.2 16 0"/><circle cx="12" cy="9.2" r="1.7" fill="currentColor" stroke="none"/>',
+    T:'<path d="M7 21V12M12 21V9M17 21V13M12 17c-2.4-1-3.6-3-4.1-5.6M12 15.5c2.2-1 3.4-2.6 3.9-5"/><path d="M7 12V8.6M12 9V5.4M17 13V9.8" stroke-width="3.4"/>',
+    S:'<path d="M2.5 20.5l4.2-7.4 2.9 2.9 4.1-8.5 4 6.6 2.2-2.2 1.6 8.6z"/>'};
+const idIcon=k=>'<svg class="idwi" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+IDWI[k]+'</svg>';
 const IDC=[['k','черно'],['w','бяло'],['g','сиво'],['b','кафяво'],['e','бежово'],['r','ръждиво'],['y','жълто'],['z','зелено'],['s','синьо'],['c','червено'],['p','розово']],
   IDW=[['V','на вода'],['A','летеше'],['Z','на земята'],['D','в дървета / храсти'],['J','на жица / ограда'],['T','в тръстика'],['S','по скали']],
   IDS=[[1,'врабче'],[2,'кос'],[3,'гълъб'],[4,'врана'],[5,'гъска / чапла']],
@@ -1771,15 +1795,21 @@ const IDC=[['k','черно'],['w','бяло'],['g','сиво'],['b','кафяв
 let ID=null;
 const idMonths=m=>m===1?'&month=12&month=1,2':m===12?'&month=11,12&month=1':'&month='+(m-1)+','+(m+1);   // този и съседните месеци
 function idOpen(from){const fd=document.getElementById('f-date'),d=from==='form'&&fd&&fd.value?fd.value:today(),g=from==='form'&&geo?ll(geo):null,pos=g||myPos();
-  ID={from,step:0,size:0,cols:[],where:[],date:d,pos,prior:null,pmax:1,pst:pos?'load':'none',more:0};
+  ID={from,step:0,size:0,cols:[],where:[],date:d,pos,src:g?'rec':pos?'last':'none',prior:null,pmax:1,pst:pos?'load':'none',more:0,seq:0,gpsMsg:''};
   if(pos)idPrior();
   const dl=document.getElementById('whatDlg');idDraw();if(!dl.open)dl.showModal();}
-async function idPrior(){const my=ID,m=+my.date.slice(5,7);
-  try{const P=await gbArea(212,'&geoDistance='+my.pos[0].toFixed(3)+','+my.pos[1].toFixed(3)+',30km'+idMonths(m));
+async function idPrior(){const my=ID,tok=++my.seq,m=+my.date.slice(5,7),pos=my.pos;   // само последният въпрос важи
+  try{const P=await gbArea(212,'&geoDistance='+pos[0].toFixed(3)+','+pos[1].toFixed(3)+',30km'+idMonths(m));
     const M=new Map();let mx=1;for(const x of P.sp){const c=listFind('la',x.la);if(!c||!KV[c.la])continue;const n=(M.get(c.la)||0)+x.n;M.set(c.la,n);if(n>mx)mx=n;}
-    if(ID!==my)return;my.prior=M;my.pmax=mx;my.pst=M.size?'ok':'empty';}
-  catch(e){if(ID===my)my.pst='fail';}
-  if(ID===my)idDraw();}
+    if(ID!==my||my.seq!==tok)return;my.prior=M;my.pmax=mx;my.pst=M.size?'ok':'empty';}
+  catch(e){if(ID===my&&my.seq===tok)my.pst='fail';}
+  if(ID===my&&my.seq===tok)idDraw();}
+function idRefresh(){ID.prior=null;ID.pmax=1;ID.seq++;ID.pst=ID.pos?'load':'none';if(ID.pos)idPrior();idDraw();}
+function idGps(){if(!navigator.geolocation){ID.gpsMsg='Телефонът не дава местоположение.';idDraw();return;}ID.gpsMsg='Търся къде си…';idDraw();
+  navigator.geolocation.getCurrentPosition(p=>{if(!ID)return;ID.pos=[p.coords.latitude,p.coords.longitude];ID.src='gps';ID.gpsMsg='';idRefresh();},
+    ()=>{if(!ID)return;ID.gpsMsg='Няма достъп до местоположението — избери на картата.';idDraw();},{enableHighAccuracy:false,timeout:12000,maximumAge:120000});}
+const idPlaceTxt=()=>{if(!ID.pos)return 'без място';const g=ID.pos[0].toFixed(5)+','+ID.pos[1].toFixed(5),nm=nearPlace(g);
+  return (nm?'до '+nm:ID.pos[0].toFixed(3)+', '+ID.pos[1].toFixed(3))+' · '+({rec:'от записа',last:'последното ти място',gps:'по GPS',map:'избрано на картата'})[ID.src];};
 function idRank(){const out=[],P=ID.prior&&ID.prior.size?ID.prior:null;
   for(const [la,t] of Object.entries(KV)){const [sz,cm,cf,wh]=t.split('|'),c=listFind('la',la);if(!c)continue;let sc=1;const n=P?(P.get(la)||0):null;
     if(P)sc*=n?0.05+0.95*Math.pow(Math.log1p(n)/Math.log1p(ID.pmax),0.7):0.03;   // наоколо по това време — най-силното
@@ -1797,14 +1827,20 @@ function idDraw(){const b=document.getElementById('idBody');if(!b||!ID)return;co
   const nav=(next,skip,back)=>'<div class="idnav">'+(back?'<button type="button" class="btn" data-idback>‹ Назад</button>':'')+'<span style="flex:1"></span>'+
     (skip?'<button type="button" class="btn" data-idskip>Не знам</button>':'')+'<button type="button" class="btn pri" data-idnext>'+next+'</button></div>';
   let h='<div class="idstep">'+(s<4?'Стъпка '+(s+1)+' от 4':'Най-вероятно е…')+'</div>';
-  if(s===0)h+='<h3>Кога и къде?</h3><div class="idrow0">🗓 '+esc(human(ID.date))+'</div><div class="idrow0">📍 '+(ID.pos?'тук и до 30 км наоколо':'без местоположение')+'</div>'+
+  if(s===0)h+='<h3>Кога и къде?</h3><label class="idlab">Дата<input type="date" id="id-date" value="'+esc(ID.date)+'" max="'+today()+'"></label>'+
+    '<div class="idlab">Място <small>и до 30 км наоколо</small></div><div class="idrow0">📍 '+esc(idPlaceTxt())+'</div>'+
+    '<div class="idchips idplc"><button type="button" class="chip" data-idgps>📍 Тук (GPS)</button><button type="button" class="chip" data-idmap>🗺 На картата</button>'+
+    (ID.pos?'<button type="button" class="chip" data-idnopos>Без място</button>':'')+'</div>'+(ID.gpsMsg?'<p class="note2" style="max-width:none">'+esc(ID.gpsMsg)+'</p>':'')+
     '<p class="note2" style="max-width:none">'+({load:'Търся кои птици са намирани тук през '+MONG[m-1]+' и съседните месеци (GBIF)…',
       ok:(ID.prior?ID.prior.size:0)+' вида са намирани наоколо през '+MONG[m-1]+' и съседните месеци — те ще са първи.',
       empty:'Наоколо няма находки за този сезон — ще подредя само по белезите.',fail:'GBIF не отговаря — ще подредя само по белезите.',
       none:'Без местоположение — ще подредя само по белезите. Сложи място в записа, за да се вземат и сезонът, и мястото.'})[ID.pst]+'</p>'+nav('Напред',false,false);
-  else if(s===1)h+='<h3>Колко голяма?</h3><div class="idchips">'+IDS.map(([v,t])=>chip('data-idsize',v,ID.size===v,t)).join('')+'</div><p class="note2" style="max-width:none">Спрямо птиците, които познаваш — както изглеждаше, с опашката.</p>'+nav('Напред',true,true);
-  else if(s===2)h+='<h3>Какви цветове? <small>до 3, първо най-видимия</small></h3><div class="idchips">'+IDC.map(([k,t])=>chip('data-idcol',k,ID.cols.includes(k),t)).join('')+'</div>'+nav('Напред',true,true);
-  else if(s===3)h+='<h3>Къде беше? <small>до 2</small></h3><div class="idchips">'+IDW.map(([k,t])=>chip('data-idwh',k,ID.where.includes(k),t)).join('')+'</div>'+nav('Покажи',true,true);
+  else if(s===1)h+='<h3>Колко голяма?</h3><div class="idsz">'+IDS.map(([v,t],i)=>'<button type="button" class="idszb" data-idsize="'+v+'" aria-pressed="'+(ID.size===v)+'">'+
+      '<span class="idszp"><svg class="sil" viewBox="0 0 100 100" style="height:'+IDSZ[i][1]+'px" aria-hidden="true">'+SIL[IDSZ[i][0]]+'</svg></span><b>'+esc(t)+'</b><small>'+IDSZ[i][2]+'</small></button>').join('')+
+      '</div><p class="note2" style="max-width:none">Спрямо птиците, които познаваш — както изглеждаше, с опашката.</p>'+nav('Напред',true,true);
+  else if(s===2)h+='<h3>Какви цветове? <small>до 3, първо най-видимия</small></h3><div class="idcolg">'+IDC.map(([k,t])=>'<button type="button" class="idcolb" data-idcol="'+k+'" aria-pressed="'+ID.cols.includes(k)+'">'+
+      '<span class="idsw" style="background:'+IDSW[k]+'"></span>'+esc(t)+(ID.cols.includes(k)?'<small>'+(ID.cols.indexOf(k)+1)+'</small>':'')+'</button>').join('')+'</div>'+nav('Напред',true,true);
+  else if(s===3)h+='<h3>Къде беше? <small>до 2</small></h3><div class="idwhg">'+IDW.map(([k,t])=>'<button type="button" class="idwhb" data-idwh="'+k+'" aria-pressed="'+ID.where.includes(k)+'">'+idIcon(k)+'<span>'+esc(t)+'</span></button>').join('')+'</div>'+nav('Покажи',true,true);
   else{const R=idRank(),N=12*(ID.more+1);
     h+=(ID.pst==='load'?'<p class="note2" style="max-width:none">Още питам GBIF кои са тук по това време — списъкът ще се подреди отново, щом отговори.</p>':'')+
       '<div class="idlist">'+R.slice(0,N).map(r=>'<div class="idr"><div class="idph">'+silFor(r.c.fam)+'<div class="refsm" data-ref="'+esc(r.la)+'"></div></div><div class="idn"><b>'+esc(r.c.bg)+'</b><small>'+esc(idWhy(r))+'</small><div class="xcw" data-xc="'+esc(r.la)+'"></div></div>'+
@@ -2555,10 +2591,14 @@ document.getElementById('toggle').onclick=()=>{if(form.classList.contains('on'))
 document.getElementById('cancel').onclick=closeForm;
 document.getElementById('f-idbtn').onclick=()=>idOpen('form');
 document.getElementById('whatDlg').addEventListener('close',()=>{ID=null;});
+document.getElementById('whatDlg').addEventListener('change',e=>{if(e.target.id!=='id-date'||!ID)return;ID.date=e.target.value||today();idRefresh();});
 document.getElementById('whatDlg').addEventListener('click',e=>{const t=e.target.closest('button');if(!t||!ID)return;
   if(t.hasAttribute('data-idclose')){idClose();return;}
   if(t.dataset.idpick){idPick(t.dataset.idpick);return;}
-  if(t.dataset.idsize){const v=+t.dataset.idsize;ID.size=ID.size===v?0:v;if(ID.size)ID.step=2;}   // един избор — направо напред
+  if(t.hasAttribute('data-idgps')){idGps();return;}
+  if(t.hasAttribute('data-idmap')){pickOpen(ID.pos?ID.pos[0].toFixed(5)+','+ID.pos[1].toFixed(5):null,at=>{if(!ID)return;ID.pos=at;ID.src='map';ID.gpsMsg='';idRefresh();});return;}
+  if(t.hasAttribute('data-idnopos')){ID.pos=null;ID.src='none';ID.gpsMsg='';idRefresh();return;}
+  if(t.dataset.idsize){const v=+t.dataset.idsize;ID.size=ID.size===v?0:v;}   // напред — само с „Напред“
   else if(t.dataset.idcol){const k=t.dataset.idcol,i=ID.cols.indexOf(k);if(i>=0)ID.cols.splice(i,1);else if(ID.cols.length<3)ID.cols.push(k);}
   else if(t.dataset.idwh){const k=t.dataset.idwh,i=ID.where.indexOf(k);if(i>=0)ID.where.splice(i,1);else if(ID.where.length<2)ID.where.push(k);}
   else if(t.hasAttribute('data-idnext'))ID.step++;
@@ -2624,7 +2664,8 @@ function pickTiles(){const T=TILES[pickKey]||TILES.hyb;
   pickM.__tls=[L.tileLayer(T.url,o).addTo(pickM),...(T.over||[]).map(u=>L.tileLayer(u,{maxZoom:T.max,crossOrigin:true}).addTo(pickM))];pickM.__tk=pickKey;}
 document.getElementById('pickTiles').addEventListener('click',e=>{const b=e.target.closest('[data-ptk]');if(!b)return;
   pickKey=b.dataset.ptk;try{localStorage.setItem('bird-journal-picktiles',pickKey);}catch(x){}pickTiles();});
-document.getElementById('geoMap').onclick=async()=>{
+let pickCb=null;   // зададено — „Готово“ връща точката тук (напр. на „Какво видях?“), а не в записа
+async function pickOpen(own,cb){pickCb=cb||null;
   const d=document.getElementById('pickDlg'),tx=document.getElementById('pickTxt');
   pickAt=null;document.getElementById('pickOk').disabled=true;tx.textContent='зарежда картата…';d.showModal();
   if(!await loadLeaflet()){tx.textContent='Картата иска връзка с интернет.';return;}
@@ -2632,12 +2673,15 @@ document.getElementById('geoMap').onclick=async()=>{
   if(!pickM){pickM=L.map('pickMap');pickM.on('click',e=>pickSet([e.latlng.lat,e.latlng.lng]));}
   pickTiles();
   if(pickPin){pickM.removeLayer(pickPin);pickPin=null;}
-  const own=parseGeo(fld('geo').value),from=own||(SESS&&SESS.geo)||(([...OBS].sort(newest).find(o=>o.geo)||{}).geo)||null,
+  const from=own||(SESS&&SESS.geo)||(([...OBS].sort(newest).find(o=>o.geo)||{}).geo)||null,
     at=from?String(from).split(',').map(Number):[42.6194,25.3956];
   pickM.setView(at,from?15:11);setTimeout(()=>pickM.invalidateSize(),80);
-  if(own)pickSet(at);};
+  if(own)pickSet(at);}
+document.getElementById('geoMap').onclick=()=>pickOpen(parseGeo(fld('geo').value),null);
+document.getElementById('pickDlg').addEventListener('close',()=>{pickCb=null;});
 document.getElementById('pickCancel').onclick=()=>document.getElementById('pickDlg').close();
 document.getElementById('pickOk').onclick=()=>{if(!pickAt)return;
+  if(pickCb){const cb=pickCb,at=pickAt;pickCb=null;document.getElementById('pickDlg').close();cb(at);return;}
   setGeo(pickAt[0].toFixed(5)+','+pickAt[1].toFixed(5));fo.geo='user';hint('посочено на картата');document.getElementById('pickDlg').close();};
 // Снимките се трият едва при „Запиши": старата — ако е махната или сменена; новите, които не са
 // влезли в записа — при запис или отказ. „махни" + „Отказ" оставя записа със снимката му.
@@ -4061,7 +4105,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-11.2';
+const VER='2026-11-11.3';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

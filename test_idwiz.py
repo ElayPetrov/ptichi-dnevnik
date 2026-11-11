@@ -1,7 +1,8 @@
 # „Какво видях?“ (2026-11-11.2): step-by-step identification. From the form: when/where → GBIF's birds within 30 km in
 # this and the neighbouring months; size; up to 3 colours; up to 2 places; every step skippable. Ranking = local
 # frequency × fit (mismatch lowers, never removes). „Това е“ fills the form. Also the Excel → data converter.
-import json,subprocess,sys,time,datetime,urllib.parse,shutil
+import json,subprocess,sys,time,datetime,urllib.parse,shutil,io
+from PIL import Image
 from playwright.sync_api import sync_playwright
 T=datetime.date.today();m=T.month
 MONTHS='month=12&month=1,2' if m==1 else 'month=11,12&month=1' if m==12 else f'month={m-1},{m+1}'
@@ -18,8 +19,15 @@ def gbif(route):
   elif 'limit=300' in u: body={'results':[{'speciesKey':k,'species':la} for k,(la,n) in NEAR.items()]}
   else: body={'count':1130,'facets':[]}
   route.fulfill(body=json.dumps(body),content_type='application/json')
-def session(b,geo=True):
-  ctx=b.new_context(viewport={'width':390,'height':844});ctx.route('https://api.gbif.org/**',gbif)
+def tile():
+  bb=io.BytesIO();Image.new('RGB',(256,256),(214,222,200)).save(bb,'PNG');return bb.getvalue()
+TILE=tile()
+def session(b,geo=True,gps=None):
+  kw=dict(viewport={'width':390,'height':844})
+  if gps:kw.update(geolocation={'latitude':gps[0],'longitude':gps[1]},permissions=['geolocation'])
+  ctx=b.new_context(**kw);ctx.route('https://api.gbif.org/**',gbif)
+  ctx.route('https://cdnjs.cloudflare.com/ajax/libs/leaflet/**',lambda r:r.fulfill(path='/home/claude/sb/leaflet/'+('leaflet.css' if r.request.url.endswith('.css') else 'leaflet.js'),content_type='text/css' if r.request.url.endswith('.css') else 'application/javascript'))
+  for pat in ['https://server.arcgisonline.com/**','https://*.basemaps.cartocdn.com/**','https://*.tile.openstreetmap.org/**','https://*.tile.opentopomap.org/**']:ctx.route(pat,lambda r:r.fulfill(body=TILE,content_type='image/png'))
   for pat in ['https://*.wikipedia.org/**','https://upload.wikimedia.org/**','https://commons.wikimedia.org/**','https://*.supabase.co/**']:ctx.route(pat,lambda r:r.abort())
   pg=ctx.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
   obs=[R(id=1,bg='Кос',la='Turdus merula',geo='42.62000,25.40000' if geo else None)]
@@ -27,7 +35,7 @@ def session(b,geo=True):
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400);return ctx,pg,errs
 def answer(pg,size=None,cols=(),wh=()):
   pg.click('#idBody [data-idnext]');pg.wait_for_timeout(100)
-  if size:pg.click(f'#idBody [data-idsize="{size}"]')
+  if size:pg.click(f'#idBody [data-idsize="{size}"]');pg.wait_for_timeout(80);pg.click('#idBody [data-idnext]')
   else:pg.click('#idBody [data-idskip]')
   pg.wait_for_timeout(100)
   for c in cols:pg.click(f'#idBody [data-idcol="{c}"]')
@@ -65,6 +73,27 @@ try:
   answer(pg,2,('k','y'),('D',))
   check('I14 ...then the авлига and the кос fit equally — which is exactly why step 1 matters', sorted(top(pg,2)), ['Авлига','Кос'])
   check('I15 no page errors (without a position)', errs, []);ctx.close()
+  # step 1 can be changed; the pictures; size waits for „Напред“
+  ctx,pg,errs=session(b,gps=(42.70,25.50));pg.click('#toggle');pg.wait_for_timeout(200);pg.click('#f-idbtn');pg.wait_for_timeout(700)
+  CALLS.clear();pg.fill('#id-date','2026-06-15');pg.dispatch_event('#id-date','change');pg.wait_for_timeout(700)
+  check('J1 changing the date asks GBIF again for that season (June → May–July)', any('month=5,7' in u and 'facet=speciesKey' in u for u in CALLS), True)
+  CALLS.clear();pg.click('#idBody [data-idgps]');pg.wait_for_timeout(900)
+  check('J2 „📍 Тук (GPS)“ takes the phone\'s position and asks GBIF there', (any('geoDistance=42.700,25.500,30km' in u for u in CALLS),'по GPS' in pg.inner_text('#idBody .idrow0')), (True,True))
+  CALLS.clear();pg.click('#idBody [data-idmap]');pg.wait_for_timeout(1200)
+  box=pg.locator('#pickMap').bounding_box();pg.mouse.click(box['x']+box['width']*0.7,box['y']+box['height']*0.4);pg.wait_for_timeout(300);pg.click('#pickOk');pg.wait_for_timeout(900)
+  check('J3 „🗺 На картата“: the record\'s map opens on top, the chosen point comes back to „Какво видях?“ (and GBIF is asked there) — the record\'s own place is untouched',
+        (pg.evaluate("document.getElementById('pickDlg').open"),pg.evaluate("document.getElementById('whatDlg').open"),'избрано на картата' in pg.inner_text('#idBody .idrow0'),any('geoDistance=' in u and '42.700,25.500' not in u for u in CALLS),pg.input_value('#f-geo') if pg.locator('#f-geo').count() else ''), (False,True,True,True,''))
+  pg.click('#idBody [data-idnopos]');pg.wait_for_timeout(300)
+  check('J4 „Без място“: traits only, and it says so', ('без място' in pg.inner_text('#idBody .idrow0'),'Без местоположение' in pg.inner_text('#idBody')), (True,True))
+  pg.click('#idBody [data-idnext]');pg.wait_for_timeout(150);pg.click('#idBody [data-idsize="3"]');pg.wait_for_timeout(200)
+  check('J5 choosing a size doesn\'t jump ahead — only „Напред“ does', (pg.inner_text('#idBody h3'),pg.get_attribute('#idBody [data-idsize="3"]','aria-pressed')), ('Колко голяма?','true'))
+  hs=pg.evaluate("[...document.querySelectorAll('#idBody .idszb svg')].map(s=>Math.round(s.getBoundingClientRect().height))")
+  check('J6 the five sizes show the reference birds\' silhouettes, growing from врабче to гъска/чапла', (len(hs),hs==sorted(hs) and hs[0]<hs[-1],pg.evaluate("[...document.querySelectorAll('#idBody .idszb small')].map(x=>x.textContent)")), (5,True,['до 17 см','18–27 см','28–38 см','39–60 см','над 60 см']))
+  pg.click('#idBody [data-idnext]');pg.wait_for_timeout(150);pg.click('#idBody [data-idcol="y"]');pg.click('#idBody [data-idcol="k"]');pg.wait_for_timeout(150)
+  check('J7 colours are filled circles in muted tones; the chosen ones show their order', (pg.locator('#idBody .idcolb .idsw').count(),pg.evaluate("getComputedStyle(document.querySelector('#idBody [data-idcol=\"y\"] .idsw')).backgroundColor"),pg.inner_text('#idBody [data-idcol="y"] small'),pg.inner_text('#idBody [data-idcol="k"] small')), (11,'rgb(210, 172, 62)','1','2'))
+  pg.click('#idBody [data-idnext]');pg.wait_for_timeout(150)
+  check('J8 each place has its own small sketch', (pg.locator('#idBody .idwhb svg.idwi').count(),pg.evaluate("[...document.querySelectorAll('#idBody .idwhb span')].map(x=>x.textContent)")), (7,['на вода','летеше','на земята','в дървета / храсти','на жица / ограда','в тръстика','по скали']))
+  check('J9 no page errors (changing place and date)', errs, []);ctx.close()
   b.close()
 finally: srv.terminate()
 # the converter: refuses unknown words, writes when clean
