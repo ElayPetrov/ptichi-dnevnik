@@ -1,6 +1,6 @@
 # Птичи дневник — tests
 
-984 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+1001 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -92,6 +92,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_ebirdapi.py | 7 | eBird through the helper: real names for the orange eBird spots; „Наскоро тук“ (30 days) in a spot's panel, in Bulgarian, with when, ✓ / „ново за теб“; „eBird наблизо“ on each target in Цели (when, how far, where); without a key nothing changes and Перá stops asking after one try |
 | test_doubt.py | 8 | Дневник „Несигурни“ filter: a chip after „Годишен списък“; shows records with „?“, only to group („sp.“) or asked friends and not yet answered — not sure or answered ones; a line counting each kind; the label while pressed; „по видове“ lists them by name with counts (alternatives shown); back to all; an honest empty message |
 | test_idwiz.py | 26 | „Какво видях?“ from the form: step 1 — GBIF asked for the birds within 30 km in this and the neighbouring months; date can be changed (asks again for that season); place by GPS, on the record's map (the point comes back to the wizard, the record's own place untouched) or none; size waits for „Напред“; silhouettes growing врабче → гъска/чапла; muted colour circles with their order; a sketch per place; „кос“, black and yellow, in trees → the кос first here and now while the авлига (absent this season) sinks but stays; the reason line; photos and sounds; „Покажи още“; „Това е“ fills the form; skipping everything; back to size; without a position → traits only; the converter refuses typos and non-neighbouring sizes, naming the rows, and writes all 340 from a clean file |
+| test_tree.py | 17 | „🌳 Дървото“ (third sub-tab of Видове): a leaf for each of the 413 species, your sure species lit (not „?“ ones); order names in Bulgarian from Wikipedia, Latin where there's none; species names only when zoomed in; a species chapter — three names, its path from the top, your records, the Bulgarian Wikipedia article first (sources dropped), credited with links to the article and CC BY-SA, the English one folded under „По-подробно на английски“ (references dropped); a family chapter with its species, how many you've seen and ✓; back; „Покажи на дървото“; search; Wikipedia down → says so; no page errors |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

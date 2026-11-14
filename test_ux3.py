@@ -23,7 +23,7 @@ try:
   check('X1 the bird card: „Сутрин обикновено го срещаш … след изгрева.“', pg.inner_text('.sunl').startswith('Сутрин обикновено го срещаш '), True)
   check('X2 ...and nothing on the card sticks out past a 340 px screen (long place names included)', wide(), False)
   pg.click('[data-spback]');pg.wait_for_timeout(100)
-  check('X3 Моите видове starts with „Моите · 2 / Всички видове · 413“', pg.evaluate("[...document.querySelectorAll('.lifetabs button')].map(b=>b.textContent)"), ['Моите · 2','Всички видове · 413'])
+  check('X3 Моите видове starts with „Моите · 2 / Всички · 413 / 🌳 Дървото“', pg.evaluate("[...document.querySelectorAll('.lifetabs button')].map(b=>b.textContent)"), ['Моите · 2','Всички · 413','🌳 Дървото'])
   pg.click('[data-lifeall="1"]');pg.wait_for_timeout(200)
   check('X4 „Всички видове“: every species, by group with counts, a tick on the ones you have', (pg.locator('.asp').count(),pg.locator('.asp.got').count(),pg.inner_text('[data-alf="Грабливи птици"] small')), (413,2,'0 / 37'))
   check('X5 ...plain names, no pictures; rare ones marked', (pg.locator('.allsp img').count(),pg.locator('.asp .rr').count()), (0,73))
