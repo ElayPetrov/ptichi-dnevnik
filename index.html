@@ -90,6 +90,9 @@ h1{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:clamp(28px,6vw,4
 .sesslist{display:none;max-height:45vh;overflow:auto;margin-top:8px;border-top:1px solid color-mix(in srgb,var(--s) 35%,transparent)} .sess.open .sesslist{display:block}
 .ssr{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed color-mix(in srgb,var(--s) 25%,transparent);font-size:14px}
 .ssr .t{color:var(--mut);font-size:12.5px;min-width:2.8em} .ssr .n{flex:1;min-width:0} .ssr .n.u{font-style:italic;color:var(--mut)}
+.sstal{display:flex;align-items:center;gap:6px;margin-top:6px;font-style:normal} .sstal b{min-width:2.6em;text-align:center;font-size:16px;color:var(--ink)}
+.ssr .sstal button{border:1px solid var(--line2);border-radius:9px;background:var(--card);color:var(--ink);font:inherit;font-size:13.5px;padding:6px 10px;line-height:1;cursor:pointer}
+.ssr .sstal button:active{background:var(--s);color:#fff;border-color:var(--s)}
 .ssr button{background:none;border:0;color:var(--mut);cursor:pointer;padding:2px 6px;font-size:16px;line-height:1} .ssr svg{width:16px;height:16px;display:block}
 .ssempty{color:var(--mut);font-size:13px;padding:8px 0}
 .sesshead .btn{flex:0 0 auto}
@@ -158,6 +161,12 @@ button.day{display:block;width:100%;text-align:left;background:none;border:0;bor
 #cardDlg{background:var(--card);padding:12px;border-radius:16px}
 #cardDlg img{max-width:min(86vw,420px);max-height:72vh;border-radius:10px;display:block;margin:0 auto}
 #cardDlg .fbtns{justify-content:center}
+.agains{display:flex;flex-wrap:wrap;gap:6px} .agains .again{margin-top:9px}
+.snack{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:60;max-width:min(520px,92vw);padding:10px 14px;border-radius:14px;
+  background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:14px;line-height:1.4}
+.snack button{margin-left:6px;border:1px solid var(--s);color:var(--s);background:none;border-radius:999px;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer}
+.o.flash{animation:flashb 1.8s ease}
+@keyframes flashb{0%{box-shadow:0 0 0 3px var(--s)}100%{box-shadow:0 0 0 0 transparent}}
 .again{margin-top:9px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);
   background:transparent;color:var(--mut);font:inherit;font-size:12.5px;cursor:pointer}
 .again:hover{border-color:var(--accent);color:var(--accent)}
@@ -244,6 +253,8 @@ textarea{resize:vertical;min-height:54px}
 .idnav{display:flex;gap:8px;align-items:center;margin-top:16px;flex-wrap:wrap}
 .idrow0{padding:9px 11px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px}
 .idlist{display:grid;gap:8px} .idr{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:12px}
+.idr:not(.big){grid-template-columns:42px minmax(0,1fr) auto;padding:6px 8px} .idr:not(.big) .idph{width:42px;height:42px} .idr:not(.big) .idph .refsm img{width:42px;height:42px}
+.idr:not(.big) .idn b{font-size:14px} .idr:not(.big) .idn small{font-size:12px} .idr.big .idph{width:64px;height:64px} .idr.big{grid-template-columns:64px minmax(0,1fr) auto} .idr.big .idph .refsm img{width:64px;height:64px}
 .idph{position:relative;width:52px;height:52px;border-radius:8px;overflow:hidden;background:var(--line);display:flex;align-items:center;justify-content:center}
 .idph>svg{width:34px;height:34px;opacity:.45} .idph .refsm{position:absolute;inset:0} .idph .refsm img{width:52px;height:52px;border-radius:0}
 .idr .btn{white-space:nowrap}
@@ -1012,6 +1023,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 </dialog>
 <dialog id="whatDlg" class="pickdlg iddlg" aria-label="Какво видях?"><div class="idhead"><span>🔍 Какво видях?</span><button type="button" data-idclose aria-label="Затвори">×</button></div><div id="idBody"></div></dialog>
 <dialog id="treeDlg" class="pickdlg iddlg" aria-label="Глава от дървото"><div class="idhead"><button type="button" class="tdback" data-tdback aria-label="Назад">‹</button><span id="tdTitle"></span><button type="button" data-tdclose aria-label="Затвори">×</button></div><div id="tdBody"></div></dialog>
+<div id="snack" class="snack" role="status" hidden></div>
 <dialog id="cardDlg"><img id="cardImg" alt="Картичка за споделяне">
   <div class="fbtns"><button type="button" class="btn pri" id="cardShare">Сподели</button>
     <button type="button" class="btn" id="cardSave">Изтегли</button><button type="button" class="btn" id="cardClose">Затвори</button></div></dialog>
@@ -1058,10 +1070,31 @@ function endOuting(complete,stale){if(!SESS)return;const d=outDefaults(stale),si
 let sessOpen=false;
 // записите на текущия излет, най-новите отгоре — молив за промяна и × за изтриване (същите като в Дневник)
 function sessListHTML(){const rs=OBS.filter(o=>o.sess===SESS.id).sort((a,b)=>(b.time||'').localeCompare(a.time||'')||b.id-a.id);
-  return rs.length?rs.map(o=>'<div class="ssr"><span class="t">'+esc(o.time||'')+'</span><span class="n'+(o.u?' u':'')+'">'+esc(o.bg||o.en||o.la)+(o.u?' ?':'')+
-      (o.count||o.as?' · '+esc(cntText(o)):'')+(o.h&&!o.s&&!o.p?' · чут':'')+'</span>'+
-    '<button type="button" data-ed="'+o.id+'" aria-label="промени" title="промени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5 17v3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14.6 7.4l3 3" stroke="currentColor" stroke-width="2"/></svg></button><button type="button" data-del="'+o.id+'" aria-label="изтрий" title="изтрий">×</button></div>').join(''):
+  return rs.length?rs.map(o=>{const m=String(o.count||'').match(/\d+/),n=m?+m[0]:0,cq=cqOf(o),pre=n&&cq==='est'?'~':n&&cq==='min'?'≥':'';
+    return '<div class="ssr"><span class="t">'+esc(o.time||'')+'</span><div class="n'+(o.u?' u':'')+'">'+esc(o.bg||o.en||o.la)+(o.u?' ?':'')+
+      (o.as&&asText(o.as)?' · '+esc(asText(o.as)):'')+(o.h&&!o.s&&!o.p?' · чут':'')+
+      '<div class="sstal"><button type="button" data-tal="'+o.id+'" data-d="-1" aria-label="едно по-малко">−1</button><b>'+pre+n+'</b>'+
+      [1,10,100].map(d=>'<button type="button" data-tal="'+o.id+'" data-d="'+d+'">+'+d+'</button>').join('')+'</div></div>'+
+    '<button type="button" data-ed="'+o.id+'" aria-label="промени" title="промени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5 17v3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14.6 7.4l3 3" stroke="currentColor" stroke-width="2"/></svg></button><button type="button" data-del="'+o.id+'" aria-label="изтрий" title="изтрий">×</button></div>';}).join(''):
     '<div class="ssempty">Още няма записи в този излет.</div>';}
+let talT=0,snackT=0,sameBusy=false;
+function snack(html,ms){const el=document.getElementById('snack');if(!el)return;el.innerHTML=html;el.hidden=false;clearTimeout(snackT);if(ms)snackT=setTimeout(()=>{el.hidden=true;},ms);}
+// „+ същия вид на ново място“ (2026-11-16): копие на записа — същият вид, но тук и сега (мястото — от пътя на излета или от телефона)
+async function sameHere(id){const o=OBS.find(x=>x.id==id);if(!o||sameBusy)return;sameBusy=true;
+  try{let g=trkNow();
+    if(!g){snack('Търся къде си…');g=await new Promise(res=>{if(!navigator.geolocation)return res(null);
+      navigator.geolocation.getCurrentPosition(p=>res(p.coords.latitude.toFixed(5)+','+p.coords.longitude.toFixed(5)),()=>res(null),{enableHighAccuracy:true,timeout:15000,maximumAge:30000});});}
+    if(!g){snack('Няма местоположение — разреши го в телефона или запиши мястото ръчно.',6000);return;}
+    const now=Date.now(),r={id:now,date:today(),time:nowTime(),place:nearPlace(g)||'',count:'',bg:o.bg||'',en:o.en||'',la:o.la||'',fam:o.fam||'',note:'',
+      h:o.h?1:0,s:o.s?1:0,p:0,beh:[],geo:g,photo:null,upd:now};   // бройката, бележката, снимката и поведението са на старото място — не се копират
+    if(o.u){r.u=1;if(o.alt&&o.alt.length)r.alt=[...o.alt];}if(SESS)r.sess=SESS.id;
+    OBS.push(r);save();render();
+    snack('„'+esc(o.bg||o.en||o.la)+'“ — записан и тук'+(r.place?' (до '+esc(r.place)+')':'')+'. <button type="button" data-undosame="'+now+'">↶ Отмени</button>',8000);
+    setTimeout(()=>{const b=document.querySelector('[data-samehere="'+now+'"]'),c=b&&b.closest('.o');if(c){c.classList.add('flash');c.scrollIntoView({block:'center',behavior:'smooth'});}},80);}
+  finally{sameBusy=false;}}
+function talAdd(id,d){const o=OBS.find(x=>x.id==id);if(!o)return;const m=String(o.count||'').match(/\d+/),n=Math.max(0,(m?+m[0]:0)+d);   // броене в движение: +1 / +10 / +100
+  o.count=n?String(n):'';o.upd=Date.now();save();try{if(navigator.vibrate)navigator.vibrate(8);}catch(e){}
+  const L=document.getElementById('sessList');if(L)L.innerHTML=sessListHTML();clearTimeout(talT);talT=setTimeout(()=>render(),700);}   // Дневникът — след като спреш да натискаш
 function sessUI(){
   const b=document.getElementById('sess');if(!b)return;
   if(SESS){b.classList.add('on');b.classList.toggle('open',sessOpen);document.getElementById('sessTxt').setAttribute('aria-expanded',sessOpen);
@@ -1407,7 +1440,7 @@ function recHTML(o,F){
         (o.h?'<span class="tag h">чух</span>':'')+(o.s?'<span class="tag s">видях</span>':'')+
         (o.p?'<span class="tag p">снимах</span>':'')+
         (o.beh||[]).map(b=>'<span class="tag b">'+esc(b)+'</span>').join('')+'</div>'+
-      '<button class="again" data-again="'+o.id+'">+ друг вид тук</button></div>';}
+      '<div class="agains"><button class="again" data-again="'+o.id+'">+ друг вид тук</button><button class="again" data-samehere="'+o.id+'">+ същия вид на ново място</button></div></div>';}
 // Излет в Дневник: заглавие с часовете, мястото и броя, „+ птица“ и „промени“; свива се и изборът се помни.
 function outBlock(id,grp,F){const live=!!(SESS&&SESS.id===id),x=live?null:outings().find(y=>y.id===id),
     byT=[...grp].sort((a,b)=>(a.time||'').localeCompare(b.time||'')),
@@ -1975,7 +2008,7 @@ function idDraw(){const b=document.getElementById('idBody');if(!b||!ID)return;co
   const chip=(a,v,on,t)=>'<button type="button" class="chip" '+a+'="'+v+'" aria-pressed="'+on+'">'+esc(t)+'</button>';
   const nav=(next,skip,back)=>'<div class="idnav">'+(back?'<button type="button" class="btn" data-idback>‹ Назад</button>':'')+'<span style="flex:1"></span>'+
     (skip?'<button type="button" class="btn" data-idskip>Не знам</button>':'')+'<button type="button" class="btn pri" data-idnext>'+next+'</button></div>';
-  let h='<div class="idstep">'+(s<4?'Стъпка '+(s+1)+' от 4':'Най-вероятно е…')+'</div>';
+  let h='<div class="idstep">'+(s<4?'Стъпка '+(s+1)+' от 4':'Резултат')+'</div>';
   if(s===0)h+='<h3>Кога и къде?</h3><label class="idlab">Дата<input type="date" id="id-date" value="'+esc(ID.date)+'" max="'+today()+'"></label>'+
     '<div class="idlab">Място <small>и до 30 км наоколо</small></div><div class="idrow0">📍 '+esc(idPlaceTxt())+'</div>'+
     '<div class="idchips idplc"><button type="button" class="chip" data-idgps>📍 Тук (GPS)</button><button type="button" class="chip" data-idmap>🗺 На картата</button>'+
@@ -1990,11 +2023,14 @@ function idDraw(){const b=document.getElementById('idBody');if(!b||!ID)return;co
   else if(s===2)h+='<h3>Какви цветове? <small>до 3, първо най-видимия</small></h3><div class="idcolg">'+IDC.map(([k,t])=>'<button type="button" class="idcolb" data-idcol="'+k+'" aria-pressed="'+ID.cols.includes(k)+'">'+
       '<span class="idsw" style="background:'+IDSW[k]+'"></span>'+esc(t)+(ID.cols.includes(k)?'<small>'+(ID.cols.indexOf(k)+1)+'</small>':'')+'</button>').join('')+'</div>'+nav('Напред',true,true);
   else if(s===3)h+='<h3>Къде беше? <small>до 2</small></h3><div class="idwhg">'+IDW.map(([k,t])=>'<button type="button" class="idwhb" data-idwh="'+k+'" aria-pressed="'+ID.where.includes(k)+'">'+idIcon(k)+'<span>'+esc(t)+'</span></button>').join('')+'</div>'+nav('Покажи',true,true);
-  else{const R=idRank(),N=12*(ID.more+1);
+  else{const R=idRank(),s0=R.length?R[0].sc:0,M=R.filter(r=>r.sc>=s0*0.16).slice(0,8),rest=R.slice(M.length),N=12*ID.more;   // само наистина възможните; останалите — скрити
+    const row=(r,big)=>'<div class="idr'+(big?' big':'')+'"><div class="idph">'+silFor(r.c.fam)+'<div class="refsm" data-ref="'+esc(r.la)+'"></div></div><div class="idn"><b>'+esc(r.c.bg)+'</b><small>'+esc(idWhy(r))+'</small><div class="xcw" data-xc="'+esc(r.la)+'"></div></div>'+
+      '<button type="button" class="btn pri" data-idpick="'+esc(r.la)+'">Това е</button></div>';
     h+=(ID.pst==='load'?'<p class="note2" style="max-width:none">Още питам GBIF кои са тук по това време — списъкът ще се подреди отново, щом отговори.</p>':'')+
-      '<div class="idlist">'+R.slice(0,N).map(r=>'<div class="idr"><div class="idph">'+silFor(r.c.fam)+'<div class="refsm" data-ref="'+esc(r.la)+'"></div></div><div class="idn"><b>'+esc(r.c.bg)+'</b><small>'+esc(idWhy(r))+'</small><div class="xcw" data-xc="'+esc(r.la)+'"></div></div>'+
-        '<button type="button" class="btn pri" data-idpick="'+esc(r.la)+'">Това е</button></div>').join('')+'</div>'+
-      (R.length>N?'<button type="button" class="btn" data-idmore style="margin-top:10px">Покажи още</button>':'')+
+      '<h4 class="psub">Най-вероятно</h4><div class="idlist">'+M.slice(0,3).map(r=>row(r,1)).join('')+'</div>'+
+      (M.length>3?'<h4 class="psub">Може да е и</h4><div class="idlist">'+M.slice(3).map(r=>row(r,0)).join('')+'</div>':'')+
+      (N&&rest.length?'<h4 class="psub">Други възможни</h4><div class="idlist">'+rest.slice(0,N).map(r=>row(r,0)).join('')+'</div>':'')+
+      (rest.length>N?'<button type="button" class="btn" data-idmore style="margin-top:10px">Покажи още '+Math.min(12,rest.length-N)+' възможни</button>':'')+
       '<div class="idnav"><button type="button" class="btn" data-idback>‹ Промени отговорите</button></div>'+
       '<p class="note2 idsrc" style="max-width:none">Подредбата: какво е намирано наоколо по това време (GBIF) и белезите. Размерите са сверени с AVONET (Tobias et al. 2022, CC BY 4.0).</p>';}
   b.innerHTML=h;b.scrollTop=0;if(s===4){loadRefs();loadXC();}}
@@ -3379,6 +3415,9 @@ document.addEventListener('click',e=>{
   if(ag){const o=OBS.find(x=>x.id==ag.dataset.again);
     if(o){openForm(null,{date:o.date,time:o.time,place:o.place,geo:o.geo,sess:o.sess||''});
       window.scrollTo({top:0,behavior:'smooth'});}return;}
+  const tal=e.target.closest('[data-tal]');if(tal){talAdd(tal.dataset.tal,+tal.dataset.d);return;}
+  const sh=e.target.closest('[data-samehere]');if(sh){sameHere(sh.dataset.samehere);return;}
+  const un=e.target.closest('[data-undosame]');if(un){const i=OBS.findIndex(x=>x.id==un.dataset.undosame);if(i>=0){tomb('obs',OBS[i].id);OBS.splice(i,1);save();render();}snack('Отменено.',2500);return;}
   const ed=e.target.closest('[data-ed]');
   if(ed){const o=OBS.find(x=>x.id==ed.dataset.ed);if(o){openForm(o);window.scrollTo({top:0,behavior:'smooth'});}return;}
   const dl=e.target.closest('[data-del]');
@@ -4263,7 +4302,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-14.1';
+const VER='2026-11-16.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
