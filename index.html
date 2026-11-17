@@ -4074,7 +4074,7 @@ const tipSeen=id=>!!(TIPS&&(TIPS.all||TIPS[id]));
 function tipDone(id){TIPS=TIPS||{};TIPS[id]=1;lsSet(KTIP,TIPS);}
 function tipHTML(id,txt){return tipSeen(id)?'':'<div class="tip" data-tipbox="'+id+'"><span>'+txt+'</span><button type="button" class="btn" data-tip="'+id+'">Разбрах</button></div>';}
 const TIPTXT={
-  form:'Започни да пишеш името без значение българско, английско или латинско - останалите се попълват сами.',
+  form:'Започни да пишеш името без значение дали е българско, английско или латинско - останалите се попълват сами.',
   unsure:'Несигурните наблюдения се пазят, но не се броят. Колебаеш се между два вида? Добави другия в „Може да е и“.',
   outing:'Излизаш на излет, за да наблюдаваш птици? Натисни „Излет“ - наблюденията се събират заедно, а накрая отбелязваш дали си записал всички видове. Пълните списъци са най-ценни за науката.',
   sess:'Докосни зелената лента, за да видиш наблюденията от излета. За бързо броене - иконката „Списък“ до „Излет“.',
@@ -4120,7 +4120,7 @@ function acctExtras(el){const d=document.createElement('div');
       (ys.filter(y=>+y!==cy).length?'<div class="note2" style="max-width:none;margin-top:8px">Минали години: '+ys.filter(y=>+y!==cy).map(y=>'<button type="button" class="chip" data-yr="'+y+'">'+y+'</button>').join(' ')+'</div>':'')):'')+
     fsec('myph','📷 Снимки · '+galItems(OBS).length,galHTML(OBS))+
     (ME?pcard('🔔','Известия на този телефон','<div id="pushSlot"><div class="note2" style="max-width:none">…</div></div>'):'')+
-    pcard('💾','Данни и настройки','<div class="note2" style="max-width:none">Износ за таблица и eBird, резервно копие и тема.</div><div id="dataSlot"></div>'+
+    pcard('💾','Данни и настройки','<div class="note2" style="max-width:none">Експорт за таблица и eBird, резервно копие и тема.</div><div id="dataSlot"></div>'+
       '<label class="qtog"><input type="checkbox" data-quiet'+(quiet()?' checked':'')+'><span>Тих режим - без изскачащи поздравления и конфети</span></label>'+
       '<div class="note2" id="refInfo" style="max-width:none;margin-top:10px"></div><div class="fbtns"><button type="button" class="btn" data-refclear>Изчисти примерните снимки</button></div>')+
     pcard('❓','Помощ','<details class="phow"><summary>Как се ползва</summary><div class="howto">'+Object.values(TIPTXT).map(t=>'<p>'+t+'</p>').join('')+'</div></details>'+
@@ -4304,7 +4304,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-17.1';
+const VER='2026-11-17.2';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -4759,7 +4759,7 @@ document.addEventListener('click',async e=>{
   if(uf){if(confirm('Да не вижда повече дневника ти?')){await SB.from('viewers').delete().eq('owner',ME.id).eq('viewer',uf.dataset.unfan);await loadFriends();}return;}
   const a=e.target.closest('[data-sb]');if(!a)return;const act=a.dataset.sb,v=id=>(document.getElementById(id)||{}).value||'';
   try{
-    if(act==='in'||act==='up'){sbMsg='';const mail=v('sb-mail').trim(),pw=v('sb-pw');if(!mail||!pw){sbMsg='Запиши имейл и парола.';return render();}
+    if(act==='in'||act==='up'){sbMsg='';const mail=v('sb-mail').trim(),pw=v('sb-pw');if(!mail||!pw){sbMsg='Въведи имейл и парола.';return render();}
       a.disabled=true;const sb=await sbClient();
       if(act==='up'){const {data,error}=await sb.auth.signUp({email:mail,password:pw,options:{data:{name:v('sb-name').trim()},emailRedirectTo:SB_SITE}});if(error)throw error;
         if(!data.session){sbMsg='Готово. Отвори писмото от Supabase, потвърди адреса и после натисни „Вход“.';return render();}ME=data.user;}
@@ -4767,7 +4767,7 @@ document.addEventListener('click',async e=>{
       sbStat='';sbForm.pw='';render();await afterSignIn();return render();}
     if(act==='forgot'&&!SMTP_ON){sbMsg=PWHELP;return render();}
     if(act==='forgot'){const mail=v('sb-mail').trim();sbForm.mail=mail;
-      if(!mail){sbMsg='Запиши имейла си горе и натисни отново „Забравена парола?“.';return render();}
+      if(!mail){sbMsg='Въведи имейла си горе и натисни отново „Забравена парола?“.';return render();}
       a.disabled=true;const sb=await sbClient();const {error}=await sb.auth.resetPasswordForEmail(mail,{redirectTo:SB_SITE});if(error)throw error;
       sbMsg='Изпратих писмо до '+mail+'. Отвори линка в него - Перá ще те пусне и ще поиска нова парола.';return render();}
     if(act==='pwset'){const p1=v('pw-new'),p2=v('pw-new2');
