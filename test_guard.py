@@ -34,12 +34,12 @@ try:
   plap.click('.tab[data-v="log"]');plap.click('#toggle');plap.fill('#f-bg','Щиглец');plap.click('#savebtn');plap.wait_for_timeout(5500);sync(pph)
   check('G2 ...and what he adds on either device ends up on both', (names(pph),cloud('petar@test.bg')), (['Кос','Сойка','Щиглец'],)*2)
   code=pph.evaluate("MYCODE");iph.fill('#fr-code',code);iph.click('[data-sb="add"]');iph.wait_for_selector('.fr .ar.tap')
-  check("G3 you see his merged journal, whichever device he logged on", iph.inner_text('.fr .ar.tap small').startswith('3 вида · 3 записа'), True)
+  check("G3 you see his merged journal, whichever device he logged on", iph.inner_text('.fr .ar.tap small').startswith('3 вида · 3 наблюдения'), True)
   # Petar signs in to HIS account on Ivan's phone browser: the two journals must not mix
   iph.click('#acct');iph.click('[data-sb="out"]');iph.fill('#sb-mail','petar@test.bg');iph.fill('#sb-pw','птица123');iph.click('[data-sb="in"]')
   iph.wait_for_function("ME&&ME.email==='petar@test.bg'&&!syncing&&sbStat.length>0&&sbStat!=='синхронизира…'",timeout=15000)
   check("G4 his account on your browser: the app refuses to upload your journal into it", (iph.evaluate("sbStat"),cloud('petar@test.bg')),
-        ('Дневникът на този телефон е свързан с друг профил — не го качвам.',['Кос','Сойка','Щиглец']))
+        ('Дневникът на този телефон е свързан с друг профил - не го качвам.',['Кос','Сойка','Щиглец']))
   check("G5 ...and nothing of his lands in your local journal", names(iph), ['Сврака'])
   # new sign-ups switched off in Supabase: a newcomer gets a plain Bulgarian message, not the raw English error
   nd=device([]);nd.context.route(SB+'/auth/v1/signup*',lambda r:r.fulfill(status=422,content_type='application/json',

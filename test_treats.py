@@ -36,7 +36,7 @@ try:
   add(pg,'Червеногръдка','2026-10-22','07:00');texts=[]
   for _ in range(3):
     texts.append(card(pg));pg.evaluate("yayHide()");pg.wait_for_timeout(420)
-  check('T3 the fifth morning before sunrise: first the new species, then „Нова значка! Ранобудник — бронз“', (any('Честито, нов вид!' in x for x in texts),any('Нова значка!' in x and 'Ранобудник — бронз' in x for x in texts)), (True,True))
+  check('T3 the fifth morning before sunrise: first the new species, then „Нова значка! Ранобудник — бронз“', (any('Честито, нов вид!' in x for x in texts),any('Нова значка!' in x and 'Ранобудник - бронз' in x for x in texts)), (True,True))
   clear(pg);add(pg,'Горска улулица','2026-10-22','21:30','Сови');texts=[]
   for _ in range(3):
     texts.append(card(pg));pg.evaluate("yayHide()");pg.wait_for_timeout(420)
@@ -55,7 +55,7 @@ try:
   p3=page(base);p3.click('#sessStart');p3.wait_for_timeout(150)
   add(p3,'Зеленика',t='08:10',keep=True);add(p3,'Щиглец',t='08:40',keep=True);add(p3,'Сойка',t='09:05',keep=True)
   clear(p3);p3.click('#sessEnd');p3.click('[data-done="1"]');p3.wait_for_timeout(300);t=card(p3)
-  check('T9 finishing an outing sums it up', ('Край на излета' in t,'3 вида · 3 записа' in t,'2 нови за дневника' in t,'първа птица: Зеленика в 08:10' in t), (True,True,True,True))
+  check('T9 finishing an outing sums it up', ('Край на излета' in t,'3 вида · 3 наблюдения' in t,'2 нови за дневника' in t,'първа птица: Зеленика в 08:10' in t), (True,True,True,True))
   p3.click('#yay [data-yayout]');p3.wait_for_function("document.getElementById('cardDlg').open",timeout=6000)
   check('T10 ...and its „картичка за споделяне“ opens the outing card', p3.evaluate("document.getElementById('cardDlg').open"), True)
   # ---- „На днешна дата“ ----

@@ -29,7 +29,7 @@ try:
   pg.fill('#q','градинска');pg.wait_for_timeout(200)
   check('A8 searching an alternative finds the unsure record too', pg.locator('.o').count(), 2)
   pg.fill('#q','');pg.click('.tab[data-v="life"]');pg.wait_for_timeout(200)
-  check('A9 Моите видове lists it among the unsure-only ones with its alternatives', 'Горска дърволазка / Градинска дърволазка' in pg.inner_text('#view'), True)
+  check('A9 Видове lists it among the unsure-only ones with its alternatives', 'Горска дърволазка / Градинска дърволазка' in pg.inner_text('#view'), True)
   pg.click('.tab[data-v="log"]');pg.click(f'[data-ed="{r["id"]}"]');pg.wait_for_timeout(150)
   check('A10 editing shows them again', chips(), ['Градинска дърволазка'])
   pg.click('#f-unsure');pg.click('#savebtn');pg.wait_for_timeout(300)

@@ -59,7 +59,7 @@ try:
   pg.click('.tab[data-v="log"]')
   check('R15 no banner outside 15 Dec – 15 Jan', pg.locator('.yrban').count(), 0)
   pg.evaluate("bannerYear=()=>2026;render()");pg.wait_for_timeout(100)
-  check('R16 the banner from 15 December: slim, with „виж я“', pg.inner_text('.yrban .yrgo'), '✨ Твоята 2026 в Перá е готова — виж я')
+  check('R16 the banner from 15 December: slim, with „виж я“', pg.inner_text('.yrban .yrgo'), '✨ Твоята 2026 в Перá е готова - виж я')
   pg.click('[data-yrhide]');pg.wait_for_timeout(100)
   check('R17 × hides it, says where to find it, and it stays hidden', (pg.inner_text('.yrnote'),pg.evaluate("render(),document.querySelectorAll('.yrban').length")), ('Скрито. „Твоята година“ е винаги в профила (кръгчето горе вдясно).',0))
   pg.click('#acct');pg.wait_for_timeout(150)

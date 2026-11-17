@@ -38,7 +38,7 @@ try:
   rows=pg.eval_on_selector_all('.spd .row',"els=>els.map(e=>e.innerText.replace(/\\n/g,' | '))")
   check('V5 species page: evidence progression from sure records', rows[:3], ['чух | 3 май 2025','видях | 28 април 2026','снимах | 10 май 2026'])
   check('V6 ...records, first meeting per year with the shift, places', (pg.locator('.spd h4').nth(1).inner_text(),rows[3:5],rows[-2:]),
-        ('3 ЗАПИСА · 1 НЕСИГУРНИ НЕ СЕ БРОЯТ',['2025 | 3 май','2026 | 28 апр · 5 дни по-рано'],['Копринка | 2×','Розариум | 1×']))
+        ('3 НАБЛЮДЕНИЯ · 1 НЕСИГУРНИ НЕ СЕ БРОЯТ',['2025 | 3 май','2026 | 28 апр · 5 дни по-рано'],['Копринка | 2×','Розариум | 1×']))
   check('V7 ...and the usual timing against sunrise, in plain words (since 2026-11-03.1)', pg.inner_text('.sunl').startswith('Сутрин обикновено го срещаш '), True)
   pg.click('[data-spback]'); check('V8 back returns to the list', pg.locator('.sp').count(), 6)
   # --- year curve ---

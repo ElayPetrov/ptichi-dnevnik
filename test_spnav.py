@@ -26,7 +26,7 @@ try:
   check('N2 back to Приятели, the post still open, at the same spot', (pg.evaluate("view"),pg.locator('.fc .fcr .o').count()>0,abs(pg.evaluate("Math.round(scrollY)")-y0)<=3), ('friends',True,True))
   pg.locator('.fc .fcr [data-sprf]',has_text='Черен щъркел').first.click();pg.wait_for_timeout(250)
   t=pg.inner_text('.spd')
-  check('N3 a bird you don\'t have yet opens a lighter card: names, links, „Още нямаш сигурни записи…“', ('Черен щъркел' in t,'Ciconia nigra' in t,'Още нямаш сигурни записи на този вид.' in t,pg.locator('.spd .idl a').count(),pg.locator('[data-spcard]').count()), (True,True,True,3,0))
+  check('N3 a bird you don\'t have yet opens a lighter card: names, links, „Още нямаш сигурни записи…“', ('Черен щъркел' in t,'Ciconia nigra' in t,'Още нямаш сигурни наблюдения на този вид.' in t,pg.locator('.spd .idl a').count(),pg.locator('[data-spcard]').count()), (True,True,True,3,0))
   check('N3b ...with room for its photo and its sounds', (pg.locator('.spd .refbig[data-ref="Ciconia nigra"]').count(),pg.locator('.spd .xcw[data-xc="Ciconia nigra"]').count()), (1,1))
   pg.click('[data-spback]');pg.wait_for_timeout(200)
   # Излети: open the outing; both the species chips and the records' names lead to the card
@@ -43,7 +43,7 @@ try:
   pg.click('[data-spback]');pg.wait_for_timeout(150)
   check('N6b ...and back on Цели', pg.evaluate("view"), 'goals')
   pg.click('.tab[data-v="life"]');pg.locator('.sp .nm',has_text='Кос').first.click();pg.wait_for_timeout(200)
-  check('N7 opened from Моите видове it says „← Моите видове“ again', pg.inner_text('[data-spback]'), '← Моите видове')
+  check('N7 opened from Видове it says „← Видове“ again', pg.inner_text('[data-spback]'), '← Видове')
   pg.click('[data-spback]');pg.click('.tab[data-v="log"]');pg.wait_for_timeout(150)
   check('N8 in Дневник every bird\'s name is a link, unsure ones too', pg.evaluate("[...document.querySelectorAll('#view .o .nm')].filter(n=>n.offsetParent).every(n=>n.querySelector('[data-sprf]'))"), True)
   check('N9 no page errors', errs, [])

@@ -1,11 +1,11 @@
-import json,subprocess,datetime
+import json,subprocess,datetime,shutil
 from zoneinfo import ZoneInfo
 from astral import LocationInfo
 from astral.sun import sun
 lat,lon=42.61985,25.39560; tz=ZoneInfo('Europe/Sofia')
 loc=LocationInfo('Kazanlak','BG','Europe/Sofia',lat,lon)
 dates=['2026-01-15','2026-03-29','2026-04-28','2026-06-21','2026-10-22','2026-10-25','2026-12-21']
-js=json.loads(subprocess.run(['node','-e',f"const {{sunTimes}}=require('./sun.js');console.log(JSON.stringify({json.dumps(dates)}.map(d=>sunTimes(d,{lat},{lon}))))"],env={'TZ':'Europe/Sofia','PATH':'/usr/bin:/bin'},capture_output=True,text=True).stdout)
+js=json.loads(subprocess.run([shutil.which('node') or 'node','-e',f"const {{sunTimes}}=require('./sun.js');console.log(JSON.stringify({json.dumps(dates)}.map(d=>sunTimes(d,{lat},{lon}))))"],env={'TZ':'Europe/Sofia','PATH':'/usr/bin:/bin'},capture_output=True,text=True).stdout)
 worst=0
 for d,j in zip(dates,js):
     s=sun(loc.observer,date=datetime.date.fromisoformat(d),tzinfo=tz,dawn_dusk_depression=6)

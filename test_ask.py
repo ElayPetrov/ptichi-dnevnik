@@ -2,7 +2,7 @@
 # you accept one (the record takes its names and becomes sure), the suggester earns „Определител“.
 import json,subprocess,sys,time,datetime
 from playwright.sync_api import sync_playwright
-T=datetime.date.today().isoformat()
+T=datetime.date.today().isoformat();Y=(datetime.date.today()-datetime.timedelta(days=1)).isoformat()
 port=int(sys.argv[1]) if len(sys.argv)>1 else 8997;fails=0
 def check(n,got,exp):
   global fails;ok=got==exp;fails+=not ok
@@ -30,7 +30,9 @@ try:
   pg.click('.tab[data-v="log"]');pg.wait_for_timeout(150)
   check('A4 your record shows „🔎 питаш приятелите“', pg.locator('[data-qown]').first.inner_text(), '🔎 питаш приятелите')
   pg.click('.tab[data-v="friends"]');pg.wait_for_timeout(200)
-  check('A5 Приятели: Петър’s question at the top, with his guess, note and „Още няма предложения“, and a dot on the tab', (pg.inner_text('.askc b'),'Мисли, че може да е Сива овесарка или Жълта овесарка' in pg.inner_text('.askc'),'Пееше от жицата' in pg.inner_text('.askc'),'Още няма предложения.' in pg.inner_text('.askc'),pg.evaluate("pendingSocial()")), ('Петър пита: какво е това?',True,True,True,1))
+  check('A5 Приятели: Петър’s question is an ordinary post in the feed — his guess, note, „Още няма предложения“; no block pinned on top',
+        (pg.locator('.fc.fq').count(),pg.inner_text('.fq .fwho'),'Мисли, че може да е Сива овесарка или Жълта овесарка' in pg.inner_text('.fq'),'Пееше от жицата' in pg.inner_text('.fq'),
+         'Още няма предложения.' in pg.inner_text('.fq'),'Помогни с определянето' in pg.inner_text('body')), (1,'Петър',True,True,True,False))
   pg.click('[data-qprop]');pg.wait_for_timeout(100);pg.fill('#id-bg','Сива овесарка');pg.wait_for_timeout(80)
   check('A6 the suggestion dialog looks the name up as you type', pg.inner_text('#id-la'), 'Emberiza calandra · Corn bunting')
   pg.fill('#id-cm','Дебел клюн и песен като ключове.');pg.click('#id-ok');pg.wait_for_timeout(150)
@@ -49,10 +51,28 @@ try:
   pg.evaluate("FR.fol[0].data.obs[0].askOk={by:'me',at:Date.now(),was:'Сива овесарка'}")
   check('A13 „Определител“: your suggestions that friends accepted', pg.evaluate("BDEF.find(d=>d.id==='idhelp').v(SURE())"), 1)
   pg.click('.tab[data-v="friends"]');pg.wait_for_timeout(150)
-  check('A14 an answered question leaves „Помогни с определянето“', pg.locator('.askc').count(), 0)
+  check('A14 an answered question leaves the feed', pg.locator('.fq').count(), 0)
   pg.evaluate("OBS.push({id:777,date:'%s',time:'',place:'',count:'',bg:'Непозната птица',en:'',la:'',fam:'',note:'',h:1,s:0,p:0,u:1,beh:[],ask:5});save();render()"%T)
   pg.click('.tab[data-v="log"]');pg.wait_for_timeout(100);pg.click('[data-qown="777"]');pg.wait_for_timeout(80);pg.click('#q-close');pg.wait_for_timeout(100)
   check('A15 closing a question without an answer keeps the record, unsure, no longer asking', pg.evaluate("(o=>[!!o,o.u,'ask' in o])(OBS.find(o=>o.id===777))"), [True,1,False])
+  # questions are ordinary posts: placed by the time of the sighting, „ново“ (and floating) only until seen — answered or not
+  R=lambda i,d,tm,bg,la,**k:dict(id=i,date=d,time=tm,place='Копринка',count='',bg=bg,en='',la=la,fam='',note='',h=1,s=1,p=0,beh=[],geo=None,photo=None,**k)
+  pg.evaluate("FR.fol[0].data.obs=%s;FSEEN=null;feedVisit=null;seenSeed();render()"%json.dumps([R(601,T,'12:00','Кос','Turdus merula'),R(602,T,'09:30','Непозната птица','',u=1,ask=7),R(603,Y,'18:00','Сврака','Pica pica')],ensure_ascii=False))
+  pg.click('.tab[data-v="log"]');pg.click('.tab[data-v="friends"]');pg.wait_for_timeout(200)
+  cards=lambda:pg.evaluate("[...document.querySelectorAll('.fc')].map(c=>c.dataset.fc).filter(k=>k.startsWith('u2|'))")
+  check('A17 the question sits in time order among Петър’s posts — under today’s 12:00, above yesterday', cards(), ['u2|d:'+T,'u2|q:602','u2|d:'+Y])
+  check('A18 ...not „ново“, and no dot', (pg.locator('.fq .newtag').count(),pg.evaluate("document.querySelector('.tab[data-v=\"friends\"]').classList.contains('dot')")), (0,False))
+  pg.click('.tab[data-v="log"]');pg.wait_for_timeout(100)
+  pg.evaluate("FR.fol[0].data.obs.push(%s);render()"%json.dumps(R(604,T,'08:00','Непозната птица','',u=1,ask=9),ensure_ascii=False))
+  check('A19 a new question lights the dot on Приятели', pg.evaluate("document.querySelector('.tab[data-v=\"friends\"]').classList.contains('dot')"), True)
+  pg.click('.tab[data-v="friends"]');pg.wait_for_timeout(200)
+  check('A20 ...and, while new, floats above the older question with „ново“', (cards().index('u2|q:604')<cards().index('u2|q:602'),pg.locator('[data-fc="u2|q:604"] .newtag').count()), (True,1))
+  pg.click('.tab[data-v="log"]');pg.click('.tab[data-v="friends"]');pg.wait_for_timeout(200)
+  check('A21 once seen it goes to its place in time (08:00, under 09:30) — unanswered, but no longer first, no „ново“, no dot',
+        (cards(),pg.locator('.fq .newtag').count(),pg.evaluate("document.querySelector('.tab[data-v=\"friends\"]').classList.contains('dot')")),
+        (['u2|d:'+T,'u2|q:602','u2|q:604','u2|d:'+Y],0,False))
+  pg.evaluate("FR.fol[0].data.obs.push(%s);FSEEN=Object.fromEntries(Object.entries(FSEEN).filter(([k])=>k!=='#q'&&!k.includes('|q:')));render()"%json.dumps(R(605,Y,'07:00','Непозната птица','',u=1,ask=3),ensure_ascii=False))
+  check('A22 questions that were already there when you update don’t pop up as new once', pg.evaluate("fdItems().filter(it=>it.kind==='q').map(isNewItem)"), [False,False,False])
   check('A16 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

@@ -26,7 +26,7 @@ try:
   add('Горска зидарка')
   t=pg.inner_text('#yay')
   check('Y3 a new species: „Честито, нов вид!“, its names and its number', ('Честито, нов вид!' in t,'Горска зидарка' in t,'Sitta europaea' in t,'Вид № 10 в дневника ти' in t), (True,True,True,True))
-  check('Y4 ...and the 10th gets a round-number line', 'Кръгла бройка — 10 вида!' in t, True)
+  check('Y4 ...and the 10th gets a round-number line', 'Кръгла бройка - 10 вида!' in t, True)
   check('Y5 it shows the family\'s silhouette', pg.locator('#yay .yaypic svg.sil').count(), 1)
   pg.wait_for_timeout(5600)
   check('Y6 it hides by itself after a few seconds', shown(), False)

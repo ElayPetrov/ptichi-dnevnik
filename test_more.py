@@ -36,7 +36,7 @@ try:
     hdr, [[f'y:{Y}',False],[f'm:{Y}-10',False],[f'm:{Y}-09',True],[f'm:{Y}-08',True],[f'y:{Y-1}',True],[f'm:{Y-1}-12',True]])
   pg.click(f'[data-ymt="m:{Y}-09"]');pg.reload();pg.wait_for_timeout(300)
   check('Q5 a month you open stays open', pg.evaluate(f"document.querySelector('[data-ymt=\"m:{Y}-09\"]').parentElement.classList.contains('shut')"), False)
-  check('Q6 the month line counts its records and species', pg.inner_text(f'[data-ymt="m:{Y}-09"] .dcount'), '2 записа · 2 вида')
+  check('Q6 the month line counts its records and species', pg.inner_text(f'[data-ymt="m:{Y}-09"] .dcount'), '2 наблюдения · 2 вида')
   pg.fill('#q','чинка');pg.wait_for_timeout(200)
   check('Q7 searching opens the year and month with a match', pg.evaluate("[...document.querySelectorAll('.yg,.mg')].every(g=>!g.classList.contains('shut'))"), True)
   pg.fill('#q','');pg.wait_for_timeout(150)

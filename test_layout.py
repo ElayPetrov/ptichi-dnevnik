@@ -20,12 +20,12 @@ try:
   pg.evaluate("""new Promise(r=>{const q=indexedDB.open('birdphotos',1);q.onsuccess=async()=>{const im=await (await fetch('a.jpg')).blob();
     const t=q.result.transaction('p','readwrite');for(let i=0;i<11;i++)t.objectStore('p').put(im,'p'+i);t.oncomplete=()=>r();};})""")
   tabs=pg.evaluate("[...document.querySelectorAll('.tab')].map(t=>t.textContent)")
-  check('L1 the tabs: Дневник, Приятели, Моите видове, Излети, Карта (with Места under the map), Цели, Фенология, Значки', tabs, ['Дневник','Приятели','Моите видове','Излети','Карта','Цели','Фенология','Значки'])
+  check('L1 the tabs: Дневник, Приятели, Видове, Излети, Карта (with Места under the map), Цели, Фенология, Значки', tabs, ['Дневник','Приятели','Видове','Излети','Карта','Цели','Фенология','Значки'])
   fit=pg.evaluate("(()=>{const W=document.documentElement.clientWidth,r=[...document.querySelectorAll('.tab')].map(t=>t.getBoundingClientRect());return [r.every(x=>x.left>=0&&x.right<=W),new Set(r.map(x=>Math.round(x.top))).size];})()")
   check('L2 on a 360 px phone all eight show at once, in two rows', fit, [True,2])
   pg.click('.tab[data-v="badges"]');pg.wait_for_timeout(150);nb=pg.locator('.bd2').count()
   pg.click('.tab[data-v="life"]');pg.wait_for_timeout(150)
-  check('L3 the badges live in Значки, no longer in Моите видове', (nb==pg.evaluate("BDEF.length"),pg.locator('#view .bd2').count()), (True,0))
+  check('L3 the badges live in Значки, no longer in Видове', (nb==pg.evaluate("BDEF.length"),pg.locator('#view .bd2').count()), (True,0))
   pg.click('.tab[data-v="map"]');pg.wait_for_timeout(200)
   names=pg.evaluate("[...document.querySelectorAll('.pl .nm')].map(e=>e.textContent)")
   check('L4 Места: named places first, then each unnamed point by its coordinates, then the records with neither', names, ['Копринка','42.621, 25.392','42.700, 25.400','без място и координати'])
@@ -44,7 +44,7 @@ try:
   i=pg.evaluate("window.__C.findIndex(c=>c.name==='Копринка')");pg.evaluate(f"showCluster({i})")   # the point's panel, now from the real map
   pg.wait_for_function("document.querySelectorAll('#mp .phstrip .th img').length===11",timeout=6000)
   sc=pg.evaluate("(()=>{const s=document.querySelector('#mp .phstrip');return [document.querySelectorAll('#mp .phstrip figure').length,s.scrollWidth>s.clientWidth,getComputedStyle(s).overflowX,document.querySelector('#mp .phcount').textContent];})()")
-  check('L9 a point shows all 11 photos, not 8, in a strip that swipes sideways', sc, [11,True,'auto','11 снимки — плъзни настрани'])
+  check('L9 a point shows all 11 photos, not 8, in a strip that swipes sideways', sc, [11,True,'auto','11 снимки - плъзни настрани'])
   check('L10 nothing pushes the page sideways', pg.evaluate("document.documentElement.scrollWidth<=document.documentElement.clientWidth"), True)
   pg.evaluate("ME={id:'u1',email:'ivan@test.bg'};MYNAME='Иван';MYCODE='ABCDEFGHJKLM';FR={fol:[],fans:[]};view='acct';render()")
   check('L11 the profile: a header card, then Приятели, Твоят код, Твоята година, Известия, Данни и настройки, Помощ, Парола, and „изход“ last',

@@ -54,10 +54,10 @@ try:
   feed=lambda pg:(pg.click('.tab[data-v="friends"]'),pg.wait_for_timeout(250))
   for pg in (iv,pe,ma):feed(pg);pg.click('.tab[data-v="log"]')   # look once, so everything so far counts as seen and cards keep date order
   feed(pe);cards=pe.evaluate("[...document.querySelectorAll('.fc')].map(c=>c.querySelector('.fchn b').textContent+' | '+c.querySelector('.fchn small').textContent)")
-  check('X2 the feed: newest first, your own day and Ivan\'s outing', cards, ['Ти | 28 октомври 2026 · 10:00–10:20 · Розариум','Иван | излет · 27 октомври 2026 · 08:10–09:00 · Копринка'])
+  check('X2 the feed: newest first, your own day and Ivan\'s outing', cards, ['Ти | 28 октомври 2026 · 10:00-10:20 · Розариум','Иван | излет · 27 октомври 2026 · 08:10-09:00 · Копринка'])
   ivcard='.fc:nth-of-type(2)'
   c=pe.evaluate(f"(()=>{{const c=document.querySelectorAll('.fc')[1];return [c.querySelector('.fcn').textContent,c.querySelector('.fhl').innerText,c.querySelectorAll('.sl span').length,c.querySelectorAll('.oumap i').length];}})()")
-  check('X3 Ivan\'s card: counts, „3 нови вида за Иван“, the species as chips, a little map with its two points', c, ['3 вида · 3 записа','3 нови вида за Иван: Сврака, Сойка, Кос',3,2])
+  check('X3 Ivan\'s card: counts, „3 нови вида за Иван“, the species as chips, a little map with its two points', c, ['3 вида · 3 наблюдения','3 нови вида за Иван: Сврака, Сойка, Кос',3,2])
   pe.locator('.fc').nth(1).locator('.fcn').click();pe.wait_for_timeout(200)
   check('X4 tapping opens its records, read-only (no edit or delete)', (pe.locator('.fc .fcr .o').count(),pe.locator('.fc .fcr [data-ed],.fc .fcr [data-del]').count()), (3,0))
   pe.locator('.fc').nth(1).locator('[data-bravo]').click();pe.wait_for_timeout(700)
@@ -74,7 +74,7 @@ try:
   cid=iv.evaluate("SOC.find(s=>s.kind==='comment').id");ma.evaluate(f"SB.from('social').delete().eq('id','{cid}')");fresh(iv)
   check('X9 ...and someone else\'s comment can\'t be deleted by a third person', iv.evaluate("SOC.some(s=>s.kind==='comment')"), True)
   feed(pe);pe.locator('.fc').nth(1).locator('[data-there]').click();pe.wait_for_timeout(700)
-  check('X10 „Бях там“ asks Ivan first', pe.locator('.fc').nth(1).locator('.soc .sbn').inner_text(), '„Бях там“ — чака Иван')
+  check('X10 „Бях там“ asks Ivan first', pe.locator('.fc').nth(1).locator('.soc .sbn').inner_text(), '„Бях там“ - чака Иван')
   fresh(iv);feed(iv)
   check('X11 Ivan sees the request on his outing (and a dot on Приятели)', (iv.locator('.fc.me .sreq span').first.inner_text(),iv.evaluate("document.querySelector('.tab[data-v=\"friends\"]').classList.contains('dot')")), ('Петър иска да се присъедини към този излет',True))
   iv.locator('.fc.me [data-thok]').click();iv.wait_for_timeout(700);iv.evaluate("syncNow()")

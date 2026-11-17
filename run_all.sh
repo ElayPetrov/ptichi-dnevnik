@@ -58,7 +58,7 @@ run releaseA python3 test_rA.py 8991
 run lint     python3 test_lint.py
 run phread   python3 test_phread.py 8992
 run releaseB python3 test_rB.py 8993
-run species  python3 test_spl.py 8994
+run splist   python3 test_spl.py 8994
 run ux1103   python3 test_ux3.py 8995
 run families python3 test_fam.py 8996
 run ask      python3 test_ask.py 8997

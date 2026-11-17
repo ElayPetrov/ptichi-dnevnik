@@ -29,7 +29,7 @@ try:
   check('S2 a copy is saved at once: the same names, group, „чух/видях“ — today, now, at the phone’s position', (len(pg.evaluate("OBS.filter(o=>o.la==='Turdus merula')")),n['bg'],n['en'],n['fam'],n['h'],n['s'],n['date'],n['geo']), (2,'Кос','Common blackbird','Дроздове',1,1,T,'42.70000,25.50000'))
   check('S3 ...count, note, photo, behaviour and „снимах“ stay with the old place', (n['count'],n['note'],n['photo'],n['beh'],n['p']), ('','',None,[],0))
   check('S4 ...named after your saved place within 2 km', n['place'], 'Язовира')
-  check('S5 a notice says so, with „↶ Отмени“', (pg.is_visible('#snack'),'„Кос“ — записан и тук (до Язовира).' in pg.inner_text('#snack'),pg.locator('#snack [data-undosame]').count()), (True,True,1))
+  check('S5 a notice says so, with „↶ Отмени“', (pg.is_visible('#snack'),'„Кос“ - записан и тук (до Язовира).' in pg.inner_text('#snack'),pg.locator('#snack [data-undosame]').count()), (True,True,1))
   pg.click('#snack [data-undosame]');pg.wait_for_timeout(300)
   check('S6 „↶ Отмени“ removes the copy (the original stays)', (len(pg.evaluate("OBS.filter(o=>o.la==='Turdus merula')")),pg.evaluate("OBS.some(o=>o.id===1)"),'Отменено.' in pg.inner_text('#snack')), (1,True,True))
   pg.evaluate("sameHere(2)");pg.wait_for_timeout(900)   # older days are folded in Дневник — the button itself is checked in S1

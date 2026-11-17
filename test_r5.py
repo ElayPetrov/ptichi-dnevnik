@@ -32,11 +32,11 @@ try:
   check('B6 saved as code 14, shown as a green chip', (pg.evaluate("OBS.find(o=>o.bg==='Голям синигер').bc"),pg.evaluate("[...document.querySelectorAll('#view .tag.bc')].map(t=>[t.textContent,t.classList.contains('bcC')])")), (14,[['C14 носи храна или фекална торбичка',True]]))
   pg.evaluate("OBS.push({...OBS.find(o=>o.bg==='Голям синигер'),id:77,date:'2025-05-10',bc:4});save();")
   pg.click('.tab[data-v="life"]');pg.locator('.sp .nm',has_text='Голям синигер').first.click();pg.wait_for_timeout(150)
-  check('B7 the bird card: the strongest evidence per year', pg.inner_text('.bcline'), 'Гнездене: '+str(T.year)+' — потвърдено (C14) · 2025 — вероятно (B4)')
+  check('B7 the bird card: the strongest evidence per year', pg.inner_text('.bcline'), 'Гнездене: '+str(T.year)+' - потвърдено (C14) · 2025 - вероятно (B4)')
   pg.click('[data-spback]')
   # sorting
   order=lambda:pg.evaluate("[...document.querySelectorAll('#view .sp .nm')].map(n=>n.textContent)")
-  check('B8 Моите видове: a „Подреди“ menu, name A–Я by default', (pg.input_value('#spSort'),order()), ('name',['Авлига','Голям синигер','Кос','Сойка']))
+  check('B8 Видове: a „Подреди“ menu, name A–Я by default', (pg.input_value('#spSort'),order()), ('name',['Авлига','Голям синигер','Кос','Сойка']))
   pg.select_option('#spSort','recs');pg.wait_for_timeout(100)
   check('B9 „брой записи“ puts the most recorded first', order()[:2], ['Голям синигер','Кос'])
   pg.select_option('#spSort','grp');pg.wait_for_timeout(100)
@@ -57,7 +57,7 @@ try:
   check('B14 his latest find', (pg.inner_text('.fnew small'),pg.inner_text('.fnew b')), ('ПОСЛЕДНА НАХОДКА · ВЧЕРА','Сива чапла'))
   pg.click('[data-ffold="bd"]');pg.wait_for_timeout(100)
   check('B15 his badges are computed from his records (his log is empty): „Голямо ято“ bronze for a flock of 250, with your level', pg.evaluate("[...document.querySelectorAll('.fbm')].map(m=>m.querySelector('b').textContent+'|'+m.querySelector('span').textContent+'|'+m.querySelector('small').textContent)"),
-    ['Голямо ято|бронз|ти: —'])
+    ['Голямо ято|бронз|ти: -'])
   pg.click('[data-ffold="rec"]');pg.wait_for_timeout(100)
   check('B16 his latest records as a timeline with coloured dots', (pg.locator('.ftl .ftr').count(),pg.locator('.ftl .ftr.l3').count()), (3,1))
   check('B17 no page errors', errs, [])

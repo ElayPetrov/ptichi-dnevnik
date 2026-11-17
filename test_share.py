@@ -48,7 +48,7 @@ try:
   pe=person(PETAR);join(pe,'Петър','petar@test.bg')
   pe.fill('#fr-code',code.lower()[:6]+'-'+code[6:]);pe.click('[data-sb="add"]');pe.wait_for_selector('.fr .ar.tap')
   check('F6 Petar adds Ivan by code: Ivan appears with his sure species', pe.inner_text('.fr .ar.tap b'), 'Иван')
-  check('F7 ...counted like the life list (unsure records left out)', pe.inner_text('.fr .ar.tap small').startswith('3 вида · 3 записа'), True)
+  check('F7 ...counted like the life list (unsure records left out)', pe.inner_text('.fr .ar.tap small').startswith('3 вида · 3 наблюдения'), True)
   pe.click('.fr .ar.tap');pe.wait_for_selector('.cbar')
   check('F8 comparison: shared / only Petar / only Ivan, matched by any shared name', pe.evaluate("Object.fromEntries([...document.querySelectorAll('.cbar>div')].map(d=>[d.querySelector('span').textContent,d.querySelector('b').textContent]))"), {'само твои':'1','общи вида':'2','само на Иван':'1'})   # since 2026-11-02.3 a three-colour bar
   check('F9 ...and the lists behind the numbers', pe.eval_on_selector_all('.chips',"e=>e.map(x=>x.innerText.replace(/\\n/g,', '))"), ['Пчелояд','Кос'])
@@ -67,7 +67,7 @@ try:
   iv.click('.tab[data-v="log"]');iv.click('#toggle');iv.fill('#f-bg','Червеногръдка');iv.click('#savebtn');iv.wait_for_timeout(5500)
   check('F14 a new record is uploaded a few seconds after saving', len(st.journal(uI)['obs']), 5)
   pe.click('[data-sb="refresh"]');pe.wait_for_timeout(800)
-  check('F15 ...and Petar sees it after Обнови', pe.inner_text('.fr .ar.tap small').startswith('4 вида · 4 записа'), True)
+  check('F15 ...and Petar sees it after Обнови', pe.inner_text('.fr .ar.tap small').startswith('4 вида · 4 наблюдения'), True)
   # ---- Petar offline: last download still readable ----
   # the test page has no offline worker, so emulate a fresh start with the network gone instead of reloading
   pe.ctx.unroute(SB+'/**');pe.ctx.unroute(CDN);pe.ctx.route(SB+'/**',lambda r:r.abort('internetdisconnected'));pe.ctx.route(CDN,lambda r:r.abort('internetdisconnected'))
@@ -87,7 +87,7 @@ try:
   pe.reload();pe.wait_for_timeout(500);pe.click('#acct');pe.wait_for_selector('.fr h3');pe.wait_for_timeout(1500)
   check('F20 after Ivan removes him, Petar no longer sees the journal', pe.locator('.fr .ar.tap').count(), 0)
   iv.click('[data-sb="out"]');iv.wait_for_selector('#sb-mail')
-  check('F21 signing out keeps the journal on the phone and restores the footer', (iv.evaluate("OBS.length"),iv.inner_text('#priv').startswith('Записите се пазят в този браузър')), (5,True))
+  check('F21 signing out keeps the journal on the phone and restores the footer', (iv.evaluate("OBS.length"),iv.inner_text('#priv').startswith('Наблюденията се пазят в този браузър')), (5,True))
   iv.fill('#sb-mail','ivan@test.bg');iv.fill('#sb-pw','грешна');iv.click('[data-sb="in"]');iv.wait_for_selector('.fr .msg')
   check('F22 wrong password says so', iv.inner_text('.fr .msg'), 'Грешен имейл или парола.')
   nc=person([],file='noconf-test.html')

@@ -56,7 +56,7 @@ try:
   tap(pg);pg.wait_for_timeout(1500)
   t=pg.inner_text('#explace')
   pts=[u for u in CALLS if 'geoDistance=' in u and '0.1km' in u]
-  check('E3 ● точка: a tap snaps to the nearest find point and asks about 100 m around it — the place, „Птици тук: 540 находки · 3 вида…“', (t.startswith('Розова долина · точка, ~100 м около нея'),'Птици тук: 540 находки · 3 вида · 2010–2025 · най-много май и април' in t,any('42.62030,25.40040,0.1km' in u for u in pts)), (True,True,True))
+  check('E3 ● точка: a tap snaps to the nearest find point and asks about 100 m around it — the place, „Птици тук: 540 находки · 3 вида…“', (t.startswith('Розова долина · точка, ~100 м около нея'),'Птици тук: 540 находки · 3 вида · 2010-2025 · най-много май и април' in t,any('42.62030,25.40040,0.1km' in u for u in pts)), (True,True,True))
   check('E3b ...the point is marked; in this mode Перá draws the find points itself as clearly visible, tappable dots (zoomed in)', (pg.locator('#exmap path.leaflet-interactive').count()>=3,pg.evaluate("document.getElementById('exmap')._dots.getLayers().length"),pg.inner_text('#exhint')), (True,2,''))
   rows=pg.evaluate("[...document.querySelectorAll('#explace .prw')].map(a=>[a.querySelector('.nmlink,i').textContent,a.classList.contains('got'),a.innerText.includes('ново за теб')])")
   check('E4 ...and every bird found there, most found first, ✓ yours, „ново за теб“ the rest', rows, [['Кос',True,False],['Сврака',False,True],['Степен орел',False,True]])
@@ -77,7 +77,7 @@ try:
   pg.fill('#ex-sp','Сврака');pg.dispatch_event('#ex-sp','change');pg.wait_for_timeout(1500)
   check('E7 choosing a species shows its own hexagons', any('/v2/map/' in u and 'taxonKey=2482513' in u for u in CALLS), True)
   tap(pg);pg.wait_for_timeout(1500)
-  check('E8 ...and the tap tells that bird’s finds there, with the others below', ('Сврака тук: 12 находки · 2019–2024 · най-често март и февруари' in pg.inner_text('#explace'),pg.locator('#explace .prw').count()), (True,2))
+  check('E8 ...and the tap tells that bird’s finds there, with the others below', ('Сврака тук: 12 находки · 2019-2024 · най-често март и февруари' in pg.inner_text('#explace'),pg.locator('#explace .prw').count()), (True,2))
   pg.reload();pg.wait_for_timeout(400);pg.click('.tab[data-v="map"]');pg.wait_for_timeout(300)
   first=pg.evaluate("document.querySelector('[data-mm][aria-pressed=\"true\"]').textContent")
   pg.click('[data-mm="gbif"]');pg.wait_for_timeout(1200)

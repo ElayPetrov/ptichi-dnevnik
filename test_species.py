@@ -37,7 +37,7 @@ try:
   check('S10 birds the list doesn\'t know stay separate', (k[4]!=k[5], len(set(k))), (True,4))
   check('S11 the records themselves are unchanged', pg2.evaluate("OBS.map(o=>[o.bg,o.la])"), [[r['bg'],r['la']] for r in d2])
   pg2.click('.tab[data-v="life"]');pg2.wait_for_timeout(200)
-  check('S12 Моите видове shows 4 species, not 6', pg2.locator('.sp').count(), 4)
+  check('S12 Видове shows 4 species, not 6', pg2.locator('.sp').count(), 4)
   check('S13 comparing with a friend links them too: „Гарга“ and „Чавка“', pg2.evaluate("(()=>{const kk=ufKeyer([{bg:'Гарга'},{bg:'Чавка'}]);return kk({bg:'Гарга'})===kk({bg:'Чавка'});})()"), True)
   check('S14 no page errors', errs, [])
   b.close()

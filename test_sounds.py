@@ -39,7 +39,7 @@ try:
   pg.click('[data-xcplay="song"]');pg.wait_for_timeout(200);pg.click('[data-spback]');pg.wait_for_timeout(250)
   check('S7 „← Дневник“ goes back to the same spot, and the sound stops', (pg.evaluate("view"),abs(pg.evaluate("Math.round(scrollY)")-y0)<=3,pg.evaluate("xcAud")), ('log',True,None))
   pg.click('.tab[data-v="life"]');pg.locator('.sp .nm',has_text='Сойка').first.click();pg.wait_for_selector('.xcw.has',timeout=5000)
-  check('S8 a bird without a call recording gets only „▶ песен“; from Моите видове the button says „← Моите видове“', (pg.evaluate("[...document.querySelectorAll('.spd .xcb button')].map(b=>b.textContent)"),pg.inner_text('[data-spback]')), (['▶ песен'],'← Моите видове'))
+  check('S8 a bird without a call recording gets only „▶ песен“; from Видове the button says „← Видове“', (pg.evaluate("[...document.querySelectorAll('.spd .xcb button')].map(b=>b.textContent)"),pg.inner_text('[data-spback]')), (['▶ песен'],'← Видове'))
   pg.click('[data-spback]');pg.locator('.sp .nm',has_text='Кос').first.click();pg.wait_for_selector('.xcw.has',timeout=5000)
   check('S9 the choice is remembered: the helper is asked once per bird', sorted(asked), ['Garrulus%20glandarius','Turdus%20merula'])
   pg.click('.tab[data-v="log"]');pg.click('#toggle');pg.fill('#f-bg','Кос');pg.locator('#f-bg').dispatch_event('change');pg.click('#f-unsure');pg.fill('#f-alt-in','Сойка');pg.click('#f-alt-add');pg.click('#f-cmp')

@@ -27,7 +27,7 @@ try:
   pg.reload(); pg.wait_for_function("navigator.serviceWorker.controller!==null")
   pg.click('#toggle'); pg.fill('#f-bg','Сврака'); pg.click('#savebtn')
   pg.ctx.set_offline(True); pg.reload(); pg.wait_for_function("document.getElementById('n-obs').textContent==='1'")
-  check('P3 offline: the app opens and shows the saved record', (pg.title(),pg.inner_text('#n-obs')), ('Перá — дневник за наблюдение на птици','1'))
+  check('P3 offline: the app opens and shows the saved record', (pg.title(),pg.inner_text('#n-obs')), ('Перá - дневник за наблюдение на птици','1'))
   pg.ctx.set_offline(False)
   html=open(ROOT+'/index.html',encoding='utf-8').read()
   import re as _re; open(ROOT+'/index.html','w',encoding='utf-8').write(_re.sub(r"const VER='[^']*'","const VER='TEST-NEW'",html))
@@ -41,7 +41,7 @@ try:
   check('P6 no page errors', pg.errs, [])
   # ---------- backups ----------
   pg=page([R(id=int(time.time()*1000)-i,date=T.isoformat(),bg=f'Вид {i}') for i in range(12)])
-  check('B1 12 records and never backed up: reminder shows', (pg.is_visible('#bakNag'),pg.inner_text('#bakNagTxt')), (True,'Още нямаш резервно копие на тези 12 записа.'))
+  check('B1 12 records and never backed up: reminder shows', (pg.is_visible('#bakNag'),pg.inner_text('#bakNagTxt')), (True,'Още нямаш резервно копие на тези 12 наблюдения.'))
   with pg.expect_download() as dl: pg.click('#acct');pg.click('#bak')
   d=dl.value; body=json.load(open(d.path(),encoding='utf-8'))
   check('B2 backup file is dated and complete', (d.suggested_filename,len(body['obs']),body['v'],body['outs']), (f'ptichi-dnevnik-{T.isoformat()}.json',12,6,[]))

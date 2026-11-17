@@ -20,7 +20,7 @@ try:
   state=lambda:pg.evaluate("[...document.querySelectorAll('.dayg')].map(g=>g.querySelector('[data-dayt]').dataset.dayt+(g.classList.contains('shut')?':shut':':open'))")
   check('D1 only the newest day is open at first', state(), ['2026-10-22:open','2026-10-21:shut','2026-10-20:shut'])
   head=lambda d:pg.locator(f'[data-dayt="{d}"] .dcount').inner_text()
-  check('D2 each day header counts its records and species; unsure records add a record, not a species', (head('2026-10-22'),head('2026-10-21'),head('2026-10-20')), ('3 записа · 2 вида','2 записа · 1 вид','2 записа · 2 вида'))
+  check('D2 each day header counts its records and species; unsure records add a record, not a species', (head('2026-10-22'),head('2026-10-21'),head('2026-10-20')), ('3 наблюдения · 2 вида','2 наблюдения · 1 вид','2 наблюдения · 2 вида'))
   ph=lambda:pg.evaluate("(()=>{const d=document.querySelector('[data-ph=\"phold\"]');return [!!d.dataset.loaded,!!d.querySelector('img')];})()")
   check('D3 a photo in a folded day is not loaded yet', ph(), [False,False])
   pg.click('[data-dayt="2026-10-20"]');pg.wait_for_function("(()=>{const i=document.querySelector('[data-ph=\"phold\"] img');return i&&i.complete&&i.naturalWidth>0;})()",timeout=4000)

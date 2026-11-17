@@ -1,5 +1,5 @@
 # 3 Nov 2026: nothing sticks out past the screen (the sunrise line and every two-column row), the map's style
-# chips as small sub-tabs on one row, and „Всички видове“ in Моите видове.
+# chips as small sub-tabs on one row, and „Всички видове“ in Видове (the tab was „Моите видове“ until 2026-11-17).
 import json,subprocess,sys,time
 from playwright.sync_api import sync_playwright
 R=lambda **k:{**dict(id=0,date='2026-05-10',time='08:30',place='Язовир Копринка, източния бряг до старата помпена станция',count='',bg='Кос',en='',la='',fam='',note='',h=0,s=1,p=0,beh=[],geo='42.61000,25.30000',photo=None),**k}
@@ -23,13 +23,13 @@ try:
   check('X1 the bird card: „Сутрин обикновено го срещаш … след изгрева.“', pg.inner_text('.sunl').startswith('Сутрин обикновено го срещаш '), True)
   check('X2 ...and nothing on the card sticks out past a 340 px screen (long place names included)', wide(), False)
   pg.click('[data-spback]');pg.wait_for_timeout(100)
-  check('X3 Моите видове starts with „Моите · 2 / Всички · 413 / 🌳 Дървото“', pg.evaluate("[...document.querySelectorAll('.lifetabs button')].map(b=>b.textContent)"), ['Моите · 2','Всички · 413','🌳 Дървото'])
+  check('X3 Видове starts with „Моите · 2 / Всички · 413 / 🌳 Дървото“', pg.evaluate("[...document.querySelectorAll('.lifetabs button')].map(b=>b.textContent)"), ['Моите · 2','Всички · 413','🌳 Дървото'])
   pg.click('[data-lifeall="1"]');pg.wait_for_timeout(200)
   check('X4 „Всички видове“: every species, by group with counts, a tick on the ones you have', (pg.locator('.asp').count(),pg.locator('.asp.got').count(),pg.inner_text('[data-alf="Грабливи птици"] small')), (413,2,'0 / 37'))
   check('X5 ...plain names, no pictures; rare ones marked', (pg.locator('.allsp img').count(),pg.locator('.asp .rr').count()), (0,73))
   pg.click('[data-alf="Чайки"]');pg.wait_for_timeout(80)   # families fold since 2026-11-03.2
   pg.locator('.asp .nmlink',has_text='Сребриста чайка').click();pg.wait_for_timeout(200)
-  check('X6 tapping a species you don’t have opens its card (photo, sounds, links)', 'Още нямаш сигурни записи на този вид.' in pg.inner_text('#view'), True)
+  check('X6 tapping a species you don’t have opens its card (photo, sounds, links)', 'Още нямаш сигурни наблюдения на този вид.' in pg.inner_text('#view'), True)
   pg.click('[data-spback]');pg.wait_for_timeout(150)
   check('X7 „назад“ returns to the full list', pg.evaluate("LIFEALL"), True)
   pg.click('[data-lifeall="0"]');pg.wait_for_timeout(100)

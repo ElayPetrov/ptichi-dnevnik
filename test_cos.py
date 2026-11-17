@@ -42,7 +42,7 @@ try:
   pg.evaluate("ME={id:'me',email:'ivan@example.bg'};MYNAME='Иван Петров';MYCODE='AB12CD34EF56';FR={fol:[{id:'u2',name:'Петър Георгиев',data:{obs:[],outs:[]},updated_at:'2026-11-03T08:00:00Z'}],fans:[{id:'u4',name:'Георги'}]}")
   pg.click('#acct');pg.wait_for_timeout(500)
   check('C8 the profile opens with a header card: initials, name, e-mail, and four numbers', (pg.inner_text('.phero .fav'),pg.inner_text('.phero h2'),'ivan@example.bg' in pg.inner_text('.phero'),pg.evaluate("[...document.querySelectorAll('.ptiles span')].map(s=>s.textContent)")),
-    ('ИП','Иван Петров',True,['вида','записа','излета','нива значки']))
+    ('ИП','Иван Петров',True,['вида','наблюдения','излета','нива значки']))
   check('C9 friends and followers get initials avatars; adding a friend sits inside the friends’ card', (pg.locator('.pcard .prow .pav').count(),pg.locator('.pcard #fr-code').count()), (2,1))
   check('C10 „Как се ползва“ is folded inside „Помощ“; sign-out is alone at the bottom', (pg.evaluate("document.querySelector('.phow').open"),pg.locator('.pout [data-sb=\"out\"]').count()), (False,1))
   check('C11 nothing on the profile pushes past a 390 px screen', pg.evaluate("document.documentElement.scrollWidth>document.documentElement.clientWidth"), False)

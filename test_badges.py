@@ -53,12 +53,12 @@ try:
   txt=[]
   for _ in range(3):txt.append(l.evaluate("document.getElementById('yay').innerText"));l.evaluate("yayHide()");l.wait_for_timeout(450)
   txt=' || '.join(txt)
-  check('B14 the 25th morning before sunrise: „Нова значка! Ранобудник — сребро“', 'Ранобудник — сребро' in txt, True)
+  check('B14 the 25th morning before sunrise: „Нова значка! Ранобудник — сребро“', 'Ранобудник - сребро' in txt, True)
   rid=l.evaluate("OBS.find(o=>o.bg==='Сойка').id")
   check('B15 ...remembered with that record (it travels with the journal for the friends\' feed)', l.evaluate("BDG['early:2']&&BDG['early:2'].r"), rid)
   l.evaluate("ME={id:'me',email:'i@t.bg'};MYNAME='Иван';FR={fol:[],fans:[]};");l.click('.tab[data-v="friends"]');l.wait_for_timeout(300)
   if l.locator('[data-feedmore]').count():l.click('[data-feedmore]');l.wait_for_timeout(300)   # that day is older than the first 20 cards
-  check('B16 the feed card of that day shows „значка: Ранобудник — сребро“', 'значка: Ранобудник — сребро' in l.inner_text('#view'), True)
+  check('B16 the feed card of that day shows „значка: Ранобудник — сребро“', 'значка: Ранобудник - сребро' in l.inner_text('#view'), True)
   l.click('.tab[data-v="badges"]');l.wait_for_timeout(200)
   check('B17 Значки: seven sections, every badge, „от N нива“ (single badges count once), and the new silver marked „ново“',
     (l.evaluate("[...document.querySelectorAll('[data-bdf] span')].map(h=>h.textContent)"),l.locator('.bd2').count()==l.evaluate("BDEF.length"),('от '+str(l.evaluate("BDEF.reduce((a,d)=>a+d.g.length,0)"))+' нива') in l.inner_text('.bdintro'),

@@ -64,7 +64,7 @@ try:
   eb=[l for l in pg.evaluate("__f[0][1]").split('\n') if 'Parus' in l][0].split(',')
   check('C12 the eBird export: the number, and sex and age in the species comment', (eb[3],'3♂ 2♀ · млади 1' in eb[4]), ('12',True))
   pg.click('[data-acctback]')
-  check('C13 Карта offers four styles; „Улици“ is OpenStreetMap now (no key)', (pg.evaluate("Object.values(TILES).map(t=>t.name)"),pg.evaluate("TILES.street.url")), (['Сателит','Сателит + надписи','Топо','Улици'],'https://tile.openstreetmap.org/{z}/{x}/{y}.png'))
+  check('C13 Карта offers four styles; „Улици“ is OpenStreetMap now (no key)', (pg.evaluate("Object.values(TILES).map(t=>t.name)"),pg.evaluate("TILES.street.url")), (['Сателит','Сателит+','Топо','Улици'],'https://tile.openstreetmap.org/{z}/{x}/{y}.png'))
   pg.click('#toggle');pg.click('#geoMap');pg.wait_for_function("pickM&&pickM.__tls&&pickM.__tls.length",timeout=8000);pg.wait_for_timeout(500)
   check('C14 choosing a place: „Сателит + надписи“ by default — the photo plus roads and names on top', (pg.evaluate("pickKey"),pg.evaluate("pickM.__tls.length"),any('World_Transportation' in u for u in tiles),any('World_Boundaries_and_Places' in u for u in tiles)), ('hyb',3,True,True))
   pg.click('[data-ptk="street"]');pg.wait_for_timeout(500)

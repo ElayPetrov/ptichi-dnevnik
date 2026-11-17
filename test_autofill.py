@@ -58,7 +58,7 @@ try:
 
     newform(); pick('#f-place','Копринка'); v=vals()
     check('T7a place pick fills newest coords', v['geo'], '42.60100,25.30100')
-    check('T7b hint says where they came from', pg.inner_text('#geoHint'), 'взети от записа от 1 юли 2026')
+    check('T7b hint says where they came from', pg.inner_text('#geoHint'), 'взети от наблюдението от 1 юли 2026')
     pick('#f-place','Розариум, Казанлък')
     check('T7c switching place swaps auto coords', vals()['geo'], '42.61985,25.39560')
     typein('#f-place','Нова поляна')

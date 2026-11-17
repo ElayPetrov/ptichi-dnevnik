@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Перá — дневник за наблюдение на птици</title>
+<title>Перá - дневник за наблюдение на птици</title>
 <!-- за инсталиране като приложение (от Netlify); от локален файл просто не се зареждат -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -644,6 +644,7 @@ dialog::backdrop{background:rgba(0,0,0,.84)}
 .asktag{margin:3px 0 1px} .asklnk{background:none;border:1px solid var(--line2);border-radius:999px;padding:2px 10px;font:inherit;font-size:12.5px;color:var(--s);cursor:pointer}
 .asktag.ok{font-size:12.5px;color:var(--s)}
 .askc{display:flex;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;margin:0 0 10px}
+.fq .askc{border:none;background:none;padding:0;margin:8px 0 0}
 .askc .ph{width:84px;height:84px;flex:0 0 84px;border-radius:10px;background:var(--bg2) center/cover}
 .askx{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1} .askx small{color:var(--mut)} .askx .btn{align-self:flex-start;margin-top:2px}
 .asknote{font-size:13.5px;color:var(--ink);font-style:italic;overflow-wrap:anywhere}
@@ -795,14 +796,14 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="st h"><b id="n-h">0</b><span>само чути</span></div>
   <div class="st s"><b id="n-s">0</b><span>видени</span></div>
   <div class="st p"><b id="n-p">0</b><span>снимани</span></div>
-  <div class="st d" title="дни със записи през последните 365 дни"><b id="n-d">0</b><span>дни на терен</span></div>
+  <div class="st d" title="дни с наблюдения през последните 365 дни"><b id="n-d">0</b><span>дни на терен</span></div>
 </div>
 <div class="bak" id="bakNag"><span id="bakNagTxt"></span><button type="button" class="btn" id="bakNow">направи сега</button></div>
 
 <div class="tabs" role="tablist">
   <button class="tab" role="tab" data-v="log" aria-selected="true">Дневник</button>
   <button class="tab" role="tab" data-v="friends" aria-selected="false">Приятели</button>
-  <button class="tab" role="tab" data-v="life" aria-selected="false">Моите видове</button>
+  <button class="tab" role="tab" data-v="life" aria-selected="false">Видове</button>
   <button class="tab" role="tab" data-v="outs" aria-selected="false">Излети</button>
   <button class="tab" role="tab" data-v="map" aria-selected="false">Карта</button>
   <button class="tab" role="tab" data-v="goals" aria-selected="false">Цели</button>
@@ -823,7 +824,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
       <div class="g2"><div class="fg"><label>Начало</label><input type="time" id="se-start"></div>
         <div class="fg"><label>Край</label><input type="time" id="se-end"></div></div>
       <div class="sq">Записа ли всички видове, които разпозна?</div>
-      <div class="note2" style="max-width:none">„Да" значи, че вид, който липсва в списъка, наистина не си го открил — това прави излетите сравними.</div>
+      <div class="note2" style="max-width:none">„Да" означава, че вид, който липсва в списъка, наистина не си го открил - това прави излетите сравними.</div>
       <div class="fbtns"><button type="button" class="btn pri" data-done="1">Да, всички</button>
         <button type="button" class="btn" data-done="0">Не, само някои</button>
         <button type="button" class="btn" id="se-back">назад</button></div>
@@ -844,7 +845,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <div class="fg"><label>Latin</label><input id="f-la" list="lanames" placeholder="напр. Phoenicurus ochruros"></div>
     <div class="fg"><label>English</label><input id="f-en" list="ennames" placeholder="напр. Black Redstart"></div>
   </div>
-  <button type="button" class="idbtn" id="f-idbtn">🔍 Не знам — какво видях?</button>
+  <button type="button" class="idbtn" id="f-idbtn">🔍 Не знам - какво видях?</button>
   <datalist id="bgnames"></datalist>
   <div class="cntline">
     <label class="cntf">Брой<input id="f-count" inputmode="numeric" placeholder="1"></label>
@@ -862,9 +863,9 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <button type="button" class="sb s" data-s="s">Видях</button>
     <button type="button" class="sb p" data-s="p">Снимах</button>
   </div>
-  <div class="fg"><button type="button" class="bh" id="f-unsure" aria-pressed="false">? не съм сигурен — няма да се брои</button></div>
+  <div class="fg"><button type="button" class="bh" id="f-unsure" aria-pressed="false">не съм сигурен (няма да се брои)</button></div>
   <div id="tip-unsure"></div>
-  <div class="fg" id="f-askrow" style="display:none"><label class="askl"><input type="checkbox" id="f-ask"> 🔎 Попитай приятелите какво е</label><div class="note2" id="f-askhint" style="max-width:none"></div></div>
+  <div class="fg" id="f-askrow" style="display:none"><label class="askl"><input type="checkbox" id="f-ask"> 🔎 Попитай приятелите</label><div class="note2" id="f-askhint" style="max-width:none"></div></div>
   <div class="fg" id="f-alt-row" style="display:none"><label>Може да е и <button type="button" class="cmplink" id="f-cmp">сравни ↗</button></label>
     <div class="altchips" id="f-alt"></div>
     <div class="geo"><input id="f-alt-in" list="bgnames" placeholder="друг вид, който може да е" style="flex:1;min-width:160px"><button type="button" class="btn" id="f-alt-add">+ добави</button></div>
@@ -880,7 +881,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="fg"><label>Място</label><input id="f-place" list="places" placeholder="напр. Розариум, Казанлък"></div>
   <datalist id="places"></datalist>
   <div class="fg"><label>Координати (по избор)</label>
-    <div class="geo"><input id="f-geo" placeholder="42.61985, 25.39560 — или залепи връзка от Google Maps" style="flex:1;min-width:200px">
+    <div class="geo"><input id="f-geo" placeholder="42.61985, 25.39560 - или залепи връзка от Google Maps" style="flex:1;min-width:200px">
       <button type="button" class="btn" id="geoBtn">GPS</button>
       <button type="button" class="btn" id="geoMap">на картата</button>
       <button type="button" class="btn" id="geoClr">изчисти</button></div>
@@ -889,7 +890,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="fg"><label>Бележка</label><textarea id="f-note" placeholder="перушина, време, с кого, какво правеше…"></textarea></div>
   <div class="fg"><label>Снимка (по избор)</label>
     <div class="pho"><input type="file" id="f-photo" accept="image/*" style="flex:1;min-width:170px">
-      <img id="prev" style="display:none" alt=""><button type="button" class="btn" id="rmph" style="display:none">махни</button></div>
+      <img id="prev" style="display:none" alt=""><button type="button" class="btn" id="rmph" style="display:none">премахни</button></div>
     <div id="f-exif" class="exif" style="display:none"></div>
     <div id="phxrow" class="phxrow"></div></div>
   <div class="fbtns">
@@ -904,7 +905,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <button class="chip ic" data-f="s" aria-label="Видени" title="Видени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="currentColor"/></svg><span class="lbl">Видени</span></button>
   <button class="chip ic" data-f="p" aria-label="Снимани" title="Снимани"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13.2" r="3.3" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="lbl">Снимани</span></button>
   <button class="chip ic" data-f="ylist" aria-label="Годишен списък" title="Годишен списък"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 9.6h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8.6 14.6l2.2 2.2 4.6-4.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Годишен списък</span></button>
-  <button class="chip ic" data-f="q" aria-label="Несигурни" title="Несигурни — „?“, „sp.“ и питани приятели"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.9" r="1.2" fill="currentColor"/></svg><span class="lbl">Несигурни</span></button>
+  <button class="chip ic" data-f="q" aria-label="Несигурни" title="Несигурни - „?“, „sp.“ и питани приятели"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.9" r="1.2" fill="currentColor"/></svg><span class="lbl">Несигурни</span></button>
 </div>
 <div class="fg" style="margin-bottom:12px"><input id="q" placeholder="Търси вид, място или бележка…"></div>
 
@@ -919,7 +920,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <button class="btn" id="impb">Възстанови</button>
     <button class="btn" id="theme">Тема</button>
   </div>
-  <div class="note2"><span id="priv">Записите се пазят в този браузър, на това устройство. Никой друг не ги вижда.</span> Правѝ резервно копие веднъж месечно.
+  <div class="note2"><span id="priv">Наблюденията се пазят в този браузър, на това устройство. Никой друг не ги вижда.</span> Правѝ резервно копие веднъж месечно.
     <span id="bakInfo" style="display:block;margin-top:4px"></span><span id="ver" style="opacity:.6"></span></div>
   <div class="inst" id="inst"></div>
 </div>
@@ -961,12 +962,12 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 </dialog>
 <dialog id="cmpDlg" class="pickdlg outdlg" aria-label="Сравни">
   <div class="pickhead">Сравни</div>
-  <div class="odb"><div class="note2" style="max-width:none">Описание, снимки и гласове — отварят се в нов прозорец.</div><div id="cmp-list"></div></div>
+  <div class="odb"><div class="note2" style="max-width:none">Описание, снимки и гласове - отварят се в нов прозорец.</div><div id="cmp-list"></div></div>
   <div class="pickfoot"><span style="flex:1"></span><button type="button" class="btn pri" id="cmp-close" autofocus>Готово</button></div>
 </dialog>
 <dialog id="nnDlg" class="pickdlg outdlg" aria-label="Допълни имената">
   <div class="pickhead">Допълни имената</div>
-  <div class="odb"><div class="note2" style="max-width:none">Тези видове ги няма в списъка. С латинско и английско име ще имат снимка, гласове и връзки, ще влязат в eBird — и в списъка на групата.</div>
+  <div class="odb"><div class="note2" style="max-width:none">Тези видове ги няма в списъка. С латинско и английско име ще имат снимка, гласове и връзки, ще влязат в eBird и в списъка на групата.</div>
     <div id="nn-list"></div><div class="msg" id="nn-msg"></div></div>
   <div class="pickfoot"><span style="flex:1"></span><button type="button" class="btn" id="nn-later">По-късно</button><button type="button" class="btn pri" id="nn-save">Запази</button></div>
 </dialog>
@@ -976,7 +977,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="fg"><label for="vc-text">или напиши / диктувай с микрофона на клавиатурата</label><textarea id="vc-text" rows="2" placeholder="напр. сойка две, кос три, чух авлига · two jays, blackbird three"></textarea></div>
   <div class="fbtns"><button type="button" class="btn pri" id="vc-add">Добави</button><button type="button" class="btn" id="vc-memo">● Гласова бележка</button></div>
   <div class="msg" id="vc-msg"></div><div id="vc-list"></div>
-  <div class="note2" style="max-width:none">Записите се пазят веднага — с часа, мястото и излета — като „за преглед“: не се броят, докато не ги потвърдиш в Дневника.</div>
+  <div class="note2" style="max-width:none">Наблюденията се пазят веднага - с часа, мястото и излета - като „за преглед“: не се броят, докато не ги потвърдиш в Дневника.</div>
   <div class="fbtns"><button type="button" class="btn" id="vc-done">Готово</button></div></div></dialog>
 <dialog id="idDlg" class="pickdlg outdlg" aria-label="Предложи вид"><div class="pickhead" id="id-t">Какво е това?</div><div class="odb">
   <div class="fg"><label for="id-bg">Вид</label><input id="id-bg" list="bgnames" autocomplete="off" placeholder="напиши или избери"></div>
@@ -987,12 +988,12 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
   <div class="fbtns"><button type="button" class="btn" id="q-close">Затвори въпроса</button><button type="button" class="btn" id="q-done">Готово</button></div></div></dialog>
 <dialog id="bcDlg" class="pickdlg outdlg" aria-label="Кодовете за гнездене">
   <div class="pickhead">Кодовете за гнездене</div>
-  <div class="odb"><div class="note2" style="max-width:none">Европейските кодове на атласите на гнездящите птици (EBCC) — същите, които ползва атласът на БДЗП. Отбелязват колко сигурно е, че птицата гнезди там.</div>
+  <div class="odb"><div class="note2" style="max-width:none">Европейските кодове на атласите на гнездящите птици (EBCC) - същите, които ползва атласът на БДЗП. Отбелязват колко сигурно е, че птицата гнезди там.</div>
     <div id="bc-list"></div>
-    <div class="note2" style="max-width:none;margin-top:10px"><b>Брои се най-силното</b>: 2 през април и 14 през май за същата птица на същото място — остава 14.<br>
-    <b>Само в гнездовия сезон</b>: пееща птица през март може да е прелетна. При съмнение — без код.<br>
-    <b>Никога не приближавай гнездо</b>, за да „вдигнеш“ кода до 15 или 16 — 14 („носи храна“) е също толкова потвърдено.<br>
-    В износа за eBird кодът отива в бележката заедно с буквите на eBird (напр. C14 / CF).</div></div>
+    <div class="note2" style="max-width:none;margin-top:10px"><b>Брои се най-силното</b>: 2 през април и 14 през май за същата птица на същото място - остава 14.<br>
+    <b>Само в гнездовия сезон</b>: пееща птица през март може да е прелетна. При съмнение - без код.<br>
+    <b>Никога не приближавай гнездо</b>, за да „вдигнеш“ кода до 15 или 16 - 14 („носи храна“) е също толкова потвърдено.<br>
+    В експорта за eBird кодът отива в бележката заедно с кода на eBird (напр. C14 / CF).</div></div>
   <div class="pickfoot"><span style="flex:1"></span><button type="button" class="btn pri" id="bc-close" autofocus>Готово</button></div>
 </dialog>
 <dialog id="yrDlg" class="yrdlg" aria-label="Твоята година">
@@ -1076,7 +1077,7 @@ function sessListHTML(){const rs=OBS.filter(o=>o.sess===SESS.id).sort((a,b)=>(b.
       '<div class="sstal"><button type="button" data-tal="'+o.id+'" data-d="-1" aria-label="едно по-малко">−1</button><b>'+pre+n+'</b>'+
       [1,10,100].map(d=>'<button type="button" data-tal="'+o.id+'" data-d="'+d+'">+'+d+'</button>').join('')+'</div></div>'+
     '<button type="button" data-ed="'+o.id+'" aria-label="промени" title="промени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5 17v3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14.6 7.4l3 3" stroke="currentColor" stroke-width="2"/></svg></button><button type="button" data-del="'+o.id+'" aria-label="изтрий" title="изтрий">×</button></div>';}).join(''):
-    '<div class="ssempty">Още няма записи в този излет.</div>';}
+    '<div class="ssempty">Още няма наблюдения в този излет.</div>';}
 let talT=0,snackT=0,sameBusy=false;
 function snack(html,ms){const el=document.getElementById('snack');if(!el)return;el.innerHTML=html;el.hidden=false;clearTimeout(snackT);if(ms)snackT=setTimeout(()=>{el.hidden=true;},ms);}
 // „+ същия вид на ново място“ (2026-11-16): копие на записа — същият вид, но тук и сега (мястото — от пътя на излета или от телефона)
@@ -1084,12 +1085,12 @@ async function sameHere(id){const o=OBS.find(x=>x.id==id);if(!o||sameBusy)return
   try{let g=trkNow();
     if(!g){snack('Търся къде си…');g=await new Promise(res=>{if(!navigator.geolocation)return res(null);
       navigator.geolocation.getCurrentPosition(p=>res(p.coords.latitude.toFixed(5)+','+p.coords.longitude.toFixed(5)),()=>res(null),{enableHighAccuracy:true,timeout:15000,maximumAge:30000});});}
-    if(!g){snack('Няма местоположение — разреши го в телефона или запиши мястото ръчно.',6000);return;}
+    if(!g){snack('Няма местоположение - разреши го в телефона или запиши мястото ръчно.',6000);return;}
     const now=Date.now(),r={id:now,date:today(),time:nowTime(),place:nearPlace(g)||'',count:'',bg:o.bg||'',en:o.en||'',la:o.la||'',fam:o.fam||'',note:'',
       h:o.h?1:0,s:o.s?1:0,p:0,beh:[],geo:g,photo:null,upd:now};   // бройката, бележката, снимката и поведението са на старото място — не се копират
     if(o.u){r.u=1;if(o.alt&&o.alt.length)r.alt=[...o.alt];}if(SESS)r.sess=SESS.id;
     OBS.push(r);save();render();
-    snack('„'+esc(o.bg||o.en||o.la)+'“ — записан и тук'+(r.place?' (до '+esc(r.place)+')':'')+'. <button type="button" data-undosame="'+now+'">↶ Отмени</button>',8000);
+    snack('„'+esc(o.bg||o.en||o.la)+'“ - записан и тук'+(r.place?' (до '+esc(r.place)+')':'')+'. <button type="button" data-undosame="'+now+'">↶ Отмени</button>',8000);
     setTimeout(()=>{const b=document.querySelector('[data-samehere="'+now+'"]'),c=b&&b.closest('.o');if(c){c.classList.add('flash');c.scrollIntoView({block:'center',behavior:'smooth'});}},80);}
   finally{sameBusy=false;}}
 function talAdd(id,d){const o=OBS.find(x=>x.id==id);if(!o)return;const m=String(o.count||'').match(/\d+/),n=Math.max(0,(m?+m[0]:0)+d);   // броене в движение: +1 / +10 / +100
@@ -1108,7 +1109,7 @@ function sessUI(){
 }
 // Излет без нов запис от 6+ часа: питаме, преди да даде старата си дата и място на нов запис
 function sessFresh(){if(!SESS||(SESS.at&&Date.now()-SESS.at<6*36e5))return;
-  if(confirm('Излетът от '+human(SESS.date)+(SESS.place?' ('+SESS.place+')':'')+' още е отворен. Продължаваш ли го?\n\nАко не — приключвам го (часовете и пълнотата му се оправят в „Излети“), а новият запис е с днешна дата.')){SESS.at=Date.now();saveSess();}
+  if(confirm('Излетът от '+human(SESS.date)+(SESS.place?' ('+SESS.place+')':'')+' още е отворен. Продължаваш ли го?\n\nАко не - приключвам го (часовете и цялостта му се оправят в „Излети“), а новото наблюдение е с днешна дата.')){SESS.at=Date.now();saveSess();}
   else endOuting(null,true);}
 
 // ---- голямото — дневник, излети, приятели, реакции — живее в IndexedDB ----
@@ -1134,7 +1135,7 @@ const stBig=k=>!!kvdb&&KVBIG.includes(k);
 function stGet(k){if(stBig(k))return k in KVC?KVC[k]:null;try{return localStorage.getItem(k);}catch(e){return null;}}
 function stSet(k,v){
   if(stBig(k)){if(v==null)delete KVC[k];else KVC[k]=v;
-    kvPut(k,v).then(ok=>{if(!ok&&!kvWarned){kvWarned=true;alert('Записът не можа да се запази в телефона. Ако има връзка, е в облака — направи и резервно копие от профила.');}});return;}
+    kvPut(k,v).then(ok=>{if(!ok&&!kvWarned){kvWarned=true;alert('Наблюдението не можа да се запази в телефона. Ако има връзка, е в облака - направи и резервно копие от профила.');}});return;}
   if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v);}
 function load(){
   // ако хранилището съществува — ползваме него, дори да е празно нарочно
@@ -1150,7 +1151,7 @@ function load(){
   try{localStorage.removeItem('bird-journal-v2');}catch(e){}
   save();
 }
-function save(){SPK=null;queueSync();try{stSet(K,JSON.stringify(OBS));}catch(e){alert('Паметта на телефона за приложението е пълна. Направи резервно копие от профила; ако има връзка, записите са и в облака.');}}
+function save(){SPK=null;queueSync();try{stSet(K,JSON.stringify(OBS));}catch(e){alert('Паметта на телефона за приложението е пълна. Направи резервно копие от профила; ако има връзка, наблюденията са и в облака.');}}
 let idb=null;
 function openDB(){return new Promise(res=>{try{const r=indexedDB.open('birdphotos',1);
   r.onupgradeneeded=()=>r.result.createObjectStore('p');
@@ -1247,7 +1248,7 @@ function render(){
   if(view==='map'&&mapMode==='gbif')return renderMap(el);   // „Изследвай“ показва находките в GBIF — работи и с празен дневник
   if(!OBS.length){const ih=instHTML();el.innerHTML=(view==='log'?inviteBanner():'')+(view==='map'?'<div class="mapbar"><button class="chip" data-mm="real" aria-pressed="true">Истинска карта</button><button class="chip" data-mm="grid">Атлас</button><button class="chip" data-mm="gbif">Изследвай</button></div>':'')+'<div class="empty"><div class="emptybird">'+BIRDGLYPH+'</div>'+
     (EMPTYTXT[view]?EMPTYTXT[view]+'<div class="fbtns" style="justify-content:center;margin-top:12px"><button type="button" class="btn" data-first>Запиши първата птица</button></div>':
-     'Още няма записи.<br>Натисни <b>+ Ново наблюдение</b> и впиши първата птица.')+
+     'Още няма наблюдения.<br>Натисни <b>+ Ново наблюдение</b> и запиши първата птица.')+
     (ih?'<div class="inst" style="margin-top:20px">'+ih+'</div>':'')+'</div>';return;}
   if(view==='log')return renderLog(el);
   if(view==='life')return renderLife(el);
@@ -1277,14 +1278,14 @@ function onThisDay(){if(q.trim()||filt!=='all')return '';const t=today(),md=t.sl
   return '<div class="otd"><span class="otdt">На днешна дата:</span>'+ds.map(d=>{const ns=[...new Set(by[d].map(o=>o.bg||o.en||o.la))];
     return '<button type="button" class="otdy" data-otd="'+d+'"><b>'+d.slice(0,4)+'</b> '+esc(ns.slice(0,3).join(', '))+(ns.length>3?' и още '+(ns.length-3):'')+'</button>';}).join('')+'</div>';}
 function doubtNote(L){const n=k=>L.filter(k).length,u=n(o=>o.u&&!isSp(o)),sp=n(isSp),ak=n(o=>o.ask&&!o.askOk);
-  return '<div class="note2 dbtnote" style="max-width:none;margin-bottom:10px">'+L.length+(L.length===1?' несигурен запис':' несигурни записа')+': '+
-    [u?u+' с „?“':'',sp?sp+' само до група („sp.“)':'',ak?ak+(ak===1?' чака':' чакат')+' отговор от приятели':''].filter(Boolean).join(' · ')+'. Докосни запис, за да го определиш.</div>';}
+  return '<div class="note2 dbtnote" style="max-width:none;margin-bottom:10px">'+L.length+(L.length===1?' несигурно наблюдение':' несигурни наблюдения')+': '+
+    [u?u+' с „?“':'',sp?sp+' само до група („sp.“)':'',ak?ak+(ak===1?' чака':' чакат')+' отговор от приятели':''].filter(Boolean).join(' · ')+'. Докосни наблюдение, за да го определиш.</div>';}
 function renderLog(el){
   // в деня — по час, най-късното горе (без час — по кога е записано); така и излетът стои на мястото си във времето,
   // дори ако после му добавиш забравена птица
   const tk=o=>{const m=tmin(o.time);if(m!=null)return m;const d=new Date(o.id);return d.getHours()*60+d.getMinutes();};
   const list=OBS.filter(pass).sort((a,b)=>a.date===b.date?(tk(b)-tk(a)||b.id-a.id):b.date.localeCompare(a.date));
-  if(!list.length){el.innerHTML='<div class="empty">'+(filt==='q'&&!q.trim()?'Няма несигурни записи — всичко е определено.':'Нищо не съвпада.')+'</div>';return;}
+  if(!list.length){el.innerHTML='<div class="empty">'+(filt==='q'&&!q.trim()?'Няма несигурни наблюдения - всичко е определено.':'Нищо не съвпада.')+'</div>';return;}
   const F=firsts();let h=vcLogTop()+(filt==='q'?doubtNote(list):''),cur='',curM='',curY='';const seen=new Set();
   const byDay={};for(const o of list)(byDay[o.date]=byDay[o.date]||[]).push(o);
   // месеци и години се появяват само когато има повече от един — дотогава Дневникът изглежда както досега
@@ -1293,7 +1294,7 @@ function renderLog(el){
     ymOpen=k=>foldOpen(k,k==='y:'+nY||k==='m:'+nM),
     ymHead=(k,lbl,cls)=>{const rs=list.filter(o=>o.date.startsWith(k.slice(2))),n=rs.length,sp=new Set(rs.filter(x=>!x.u).map(key).filter(Boolean)).size,op=ymOpen(k);
       return '<div class="'+cls+(op?'':' shut')+'"><button type="button" class="ymh" data-ymt="'+k+'" aria-expanded="'+op+'"><span class="dchev" aria-hidden="true">▾</span>'+lbl+
-        '<span class="dcount">'+n+(n===1?' запис':' записа')+' · '+sp+(sp===1?' вид':' вида')+'</span></button><div class="ymb">';};
+        '<span class="dcount">'+n+(n===1?' наблюдение':' наблюдения')+' · '+sp+(sp===1?' вид':' вида')+'</span></button><div class="ymb">';};
   for(const o of list){
     if(o.date!==cur){const y=o.date.slice(0,4),mo=o.date.slice(0,7);
       if(cur)h+='</div></div>';
@@ -1305,7 +1306,7 @@ function renderLog(el){
         nsp=new Set(dl.filter(x=>!x.u).map(key).filter(Boolean)).size;
       h+='<div class="dayg'+(open?'':' shut')+'"><button class="day" data-dayt="'+cur+'" aria-expanded="'+open+'">'+
         '<span class="dchev" aria-hidden="true">▾</span>'+human(cur)+
-        '<span class="dcount">'+dl.length+(dl.length===1?' запис':' записа')+' · '+nsp+(nsp===1?' вид':' вида')+'</span>'+
+        '<span class="dcount">'+dl.length+(dl.length===1?' наблюдение':' наблюдения')+' · '+nsp+(nsp===1?' вид':' вида')+'</span>'+
         (S&&S.rise!=null?'<span class="sun">зора '+fhm(S.dawn)+' · изгрев '+fhm(S.rise)+' · залез '+fhm(S.set)+'</span>':'')+'</button><div class="dayb">';}
     if(o.sess){const k=o.date+'|'+o.sess;if(seen.has(k))continue;seen.add(k);   // излетът стои там, където е първият му запис в деня
       h+=outBlock(o.sess,byDay[o.date].filter(x=>x.sess===o.sess),F);continue;}
@@ -1318,7 +1319,7 @@ function renderLog(el){
 let RECLK=null,spBack=null,spInfo=null;
 const spLink=(o,txt)=>'<button type="button" class="nmlink" data-sprf data-bg="'+esc(o.bg||'')+'" data-la="'+esc(o.la||'')+'" data-en="'+esc(o.en||'')+'">'+(txt==null?esc(o.bg||o.en||o.la):txt)+'</button>';
 function recNm(o){return view==='log'&&!fsel?spLink(o):esc(o.bg||o.en||o.la);}
-const spBackLabel=()=>({log:'← Дневник',friends:'← Приятели',outs:'← Излети',goals:'← Цели'})[spBack&&spBack.v]||'← Моите видове';
+const spBackLabel=()=>({log:'← Дневник',friends:'← Приятели',outs:'← Излети',goals:'← Цели'})[spBack&&spBack.v]||'← Видове';
 function spOpen(ref){spBack={v:view,f:fsel,y:window.scrollY};
   const m=SURE().find(o=>tgMatch(o,ref));
   if(m){spSel=key(m);spInfo=null;}else{spSel='~';spInfo=ref;}
@@ -1378,7 +1379,7 @@ function placeHTML(P,la,key,r,title){const all=+key===212,me=all?{bg:'Птици
     '<small class="pc">'+x.n+(x.got||!x.bg?'':' · <span class="rr">ново за теб</span>')+'</small></span><span class="pra">'+(x.got||!x.bg?'':inTg(x)?'<span class="tgin">✓ в целите</span>':
       '<button type="button" class="tgadd" data-tgadd="'+esc(x.la2)+'" data-bg="'+esc(x.bg)+'" data-en="'+esc(x.en)+'">+ Цел</button>')+'</span></div>';
   return '<div class="whpl"><b>'+(title?esc(title):(P.loc?esc(P.loc)+' и наоколо':'Това място'))+'</b><small>'+(r?(r<.15?' · точка, ~100 м около нея':' · кръг ~'+(r<1.5?r.toFixed(1).replace('.',','):Math.round(r))+' км'):title&&P.loc?' · '+esc(P.loc):'')+'</small>'+
-    '<div class="whplme">'+(P.n?'<b>'+esc(me.bg)+'</b> тук: '+P.n+' '+(P.n===1?'находка':'находки')+(all?' · '+P.sp.length+' вида':'')+(P.y0?' · '+P.y0+(P.y1!==P.y0?'–'+P.y1:''):'')+(top.length?' · '+(all?'най-много ':'най-често ')+top.join(' и '):''):
+    '<div class="whplme">'+(P.n?'<b>'+esc(me.bg)+'</b> тук: '+P.n+' '+(P.n===1?'находка':'находки')+(all?' · '+P.sp.length+' вида':'')+(P.y0?' · '+P.y0+(P.y1!==P.y0?'-'+P.y1:''):'')+(top.length?' · '+(all?'най-много ':'най-често ')+top.join(' и '):''):
       (all?'Тук GBIF няма находки на птици.':'Тук няма находки на <b>'+esc(me.bg)+'</b>.'))+'</div>'+
     (others.length?'<h4 class="psub">Птици, намирани тук · '+others.length+' вида · '+others.filter(x=>!x.got&&x.bg).length+' нови за теб</h4><div class="prws">'+others.slice(0,30).map(row).join('')+(others.length>30?'<div class="prmore" hidden>'+others.slice(30).map(row).join('')+'</div>':'')+'</div>'+
       (others.length>30?'<button type="button" class="btn sm prmorebtn" data-prmore>Покажи всички '+others.length+' вида</button>':''):ntH('Тук GBIF няма други находки на птици.'))+'</div>';}
@@ -1393,23 +1394,23 @@ async function whereMap(el,key,la){if(!el||!await loadLeaflet()||!el.isConnected
   m.on('click',async e=>{const r=GBR(m.getZoom()),p=e.latlng,box=el.parentElement.querySelector('.whplace'),my=++busy;if(!box)return;
     if(circ)circ.remove();circ=L.circle(p,{radius:r*1000,color:'#c0392b',weight:2,fillOpacity:.06}).addTo(m);
     box.innerHTML=ntH('Търся какво има тук…');
-    try{const P=await gbPlace(key,p.lat,p.lng,r);if(my===busy)box.innerHTML=placeHTML(P,la,key,r);}catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря — опитай пак.');}});}
+    try{const P=await gbPlace(key,p.lat,p.lng,r);if(my===busy)box.innerHTML=placeHTML(P,la,key,r);}catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря - опитай пак.');}});}
 async function whereLoad(det){if(!det||det.dataset.done)return;det.dataset.done='1';const la=det.dataset.where,b=det.querySelector('.whb'),nt=t=>'<div class="note2" style="max-width:none">'+t+'</div>';
   if(navigator.onLine===false){b.innerHTML=nt('Нужен е интернет.');det.dataset.done='';return;}
   b.innerHTML=nt('Зареждам…');
   try{const key=await gbKey(la);if(!key){b.innerHTML=nt('Няма данни за този вид в GBIF.');return;}
     const M=await gbMonths(la,key),mx=Math.max(1,...M.months),cm=new Date().getMonth(),pos=myPos();
     b.innerHTML='<div class="whm" aria-label="находки по месеци">'+M.months.map((v,i)=>'<div class="whmb'+(i===cm?' now':'')+'" title="'+v+'"><i style="height:'+Math.round(3+57*v/mx)+'px'+(v?'':';opacity:.25')+'"></i><small>'+GBMON[i]+'</small></div>').join('')+'</div>'+
-      nt(fmtN(M.total)+' находки в България — колко по месеци; на картата: къде.')+'<div class="whmap"></div>'+nt('Докосни място на картата — ще видиш кога е намиран там и какви други птици има. Приближи за по-точно място.')+'<div class="whplace"></div><div class="whn"></div>'+
-      '<div class="whsrc">Данни: <a href="https://www.gbif.org/occurrence/map?taxon_key='+key+'&country=BG" target="_blank" rel="noopener">GBIF.org</a> — eBird, iNaturalist, БДЗП и др. Редките и защитените видове са с приблизително място.</div>';
+      nt(fmtN(M.total)+' находки в България - колко по месеци; на картата: къде.')+'<div class="whmap"></div>'+nt('Докосни място на картата - ще видиш кога е намиран там и какви други птици има. Приближи за по-точно място.')+'<div class="whplace"></div><div class="whn"></div>'+
+      '<div class="whsrc">Данни: <a href="https://www.gbif.org/occurrence/map?taxon_key='+key+'&country=BG" target="_blank" rel="noopener">GBIF.org</a> - eBird, iNaturalist, БДЗП и др. Редките и защитените видове са с приблизително място.</div>';
     whereMap(b.querySelector('.whmap'),key,la);
     const nb=b.querySelector('.whn');
-    if(!pos){nb.innerHTML=nt('Запиши птица с GPS — тогава тук ще са най-близките места до теб.');return;}
+    if(!pos){nb.innerHTML=nt('Запиши птица с GPS - тогава тук ще са най-близките места до теб.');return;}
     nb.innerHTML=nt('Търся най-близките места…');
     const N=await gbNear(la,key,pos);
     nb.innerHTML='<h4 class="psub">Най-близо до теб (до 60 км)</h4>'+(N.length?N.map(g=>'<div class="row"><span>'+esc(g.name||g.la.toFixed(3)+', '+g.lo.toFixed(3))+
       '<small> · '+fmtM(g.d)+(g.last?' · последно '+esc(human(g.last)):'')+'</small></span><span>'+g.n+'× · '+esc(g.src)+'</span></div>').join(''):nt('Няма находки до 60 км.'));
-  }catch(e){det.dataset.done='';b.innerHTML=nt('GBIF не отговаря — опитай пак по-късно.');}}
+  }catch(e){det.dataset.done='';b.innerHTML=nt('GBIF не отговаря - опитай пак по-късно.');}}
 document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.matches&&d.matches('details.where')&&d.open)whereLoad(d);},true);   // toggle не се разпространява — затова capture
 document.addEventListener('click',e=>{const tw=e.target.closest('[data-tgwhere]');if(!tw)return;
   WHEREOPEN=tw.dataset.tgwhere;spOpen({bg:tw.dataset.bg,la:tw.dataset.tgwhere,en:tw.dataset.en});
@@ -1422,11 +1423,11 @@ function renderUnseen(el,o){const c=listFind('la',o.la)||listFind('bg',o.bg)||li
     '<div class="sphd"><div class="thw"><div class="th none" style="width:60px;height:60px">'+silFor(r.fam)+'</div></div><div class="big" style="min-width:0">'+esc(r.bg||r.en||r.la)+'</div></div>'+
     (la?'<div class="xcw" data-xc="'+esc(la)+'"></div>':'')+
     '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':'',r.fam?esc(r.fam):''].filter(Boolean).join(' · ')+'</div>'+
-    '<div class="note2" style="max-width:none;margin-top:10px">Още нямаш сигурни записи на този вид.</div>'+whereHTML(r)+idLinks(r,'big spbot')+'</div>';}
+    '<div class="note2" style="max-width:none;margin-top:10px">Още нямаш сигурни наблюдения на този вид.</div>'+whereHTML(r)+idLinks(r,'big spbot')+'</div>';}
 function recHTML(o,F){
     return '<div class="o l'+lvl(o)+(o.u?' uns':'')+'">'+
       // името и бройката заемат свободното място и се пренасят; „промени“ и „×“ стоят вдясно и не се застъпват с тях
-      (o.rv?'<div class="rvtag">🎙 за преглед'+(o.la?' <button type="button" class="rvok" data-rvok="'+o.id+'">✓ потвърди</button>':' · не разпознах „'+esc(o.vraw||o.bg)+'“ — натисни „промени“')+'</div>':'')+
+      (o.rv?'<div class="rvtag">🎙 за преглед'+(o.la?' <button type="button" class="rvok" data-rvok="'+o.id+'">✓ потвърди</button>':' · не разпознах „'+esc(o.vraw||o.bg)+'“ - натисни „промени“')+'</div>':'')+
       '<div class="oh"><div class="nm">'+recNm(o)+(sspOf(o)?' <span class="ssp">('+esc(sspOf(o))+')</span>':'')+(o.count||o.as?' <span style="color:var(--mut);font-weight:400">· '+esc(cntText(o))+'</span>':'')+'</div>'+
       '<div class="x"><button data-ed="'+o.id+'" aria-label="промени" title="промени"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5 17v3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14.6 7.4l3 3" stroke="currentColor" stroke-width="2"/></svg></button><button data-del="'+o.id+'" aria-label="изтрий" title="изтрий">×</button></div></div>'+
       (o.u&&o.alt&&o.alt.length?'<div class="altnm">или '+o.alt.map(esc).join(' или ')+'</div>':'')+
@@ -1444,12 +1445,12 @@ function recHTML(o,F){
 // Излет в Дневник: заглавие с часовете, мястото и броя, „+ птица“ и „промени“; свива се и изборът се помни.
 function outBlock(id,grp,F){const live=!!(SESS&&SESS.id===id),x=live?null:outings().find(y=>y.id===id),
     byT=[...grp].sort((a,b)=>(a.time||'').localeCompare(b.time||'')),
-    t=live?'от '+(SESS.t0||(byT[0]&&byT[0].time)||''):x&&x.start&&x.end?x.start+'–'+x.end:'',
+    t=live?'от '+(SESS.t0||(byT[0]&&byT[0].time)||''):x&&x.start&&x.end?x.start+'-'+x.end:'',
     pl=(live?SESS.place:x&&x.place)||(byT[0]&&byT[0].place)||'',nsp=new Set(grp.filter(o=>!o.u).map(key).filter(Boolean)).size,
     k='o:'+id,open=foldOpen(k,true);
   return '<div class="og'+(open?'':' shut')+(live?' live':'')+'"><div class="ogh"><button type="button" class="ogt" data-ogt="'+esc(id)+'" aria-expanded="'+open+'">'+
     '<span class="dchev" aria-hidden="true">▾</span><b>Излет'+(live?' · сега':'')+'</b>'+(t?' · '+esc(t):'')+(pl?' · '+esc(pl):'')+(x&&x.with?' · с '+esc(x.with):'')+
-    '<span class="dcount">'+grp.length+(grp.length===1?' запис':' записа')+' · '+nsp+(nsp===1?' вид':' вида')+(x&&x.complete===true?' · пълен списък':'')+'</span></button>'+
+    '<span class="dcount">'+grp.length+(grp.length===1?' наблюдение':' наблюдения')+' · '+nsp+(nsp===1?' вид':' вида')+(x&&x.complete===true?' · пълен списък':'')+'</span></button>'+
     (live?'':'<span class="ogx"><button type="button" data-oadd="'+esc(id)+'">+ птица</button><button type="button" data-oedit="'+esc(id)+'">промени</button><button type="button" data-oinv="'+esc(id)+'">покани</button></span>')+
     '</div><div class="ogb">'+grp.map(o=>recHTML(o,F)).join('')+'</div></div>';}
 // ---- колко добре познаваш вида: пръстен около птицата по дните с нея (не по записите — десет за един ден са един ден) ----
@@ -1473,7 +1474,7 @@ function renderAllSpecies(el){const ql=q.trim().toLowerCase(),mine=new Set();
   const by={};for(const e of SPL){if(ql&&!(e[0]+' '+e[1]+' '+e[2]+' '+altsOf(e).join(' ')).toLowerCase().includes(ql))continue;(by[FAMS[e[3]]]=by[FAMS[e[3]]]||[]).push(e);}
   const X=spxAll().filter(x=>!ql||(x.bg+' '+x.la+' '+x.en).toLowerCase().includes(ql));
   const row=(bg,la,en,rare)=>{const got=mine.has(nrm(la));return '<div class="asp'+(got?' got':'')+'"><span class="tick">'+(got?'✓':'')+'</span>'+spLink({bg,la,en})+(rare?' <small class="rr">рядък</small>':'')+'</div>';};
-  el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+'<div class="note2" style="max-width:none;margin:0 0 6px">Всички видове, установени в България — ✓ са тези, които имаш. Пипни име за картата на вида.</div>'+
+  el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+'<div class="note2" style="max-width:none;margin:0 0 6px">Всички видове, установени в България - ✓ са тези, които имаш. Пипни име за картичката на вида.</div>'+
     (FAMS.filter(g=>by[g]).map(g=>{const L=by[g].sort((a,b)=>a[0].localeCompare(b[0],'bg')),n=L.filter(e=>mine.has(nrm(e[1]))).length;
       const op=!!ql||!!(lsGet(KALF,{})||{})[g];
       return '<button type="button" class="bdsec bdfold" data-alf="'+esc(g)+'" aria-expanded="'+op+'"><span>'+esc(g)+'</span><small>'+n+' / '+L.length+'</small><i>'+(op?'▾':'▸')+'</i></button><div class="allsp"'+(op?'':' style="display:none"')+'>'+L.map(e=>row(e[0],e[1],e[2],e[6])).join('')+'</div>';}).join('')||'<div class="empty">Нищо не съвпада.</div>')+
@@ -1486,8 +1487,8 @@ function renderLife(el){
   if(filt==='q'){const m=new Map();
     for(const o of OBS)if(isDoubt(o)){const nm=(o.bg||o.en||o.la||'неопределена птица')+(o.alt&&o.alt.length?' / '+o.alt.join(' / '):'');if(ql&&!nm.toLowerCase().includes(ql))continue;m.set(nm,(m.get(nm)||0)+1);}
     const L=[...m.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'bg'));
-    el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+(L.length?'<div class="note2" style="max-width:none;margin:10px 0">Несигурните записи по птица — не се броят, докато не ги определиш (в „Записи“).</div><div class="dbtlist">'+
-      L.map(([nm,c])=>'<div class="dbtrow"><span>'+esc(nm)+'</span><small>'+c+'</small></div>').join('')+'</div>':'<div class="empty">'+(ql?'Нищо не съвпада.':'Няма несигурни записи — всичко е определено.')+'</div>');
+    el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+(L.length?'<div class="note2" style="max-width:none;margin:10px 0">Несигурните наблюдения на птица - не се броят, докато не ги определиш (в Дневника).</div><div class="dbtlist">'+
+      L.map(([nm,c])=>'<div class="dbtrow"><span>'+esc(nm)+'</span><small>'+c+'</small></div>').join('')+'</div>':'<div class="empty">'+(ql?'Нищо не съвпада.':'Няма несигурни наблюдения - всичко е определено.')+'</div>');
     return;}
   if(ql)arr=arr.filter(r=>((r.bg||'')+' '+(r.en||'')+' '+(r.la||'')).toLowerCase().includes(ql));
   if(filt==='h')arr=arr.filter(r=>r.L===1);
@@ -1499,7 +1500,7 @@ function renderLife(el){
   spSortArr(arr,spDays());
   const sm=new Set(Object.keys(speciesMap())), un=new Map();
   for(const o of OBS)if(o.u&&key(o)&&!sm.has(key(o))&&(!ql||(o.bg+' '+o.en+' '+o.la).toLowerCase().includes(ql)))un.set(key(o),(o.bg||o.en||o.la)+(o.alt&&o.alt.length?' / '+o.alt.join(' / '):''));
-  const unH=un.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с несигурни записи (не се броят): '+[...un.values()].map(esc).join(' · ')+'</div>':'';
+  const unH=un.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с несигурни наблюдения (не се броят): '+[...un.values()].map(esc).join(' · ')+'</div>':'';
   if(!arr.length){el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+(unH||'<div class="empty">Нищо не съвпада.</div>');return;}
   const D=spDays(),rk=r=>rankOf((D[r.k]||new Set()).size);
   el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+'<div class="spsort">Подреди: <select id="spSort">'+SPSORT.map(([k,l])=>'<option value="'+k+'"'+(SPS===k?' selected':'')+'>'+l+'</option>').join('')+'</select></div>'+
@@ -1512,7 +1513,7 @@ function renderLife(el){
     (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
     '<div class="meta">пръв път '+human(r.first)+(r.n>1?' · последно '+human(r.last):'')+'</div>'+
     '<div class="meta rkm">'+rankLine((D[r.k]||new Set()).size)+'</div>'+idLinks(r)+'</div>'+
-    (dd=>'<div class="cnt">'+dd+' '+(dd===1?'ден':'дни')+'<small>'+r.n+(r.n===1?' запис':' записа')+'</small><small>'+r.b+(r.b===1?' птица':' птици')+'</small></div></div>')((D[r.k]||new Set()).size)).join('')+unH;   // дни — като коронките и подреждането
+    (dd=>'<div class="cnt">'+dd+' '+(dd===1?'ден':'дни')+'<small>'+r.n+(r.n===1?' наблюдение':' наблюдения')+'</small><small>'+r.b+(r.b===1?' птица':' птици')+'</small></div></div>')((D[r.k]||new Set()).size)).join('')+unH;   // дни — като коронките и подреждането
   loadThumbs();}
 // ---- страница на вида ----
 function renderSpecies(el,k){
@@ -1520,7 +1521,7 @@ function renderSpecies(el,k){
   const rs=SURE().filter(o=>key(o)===k).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
   const r=speciesMap()[k];if(!rs.length||!r){spSel=null;return renderLife(el);}
   const un=OBS.filter(o=>o.u&&key(o)===k).length;
-  const fd=f=>{const o=rs.find(f);return o?human(o.date):'—';};
+  const fd=f=>{const o=rs.find(f);return o?human(o.date):'-';};
   const F={};for(const o of rs){const y=o.date.slice(0,4);if(!F[y])F[y]=o.date;}
   const ys=Object.keys(F).sort(), P={};for(const o of rs){const p=(o.place||'').trim()||'(без място)';P[p]=(P[p]||0)+1;}
   const morn=rs.map(o=>{const t=hm(o.time),S=sunFor(o.date,ll(o.geo));return t!=null&&S&&S.rise!=null&&t<S.noon?t-S.rise:null;}).filter(x=>x!=null&&Math.abs(x)<=240);
@@ -1538,7 +1539,7 @@ function renderSpecies(el,k){
     (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
     '<h4>Доказателства</h4><div class="row"><span>чух</span><span>'+fd(o=>o.h)+'</span></div>'+
     '<div class="row"><span>видях</span><span>'+fd(o=>o.s||o.p)+'</span></div><div class="row"><span>снимах</span><span>'+fd(o=>o.p)+'</span></div>'+
-    '<h4>'+rs.length+(rs.length===1?' запис':' записа')+(un?' · '+un+' несигурни не се броят':'')+'</h4>'+
+    '<h4>'+rs.length+(rs.length===1?' наблюдение':' наблюдения')+(un?' · '+un+' несигурни не се броят':'')+'</h4>'+
     '<div class="months">'+MS.map((m,i)=>{const c=r.months[i+1]||0;return '<div><span class="cell'+(c?' on v'+Math.min(3,Math.ceil(c/mx*3)):'')+'" title="'+c+'"></span>'+m+'</div>';}).join('')+'</div>'+
     '<h4>Първа среща по години</h4>'+ys.map((y,i)=>{const dd=i?doy(F[y])-doy(F[ys[i-1]]):0;
       return '<div class="row"><span>'+y+'</span><span>'+sd(F[y])+(i&&dd?' · '+dni(Math.abs(dd))+(dd<0?' по-рано':' по-късно'):'')+'</span></div>';}).join('')+
@@ -1573,7 +1574,7 @@ function renderCurve(){
   const now=(S[Y]||[]).filter(d=>d<=T).length, pv=ys.filter(y=>y<Y).pop();
   const sum=pv?Y+': '+now+' вида до днес · '+pv+': '+S[pv].filter(d=>d<=T).length+' до същата дата, '+S[pv].length+' за цялата година':Y+': '+now+' вида до днес';
   return '<div class="phen"><div class="outsum" style="margin:2px 0 8px">'+sum+'</div><svg viewBox="0 0 '+W+' '+H+'" class="curve" role="img">'+g+ln+'</svg></div>'+
-    '<div class="note2" style="margin-top:10px;max-width:none">Всяка стъпка нагоре е нов вид за годината. Броят се само сигурните записи.</div>';}
+    '<div class="note2" style="margin-top:10px;max-width:none">Всяка стъпка нагоре е нов вид за годината. Броят се само сигурните наблюдения.</div>';}
 // ---- карта за споделяне: PNG 1080×1350 в светлите цветове на дневника ----
 const CP={bg:'#f1e9d4',card:'#fbf6e8',ink:'#2b2920',mut:'#7c745f',line:'#d6c7a4',acc:'#9c3a28',h:'#b07d18',s:'#5a7a3e',p:'#2f6480',
   sky1:'#f6edd6',sky2:'#efd9ae',h1:'#b9bc92',h2:'#8a9668',h3:'#5f7048',h4:'#3c4a30'};
@@ -1623,13 +1624,13 @@ async function outCard(id){const x=outings().find(y=>y.id===id);if(!x)return;con
   for(const o of x.rs){if(o.u)continue;const k=key(o);if(!k)continue;if(!m[k])m[k]={nm:o.bg||o.en||o.la,L:0};m[k].L=Math.max(m[k].L,lvl(o));}
   const sp=Object.values(m).sort((a,b)=>b.L-a.L||String(a.nm).localeCompare(String(b.nm),'bg'));
   await makeCard({kicker:'Излет',title:human(x.date),sub:x.place||'',file:x.date,list:sp,season:seasonOf(new Date(x.date+'T12:00')),
-    meta:[x.start&&x.end?x.start+'–'+x.end:'',dur(mins(x.start,x.end)),sp.length+(sp.length===1?' вид':' вида'),x.complete===true?'пълен списък':''].filter(Boolean).join(' · ')});}
+    meta:[x.start&&x.end?x.start+'-'+x.end:'',dur(mins(x.start,x.end)),sp.length+(sp.length===1?' вид':' вида'),x.complete===true?'пълен списък':''].filter(Boolean).join(' · ')});}
 async function spCard(k){const r=speciesMap()[k];if(!r)return;const rs=SURE().filter(o=>key(o)===k).sort((a,b)=>a.date.localeCompare(b.date));
   const ph=rs.filter(o=>o.photo).pop();let url=null;if(ph){const b=await getPhoto(ph.photo);if(b)url=URL.createObjectURL(b);}
   const F={};for(const o of rs){const y=o.date.slice(0,4);if(!F[y])F[y]=o.date;}
-  const fd=f=>{const o=rs.find(f);return o?human(o.date):'—';};
+  const fd=f=>{const o=rs.find(f);return o?human(o.date):'-';};
   await makeCard({kicker:'Моите видове',title:r.bg||r.en||r.la,sub:r.la||'',file:(r.la||r.bg||'vid').replace(/\s+/g,'-'),photo:url,sil:!url&&FAMSIL[r.fam]?SIL[FAMSIL[r.fam]]:null,
-    meta:(pl=>rs.length+(rs.length===1?' запис':' записа')+(pl?' · '+pl+(pl===1?' място':' места'):''))(new Set(rs.map(o=>(o.place||'').trim()).filter(Boolean)).size),
+    meta:(pl=>rs.length+(rs.length===1?' наблюдение':' наблюдения')+(pl?' · '+pl+(pl===1?' място':' места'):''))(new Set(rs.map(o=>(o.place||'').trim()).filter(Boolean)).size),
     rows:[['чух',fd(o=>o.h)],['видях',fd(o=>o.s||o.p)],['снимах',fd(o=>o.p)],...Object.keys(F).sort().slice(-3).map(y=>['първа среща '+y,sd(F[y])])]});
   if(url)setTimeout(()=>URL.revokeObjectURL(url),5000);}
 document.getElementById('cardShare').onclick=async()=>{try{await navigator.share({files:[cardFile]});}catch(e){}};
@@ -1793,7 +1794,7 @@ async function hotspots(b,key){   // „горещите точки“: най-�
       const cen=[U.reduce((x,u)=>x+u[0],0)/U.length,U.reduce((x,u)=>x+u[1],0)/U.length];
       return {name:f.name,n:f.count,cen,ring:U.length>=3?gbShape(hullRing(U),250):circleRing(cen,250+span/2)};}catch(e){why.push(f.name+': '+((e&&e.message)||e));return null;}}));
     for(const x of part)if(x)out.push(x);}
-  if(F.length&&!out.length)logErr('Горещи точки: '+F.length+' имена, нито едно място — '+why.slice(0,6).join('; '),'hs');
+  if(F.length&&!out.length)logErr('Горещи точки: '+F.length+' имена, нито едно място - '+why.slice(0,6).join('; '),'hs');
   out.sort((x,y)=>y.n-x.n);HSC.set(ck,out);return out;}
 // ---- eBird (2026-11-09): през помощника „osm“ — ключът е в Supabase (Secrets → EBIRD_KEY), не в Перá. Без ключ всичко е както преди.
 let EBOK=null;const EBM=new Map(),KEBN='bird-journal-ebnames',KEBC='bird-journal-ebcodes';let EBN=lsGet(KEBN,{})||{},EBCD=lsGet(KEBC,{})||{};
@@ -1883,13 +1884,13 @@ function wpHTML(v,lang){const STOP=/^(Източници|Бележки|Външ
   const keep=out.filter((x,i)=>!x.h||(out[i+1]&&out[i+1].p));   // празно заглавие — навън
   const url='https://'+lang+'.wikipedia.org/wiki/'+encodeURIComponent(v.t.replace(/ /g,'_'));
   return keep.map(x=>x.h?'<h5>'+esc(x.h)+'</h5>':'<p>'+esc(x.p)+'</p>').join('')+
-    '<p class="tdcr">Текст: Уикипедия — <a href="'+url+'" target="_blank" rel="noopener">„'+esc(v.t)+'“</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.bg" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>';}
+    '<p class="tdcr">Текст: Уикипедия - <a href="'+url+'" target="_blank" rel="noopener">„'+esc(v.t)+'“</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.bg" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>';}
 const trMine=()=>{const s=new Set();for(const o of SURE()){const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en);if(c)s.add(nrm(c.la));}return s;};
 function renderTree(el){treeBuild();
   el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+
     '<div class="trbar"><input id="tr-q" list="bgnames" placeholder="Намери вид на дървото…" autocomplete="off"></div>'+
-    '<div id="treemap"></div><p class="trleg">● видян от теб · ○ още не · малките точки — редки гости. Пипни листо или клон, за да прочетеш главата. '+
-    'Разредите и семействата — по AVONET (Tobias et al. 2022, CC BY 4.0; таксономия на BirdLife); връзките между разредите — по геномните изследвания (където учените още спорят, клоновете излизат от една точка). Текстовете — от Уикипедия.</p>';
+    '<div id="treemap"></div><p class="trleg">● видян от теб · ○ още не · малките точки - редки гости. Пипни листо или клон, за да прочетеш главата. '+
+    'Разредите и семействата - по AVONET (Tobias et al. 2022, CC BY 4.0; таксономия на BirdLife); връзките между разредите - по геномните изследвания (където учените още спорят, клоновете излизат от една точка). Текстовете - от Уикипедия.</p>';
   const box=el.querySelector('#treemap');
   loadLeaflet().then(ok=>{if(!box.isConnected)return;if(!ok){box.innerHTML='<div class="empty">Дървото иска връзка с интернет първия път.</div>';return;}treeMap(box);
     txLoad().then(ch=>{if(ch&&box.isConnected&&TRM&&TRM._trbox===box)treeLabels();});});}
@@ -1947,7 +1948,7 @@ function tdDraw(){const b=document.getElementById('tdBody');if(!b||!TDCUR)return
       '<div class="tdwp" id="tdwp"><p class="note2">Зареждам от Уикипедия…</p></div><button type="button" class="btn" data-tdshow="'+esc(key)+'" style="margin-top:12px">Покажи на дървото</button>';}
   b.innerHTML=h;b.scrollTop=0;loadRefs();loadXC();
   (async()=>{const en=await wpGet('en',key),bgv=en&&en.bg?await wpGet('bg',en.bg):null,w=document.getElementById('tdwp');if(!w||TDCUR!==tok)return;
-    if(en===undefined){w.innerHTML='<p class="note2">Уикипедия не отговаря — опитай пак след малко.</p>';return;}
+    if(en===undefined){w.innerHTML='<p class="note2">Уикипедия не отговаря - опитай пак след малко.</p>';return;}
     w.innerHTML=(bgv?'<h4 class="psub">Уикипедия</h4>'+wpHTML(bgv,'bg'):'<p class="note2">Няма статия в българската Уикипедия.</p>')+
       (en?'<details class="tden"'+(bgv?'':' open')+'><summary>По-подробно на английски</summary>'+wpHTML(en,'en')+'</details>':'');})();}
 // ---- „Какво видях?“ (2026-11-11): разпознаване стъпка по стъпка, като в Merlin ----
@@ -1960,7 +1961,7 @@ function tdDraw(){const b=document.getElementById('tdBody');if(!b||!TDCUR)return
 // <KV>
 const KV={"Aythya nyroca":"4|rbw||V","Tadorna tadorna":"5|wkr||V","Anas platyrhynchos":"4|zgb|be|V","Anas crecca":"3|grz|be|V","Aythya ferina":"4|rgk|bg|V","Spatula clypeata":"4|zwr|be|V","Spatula querquedula":"3|bwg|be|V","Cygnus olor":"5|w||V","Somateria mollissima":"4|wkz|b|V","Anser anser":"5|gb||VZ","Mareca strepera":"4|gkb|be|V","Mareca penelope":"4|rge|b|V","Tadorna ferruginea":"5|re||VZ","Netta rufina":"4|rkc|be|V","Aythya fuligula":"4|kw|b|V","Anas acuta":"5|bwg|be|V","Mergus merganser":"5|wzkc|grw|V","Anser albifrons":"5|gbw||VZ","Melanitta fusca":"4|kw|b|V","Clangula hyemalis":"4|wkb||V","Anser erythropus":"5|gbw||VZ","Mergellus albellus":"4|wk|grw|V","Bucephala clangula":"4|wkz|gbw|V","Aythya marila":"4|kgw|bw|V","Cygnus cygnus":"5|wy||V","Anser fabalis":"5|bg||VZ","Mergus serrator":"4|zrw|gr|V","Melanitta nigra":"4|k|be|V","Oxyura leucocephala":"4|wrs|b|V","Cygnus columbianus":"5|wy||V","Branta ruficollis":"4|krw||VZ","Tetrao urogallus":"5|kz|br|ZD","Phasianus colchicus":"5|rzc|be|Z","Tetrastes bonasia":"3|gbr||ZD","Alectoris graeca":"3|gec||ZS","Perdix perdix":"3|grb||Z","Coturnix coturnix":"1|be||Z","Alectoris chukar":"3|gec||ZS","Lyrurus tetrix":"4|kw|br|ZD","Podiceps cristatus":"4|wbr||V","Tachybaptus ruficollis":"2|br||VT","Podiceps grisegena":"4|rgw||V","Podiceps nigricollis":"3|kyr||V","Podiceps auritus":"3|rky||V","Gavia stellata":"5|grw||V","Gavia arctica":"5|kwg||V","Pelecanus crispus":"5|wg||VA","Pelecanus onocrotalus":"5|wk||VA","Puffinus yelkouan":"3|bw||VA","Phalacrocorax carbo":"5|kw||VD","Microcarbo pygmeus":"4|kb||VDT","Gulosus aristotelis":"5|k||V","Bubulcus ibis":"4|we||Z","Plegadis falcinellus":"5|brz||VT","Ciconia ciconia":"5|wkc||ZA","Botaurus stellaris":"5|be||T","Ardea alba":"5|w||V","Ardeola ralloides":"4|ew||VT","Platalea leucorodia":"5|w||V","Egretta garzetta":"5|wk||V","Ixobrychus minutus":"3|ke|be|T","Nycticorax nycticorax":"5|gkw||VD","Ardea cinerea":"5|gwk||V","Ardea purpurea":"5|rg||TV","Ciconia nigra":"5|kwc||VD","Gyps fulvus":"5|be||AS","Buteo rufinus":"4|reb||AZ","Falco naumanni":"3|rg|be|AJ","Accipiter gentilis":"4|gw||AD","Falco biarmicus":"4|grw||AS","Neophron percnopterus":"5|wky||AS","Accipiter brevipes":"3|grw||AD","Circus pygargus":"4|gk|b|A","Falco cherrug":"4|be||A","Clanga pomarina":"5|b||A","Hieraaetus pennatus":"4|bw||A","Accipiter nisus":"3|grw||AD","Haliaeetus albicilla":"5|bwy||AV","Buteo buteo":"4|bw||AJD","Circaetus gallicus":"5|wb||A","Pandion haliaetus":"4|bw||AV","Pernis apivorus":"4|bgw||AD","Circus cyaneus":"4|gwk|b|AZ","Aquila chrysaetos":"5|b||AS","Falco subbuteo":"3|gwr||A","Falco peregrinus":"4|gwk||AS","Falco eleonorae":"3|bkgwr||AV","Circus aeruginosus":"4|bge|be|AT","Aquila heliaca":"5|bw||A","Falco vespertinus":"3|grckw|rge|AJ","Aegypius monachus":"5|bk||A","Milvus migrans":"4|b||AV","Falco tinnunculus":"3|rg|rb|AJ","Aquila fasciata":"5|bw||AS","Clanga clanga":"5|bk||A","Falco columbarius":"2|gr|be|AZ","Buteo lagopus":"4|bwe||AJ","Circus macrourus":"4|gw|b|A","Aquila nipalensis":"5|b||A","Milvus milvus":"5|rgw||A","Porzana porzana":"2|bgw||T","Gallinula chloropus":"3|kcw||VT","Rallus aquaticus":"2|bgc||T","Crex crex":"3|ber||Z","Fulica atra":"3|kw||V","Zapornia pusilla":"2|bg||T","Zapornia parva":"2|gb|be|T","Otis tarda":"5|regw||Z","Grus grus":"5|gkc||ZA","Tringa ochropus":"2|bw||V","Scolopax rusticola":"3|bre||ZD","Vanellus vanellus":"3|kwz||Z","Glareola pratincola":"2|be||ZA","Himantopus himantopus":"3|kwc||V","Actitis hypoleucos":"2|bw||V","Tringa totanus":"3|bwc||V","Charadrius alexandrinus":"1|ewk||VZ","Charadrius dubius":"1|bwk||VZ","Recurvirostra avosetta":"4|wk||V","Gallinago gallinago":"2|be||VT","Haematopus ostralegus":"4|kwc||V","Burhinus oedicnemus":"4|eby||Z","Glareola nordmanni":"2|bk||ZA","Calidris falcinellus":"1|bw||V","Calidris pugnax":"3|bre|be|VZ","Calidris canutus":"2|rg||V","Tringa nebularia":"3|gw||V","Numenius arquata":"4|be||VZ","Tringa erythropus":"3|kgc||V","Gallinago media":"2|be||ZT","Pluvialis apricaria":"2|ybkg||Z","Arenaria interpres":"2|rkw||V","Calidris ferruginea":"2|rgw||V","Lymnocryptes minimus":"2|be||T","Calidris minuta":"1|rbw||V","Tringa glareola":"2|bw||V","Tringa stagnatilis":"2|gw||V","Numenius phaeopus":"4|be||VZ","Xenus cinereus":"2|gw||V","Charadrius morinellus":"2|rgw||Z","Limosa lapponica":"3|rb||V","Charadrius hiaticula":"2|bwk||V","Calidris temminckii":"1|gb||V","Pluvialis squatarola":"3|kwg||V","Calidris alba":"2|wg||V","Calidris alpina":"2|bkw||V","Phalaropus lobatus":"2|grw||V","Limosa limosa":"4|rbw||V","Stercorarius skua":"4|b||VA","Stercorarius longicaudus":"4|gwk||VA","Stercorarius parasiticus":"4|bw||VA","Stercorarius pomarinus":"4|bwk||VA","Larus cachinnans":"5|wgy||VA","Ichthyaetus melanocephalus":"3|wkc||VA","Chroicocephalus ridibundus":"3|wgc||VA","Larus michahellis":"4|wgy||VA","Chroicocephalus genei":"4|wgc||V","Hydrocoloeus minutus":"2|wgk||VA","Larus fuscus":"4|wky||VA","Larus argentatus":"4|wgyk||VA","Larus canus":"4|wgy||VA","Chlidonias hybrida":"2|gkw||VAT","Chlidonias leucopterus":"2|kw||VA","Sternula albifrons":"2|wgy||VA","Thalasseus sandvicensis":"4|wk||VA","Gelochelidon nilotica":"3|wgk||VA","Sterna hirundo":"3|wkc||VA","Chlidonias niger":"2|kg||VA","Hydroprogne caspia":"4|wkc||VA","Columba palumbus":"4|gw||DZ","Streptopelia decaocto":"3|egk||ZJD","Streptopelia turtur":"2|rgb||DJ","Columba livia":"3|gk||ZS","Columba oenas":"3|g||D","Clamator glandarius":"4|gwe||D","Cuculus canorus":"3|gw||DJ","Asio flammeus":"3|eby||ZA","Bubo bubo":"5|br||SD","Glaucidium passerinum":"1|bw||D","Strix aluco":"3|bgr||D","Asio otus":"3|br||D","Tyto alba":"3|we||A","Athene noctua":"2|bw||ZJ","Aegolius funereus":"2|bw||D","Strix uralensis":"4|gw||D","Otus scops":"2|gb||D","Caprimulgus europaeus":"2|gb||ZA","Tachymarptis melba":"2|bw||AS","Apus pallidus":"1|b||A","Apus apus":"1|k||A","Alcedo atthis":"1|sr||V","Merops apiaster":"2|ysrz||AJ","Upupa epops":"2|rkw||Z","Coracias garrulus":"3|sr||JA","Dendrocopos leucotos":"2|kwc||D","Jynx torquilla":"1|gb||D","Dendrocopos major":"2|kwc||D","Picus viridis":"3|zyc||DZ","Dryobates minor":"1|kwc||D","Picus canus":"2|zgc|zg|D","Dendrocopos syriacus":"2|kwc||D","Dendrocoptes medius":"2|kwc||D","Picoides tridactylus":"2|kwy|kw|D","Dryocopus martius":"4|kc||D","Eremophila alpestris":"1|eyk||Z","Lullula arborea":"1|be||ZD","Melanocorypha calandra":"2|bek||Z","Galerida cristata":"1|be||Z","Alauda arvensis":"2|be||ZA","Alaudala rufescens":"1|be||Z","Calandrella brachydactyla":"1|eb||Z","Riparia riparia":"1|bw||AV","Delichon urbicum":"1|kws||AJ","Hirundo rustica":"2|srw||AJ","Ptyonoprogne rupestris":"1|b||AS","Cecropis rufula":"1|sre||AJS","Motacilla alba":"2|kwg||ZV","Anthus spinoletta":"1|gbe||VZ","Anthus trivialis":"1|be||DZ","Motacilla flava":"1|ykzgw||ZJ","Motacilla cinerea":"2|gyk||V","Anthus campestris":"1|eb||Z","Motacilla citreola":"1|ygk||VZ","Anthus pratensis":"1|be||Z","Anthus cervinus":"1|rb||ZV","Cinclus cinclus":"2|bw||V","Bombycilla garrulus":"2|pky||D","Regulus regulus":"1|zy||D","Troglodytes troglodytes":"1|b||DZ","Regulus ignicapillus":"1|zyw||D","Prunella collaris":"2|grb||SZ","Prunella modularis":"1|gb||DZ","Phoenicurus phoenicurus":"1|grk|br|D","Phoenicurus ochruros":"1|kgr|gr|SJZ","Saxicola rubicola":"1|krw|br|JZ","Oenanthe melanoleuca":"1|kwe|be|ZS","Oenanthe isabellina":"1|ewk||Z","Saxicola rubetra":"1|brw||JZ","Luscinia luscinia":"1|bg||D","Oenanthe oenanthe":"1|gwk|be|ZS","Cercotrichas galactotes":"1|rew||ZD","Erithacus rubecula":"1|rbg||DZ","Oenanthe pleschanka":"1|kw|b|SZ","Luscinia megarhynchos":"1|br||D","Luscinia svecica":"1|srb|bw|T","Turdus torquatus":"2|kw||ZD","Turdus viscivorus":"2|gbe||DZ","Turdus merula":"2|ky|b|ZD","Turdus philomelos":"2|bew||DZ","Monticola saxatilis":"2|srw|b|S","Monticola solitarius":"2|s|b|S","Turdus pilaris":"2|grb||DZ","Turdus iliacus":"2|brw||DZ","Acrocephalus scirpaceus":"1|be||T","Phylloscopus trochilus":"1|zy||D","Phylloscopus sibilatrix":"1|zyw||D","Hippolais olivetorum":"1|gw||D","Curruca communis":"1|gbwr||D","Sylvia atricapilla":"1|gk|gr|D","Hippolais icterina":"1|zy||D","Sylvia borin":"1|bg||D","Phylloscopus collybita":"1|zb||D","Phylloscopus orientalis":"1|gwz||D","Curruca crassirostris":"1|gkw||D","Acrocephalus agricola":"1|be||T","Acrocephalus schoenobaenus":"1|bew||T","Curruca curruca":"1|gbw||D","Curruca melanocephala":"1|kgc|gb|D","Iduna pallida":"1|ge||D","Acrocephalus palustris":"1|bz||TD","Acrocephalus melanopogon":"1|brw||T","Locustella naevia":"1|bz||TZ","Locustella fluviatilis":"1|b||DT","Cettia cetti":"1|rbg||TD","Locustella luscinioides":"1|rb||T","Acrocephalus arundinaceus":"2|be||T","Curruca cantillans":"1|grw|gb|D","Curruca nisoria":"1|gwy||D","Acrocephalus paludicola":"1|ebk||T","Ficedula albicollis":"1|kw|bw|D","Ficedula hypoleuca":"1|kw|bw|D","Ficedula semitorquata":"1|kw|bw|D","Muscicapa striata":"1|gbw||DJ","Ficedula parva":"1|gr|gb|D","Parus major":"1|ykz||D","Aegithalos caudatus":"1|wkp||D","Poecile lugubris":"1|gkw||D","Lophophanes cristatus":"1|bkw||D","Poecile palustris":"1|gkw||D","Poecile montana":"1|gkw||D","Panurus biarmicus":"1|rgk|rb|T","Cyanistes caeruleus":"1|syw||D","Remiz pendulinus":"1|krg||TD","Periparus ater":"1|kwg||D","Certhia familiaris":"1|bw||D","Sitta europaea":"1|srkg||D","Certhia brachydactyla":"1|bw||D","Sitta neumayer":"1|gwe||S","Tichodroma muraria":"1|gck||S","Oriolus oriolus":"2|yk|zy|D","Lanius nubicus":"1|kwr||DJ","Lanius excubitor":"2|gkw||JD","Lanius senator":"2|rkw||JD","Lanius collurio":"1|rgk|be|JD","Lanius minor":"2|gkw||J","Corvus corax":"5|k||ASZ","Pyrrhocorax graculus":"3|ky||ASZ","Corvus frugilegus":"4|kg||Z","Pica pica":"4|kw||ZD","Corvus cornix":"4|gk||ZD","Garrulus glandarius":"3|eskw||D","Nucifraga caryocatactes":"3|bw||D","Corvus monedula":"3|kg||ZJ","Sturnus vulgaris":"2|kzw||ZJ","Pastor roseus":"2|kp||ZD","Passer domesticus":"1|bgk|be|ZJ","Passer hispaniolensis":"1|rkw|be|ZD","Passer italiae":"1|rbk|be|Z","Passer montanus":"1|rbw||ZD","Petronia petronia":"1|be||SZ","Serinus serinus":"1|yz||DJ","Spinus spinus":"1|yzk||D","Chloris chloris":"1|zy||DJ","Fringilla coelebs":"1|pgw|bw|DZ","Linaria cannabina":"1|bc|b|ZD","Carpodacus erythrinus":"1|cb|b|D","Pyrrhula pyrrhula":"1|ckg|gk|D","Coccothraustes coccothraustes":"1|brg||D","Carduelis carduelis":"1|cyk||DZ","Acanthis flammea":"1|bc||D","Linaria flavirostris":"1|be||Z","Fringilla montifringilla":"1|rkw||DZ","Loxia curvirostra":"1|cb|zy|D","Emberiza hortulana":"1|gyr||Z","Emberiza citrinella":"1|yb||ZJ","Emberiza cirlus":"1|ykz||DJ","Emberiza calandra":"2|be||JZ","Emberiza cia":"1|grk||SZ","Emberiza schoeniclus":"1|kwb|be|T","Emberiza melanocephala":"1|ykr|ye|JD"};
 // </KV>
-const IDSZ=[['finch',20,'до 17 см'],['songbird',27,'18–27 см'],['pigeon',35,'28–38 см'],['crow',45,'39–60 см'],['heron',58,'над 60 см']],   // силует, височина в px, дължина
+const IDSZ=[['finch',20,'до 17 см'],['songbird',27,'18-27 см'],['pigeon',35,'28-38 см'],['crow',45,'39-60 см'],['heron',58,'над 60 см']],   // силует, височина в px, дължина
   IDSW={k:'#2f2b27',w:'#eeeadf',g:'#9a978f',b:'#7a5737',e:'#d5c3a0',r:'#ad6132',y:'#d2ac3e',z:'#6f8542',s:'#567a99',c:'#a3402f',p:'#cf9d96'},   // приглушени, „природни“
   IDWI={V:'<path d="M3 10c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 15.5c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>',
     A:'<path d="M2 10c2.4-2.2 5-2.2 7.2.9 2.2-3.1 4.8-3.1 7.2-.9"/><path d="M12.5 16.5c1.4-1.3 2.9-1.3 4.2.5 1.3-1.8 2.8-1.8 4.2-.5"/>',
@@ -1989,9 +1990,9 @@ async function idPrior(){const my=ID,tok=++my.seq,m=+my.date.slice(5,7),pos=my.p
 function idRefresh(){ID.prior=null;ID.pmax=1;ID.seq++;ID.pst=ID.pos?'load':'none';if(ID.pos)idPrior();idDraw();}
 function idGps(){if(!navigator.geolocation){ID.gpsMsg='Телефонът не дава местоположение.';idDraw();return;}ID.gpsMsg='Търся къде си…';idDraw();
   navigator.geolocation.getCurrentPosition(p=>{if(!ID)return;ID.pos=[p.coords.latitude,p.coords.longitude];ID.src='gps';ID.gpsMsg='';idRefresh();},
-    ()=>{if(!ID)return;ID.gpsMsg='Няма достъп до местоположението — избери на картата.';idDraw();},{enableHighAccuracy:false,timeout:12000,maximumAge:120000});}
+    ()=>{if(!ID)return;ID.gpsMsg='Няма достъп до местоположението - избери на картата.';idDraw();},{enableHighAccuracy:false,timeout:12000,maximumAge:120000});}
 const idPlaceTxt=()=>{if(!ID.pos)return 'без място';const g=ID.pos[0].toFixed(5)+','+ID.pos[1].toFixed(5),nm=nearPlace(g);
-  return (nm?'до '+nm:ID.pos[0].toFixed(3)+', '+ID.pos[1].toFixed(3))+' · '+({rec:'от записа',last:'последното ти място',gps:'по GPS',map:'избрано на картата'})[ID.src];};
+  return (nm?'до '+nm:ID.pos[0].toFixed(3)+', '+ID.pos[1].toFixed(3))+' · '+({rec:'от наблюдението',last:'последното ти място',gps:'по GPS',map:'избрано на картата'})[ID.src];};
 function idRank(){const out=[],P=ID.prior&&ID.prior.size?ID.prior:null;
   for(const [la,t] of Object.entries(KV)){const [sz,cm,cf,wh]=t.split('|'),c=listFind('la',la);if(!c)continue;let sc=1;const n=P?(P.get(la)||0):null;
     if(P)sc*=n?0.05+0.95*Math.pow(Math.log1p(n)/Math.log1p(ID.pmax),0.7):0.03;   // наоколо по това време — най-силното
@@ -2003,7 +2004,7 @@ function idRank(){const out=[],P=ID.prior&&ID.prior.size?ID.prior:null;
   return out.sort((a,b)=>b.sc-a.sc||a.c.bg.localeCompare(b.c.bg,'bg'));}
 const idCol=x=>[...x].map(k=>(IDC.find(c=>c[0]===k)||[0,''])[1]).join(', ');
 function idWhy(r){const fr=r.n==null?'':r.n===0?'не е намирана наоколо по това време':r.n>=ID.pmax*0.2?'честа тук сега':r.n>=ID.pmax*0.02?'среща се тук сега':'рядка тук сега';
-  return [[...r.sz].map(x=>IDS[+x-1][1]).join('–'),idCol(r.cm)+(r.cf?' (♀ '+idCol(r.cf)+')':''),[...r.wh].map(k=>(IDW.find(w=>w[0]===k)||[0,''])[1]).join(', '),fr].filter(Boolean).join(' · ');}
+  return [[...r.sz].map(x=>IDS[+x-1][1]).join('-'),idCol(r.cm)+(r.cf?' (♀ '+idCol(r.cf)+')':''),[...r.wh].map(k=>(IDW.find(w=>w[0]===k)||[0,''])[1]).join(', '),fr].filter(Boolean).join(' · ');}
 function idDraw(){const b=document.getElementById('idBody');if(!b||!ID)return;const s=ID.step,m=+ID.date.slice(5,7);
   const chip=(a,v,on,t)=>'<button type="button" class="chip" '+a+'="'+v+'" aria-pressed="'+on+'">'+esc(t)+'</button>';
   const nav=(next,skip,back)=>'<div class="idnav">'+(back?'<button type="button" class="btn" data-idback>‹ Назад</button>':'')+'<span style="flex:1"></span>'+
@@ -2014,19 +2015,19 @@ function idDraw(){const b=document.getElementById('idBody');if(!b||!ID)return;co
     '<div class="idchips idplc"><button type="button" class="chip" data-idgps>📍 Тук (GPS)</button><button type="button" class="chip" data-idmap>🗺 На картата</button>'+
     (ID.pos?'<button type="button" class="chip" data-idnopos>Без място</button>':'')+'</div>'+(ID.gpsMsg?'<p class="note2" style="max-width:none">'+esc(ID.gpsMsg)+'</p>':'')+
     '<p class="note2" style="max-width:none">'+({load:'Търся кои птици са намирани тук през '+MONG[m-1]+' и съседните месеци (GBIF)…',
-      ok:(ID.prior?ID.prior.size:0)+' вида са намирани наоколо през '+MONG[m-1]+' и съседните месеци — те ще са първи.',
-      empty:'Наоколо няма находки за този сезон — ще подредя само по белезите.',fail:'GBIF не отговаря — ще подредя само по белезите.',
-      none:'Без местоположение — ще подредя само по белезите. Сложи място в записа, за да се вземат и сезонът, и мястото.'})[ID.pst]+'</p>'+nav('Напред',false,false);
+      ok:(ID.prior?ID.prior.size:0)+' вида са намирани наоколо през '+MONG[m-1]+' и съседните месеци - те ще са първи.',
+      empty:'Наоколо няма находки за този сезон - ще подредя само по белезите.',fail:'GBIF не отговаря - ще подредя само по белезите.',
+      none:'Без местоположение - ще подредя само по белезите. Сложи място в наблюдението, за да се вземат и сезонът, и мястото.'})[ID.pst]+'</p>'+nav('Напред',false,false);
   else if(s===1)h+='<h3>Колко голяма?</h3><div class="idsz">'+IDS.map(([v,t],i)=>'<button type="button" class="idszb" data-idsize="'+v+'" aria-pressed="'+(ID.size===v)+'">'+
       '<span class="idszp"><svg class="sil" viewBox="0 0 100 100" style="height:'+IDSZ[i][1]+'px" aria-hidden="true">'+SIL[IDSZ[i][0]]+'</svg></span><b>'+esc(t)+'</b><small>'+IDSZ[i][2]+'</small></button>').join('')+
-      '</div><p class="note2" style="max-width:none">Спрямо птиците, които познаваш — както изглеждаше, с опашката.</p>'+nav('Напред',true,true);
-  else if(s===2)h+='<h3>Какви цветове? <small>до 3, първо най-видимия</small></h3><div class="idcolg">'+IDC.map(([k,t])=>'<button type="button" class="idcolb" data-idcol="'+k+'" aria-pressed="'+ID.cols.includes(k)+'">'+
-      '<span class="idsw" style="background:'+IDSW[k]+'"></span>'+esc(t)+(ID.cols.includes(k)?'<small>'+(ID.cols.indexOf(k)+1)+'</small>':'')+'</button>').join('')+'</div>'+nav('Напред',true,true);
+      '</div><p class="note2" style="max-width:none">Спрямо птиците, които познаваш - дължина, с опашката.</p>'+nav('Напред',true,true);
+  else if(s===2)h+='<h3>Какви цветове? <small>до 3 - най-видимите</small></h3><div class="idcolg">'+IDC.map(([k,t])=>'<button type="button" class="idcolb" data-idcol="'+k+'" aria-pressed="'+ID.cols.includes(k)+'">'+
+      '<span class="idsw" style="background:'+IDSW[k]+'"></span>'+esc(t)+'</button>').join('')+'</div>'+nav('Напред',true,true);
   else if(s===3)h+='<h3>Къде беше? <small>до 2</small></h3><div class="idwhg">'+IDW.map(([k,t])=>'<button type="button" class="idwhb" data-idwh="'+k+'" aria-pressed="'+ID.where.includes(k)+'">'+idIcon(k)+'<span>'+esc(t)+'</span></button>').join('')+'</div>'+nav('Покажи',true,true);
   else{const R=idRank(),s0=R.length?R[0].sc:0,M=R.filter(r=>r.sc>=s0*0.16).slice(0,8),rest=R.slice(M.length),N=12*ID.more;   // само наистина възможните; останалите — скрити
     const row=(r,big)=>'<div class="idr'+(big?' big':'')+'"><div class="idph">'+silFor(r.c.fam)+'<div class="refsm" data-ref="'+esc(r.la)+'"></div></div><div class="idn"><b>'+esc(r.c.bg)+'</b><small>'+esc(idWhy(r))+'</small><div class="xcw" data-xc="'+esc(r.la)+'"></div></div>'+
       '<button type="button" class="btn pri" data-idpick="'+esc(r.la)+'">Това е</button></div>';
-    h+=(ID.pst==='load'?'<p class="note2" style="max-width:none">Още питам GBIF кои са тук по това време — списъкът ще се подреди отново, щом отговори.</p>':'')+
+    h+=(ID.pst==='load'?'<p class="note2" style="max-width:none">Още питам GBIF кои са тук по това време - списъкът ще се подреди отново, щом отговори.</p>':'')+
       '<h4 class="psub">Най-вероятно</h4><div class="idlist">'+M.slice(0,3).map(r=>row(r,1)).join('')+'</div>'+
       (M.length>3?'<h4 class="psub">Може да е и</h4><div class="idlist">'+M.slice(3).map(r=>row(r,0)).join('')+'</div>':'')+
       (N&&rest.length?'<h4 class="psub">Други възможни</h4><div class="idlist">'+rest.slice(0,N).map(r=>row(r,0)).join('')+'</div>':'')+
@@ -2070,12 +2071,12 @@ const gbWKTm=(rings,buf)=>{const R=rings.slice().sort((x,y)=>Math.abs(ringArea(y
 // ---- Карта → „Изследвай“ (2026-11-07): находките на птици в България от GBIF; докосни точка или 10×10 км квадрат ----
 const KEXP='bird-journal-explore',EXSZ=[1,2,5,10,20];let EXP=lsGet(KEXP,null)||{mode:'pt',sp:null},EXM=null;
 function renderExplore(el,bar){if(EXM){try{EXM.remove();}catch(e){}EXM=null;}
-  el.innerHTML=bar+'<div class="explbar"><input id="ex-sp" list="bgnames" placeholder="всички птици — или избери вид" value="'+esc(EXP.sp?EXP.sp.bg:'')+'">'+
+  el.innerHTML=bar+'<div class="explbar"><input id="ex-sp" list="bgnames" placeholder="всички птици - или избери вид" value="'+esc(EXP.sp?EXP.sp.bg:'')+'">'+
     (EXP.sp?'<button type="button" class="btn sm" data-exclr aria-label="всички птици">×</button>':'')+'</div>'+
     '<div class="seg exmode"><button type="button" data-exm="pt" aria-pressed="'+(EXP.mode!=='sq'&&EXP.mode!=='pl')+'">● точка</button><button type="button" data-exm="sq" aria-pressed="'+(EXP.mode==='sq')+'">▦ квадрат</button><button type="button" data-exm="pl" aria-pressed="'+(EXP.mode==='pl')+'">🏞 място</button></div>'+
     (EXP.mode==='sq'?'<div class="exsz"><span>Квадрат</span><input type="range" id="ex-sz" min="0" max="4" step="1" value="'+Math.max(0,EXSZ.indexOf(EXP.sq||10))+'" aria-label="големина на квадрата"><b id="ex-szv">'+(EXP.sq||10)+' км</b></div>':'')+
     '<div class="mapwrap" style="padding:0;overflow:hidden"><div id="exmap" style="height:'+(innerWidth<600?380:500)+'px;width:100%;border-radius:12px"></div></div>'+
-    ntH('Находките на '+(EXP.sp?'<b>'+esc(EXP.sp.bg)+'</b>':'всички птици')+' в България от GBIF — eBird, iNaturalist, БДЗП и др. '+(EXP.mode!=='sq'&&EXP.mode!=='pl'?'Всяка червена точка е място с находки — докосни я, за да видиш какво е намирано на 100 м от нея. По-голямата точка — повече находки.':EXP.mode==='pl'?'Очертаните места: зелено — зоните за птици по Натура 2000 (Европейската агенция по околна среда); оранжево — там, където находките са нагъсто. Докосни място, за да видиш птиците му.':'Докосни '+(EXP.mode==='sq'?'квадрат':'място')+', за да видиш какво е намирано там.'))+
+    ntH('Находките на '+(EXP.sp?'<b>'+esc(EXP.sp.bg)+'</b>':'всички птици')+' в България от GBIF - eBird, iNaturalist, БДЗП и др. '+(EXP.mode!=='sq'&&EXP.mode!=='pl'?'Всяка червена точка е място с находки - докосни я, за да видиш какво е намирано на 100 м от нея. По-голямата точка - повече находки.':EXP.mode==='pl'?'Очертаните места: зелено - зоните за птици по Натура 2000 (Европейската агенция по околна среда); оранжево - там, където находките са нагъсто. Докосни място, за да видиш птиците му.':'Докосни '+(EXP.mode==='sq'?'квадрат':'място')+', за да видиш какво е намирано там.'))+
     '<div class="note2" id="exhint" style="max-width:none"></div><div class="whplace" id="explace"></div>';
   exploreMap(document.getElementById('exmap'));}
 async function exploreMap(el){if(!el||!await loadLeaflet()||!el.isConnected)return;
@@ -2094,20 +2095,20 @@ async function exploreMap(el){if(!el||!await loadLeaflet()||!el.isConnected)retu
       const q=S===1e4?sqOf(p.lat.toFixed(5)+','+p.lng.toFixed(5)):null;
       shape=L.polygon(C,{color:'#c0392b',weight:2,fillOpacity:.06}).addTo(m);title='Квадрат '+(S/1000)+'×'+(S/1000)+' км'+(q?' · '+q.id:'');
       where='&geometry='+encodeURIComponent('POLYGON(('+[...C,C[0]].map(c=>c[1].toFixed(5)+' '+c[0].toFixed(5)).join(', ')+'))');}
-    else if(EXP.mode==='pl'){box.innerHTML=ntH('Докосни очертано място — зелените са зоните за птици (Натура 2000), оранжевите — местата с много находки.');return;}
+    else if(EXP.mode==='pl'){box.innerHTML=ntH('Докосни очертано място - зелените са зоните за птици (Натура 2000), оранжевите - местата с много находки.');return;}
     else{   // ● точка: най-близката до пръста точка с находки (до ~14 пиксела), после всичко на 100 м от нея
       const mpp=40075016.686*Math.cos(p.lat*Math.PI/180)/Math.pow(2,m.getZoom()+8),tol=Math.max(80,14*mpp)/1000;
       box.innerHTML=ntH('Търся най-близката точка…');let d;
       try{d=await gbJ(GBA+'/v1/occurrence/search?taxonKey='+key+'&country=BG&hasCoordinate=true&hasGeospatialIssue=false&geoDistance='+p.lat.toFixed(5)+','+p.lng.toFixed(5)+','+tol.toFixed(2)+'km&limit=300');}
-      catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря — опитай пак.');return;}
+      catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря - опитай пак.');return;}
       if(my!==busy)return;let best=null;
       for(const o of d.results||[]){if(o.decimalLatitude==null||o.decimalLongitude==null)continue;const dd=distM(p.lat,p.lng,+o.decimalLatitude,+o.decimalLongitude);
         if(!best||dd<best.d)best={d:dd,la:+o.decimalLatitude,lo:+o.decimalLongitude,loc:String(o.locality||'').trim()};}
-      if(!best){box.innerHTML=ntH('Тук няма точка с находки — докосни точка на картата. Приближи, за да ги виждаш една по една.');return;}
+      if(!best){box.innerHTML=ntH('Тук няма точка с находки - докосни точка на картата. Приближи, за да ги виждаш една по една.');return;}
       const q=L.latLng(best.la,best.lo);shape=L.layerGroup([L.circle(q,{radius:100,color:'#c0392b',weight:1.5,fillOpacity:.08}),L.circleMarker(q,{radius:5,color:'#fff',weight:2,fillColor:'#c0392b',fillOpacity:1})]).addTo(m);
       r=.1;title=best.loc;where='&geoDistance='+best.la.toFixed(5)+','+best.lo.toFixed(5)+',0.1km';}
     box.innerHTML=ntH('Търся какво има тук…');
-    try{const P=await gbArea(key,where);if(my===busy)box.innerHTML=placeHTML(P,EXP.sp?EXP.sp.la:'',key,r,title);}catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря — опитай пак.');}};
+    try{const P=await gbArea(key,where);if(my===busy)box.innerHTML=placeHTML(P,EXP.sp?EXP.sp.la:'',key,r,title);}catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря - опитай пак.');}};
   el._extap=tapAt;m.on('click',e=>{el._exlast=e.latlng;tapAt(e.latlng);});
   if(pt&&key){const dots=L.layerGroup().addTo(m),DC=new Map();let tmr=0,seq=0;el._dots=dots;
     const hint=()=>{const h=document.getElementById('exhint');if(h)h.textContent=m.getZoom()<11?'Приближи картата, за да видиш точките с находки една по една.':'';};
@@ -2127,15 +2128,15 @@ async function exploreMap(el){if(!el||!await loadLeaflet()||!el.isConnected)retu
     const showArea=async a=>{const box=document.getElementById('explace'),my=++busy;if(!box)return;if(shape){shape.remove();shape=null;}
       shape=L.polygon(a.rings,{color:'#c0392b',weight:3,fill:false}).addTo(m);box.innerHTML=ntH('Търся какво има тук…');
       try{const P=await gbArea(key,'&geometry='+encodeURIComponent(gbWKTm(a.rings,a.buf)));if(my===busy)box.innerHTML=placeHTML(P,EXP.sp?EXP.sp.la:'',key,0,a.name+' · '+a.kind)+
-          (a.ebird?'<div class="note2" style="max-width:none"><a href="https://ebird.org/hotspot/'+esc(a.ebird)+'" target="_blank" rel="noopener">Виж мястото в eBird ↗</a>'+(EBN[a.ebird]?'':' — там е истинското му име.')+'</div>':'');
+          (a.ebird?'<div class="note2" style="max-width:none"><a href="https://ebird.org/hotspot/'+esc(a.ebird)+'" target="_blank" rel="noopener">Виж мястото в eBird ↗</a>'+(EBN[a.ebird]?'':' - там е истинското му име.')+'</div>':'');
         if(a.ebird&&my===busy)ebRecentHTML(a.ebird).then(h=>{if(h&&my===busy&&box.isConnected)box.insertAdjacentHTML('beforeend','<div class="whpl">'+h+'</div>');});}
-      catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря — опитай пак.');}};
+      catch(err){if(my===busy)box.innerHTML=ntH('GBIF не отговаря - опитай пак.');}};
     el._showArea=showArea;
     const drawPl=async()=>{if(!el.isConnected)return;const z=m.getZoom(),my=++seq2;
       if(z<9){LZ.clearLayers();LH.clearLayers();hint2('Приближи картата, за да видиш местата.');return;}
       const b=m.getBounds(),log=[];let S=[],H=[];
-      try{S=await eeaSites(b,log);}catch(e){logErr('Натура 2000 не отговаря — '+log.join('; '),'eea');}
-      if(z>=10){try{H=await hotspots(b,key);}catch(e){logErr('Горещи точки не отговарят — '+((e&&e.message)||e),'hs');}}
+      try{S=await eeaSites(b,log);}catch(e){logErr('Натура 2000 не отговаря - '+log.join('; '),'eea');}
+      if(z>=10){try{H=await hotspots(b,key);}catch(e){logErr('Горещи точки не отговарят - '+((e&&e.message)||e),'hs');}}
       if(my!==seq2||!el.isConnected)return;LZ.clearLayers();LH.clearLayers();
       for(const z2 of S)L.polygon(z2.rings,{color:'#2e7d32',weight:2,dashArray:'6 4',fillColor:'#2e7d32',fillOpacity:.06}).bindTooltip(z2.name,{sticky:true})
         .on('click',ev=>{L.DomEvent.stopPropagation(ev);showArea({name:z2.name,kind:'зона за птици (Натура 2000)',rings:z2.rings,buf:0});}).addTo(LZ);
@@ -2143,7 +2144,7 @@ async function exploreMap(el){if(!el||!await loadLeaflet()||!el.isConnected)retu
         if(z>=13)L.polygon(h.ring,{color:'#e67e22',weight:2,fillColor:'#e67e22',fillOpacity:.18}).on('click',go).addTo(LH);   // истинските очертания — отблизо
         const mk=L.circleMarker(h.cen,{radius:Math.max(7,Math.min(16,4+Math.log2(h.n))),color:'#fff',weight:2,fillColor:'#e67e22',fillOpacity:.95}).bindTooltip(hsName(h),{sticky:true}).on('click',go).addTo(LH);mk._hs=h;}
       if(H.some(h=>/^L\d+$/.test(h.name)&&!EBN[h.name]))ebNames(H.map(h=>h.name)).then(g=>{if(g&&el.isConnected)LH.eachLayer(l=>{if(l._hs&&l.getTooltip())l.setTooltipContent(hsName(l._hs));});});
-      hint2(z<10?'Приближи още, за да видиш и местата с много находки (оранжево).':!S.length&&!H.length?'Тук няма очертани места — опитай с точка или квадрат.':H.length?'':'Тук няма места с много находки.');};
+      hint2(z<10?'Приближи още, за да видиш и местата с много находки (оранжево).':!S.length&&!H.length?'Тук няма очертани места - опитай с точка или квадрат.':H.length?'':'Тук няма места с много находки.');};
     m.on('moveend',()=>{clearTimeout(tmr2);tmr2=setTimeout(drawPl,400);});drawPl();}}
 document.addEventListener('click',e=>{const pm=e.target.closest('[data-prmore]');if(pm){const r=pm.parentElement.querySelector('.prmore');if(r)r.hidden=false;pm.remove();return;}
   const ta=e.target.closest('[data-tgadd]');if(ta){   // „+ Цел“ — на място, без да се пречертава картата
@@ -2165,9 +2166,9 @@ function renderMap(el){
     '<button class="chip" data-mm="grid"'+(mapMode==='grid'?' aria-pressed="true"':'')+'>Атлас</button><button class="chip" data-mm="gbif"'+(mapMode==='gbif'?' aria-pressed="true"':'')+'>Изследвай</button></div>';
   if(mapMode==='gbif')return renderExplore(el,bar0);   // не зависи от твоите записи
   if(!C.length){
-    el.innerHTML=bar0+'<div class="empty">Няма записи с координати.<br><br>'+
+    el.innerHTML=bar0+'<div class="empty">Няма наблюдения с координати.<br><br>'+
       'Добави координати към няколко наблюдения и тук ще се появи карта на местата ти.'+
-      (noGeo?'<br><span style="opacity:.7">'+noGeo+' записа са без координати.</span>':'')+'</div>';
+      (noGeo?'<br><span style="opacity:.7">'+noGeo+(noGeo===1?' наблюдение е без координати.':' наблюдения са без координати.')+'</span>':'')+'</div>';
     return;}
   const bar='<div class="mapbar">'+
     '<button class="chip" data-mm="real"'+(mapMode==='real'?' aria-pressed="true"':'')+'>Истинска карта</button>'+
@@ -2178,7 +2179,7 @@ function renderMap(el){
       (tileKey===k?' aria-pressed="true"':'')+' title="'+esc(TILES[k].name)+'">'+(TILES[k].short||TILES[k].name)+'</button>').join('')+'<button class="sub sq" data-atov aria-pressed="'+ATOV+'" title="квадрати 10×10 км">▦ квадрати</button></div>':'');
   const panel='<div class="mappanel" id="mp"><div style="color:var(--mut);font-size:13.5px">'+
     'Пипни или посочи кръг, за да видиш какво си намерил там. Големината е брой различни видове.</div></div>'+
-    (noGeo?'<div class="note2" style="margin-top:9px;max-width:none">'+noGeo+' записа са без координати и не се показват.</div>':'');
+    (noGeo?'<div class="note2" style="margin-top:9px;max-width:none">'+noGeo+(noGeo===1?' наблюдение е без координати и не се показва.':' наблюдения са без координати и не се показват.')+'</div>':'');
   window.__C=C;
   if(mapMode==='real'){
     const mh=(window.innerWidth<600?380:500);
@@ -2214,14 +2215,14 @@ function renderMap(el){
     '<text x="'+(barPx/2).toFixed(1)+'" y="-9" text-anchor="middle">'+
       (target<1?Math.round(target*1000)+' м':target+' км')+'</text></g>';
   el.innerHTML=bar+'<div class="mapwrap"><svg viewBox="0 0 '+W+' '+H+'" role="img">'+g+pts+sc+'</svg></div>'+panel;
-  msg(navigator.onLine?'':'офлайн — истинската карта не е достъпна');
+  msg(navigator.onLine?'':'офлайн - истинската карта не е достъпна');
 }
 function msg(t){const m=document.getElementById('mapmsg');if(m)m.textContent=t;}
 const TILES={
   sat:{name:'Сателит',
     url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attr:'Esri, Maxar, Earthstar Geographics',max:19},
-  hyb:{name:'Сателит + надписи',short:'С надписи',
+  hyb:{name:'Сателит+',short:'С надписи',
     url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     over:['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
           'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],
@@ -2280,7 +2281,7 @@ function loadLeaflet(){
 }
 async function realMap(C){
   const ok=await loadLeaflet();
-  if(!ok){if(view==='map'&&mapMode==='real'){mapMode='grid';render();msg('картата не се зареди — няма интернет или е блокирана');}return;}   // само ако още гледаш картата
+  if(!ok){if(view==='map'&&mapMode==='real'){mapMode='grid';render();msg('картата не се зареди - няма интернет или е блокирана');}return;}   // само ако още гледаш картата
   const el=document.getElementById('lmap'); if(!el)return;
   const map=L.map(el,{scrollWheelZoom:false});
   let gotTile=false, dead=false;
@@ -2290,7 +2291,7 @@ async function realMap(C){
   const layer=L.tileLayer(T.url,opts);
   layer.on('tileload',()=>{gotTile=true;msg('');});
   layer.on('tileerror',()=>{if(!gotTile&&!dead&&el.isConnected){dead=true;mapMode='grid';render();
-    msg('плочките не се заредиха — пробвай друг слой или провери връзката');}});
+    msg('картата не се зареди докрай - пробвай друг слой или провери връзката');}});
   layer.addTo(map);
   for(const u of T.over||[])L.tileLayer(u,{maxZoom:T.max,crossOrigin:true}).addTo(map);   // надписи и пътища върху снимката
   atlasOverlay(map);
@@ -2339,11 +2340,11 @@ function showCluster(i){
     (pp.length>1?'<div class="meta">Събрани тук: '+(named.length&&unT?named.join(', ')+' и '+unT:named.length?named.slice(0,-1).join(', ')+(named.length>1?' и ':'')+named[named.length-1]:unT)+
       '. Приближи „Истинска карта“, за да ги видиш поотделно.</div>':'')+
     '<div class="meta">'+arr.length+' вида · '+c.n+' наблюдения · '+human(ds[0])+
-    (ds[0]!==ds[ds.length-1]?' – '+human(ds[ds.length-1]):'')+
+    (ds[0]!==ds[ds.length-1]?' - '+human(ds[ds.length-1]):'')+
     ' · <a href="https://www.google.com/maps?q='+c.lat.toFixed(5)+','+c.lon.toFixed(5)+'" target="_blank" rel="noopener" style="color:var(--mut)">в Google Maps</a></div>'+
     '<div class="sl">'+arr.map(r=>'<span class="v'+r.L+'">'+esc(r.nm)+(r.n>1?' ·'+r.n:'')+'</span>').join('')+'</div>'+
     (()=>{const ph=c.obs.filter(o=>o.photo).sort(newest);   // всички снимки от точката, най-новите първи
-      return ph.length?'<div class="phcount">'+ph.length+(ph.length===1?' снимка':' снимки')+(ph.length>3?' — плъзни настрани':'')+'</div>'+
+      return ph.length?'<div class="phcount">'+ph.length+(ph.length===1?' снимка':' снимки')+(ph.length>3?' - плъзни настрани':'')+'</div>'+
         '<div class="phstrip">'+ph.map(o=>'<figure><div class="th" data-th="'+o.photo+'"></div><figcaption>'+esc(o.bg||o.en||o.la)+'</figcaption></figure>').join('')+'</div>':'';})();
   loadThumbs();   // без това квадратчетата за снимки остават празни
   for(const g of document.querySelectorAll('.pt'))g.classList.toggle('sel',g.dataset.c==String(i));
@@ -2372,9 +2373,9 @@ function openOutDlg(id){const x=outings().find(y=>y.id===id);if(!x)return;odId=i
   odF('date').value=x.date;odF('place').value=x.place||'';odF('start').value=x.start||'';odF('end').value=x.end||'';
   odF('comp').value=x.complete===true?'1':x.complete===false?'0':'';
   const n=new Set(x.rs.filter(o=>!o.u).map(key).filter(Boolean)).size;
-  odF('info').textContent=x.rs.length+(x.rs.length===1?' запис':' записа')+' · '+n+(n===1?' вид':' вида')+'. Птиците се добавят с „+ птица“, а се променят или махат от излета с „промени“ на всяка от тях.';
+  odF('info').textContent=x.rs.length+(x.rs.length===1?' наблюдение':' наблюдения')+' · '+n+(n===1?' вид':' вида')+'. Птиците се добавят с „+ птица“, а се променят или махат от излета с „промени“ на всяка от тях.';
   document.getElementById('outDlg').showModal();}
-function delOuting(id){if(!confirm('Изтриване на излета? Записите му остават в Дневника.'))return false;
+function delOuting(id){if(!confirm('Изтриване на излета? Наблюденията му остават в Дневника.'))return false;
   tomb('outs',id);OUTS=OUTS.filter(y=>y.id!==id);saveOuts();
   OBS=OBS.map(o=>o.sess===id?(({sess,...r})=>({...r,upd:Date.now()}))(o):o);save();openOut=null;render();return true;}
 odF('cancel').onclick=()=>document.getElementById('outDlg').close();
@@ -2385,12 +2386,12 @@ odF('save').onclick=()=>{const x=outings().find(y=>y.id===odId);if(!x)return doc
   putOut({id:odId,date:nd,place:odF('place').value.trim(),start:odF('start').value,end:odF('end').value,complete:v==='1'?true:v==='0'?false:null});
   document.getElementById('outDlg').close();render();};
 // Полето „Излет“ във формата: излетите от датата на записа (и текущият), за да се добави или махне запис от излет по-късно.
-const outLabel=x=>(x.live?'текущият излет':'излет')+(x.start?' · '+x.start+(x.end?'–'+x.end:''):'')+(x.place?' · '+x.place:'');
+const outLabel=x=>(x.live?'текущият излет':'излет')+(x.start?' · '+x.start+(x.end?'-'+x.end:''):'')+(x.place?' · '+x.place:'');
 function sessOptions(cur){const d=fld('date').value,L=outings().filter(x=>x.date===d);
   if(SESS&&(SESS.date||today())===d)L.unshift({id:SESS.id,date:d,start:SESS.t0,place:SESS.place,live:1});
   if(cur&&!L.some(x=>x.id===cur)){const x=SESS&&SESS.id===cur?{id:cur,start:SESS.t0,place:SESS.place,live:1}:outings().find(y=>y.id===cur);if(x)L.push(x);}
   const sel=document.getElementById('f-sess');
-  sel.innerHTML='<option value="">— без излет —</option>'+L.map(x=>'<option value="'+esc(x.id)+'">'+esc(outLabel(x))+'</option>').join('');
+  sel.innerHTML='<option value="">- без излет -</option>'+L.map(x=>'<option value="'+esc(x.id)+'">'+esc(outLabel(x))+'</option>').join('');
   sel.value=cur&&L.some(x=>x.id===cur)?cur:'';document.getElementById('f-sess-row').style.display=L.length?'':'none';}
 document.getElementById('f-date').addEventListener('change',()=>sessOptions(document.getElementById('f-sess').value));
 // Малка карта без библиотека: плочките на подходящото приближение и точките върху тях. Без мрежа остават само точките.
@@ -2444,12 +2445,12 @@ document.getElementById('imp-ok').onclick=()=>{const v=curInv;if(!v)return;
   document.getElementById('impDlg').close();render();
   if(n){const nw=new Set(SURE().map(key).filter(Boolean)).size-nBefore,sp=new Set(OBS.filter(x=>x.sess===oid&&!x.u).map(key).filter(Boolean)).size;
     yayPush({cls:'trip',cf:nw?16:0,ms:7000,html:'<div class="yaypic">'+silFor((v.rs.find(r=>ids.has(String(r.id)))||{}).fam)+'</div><div class="yaytx"><div class="yayt">Добавен излет с '+esc(v.f.name)+'</div>'+
-      '<div class="yaynm">'+sp+(sp===1?' вид':' вида')+' · '+n+(n===1?' запис':' записа')+'</div>'+(nw?'<div class="yaym">'+nw+(nw===1?' нов':' нови')+' за дневника ти</div>':'')+'</div>'});}};
+      '<div class="yaynm">'+sp+(sp===1?' вид':' вида')+' · '+n+(n===1?' наблюдение':' наблюдения')+'</div>'+(nw?'<div class="yaym">'+nw+(nw===1?' нов':' нови')+' за дневника ти</div>':'')+'</div>'});}};
 function openInvite(id){invOut=id;const x=outings().find(y=>y.id===id),list=document.getElementById('inv-list'),note=document.getElementById('inv-note'),ok=document.getElementById('inv-ok');
   const fans=ME&&FR?(FR.fans||[]):[];list.innerHTML='';ok.disabled=true;
   if(!ME)note.textContent='Влез в „Приятели“, за да каниш приятели в излетите си.';
   else if(!fans.length)note.textContent='Още никой не вижда дневника ти. Дай кода си на приятел („Приятели“ → „Твоят код“) и после го покани.';
-  else{note.textContent='Каниш хората, които виждат дневника ти. Ако приемат, излетът се копира при тях без снимките и бележките; после всеки си променя своя.';
+  else{note.textContent='Каниш хората, които виждат дневника ти. Ако приемат, излетът се копира при тях без снимките и бележките; после всеки може да си редактира своя.';
     list.innerHTML=fans.map(f=>{const t=x&&x.inv&&x.inv[f.id],fr=(FR.fol||[]).find(y=>y.id===f.id),a=t&&fr&&fr.data&&fr.data.ans&&fr.data.ans[ME.id+':'+id+':'+t];
       return '<label class="impr"><input type="checkbox" data-uid="'+esc(f.id)+'"><span><b>'+esc(f.name)+'</b>'+(t?' <small>'+(a?(a.a==='a'?'прие':'отказа'):'поканен на '+human(new Date(t).toISOString().slice(0,10)).replace(/ \d{4}$/,''))+'</small>':'')+'</span></label>';}).join('');
     list.onchange=()=>{ok.disabled=!list.querySelector('input:checked');};}
@@ -2471,8 +2472,8 @@ function renderOuts(el){const L=outings();
     const sp=Object.values(m).sort((a,b)=>b.L-a.L||String(a.nm).localeCompare(String(b.nm),'bg'));
     const pics=x.rs.filter(o=>o.photo).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
     h+='<div class="ou" data-out="'+esc(x.id)+'"><div class="ouh"><div class="oumap" data-omap="'+esc(x.id)+'"></div><div class="out"><div class="nm">'+human(x.date)+(x.place?' · '+esc(x.place):'')+(x.with?' · с '+esc(x.with):'')+'</div>'+
-      '<div class="meta">'+[x.start&&x.end?esc(x.start)+'–'+esc(x.end):'',dur(mins(x.start,x.end)),sp.length+(sp.length===1?' вид':' вида')].filter(Boolean).join(' · ')+'</div>'+
-      '<div class="tags">'+(x.complete===true?'<span class="tag s">пълен списък</span>':x.complete===false?'<span class="tag b">частичен списък</span>':'<span class="tag h">пълнотата не е отбелязана</span>')+'</div></div></div>'+
+      '<div class="meta">'+[x.start&&x.end?esc(x.start)+'-'+esc(x.end):'',dur(mins(x.start,x.end)),sp.length+(sp.length===1?' вид':' вида')].filter(Boolean).join(' · ')+'</div>'+
+      '<div class="tags">'+(x.complete===true?'<span class="tag s">пълен списък</span>':x.complete===false?'<span class="tag b">частичен списък</span>':'<span class="tag h">цялостта не е отбелязана</span>')+'</div></div></div>'+
       (pics.length?'<div class="ouph">'+pics.map(o=>'<div class="th" data-th="'+o.photo+'" title="'+esc(o.bg||o.en||o.la)+'"></div>').join('')+'</div>':'');
     if(openOut===x.id){const rs=[...x.rs].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
       h+='<div class="sl">'+sp.map(r=>'<span class="v'+r.L+'">'+spLink({bg:r.nm})+'</span>').join('')+'</div>'+(x.trk&&x.trk.length>1||x.rs.some(o=>o.geo)?'<div class="oumap big" data-omap="'+esc(x.id)+'"></div>'+(x.trk&&x.trk.length>1?'<div class="note2" style="max-width:none">път: '+kmTxt(x.dist)+'</div>':''):'')+
@@ -2527,19 +2528,19 @@ const KPLUN='bird-journal-plun',fmtM=d=>d<1000?Math.round(d/10)*10+' м':(d/1000
 function renderPlaces(el){const arr=placesList();if(plMap){try{plMap.remove();}catch(e){}plMap=null;}
   const row=r=>'<div class="pl'+(openPl===r.k?' on':'')+(r.named?'':' unnamed')+'"><div class="plh" data-pl="'+esc(r.k)+'"><div>'+
     '<div class="nm">'+esc(r.name)+'</div><div class="meta">'+(r.near?'до '+esc(r.near.name)+' · '+fmtM(r.near.d)+' · ':'')+human(r.first)+
-    (r.first!==r.last?' – '+human(r.last):'')+' · '+r.rs.length+' наблюдения'+(r.np>1?' · '+r.np+' точки':'')+'</div></div>'+
+    (r.first!==r.last?' - '+human(r.last):'')+' · '+r.rs.length+' наблюдения'+(r.np>1?' · '+r.np+' точки':'')+'</div></div>'+
     '<div class="cnt">'+r.sp.size+'<small>вида</small></div></div>'+(openPl===r.k?placeDetail(r):'')+'</div>';
   const N=arr.filter(r=>r.named),U=arr.filter(r=>!r.named),st=lsGet(KPLUN,null),op=!N.length||U.some(r=>r.k===openPl)||(st===null?false:!!st);
   el.innerHTML=N.map(row).join('')+(U.length?'<button type="button" class="bdsec bdfold plun" data-plun aria-expanded="'+op+'"><span>Без име</span><small>'+U.length+(U.length===1?' място':' места')+' · '+
     U.reduce((a,r)=>a+r.rs.length,0)+' наблюдения</small><i>'+(op?'▾':'▸')+'</i></button><div class="plunb"'+(op?'':' style="display:none"')+'>'+
-    '<div class="note2" style="max-width:none;margin:2px 0 8px">Записи без име на мястото; точките на до 250 м една от друга са едно място. Отвори едно и му дай име — то ще се присъедини към списъка горе.</div>'+U.map(row).join('')+'</div>':'');
+    '<div class="note2" style="max-width:none;margin:2px 0 8px">Наблюдения без име на мястото; точките на до 250 м една от друга са едно място. Отвори едно и му дай име - то ще се присъедини към списъка горе.</div>'+U.map(row).join('')+'</div>':'');
   const r=openPl&&arr.find(x=>x.k===openPl);if(r&&r.rs.some(o=>o.geo))placeMap(r);}
 // Ново име на място — за всички записи там (и несигурните), за излетите със същото място и за текущия излет.
 // Име, което вече съществува, слива двете места. Мястото „без място и координати“ не се преименува.
 function renamePlace(k,nm){nm=(nm||'').trim();const r=placesList().find(x=>x.k===k)||(()=>{const C=plClusters(),all=OBS.filter(o=>placeKey(o,C).k===k);return all.length?{k,...placeKey(all[0])}:null;})();
   if(!r||r.none||!nm||(r.named&&nm===r.name))return;
   const C=plClusters(),hit=o=>placeKey(o,C).k===k,n=OBS.filter(hit).length,merge=OBS.some(o=>(o.place||'').trim()===nm&&!hit(o));
-  if(!n||!confirm('„'+nm+'“ ще стане мястото на '+n+(n===1?' запис':' записа')+(merge?' — място с това име вече има и двете ще се слеят':'')+'.'))return;
+  if(!n||!confirm('„'+nm+'“ ще стане мястото на '+n+(n===1?' наблюдение':' наблюдения')+(merge?' - място с това име вече има и двете ще се слеят':'')+'.'))return;
   const now=Date.now();OBS=OBS.map(o=>hit(o)?{...o,place:nm,upd:now}:o);save();
   if(r.named){for(const x of OUTS.filter(y=>(y.place||'').trim()===r.name))putOut({...x,place:nm});
     if(SESS&&(SESS.place||'').trim()===r.name){SESS.place=nm;saveSess();}}
@@ -2617,7 +2618,7 @@ function drawBeh(){
   const used=new Set(OBS.flatMap(o=>o.beh||[]));
   document.getElementById('beh').innerHTML =
     BEH.filter(b=>!AS_TAGS.has(b)||beh.includes(b)).map(b=>'<button type="button" class="bh'+(beh.includes(b)?' on':'')+'" data-b="'+esc(b)+'">'+esc(b)+
-      (behEditing?'<span class="del" data-rm="'+esc(b)+'" title="махни">×</span>':'')+'</button>').join('')
+      (behEditing?'<span class="del" data-rm="'+esc(b)+'" title="премахни">×</span>':'')+'</button>').join('')
     + (behEditing?'<button type="button" class="bh addnew" id="behAdd">+ нов етикет</button>':'');
   document.getElementById('behEdit').textContent = behEditing?'готово':'редактирай';
 }
@@ -2636,7 +2637,7 @@ function altSuggest(){const nm=(fld('la').value||'').trim()||((listFind('bg',fld
   const have=new Set([fld('bg').value,...alts].map(nrm));
   return SPL.filter(e=>e[1].split(' ')[0]===g&&nrm(e[1])!==nrm(nm)&&!have.has(nrm(e[0]))).map(e=>e[0]).slice(0,6);}
 function drawAlts(){const c=document.getElementById('f-alt');if(!c)return;
-  c.innerHTML=alts.map((a,i)=>'<span class="altc">'+esc(a)+'<button type="button" data-altx="'+i+'" aria-label="махни">×</button></span>').join('');
+  c.innerHTML=alts.map((a,i)=>'<span class="altc">'+esc(a)+'<button type="button" data-altx="'+i+'" aria-label="премахни">×</button></span>').join('');
   const sg=unsure?altSuggest():[];
   document.getElementById('f-alt-sug').innerHTML=sg.length?'<span class="note2">от същия род:</span> '+sg.map(n=>'<button type="button" class="chip" data-alts="'+esc(n)+'">+ '+esc(n)+'</button>').join(''):'';}
 function addAlt(v){v=(v||'').trim();if(!v||nrm(v)===nrm(fld('bg').value)||alts.some(a=>nrm(a)===nrm(v)))return;alts.push(v);drawAlts();}
@@ -2732,7 +2733,7 @@ function commitPlace(){const v=fld('place').value;
   if(nrm(v)===nrm(fc.place))return;fc.place=v;
   if(fo.geo==='user'&&fld('geo').value.trim())return;
   const n=nrm(v), o=n?[...OBS].sort(newest).find(o=>o.geo&&nrm(o.place)===n):null;
-  if(o){setGeo(o.geo);fo.geo='auto';hint('взети от записа от '+human(o.date));}
+  if(o){setGeo(o.geo);fo.geo='auto';hint('взети от наблюдението от '+human(o.date));}
   else if(fo.geo==='auto'){setGeo(null);fo.geo='';}}
 const picked=e=>!e.inputType||e.inputType==='insertReplacementText';   // избор от падащия списък
 for(const f of NM){const el=fld(f);
@@ -2811,7 +2812,7 @@ document.getElementById('beh').onclick=e=>{
   const rm=e.target.closest('[data-rm]');
   if(rm){e.stopPropagation();const v=rm.dataset.rm;
     const used=OBS.filter(o=>(o.beh||[]).includes(v)).length;
-    if(used && !confirm('„'+v+'" е използван в '+used+' записа. Старите записи остават, но етикетът ще изчезне от списъка. Да продължа?'))return;
+    if(used && !confirm('„'+v+'" е използван в '+used+' наблюдения. Старите наблюдения остават, но етикетът ще изчезне от списъка. Да продължа?'))return;
     BEH=BEH.filter(x=>x!==v);beh=beh.filter(x=>x!==v);saveBeh();drawBeh();return;}
   if(e.target.closest('#behAdd')){
     const v=(prompt('Нов етикет за поведение:')||'').trim();
@@ -2824,19 +2825,19 @@ document.getElementById('f-geo').oninput=e=>{
   if(!v){geo=null;hint('');return;}
   const g=parseGeo(v);
   if(g){geo=g;hint(g===v?'':'разчетено: '+g);}
-  else{geo=null;hint('не разпознавам координати — формат 42.61985, 25.39560');}};
+  else{geo=null;hint('не разпознавам координати - формат 42.61985, 25.39560');}};
 document.getElementById('f-geo').onblur=e=>{const g=parseGeo(e.target.value);if(g){e.target.value=g;geo=g;hint('');}};
 document.getElementById('geoBtn').onclick=()=>{
-  if(!navigator.geolocation){hint('Този браузър не поддържа GPS. Впиши координатите ръчно.');return;}
+  if(!navigator.geolocation){hint('Този браузър не поддържа GPS. Запиши координатите ръчно.');return;}
   hint('търси сигнал…');
   navigator.geolocation.getCurrentPosition(
     p=>{setGeo(p.coords.latitude.toFixed(5)+','+p.coords.longitude.toFixed(5));fo.geo='user';
         hint('точност ±'+Math.round(p.coords.accuracy)+' м');},
     err=>{
       const why = err.code===1
-        ? 'Браузърът отказа достъп. Отвори страницата в собствен раздел (менюто ⋯ горе вдясно) или я добави на началния екран — тогава GPS работи. Иначе впиши координатите ръчно.'
-        : err.code===3 ? 'Няма сигнал навреме. Пробвай на открито или впиши ръчно.'
-        : 'Местоположението не е достъпно в момента. Впиши координатите ръчно.';
+        ? 'Браузърът отказа достъп. Отвори страницата в собствен раздел (менюто ⋯ горе вдясно) или я добави на началния екран - тогава GPS работи. Иначе запиши координатите ръчно.'
+        : err.code===3 ? 'Няма сигнал навреме. Пробвай на открито или запиши ръчно.'
+        : 'Местоположението не е достъпно в момента. Запиши координатите ръчно.';
       hint(why);},
     {enableHighAccuracy:true,timeout:15000,maximumAge:60000});};
 document.getElementById('geoClr').onclick=()=>{setGeo(null);hint('');fo.geo='';};
@@ -2917,7 +2918,7 @@ form.onsubmit=e=>{e.preventDefault();
   const g=i=>document.getElementById('f-'+i).value.trim();
   const asking=unsure&&!!ME&&document.getElementById('f-ask').checked;
   if(asking&&!g('bg')&&!g('en')&&!g('la'))document.getElementById('f-bg').value='Непозната птица';
-  if(!g('bg')&&!g('en')&&!g('la')){alert('Впиши поне едно име.');return;}
+  if(!g('bg')&&!g('en')&&!g('la')){alert('Запиши поне едно име.');return;}
   if(!st.h&&!st.s&&!st.p){alert('Отбележи чух, видях или снимах.');return;}
   const rec={id:edit||Date.now(),date:g('date')||today(),time:g('time'),place:g('place'),count:g('count'),
     bg:g('bg'),en:g('en'),la:g('la'),fam:document.getElementById('f-fam').value,note:g('note'),
@@ -2974,7 +2975,7 @@ const MILE=n=>n===10||n===25||n%50===0;
 function yayNew(o,n){const sto=n===100;   // вид № 100 е „СТО!“
   return {cls:sto?'gold':'',cf:sto?30:16,ms:sto?7000:5000,after:el=>yayPic(el,o),
     html:'<div class="yaypic">'+silFor(o.fam)+'</div><div class="yaytx"><div class="yayt">'+(sto?'СТО!':'Честито, нов вид!')+'</div>'+yayName(o)+
-      '<div class="yayn">Вид № '+n+' в дневника ти</div>'+(!sto&&MILE(n)?'<div class="yaym">Кръгла бройка — '+n+' вида!</div>':'')+
+      '<div class="yayn">Вид № '+n+' в дневника ти</div>'+(!sto&&MILE(n)?'<div class="yaym">Кръгла бройка - '+n+' вида!</div>':'')+
       '<button type="button" class="yaycard" data-yaycard="'+esc(key(o))+'">картичка за споделяне</button></div>'};}
 function yayYear(o){const k=key(o),y=+o.date.slice(0,4);   // първа среща с вида за годината; при прелетните — спрямо миналата
   const last=SURE().filter(x=>key(x)===k&&+x.date.slice(0,4)===y-1).map(x=>x.date).sort()[0];
@@ -2994,7 +2995,7 @@ function outingCard(id){const byDT=(a,b)=>(a.date+(a.time||'')).localeCompare(b.
   const t=rs.find(o=>o.time),bits=[nNew?nNew+(nNew===1?' нов':' нови')+' за дневника':'',nYr?nYr+(nYr===1?' първа среща':' първи срещи')+' за годината':''].filter(Boolean);
   return {cls:'trip',cf:nNew?20:0,ms:9000,
     html:'<div class="yaypic">'+silFor((rs.find(o=>mine.has(F[key(o)]))||rs[0]).fam)+'</div><div class="yaytx"><div class="yayt">Край на излета</div>'+
-      '<div class="yaynm">'+ks.length+(ks.length===1?' вид':' вида')+' · '+rs.length+(rs.length===1?' запис':' записа')+'</div>'+
+      '<div class="yaynm">'+ks.length+(ks.length===1?' вид':' вида')+' · '+rs.length+(rs.length===1?' наблюдение':' наблюдения')+'</div>'+
       (bits.length?'<div class="yaym">'+bits.join(' · ')+'</div>':'')+
       (t?'<div class="yayn">първа птица: '+esc(t.bg||t.en||t.la)+' в '+esc(t.time)+'</div>':'')+
       '<button type="button" class="yaycard" data-yayout="'+esc(id)+'">картичка за споделяне</button></div>'};}
@@ -3043,7 +3044,7 @@ const KSPXM='bird-journal-spx-merged-1';
 function spxMergeNote(){if(lsGet(KSPXM,false))return;const L=(SPXO||[]).filter(x=>x&&inSPL(x));lsSet(KSPXM,true);if(!L.length)return;
   yayPush({cls:'yr',cf:0,ms:9000,html:'<div class="yaytx"><div class="yayt">Официалният списък вече ги има</div><div class="yaym">'+
     L.map(x=>{const e=SPL.find(e=>nrm(e[1])===nrm(x.la)||nrm(e[4])===nrm(x.la)||nrm(e[0])===nrm(x.bg)||altsOf(e).some(a=>nrm(a)===nrm(x.bg)));return esc(x.bg)+(e&&e[0]!==x.bg?' → '+esc(e[0]):'');}).join(', ')+
-    ' — добавените от групата се сляха с тях; записите ви се броят както досега.</div></div>'});}
+    ' - добавените от групата се сляха с тях; наблюденията ви се броят както досега.</div></div>'});}
 setTimeout(spxMergeNote,2500);
 const tgKey=t=>nrm(t.la||t.bg);
 const tgList=()=>Object.entries(TG).filter(([k,v])=>v&&!v.del).map(([k,v])=>({k,...v})).sort((a,b)=>(b.t||0)-(a.t||0));
@@ -3089,7 +3090,7 @@ function renderGoals(el){tgSeed();
       const rl=refLatin(t);
       return '<div class="tgc'+(mine.length?' done':'')+(nw?' new':'')+'"><div class="tgh">'+(rl?'<div class="refsm" data-ref="'+esc(rl)+'"></div>':'')+'<div class="tgn"><b>'+spLink(t)+(nw?'<span class="newtag">ново</span>':'')+'</b>'+
           '<small>'+[t.la,t.en].filter(Boolean).map(esc).join(' · ')+'</small>'+idLinks(t)+
-          (t.la?'<button type="button" class="tgwhere" data-tgwhere="'+esc(t.la)+'" data-bg="'+esc(t.bg||'')+'" data-en="'+esc(t.en||'')+'">📍 Къде да го търся</button><div class="tgeb" data-tgeb="'+esc(t.la)+'"></div>':'')+'</div><button type="button" class="tgx-del" data-tgdel="'+esc(t.k)+'" aria-label="махни целта">×</button></div>'+
+          (t.la?'<button type="button" class="tgwhere" data-tgwhere="'+esc(t.la)+'" data-bg="'+esc(t.bg||'')+'" data-en="'+esc(t.en||'')+'">📍 Къде да го търся</button><div class="tgeb" data-tgeb="'+esc(t.la)+'"></div>':'')+'</div><button type="button" class="tgx-del" data-tgdel="'+esc(t.k)+'" aria-label="премахни целта">×</button></div>'+
         (mine.length?'<div class="tgs ok">✓ видян на '+human(mine[0].date)+'</div>':'')+
         (b?'<div class="tgs">Последно: '+esc(b.f.name)+', '+relDay(b.o.date)+(b.o.place?', '+esc(b.o.place):'')+(b.km!=null?', '+(b.km<10?b.km.toFixed(1).replace('.',','):Math.round(b.km))+' км':'')+'</div>':
           (mine.length?'':'<div class="tgs mut">Никой от приятелите ти още не го е записал.</div>'))+
@@ -3100,7 +3101,7 @@ function tgSubmit(){const i=document.getElementById('tg-in'),v=(i&&i.value||'').
   const e=listFind('bg',v)||listFind('la',v)||listFind('en',v);
   if(e){tgAdd(e);i.value='';render();return;}
   const box=document.getElementById('tg-new');box.style.display='';
-  document.getElementById('tg-newtxt').textContent='„'+v+'“ го няма в списъка. Напиши и трите имена — така видът влиза в общия списък и за приятелите ти.';
+  document.getElementById('tg-newtxt').textContent='„'+v+'“ го няма в списъка. Напиши и трите имена - така видът влиза в общия списък и за приятелите ти.';
   const lat=/^[A-Za-z]/.test(v);document.getElementById('tgx-bg').value=lat?'':v;document.getElementById('tgx-la').value=lat?v:'';document.getElementById('tgx-en').value='';
   document.getElementById(lat?'tgx-bg':'tgx-la').focus();}
 function tgxSubmit(){const g=k=>document.getElementById('tgx-'+k).value.trim(),x={bg:g('bg'),la:g('la'),en:g('en')},m=document.getElementById('tgx-msg');
@@ -3110,7 +3111,7 @@ function tgxSubmit(){const g=k=>document.getElementById('tgx-'+k).value.trim(),x
 function renderBadges(el){if(badgeVisit===null){badgeVisit=new Set(newBadges());BSEEN=['#2',...earnedKeys()];lsSet(KBSEEN,BSEEN);}
   const T=tiersNow(),done=Object.values(T).reduce((x,y)=>x+y.t,0);
     const all=BDEF.reduce((a,d)=>a+d.g.length,0),open=lsGet(KBDF,{})||{};
-    el.innerHTML='<div class="bdintro">Повечето значки имат три нива: бронз за начало, сребро за усилие и злато за майсторство; малките семейства — по една. Печелят се сами — само от сигурните ти записи. Имаш <b>'+done+'</b> от '+all+' нива.</div>'+
+    el.innerHTML='<div class="bdintro">Повечето значки имат три нива: бронз за участие, сребро за усилие и злато за майсторство; малките семейства - по една. Печелят се само от сигурните ти наблюдения. Имаш <b>'+done+'</b> от '+all+' нива.</div>'+
       BSECS.map(([sec,title])=>{const L=BDEF.filter(d=>d.sec===sec),got=L.reduce((a,d)=>a+T[d.id].t,0),max=L.reduce((a,d)=>a+d.g.length,0),op=!!open[sec];
         return '<button type="button" class="bdsec bdfold" data-bdf="'+sec+'" aria-expanded="'+op+'"><span>'+title+'</span><small>'+got+' / '+max+'</small><i>'+(op?'▾':'▸')+'</i></button>'+
           '<div class="bdg2"'+(op?'':' style="display:none"')+'>'+L.map(d=>bdCard(d,T[d.id],badgeVisit)).join('')+'</div>';}).join('');}
@@ -3205,11 +3206,11 @@ function vcPaint(){const live=vcLive();document.getElementById('vc-livebox').sty
   document.getElementById('vc-mic').classList.toggle('on',VON);document.getElementById('vc-mict').textContent=VON?'Слушам… натисни за край':'Натисни и говори';
   for(const b of document.querySelectorAll('[data-vclang]'))b.setAttribute('aria-pressed',String(b.dataset.vclang===VCL));
   document.getElementById('vc-hint').textContent=live?(VCL==='en'?'Say the species and the count, e.g. “two jays, blackbird three, heard golden oriole”. A short vibration for each one.':
-    'Кажи вида и бройката, напр. „сойка две, кос три, чух авлига“. Всеки разпознат вид — кратко вибриране.'):
-    (isIOS?'На iPhone разпознаването става с микрофона на клавиатурата: докосни полето долу и натисни микрофона. Езикът е този на клавиатурата — Apple няма диктовка на български, затова смени клавиатурата на English (🌐) и казвай имената на английски.':'Този браузър не разпознава реч сам — ползвай микрофона на клавиатурата в полето долу.');
+    'Кажи вида и бройката, напр. „сойка две, кос три, чух авлига“. Всеки разпознат вид - кратко вибриране.'):
+    (isIOS?'На iPhone разпознаването става с микрофона на клавиатурата: докосни полето долу и натисни микрофона. Езикът е този на клавиатурата - Apple няма диктовка на български, затова смени клавиатурата на English (🌐) и казвай имената на английски.':'Този браузър не разпознава реч сам - ползвай микрофона на клавиатурата в полето долу.');
   const mb=document.getElementById('vc-memo');mb.textContent=VMR?'■ Спри бележката ('+Math.round((Date.now()-VMT0)/1000)+' с)':'● Гласова бележка';mb.classList.toggle('on',!!VMR);
   document.getElementById('vc-list').innerHTML=VCLIST.length?'<h4 class="psub">Добавени сега · '+VCLIST.length+'</h4>'+VCLIST.map(o=>'<div class="vcrow'+(o.la?'':' unk')+'"><b>'+esc(o.la?o.bg:'„'+(o.vraw||o.bg)+'“')+'</b>'+
-    (o.count?' · '+esc(cntText(o)):'')+'<small>'+(o.h&&!o.s?'чут':o.p?'сниман':'видян')+(o.la?'':' · не разпознах — оправи го после')+'</small></div>').join(''):'';}
+    (o.count?' · '+esc(cntText(o)):'')+'<small>'+(o.h&&!o.s?'чут':o.p?'сниман':'видян')+(o.la?'':' · не разпознах - оправи го после')+'</small></div>').join(''):'';}
 function vcAdd(text){const E=vcParse(text);if(!E.length){vcMsg('Не чух птица в „'+String(text).trim()+'“.');return [];}
   const now=Date.now(),t=nowTime(),g=trkNow()||VCPOS||(SESS&&SESS.geo)||null,out=[];
   E.forEach((x,i)=>{const r={id:now+i,date:today(),time:t,place:(SESS&&SESS.place)||'',count:x.count||'',bg:x.unk?x.raw:x.bg,en:x.en||'',la:x.la||'',fam:x.fam||'',note:'',
@@ -3224,7 +3225,7 @@ function vcMic(){if(VON){VON=false;try{VREC&&VREC.stop();}catch(e){}vcPaint();re
       if(k===VLAST.k&&Date.now()-VLAST.at<4000)continue;   // същата фраза пак — това е повторение от браузъра, не нова птица
       VLAST={k,at:Date.now()};vcAdd(f);}};
   VREC.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){VON=false;vcMsg('Микрофонът не е разрешен за Перá.');}
-    else if(e.error==='network'){VON=false;vcMsg('Няма връзка — разпознаването иска интернет. Запиши гласова бележка и я превърни после.');}vcPaint();};
+    else if(e.error==='network'){VON=false;vcMsg('Няма връзка - разпознаването иска интернет. Запиши гласова бележка и я превърни после.');}vcPaint();};
   VREC.onend=()=>{if(VON)try{VREC.start();}catch(e){VON=false;vcPaint();}};   // слуша фраза по фраза — след всяка продължава сам, докато не натиснеш
   try{VREC.start();}catch(e){VON=false;vcMsg('Не успях да пусна микрофона.');}vcPaint();}
 async function vcMemo(){if(VMR){VMR.stop();return;}
@@ -3233,7 +3234,7 @@ async function vcMemo(){if(VMR){VMR.stop();return;}
     VMR.onstop=async()=>{st.getTracks().forEach(t=>t.stop());clearInterval(VMTI);const b=new Blob(ch,{type:(VMR&&VMR.mimeType)||'audio/webm'}),id=Date.now();
       if(!idb)await openDB();await putPhoto('v:'+id,b);
       VMEMO.unshift({id,date:today(),time:nowTime(),dur:Math.max(1,Math.round((Date.now()-VMT0)/1000)),geo:trkNow()||VCPOS||null,sess:SESS?SESS.id:undefined});lsSet(KVM,VMEMO);
-      VMR=null;vcMsg('Бележката е запазена — ще я намериш най-горе в Дневника.');vcPaint();render();};
+      VMR=null;vcMsg('Бележката е запазена - ще я намериш най-горе в Дневника.');vcPaint();render();};
     VMR.start();VMTI=setInterval(vcPaint,1000);vcPaint();}
   catch(e){VMR=null;vcMsg('Микрофонът не е разрешен за Перá.');vcPaint();}}
 async function vmPlay(id){if(!idb)await openDB();const b=await getPhoto('v:'+id);if(!b){alert('Звукът на тази бележка липсва на този телефон.');return;}
@@ -3245,9 +3246,9 @@ function vcOpenDlg(text){VCLIST=[];vcMsg('');const d=document.getElementById('vc
 function vcClose(){if(VON){VON=false;try{VREC&&VREC.stop();}catch(e){}}if(VMR)VMR.stop();document.getElementById('vcDlg').close();}
 // Дневник: какво чака преглед и гласовите бележки
 function vcLogTop(){const P=OBS.filter(o=>o.rv),ok=P.filter(o=>o.la).length;let h='';
-  if(P.length)h+='<div class="rvbar">🎙 <b>'+P.length+'</b> '+(P.length===1?'гласов запис чака':'гласови записа чакат')+' преглед'+(ok?'<button type="button" class="btn sm" data-rvall>✓ потвърди разпознатите ('+ok+')</button>':'')+'</div>';
-  if(VMEMO.length)h+='<div class="vmemos"><b>🎙 Гласови бележки · '+VMEMO.length+'</b><small> — само на този телефон</small>'+VMEMO.map(m=>'<div class="vmrow"><span>'+esc(human(m.date))+' '+esc(m.time)+' · '+m.dur+' с</span>'+
-    '<button type="button" class="btn sm" data-vplay="'+m.id+'">▶</button><button type="button" class="btn sm" data-vconv="'+m.id+'">превърни в записи</button><button type="button" class="btn sm" data-vdel="'+m.id+'" aria-label="изтрий">×</button></div>').join('')+'</div>';
+  if(P.length)h+='<div class="rvbar">🎙 <b>'+P.length+'</b> '+(P.length===1?'наблюдение с глас чака':'наблюдения с глас чакат')+' преглед'+(ok?'<button type="button" class="btn sm" data-rvall>✓ потвърди разпознатите ('+ok+')</button>':'')+'</div>';
+  if(VMEMO.length)h+='<div class="vmemos"><b>🎙 Гласови бележки · '+VMEMO.length+'</b><small> - само на този телефон</small>'+VMEMO.map(m=>'<div class="vmrow"><span>'+esc(human(m.date))+' '+esc(m.time)+' · '+m.dur+' с</span>'+
+    '<button type="button" class="btn sm" data-vplay="'+m.id+'">▶</button><button type="button" class="btn sm" data-vconv="'+m.id+'">превърни в наблюдения</button><button type="button" class="btn sm" data-vdel="'+m.id+'" aria-label="изтрий">×</button></div>').join('')+'</div>';
   return h;}
 function rvOk(o){if(!o||!o.rv)return;delete o.rv;delete o.vraw;o.u=0;o.upd=Date.now();}
 document.getElementById('vcOpen').onclick=()=>vcOpenDlg('');
@@ -3264,11 +3265,12 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-rvok],[dat
   if(a.dataset.vdel){if(confirm('Да изтрия ли тази гласова бележка?'))vmDel(+a.dataset.vdel);return;}});
 // ---- известия на телефона (Web Push): абонаментът е в push_subs, изпраща помощникът „push“ ----
 const KPUSHK='bird-journal-pushkinds',KPUSHKEY='bird-journal-pushkey',pushFn=()=>SB_URL+'/functions/v1/push';
-const PUSHL=[['ask','Приятел пита какво е птица'],['idp','Предложение по твой въпрос · прието твое определение'],['inv','Покана за излет'],['comment','Коментари и отговори'],['bravo','„Браво“']];
+const PUSHL=[['ask','Приятел пита коя е птицата'],['idp','Предложение по твой въпрос · прието твое определение'],['inv','Покана за излет'],['comment','Коментари и отговори'],['bravo','„Браво“']];
 const pushKinds=()=>lsGet(KPUSHK,['ask','idp','inv','comment']);
 const pushOK=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
 const b64uBytes=t=>{t=String(t).replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';return Uint8Array.from(atob(t),c=>c.charCodeAt(0));};
-async function pushSub(){if(!pushOK())return null;try{const reg=await navigator.serviceWorker.ready;return await reg.pushManager.getSubscription();}catch(e){return null;}}
+async function pushSub(){if(!pushOK())return null;try{   // без работещ service worker „ready“ не идва никога - не чакаме повече от 4 с (иначе изходът от профила увисва)
+  const reg=await Promise.race([navigator.serviceWorker.ready,new Promise(r=>setTimeout(r,4000))]);return reg?await reg.pushManager.getSubscription():null;}catch(e){return null;}}
 const fnH=(x={})=>({apikey:SB_KEY,...x});   // ключът за помощниците (публичен — той е и в самата страница)
 async function pushKey(){const k=lsGet(KPUSHKEY,'');if(k)return k;const r=await fetch(pushFn()+'?key=1',{headers:fnH()});const d=r.ok?await r.json():null;
   if(!d||!d.key)throw new Error('Помощникът за известия не отговаря.');lsSet(KPUSHKEY,d.key);return d.key;}
@@ -3279,10 +3281,10 @@ let pushMsg='';
 async function pushRender(){const el=document.getElementById('pushSlot');if(!el)return;
   const note=t=>'<div class="note2" style="max-width:none">'+t+'</div>';
   if(isIOS&&!standalone()){el.innerHTML=note('На iPhone известията идват само ако Перá е на началния екран: в Safari натисни „Сподели“ → „Добави към началния екран“ и отваряй Перá оттам. Нужен е iOS 16.4 или по-нов.');return;}
-  if(!pushOK()){el.innerHTML=note(isIOS?'Този iPhone не може да показва известия от уеб приложения — нужен е iOS 16.4 или по-нов.':'Този браузър не може да показва известия.');return;}
+  if(!pushOK()){el.innerHTML=note(isIOS?'Този iPhone не може да показва известия от уеб приложения - нужен е iOS 16.4 или по-нов.':'Този браузър не може да показва известия.');return;}
   if(Notification.permission==='denied'){el.innerHTML=note('Известията за Перá са спрени в настройките на телефона (или на браузъра). Разреши ги там и се върни тук.');return;}
   const sub=await pushSub(),K=pushKinds();
-  if(!sub){el.innerHTML=note('Телефонът ще те известява, когато приятел пита какво е птица, предложи вид по твой въпрос, покани те на излет или коментира. Кое — избираш после.')+
+  if(!sub){el.innerHTML=note('Телефонът ще те известява, когато приятел пита какво е птица, предложи вид по твой въпрос, покани те на излет или коментира. Кое - избираш после.')+
     (pushMsg?note(esc(pushMsg)):'')+'<div class="fbtns"><button type="button" class="btn pri" data-push="on">Включи известията</button></div>';return;}
   el.innerHTML=note('Известията са включени на този телефон. Какво да идва:')+
     '<div class="pushk">'+PUSHL.map(([k,t])=>'<label class="qtog"><input type="checkbox" data-pushk="'+k+'"'+(K.includes(k)?' checked':'')+'><span>'+t+'</span></label>').join('')+'</div>'+
@@ -3300,7 +3302,7 @@ async function pushKind(k,on){const L=pushKinds().filter(x=>x!==k);if(on)L.push(
   const sub=await pushSub();if(sub&&SB&&ME)try{await SB.from('push_subs').update({kinds:L,updated_at:new Date().toISOString()}).eq('endpoint',sub.endpoint);}catch(e){}}
 async function pushTest(){const sub=await pushSub();if(!sub)return;pushMsg='Изпращам…';pushRender();
   try{const r=await fetch(pushFn(),{method:'POST',headers:fnH({'Content-Type':'application/json'}),body:JSON.stringify({test:sub.endpoint})});const d=r.ok?await r.json():{};
-    pushMsg=d.sent?'Изпратено — трябва да дойде до няколко секунди.':'Не стигна до телефона. Изключи и включи известията отново.';}
+    pushMsg=d.sent?'Изпратено - трябва да дойде до няколко секунди.':'Не стигна до телефона. Изключи и включи известията отново.';}
   catch(e){pushMsg='Помощникът за известия не отговаря.';}pushRender();}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-push]');if(!b)return;const a=b.dataset.push;
   if(a==='on')pushOn();else if(a==='off'){pushMsg='';pushForget().then(pushRender);}else if(a==='test')pushTest();});
@@ -3313,7 +3315,7 @@ setTimeout(pushRefresh,2500);
 setTimeout(()=>{if(RECLINK){view='acct';render();sbStart();}},0);   // линк от писмо за нова парола — дори ако на този телефон не си влизал (RECLINK се обявява по-надолу)
 document.getElementById('id-bg').addEventListener('input',idLook);document.getElementById('id-ok').onclick=idSend;document.getElementById('id-cancel').onclick=()=>document.getElementById('idDlg').close();
 document.getElementById('q-list').addEventListener('click',e=>{const b=e.target.closest('[data-qok]');if(b)qAccept(+b.dataset.qok);});
-document.getElementById('q-close').onclick=()=>{if(confirm('Да затворя ли въпроса без отговор? Записът остава несигурен.'))qClose();};document.getElementById('q-done').onclick=()=>document.getElementById('qDlg').close();
+document.getElementById('q-close').onclick=()=>{if(confirm('Да затворя ли въпроса без отговор? Наблюдението остава несигурно.'))qClose();};document.getElementById('q-done').onclick=()=>document.getElementById('qDlg').close();
 function badgeStrip(nw){const R=SURE();return '<div class="bdg">'+BADGES.map(b=>{const st=badgeState(b,R);
   return '<div class="bd'+(st.on?' on':'')+(nw&&nw.has(b.id)?' new':'')+'" title="'+esc(b.how)+'"><span class="bdi">'+b.icon+'</span><b>'+b.name+(nw&&nw.has(b.id)?'<span class="newtag">ново</span>':'')+'</b><small>'+
     (st.on?(st.first?'от '+human(st.first):'спечелена'):(b.goal?st.n+' от '+b.goal:b.how))+'</small></div>';}).join('')+'</div>';}
@@ -3422,7 +3424,7 @@ document.addEventListener('click',e=>{
   if(ed){const o=OBS.find(x=>x.id==ed.dataset.ed);if(o){openForm(o);window.scrollTo({top:0,behavior:'smooth'});}return;}
   const dl=e.target.closest('[data-del]');
   if(dl){const i=OBS.findIndex(x=>x.id==dl.dataset.del);
-    if(i>=0&&confirm('Изтриване на записа?')){for(const x of allPh(OBS[i])){delPhoto(x);photoGone(x);}tomb('obs',OBS[i].id);OBS.splice(i,1);save();render();}return;}
+    if(i>=0&&confirm('Изтриване на наблюдението?')){for(const x of allPh(OBS[i])){delPhoto(x);photoGone(x);}tomb('obs',OBS[i].id);OBS.splice(i,1);save();render();}return;}
   const th=e.target.closest('.th img');
   if(th){document.getElementById('lbimg').src=th.src;document.getElementById('lb').showModal();return;}
   const im=e.target.closest('.ph img');
@@ -3443,7 +3445,7 @@ document.getElementById('exp').onclick=()=>{const Q=v=>'"'+String(v==null?'':v).
   const OI={};for(const x of outings())OI[x.id]=x;
   for(const o of [...OBS].sort((a,b)=>a.date.localeCompare(b.date)))
     c+=[o.date,o.time,o.bg,o.en,o.la,o.fam,o.place,o.geo,o.count,({exact:'точно',min:'поне',est:'около'})[cqOf(o)],asText(o.as),o.bc&&BC[o.bc]?BC[o.bc][0]+o.bc:'',o.h?'да':'',o.s?'да':'',o.p?'да':'',
-      (o.beh||[]).join('; '),o.note,o.u?'да':'',(x=>x?human(x.date)+' '+(x.start||'')+'–'+(x.end||''):'')(OI[o.sess]),
+      (o.beh||[]).join('; '),o.note,o.u?'да':'',(x=>x?human(x.date)+' '+(x.start||'')+'-'+(x.end||''):'')(OI[o.sess]),
       (x=>!x||x.complete==null?'':x.complete?'да':'не')(OI[o.sess])].map(Q).join(',')+'\n';
   offer('ptichi-dnevnik.csv',c,'text/csv');};
 // ---- към eBird: CSV във формата „eBird Record Format (Extended)“ — 19 колони, без заглавен ред ----
@@ -3491,8 +3493,8 @@ function ebirdFiles(){const rows=ebirdRows(),files=[];let cur='';
   for(const r of rows){const l=r.line+'\n';if(cur&&new Blob([cur+l]).size>950000){files.push(cur);cur='';}cur+=l;}
   if(cur)files.push(cur);return files;}
 function openEbird(){const rows=ebirdRows(),n=new Set(rows.map(r=>r.line.split(',').slice(5,10).join(','))).size,sk=OBS.filter(o=>o.u).length;
-  document.getElementById('eb-txt').innerHTML='<b>'+rows.length+(rows.length===1?' ред':' реда')+'</b> в около '+n+(n===1?' списък':' списъка')+' за eBird. Всеки излет е един списък; записите извън излет са отделни.'+
-    (sk?' '+sk+(sk===1?' несигурен запис не влиза':' несигурни записа не влизат')+'.':'')+
+  document.getElementById('eb-txt').innerHTML='<b>'+rows.length+(rows.length===1?' ред':' реда')+'</b> в около '+n+(n===1?' списък':' списъка')+' за eBird. Всеки излет е един списък; наблюденията извън излет са отделни.'+
+    (sk?' '+sk+(sk===1?' несигурно наблюдение не влиза':' несигурни наблюдения не влизат')+'.':'')+
     '<br><br>Как да ги качиш: в eBird → <b>Submit</b> → <b>Import Data</b> → формат <b>eBird Record Format (Extended)</b> → <b>Import File</b>. После eBird ще те помоли да потвърдиш видовете и местата, които не разпознае.';
   document.getElementById('ebDlg').showModal();}
 document.getElementById('eb-ok').onclick=()=>{const F=ebirdFiles();document.getElementById('ebDlg').close();
@@ -3689,7 +3691,7 @@ const BC_CAT={A:'възможно',B:'вероятно',C:'потвърдено'
 const bcShort=n=>BC[n]?BC[n][0]+n+' '+BC[n][1].split(/[,(]/)[0].trim():'';
 for(const t of ['гнезди','с малки','двойка'])AS_TAGS.add(t);   // вече имат свое място — кодовете
 let fBC=0;
-function bcOptions(){return '<option value="">— няма —</option>'+['A','B','C'].map(c=>'<optgroup label="'+c+' · '+BC_CAT[c]+'">'+
+function bcOptions(){return '<option value="">- няма -</option>'+['A','B','C'].map(c=>'<optgroup label="'+c+' · '+BC_CAT[c]+'">'+
   BC.map((x,i)=>x&&x[0]===c?'<option value="'+i+'">'+i+' · '+x[1]+'</option>':'').join('')+'</optgroup>').join('');}
 // списъците се попълват при първо отваряне — кодовете са обявени по-надолу от мястото, където се закачат бутоните
 function bcInit(){const s=document.getElementById('f-bc');if(s&&!s.options.length)s.innerHTML=bcOptions();
@@ -3697,13 +3699,13 @@ function bcInit(){const s=document.getElementById('f-bc');if(s&&!s.options.lengt
 function bcDraw(){bcInit();const s=document.getElementById('f-bc'),b=document.getElementById('f-bcbox');if(s)s.value=fBC?String(fBC):'';
   document.getElementById('f-bctog').textContent=(fBC?bcShort(fBC):'гнездене')+(b.style.display==='none'?' ▸':' ▾');}
 function bcYears(rs){const y={};for(const o of rs)if(o.bc&&BC[o.bc]){const k=o.date.slice(0,4);y[k]=Math.max(y[k]||0,o.bc);}
-  return Object.entries(y).sort((a,b)=>b[0].localeCompare(a[0])).map(([yr,n])=>yr+' — '+BC_CAT[BC[n][0]]+' ('+BC[n][0]+n+')').join(' · ');}
+  return Object.entries(y).sort((a,b)=>b[0].localeCompare(a[0])).map(([yr,n])=>yr+' - '+BC_CAT[BC[n][0]]+' ('+BC[n][0]+n+')').join(' · ');}
 // ---- Приятели: филтър „Всички · Мои · На приятели“ ----
 const KFDF='bird-journal-feedf';let FDF=lsGet(KFDF,'all')||'all';
 const fdfHTML=()=>'<div class="fdf">'+[['all','Всички'],['me','Мои'],['fr','На приятели']].map(([k,l])=>'<button type="button" class="chip" data-fdf="'+k+'" aria-pressed="'+(FDF===k)+'">'+l+'</button>').join('')+'</div>';
 // ---- Моите видове: подреждане ----
 const KSPS='bird-journal-spsort';let SPS=lsGet(KSPS,'name')||'name';
-const SPSORT=[['name','име А–Я'],['last','последно видян'],['days','дни с вида'],['recs','брой записи'],['birds','брой птици'],['new','нови отгоре'],['grp','по група']];
+const SPSORT=[['name','име А-Я'],['last','последно видян'],['days','дни с вида'],['recs','брой наблюдения'],['birds','брой птици'],['new','нови отгоре'],['grp','по група']];
 function spSortArr(arr,D){const nm=(a,b)=>String(a.bg||a.la).localeCompare(String(b.bg||b.la),'bg'),dd=r=>(D[r.k]||new Set()).size;
   const f={name:nm,last:(a,b)=>b.last.localeCompare(a.last)||nm(a,b),recs:(a,b)=>b.n-a.n||nm(a,b),birds:(a,b)=>(b.b||0)-(a.b||0)||nm(a,b),days:(a,b)=>dd(b)-dd(a)||nm(a,b),
     new:(a,b)=>b.first.localeCompare(a.first)||nm(a,b),grp:(a,b)=>String(a.fam||'я').localeCompare(String(b.fam||'я'),'bg')||nm(a,b)}[SPS]||nm;
@@ -3717,7 +3719,7 @@ function friendTiers(f){const so=OBS,su=OUTS,out={};
     for(const d of BDEF){let t=0;if(d.sec==='soc'||d.own)t=lvMax(f.data.bdg,d.id);else{try{t=tierOf(d,d.v(R)||0);}catch(e){t=lvMax(f.data.bdg,d.id);}}out[d.id]=t;}}
   finally{OBS=so;OUTS=su;SPK=null;}return out;}
 const nameHue=s=>[...String(s)].reduce((a,c)=>(a*31+c.charCodeAt(0))%360,7);
-function agoTxt(iso){if(!iso)return '—';const m=Math.round((Date.now()-Date.parse(iso))/6e4);
+function agoTxt(iso){if(!iso)return '-';const m=Math.round((Date.now()-Date.parse(iso))/6e4);
   return m<2?'току-що':m<60?'преди '+m+' мин':m<24*60?'преди '+Math.round(m/60)+' ч':relDay(ymd(Date.parse(iso)));}
 // ---- коментари (издание 6): отговор с „@Име:“ и известие, когато някой пише след теб ----
 const REPRX=/^@([^:\n]{1,40}):\s*/;
@@ -3727,7 +3729,7 @@ const afterMine=(owner,item)=>{if(!ME)return [];const cm=SOC.filter(x=>x.owner==
 // ---- снимки (издание 6): до 5 на запис; първата е основната и стои навсякъде, другите — само при разгръщане ----
 const PHMAX=5;let phx=[];
 function phxDraw(){const r=document.getElementById('phxrow');if(!r)return;
-  r.innerHTML=phx.map((id,i)=>'<div class="phxi" data-phxi="'+i+'"><img alt=""><button type="button" data-phxmain="'+i+'" title="направи основна" aria-label="направи основна">★</button><button type="button" data-phxdel="'+i+'" aria-label="махни">×</button></div>').join('')+
+  r.innerHTML=phx.map((id,i)=>'<div class="phxi" data-phxi="'+i+'"><img alt=""><button type="button" data-phxmain="'+i+'" title="направи основна" aria-label="направи основна">★</button><button type="button" data-phxdel="'+i+'" aria-label="премахни">×</button></div>').join('')+
     (photo&&1+phx.length<PHMAX?'<label class="btn phxadd">+ още снимки<input type="file" id="f-photo2" accept="image/*" multiple hidden></label>':'');
   r.querySelectorAll('.phxi').forEach((d,i)=>getPhoto(phx[i]).then(b=>{if(b)d.querySelector('img').src=URL.createObjectURL(b);}));}
 async function phxAdd(files){const errs=new Set();
@@ -3754,7 +3756,7 @@ const KYRB='bird-journal-yearban';
 function storyYear(){const d=new Date(),m=d.getMonth(),dd=d.getDate();return m===0?d.getFullYear()-1:d.getFullYear();}
 function bannerYear(){const d=new Date(),m=d.getMonth(),dd=d.getDate();if(m===11&&dd>=15)return d.getFullYear();if(m===0&&dd<=15)return d.getFullYear()-1;return 0;}
 function yearBanner(){const y=bannerYear();if(!y||!SURE().some(o=>o.date.slice(0,4)===String(y)))return '';const hid=lsGet(KYRB,{})||{};if(hid[y])return '';
-  return '<div class="yrban"><button type="button" class="yrgo" data-yr="'+y+'">✨ Твоята '+y+' в Перá е готова — <b>виж я</b></button><button type="button" class="yrx" data-yrhide="'+y+'" aria-label="скрий">×</button></div>';}
+  return '<div class="yrban"><button type="button" class="yrgo" data-yr="'+y+'">✨ Твоята '+y+' в Перá е готова - <b>виж я</b></button><button type="button" class="yrx" data-yrhide="'+y+'" aria-label="скрий">×</button></div>';}
 function yearData(y){const Y=String(y),R=SURE().filter(o=>o.date.slice(0,4)===Y),all=SURE(),k=key;
   const sp={};for(const o of R){const kk=k(o);if(!kk)continue;const r=sp[kk]||(sp[kk]={o,nm:o.bg||o.en||o.la,d:new Set(),n:0});r.n++;r.d.add(o.date);if(o.bg){r.nm=o.bg;r.o=o;}}
   const firstEver={};for(const o of all){const kk=k(o);if(kk&&(!firstEver[kk]||o.date<firstEver[kk].date))firstEver[kk]=o;}
@@ -3785,18 +3787,18 @@ function yearData(y){const Y=String(y),R=SURE().filter(o=>o.date.slice(0,4)===Y)
   return {y,R,sp,lif,rare,bestDay,bestOut,hrs,place,mon,early:timed[0],late:timed[timed.length-1],spring,bd,mate,bravoG,bravoR,top,outs,days:new Set(R.map(o=>o.date)).size};}
 const MONTHS_S=['ян','фев','мар','апр','май','юни','юли','авг','сеп','окт','ное','дек'];
 function yearCards(Y){const D=yearData(Y),c=[],n=(v,a,b)=>v+' '+(v===1?a:b);
-  c.push({k:'Перá · '+Y,big:'Твоята '+Y,sub:'Година с птиците — да я видим.'});
-  c.push({k:'Големите числа',big:n(Object.keys(D.sp).length,'вид','вида'),rows:[['записи',D.R.length],['дни на терен',D.days],['излети',D.outs.length],['часа на излети',D.hrs]]});
-  if(D.top)c.push({k:'Птицата на годината ти',big:D.top.nm,sub:'с теб '+n(D.top.d.size,'ден','дни')+' · '+n(D.top.n,'запис','записа'),ref:refLatin(D.top.o)});
+  c.push({k:'Перá · '+Y,big:'Твоята '+Y,sub:'Година с птиците - да я видим.'});
+  c.push({k:'Големите числа',big:n(Object.keys(D.sp).length,'вид','вида'),rows:[['наблюдения',D.R.length],['дни на терен',D.days],['излети',D.outs.length],['часа на излети',D.hrs]]});
+  if(D.top)c.push({k:'Птицата на годината ти',big:D.top.nm,sub:'с теб '+n(D.top.d.size,'ден','дни')+' · '+n(D.top.n,'наблюдение','наблюдения'),ref:refLatin(D.top.o)});
   if(D.lif.length)c.push({k:'Нови за теб',big:n(D.lif.length,'нов вид','нови вида'),rows:[['първият',D.lif[0].o.bg+' · '+human(D.lif[0].o.date)],['последният',D.lif[D.lif.length-1].o.bg+' · '+human(D.lif[D.lif.length-1].o.date)]].concat(D.rare?[['най-рядкият',D.rare.o.bg]]:[])});
   if(D.bestDay)c.push({k:'Най-добрият ден',big:n(D.bestDay[1].size,'вид','вида'),sub:human(D.bestDay[0]),rows:D.bestOut&&D.bestOut.n?[['най-добрият излет',D.bestOut.n+' вида · '+human(D.bestOut.x.date)+(D.bestOut.x.place?' · '+D.bestOut.x.place:'')]]:[]});
   if(D.place)c.push({k:'Твоето място',big:D.place[0],sub:n(D.place[1].d.size,'посещение','посещения')+' · '+n(D.place[1].s.size,'вид','вида')});
   {const mx=Math.max(...D.mon);if(mx)c.push({k:'Месец по месец',big:'най-силен: '+['януари','февруари','март','април','май','юни','юли','август','септември','октомври','ноември','декември'][D.mon.indexOf(mx)],bars:D.mon});}
-  if(D.early)c.push({k:'Най-ранната и най-късната птица',big:D.early.time+' — '+(D.early.bg||D.early.en),rows:D.late&&D.late!==D.early?[['най-късна',D.late.time+' — '+(D.late.bg||D.late.en)]]:[]});
+  if(D.early)c.push({k:'Най-ранната и най-късната птица',big:D.early.time+' - '+(D.early.bg||D.early.en),rows:D.late&&D.late!==D.early?[['най-късна',D.late.time+' - '+(D.late.bg||D.late.en)]]:[]});
   if(D.spring.length)c.push({k:'Първите пролетни',big:D.spring[0].bg+' · '+human(D.spring[0].date),rows:D.spring.slice(1).map(o=>[o.bg,human(o.date)])});
   if(D.bd.length)c.push({k:'Значки тази година',big:n(D.bd.length,'значка','значки'),rows:D.bd.slice(0,4).map(x=>[x.d.name,tierName(x.d,x.t).toLowerCase()])});
   if(D.mate||D.bravoG||D.bravoR)c.push({k:'С приятели',big:D.mate?'най-честият ти спътник: '+D.mate[0]:'„Браво“ тази година',rows:[['„Браво“ дадени',D.bravoG],['„Браво“ получени',D.bravoR]].concat(D.mate?[['общи излети с '+D.mate[0],D.mate[1]]]:[])});
-  c.push({k:'Твоята '+Y+' в Перá',big:n(Object.keys(D.sp).length,'вид','вида'),rows:[['нови за теб',D.lif.length],['дни на терен',D.days],['излети',D.outs.length]].concat(D.top?[['птицата на годината',D.top.nm]]:[]),fin:1});
+  c.push({k:'Твоята '+Y+' в Перá',big:n(Object.keys(D.sp).length,'вид','вида'),rows:[['нови за теб',D.lif.length],['дни на терен',D.days],['излети',D.outs.length]].concat(D.top?[['птица на годината',D.top.nm]]:[]),fin:1});
   return c;}
 let YR=null,YRI=0;
 function openYear(y){YR={y,c:yearCards(y)};YRI=0;yrDraw();document.getElementById('yrDlg').showModal();}
@@ -3823,12 +3825,12 @@ window.addEventListener('error',e=>{const f=e.filename||'';if(f&&!f.startsWith(l
   logErr(e.message,f.split('/').pop()+':'+e.lineno+':'+e.colno+(e.error&&e.error.stack?' | '+String(e.error.stack).split('\n').slice(1,3).join(' ').trim():''));});
 window.addEventListener('unhandledrejection',e=>{const r=e.reason;logErr('promise: '+(r&&(r.message||r))||'?',r&&r.stack?String(r.stack).split('\n').slice(0,2).join(' '):'');});
 // „Съобщи за проблем“ — готов текст с версията и телефона, за чата или имейла
-function reportText(){return 'Проблем в Перá\n\nКакво направих:\n\nКакво очаквах:\n\nКакво стана:\n\n—\nверсия '+VER+'\n'+navigator.userAgent+'\nекран '+innerWidth+'×'+innerHeight+
+function reportText(){return 'Проблем в Перá\n\nКакво направих:\n\nКакво очаквах:\n\nКакво стана:\n\n-\nверсия '+VER+'\n'+navigator.userAgent+'\nекран '+innerWidth+'×'+innerHeight+
   (matchMedia('(display-mode: standalone)').matches?' · инсталирано':' · в браузъра')+(ME?'':' · без профил')+(navigator.onLine?'':' · без връзка')+
   (ERRQ.length?'\nпоследни грешки: '+ERRQ.slice(-3).map(e=>e.msg).join(' | '):'');}
 async function reportProblem(){const t=reportText();
-  if(navigator.share){try{await navigator.share({title:'Перá — проблем',text:t});return;}catch(e){if(e&&e.name==='AbortError')return;}}
-  try{await navigator.clipboard.writeText(t);alert('Текстът е копиран — постави го в съобщение и допиши какво стана.');}catch(e){prompt('Копирай този текст:',t);}}
+  if(navigator.share){try{await navigator.share({title:'Перá - проблем',text:t});return;}catch(e){if(e&&e.name==='AbortError')return;}}
+  try{await navigator.clipboard.writeText(t);alert('Текстът е копиран - постави го в съобщение и допиши какво стана.');}catch(e){prompt('Копирай този текст:',t);}}
 // ---- снимки (издание A): галерия в профила — твоята и на приятелите; данни от самата снимка ----
 const KGAL='bird-journal-galsort';let GALS=lsGet(KGAL,'date')||'date';
 function galItems(obs){const it=[];for(const o of obs)for(const pid of allPh(o))it.push({pid,o,nm:o.bg||o.en||o.la||'?'});
@@ -3844,7 +3846,7 @@ function galHTML(obs,uid){const it=galItems(obs);if(!it.length)return '<div clas
 function galOpen(btn){const im=btn.querySelector('img');if(!im)return;const uid=btn.dataset.galu||'',rid=+btn.dataset.galr;
   const src=uid?((((FR&&FR.fol)||[]).find(f=>f.id===uid)||{}).data||{}).obs||[]:OBS,o=src.find(x=>x.id===rid);
   document.getElementById('lbimg').src=im.src;document.getElementById('lbimg').style.display='';const sx=document.getElementById('lbx');sx.style.display='none';sx.innerHTML='';
-  document.getElementById('lbcap').innerHTML=o?'<b>'+spLink(o)+'</b> · '+esc(human(o.date))+(o.time?' '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+(uid?'':' <button type="button" class="btn" data-galrec="'+o.id+'">покажи записа</button>'):'';
+  document.getElementById('lbcap').innerHTML=o?'<b>'+spLink(o)+'</b> · '+esc(human(o.date))+(o.time?' '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+(uid?'':' <button type="button" class="btn" data-galrec="'+o.id+'">покажи наблюдението</button>'):'';
   document.getElementById('lb').showModal();}
 // данните на снимката (EXIF): дата и час на снимане и място, ако телефонът ги е записал — само предложение под снимката
 function exifOf(buf){try{const v=new DataView(buf);if(v.getUint16(0)!==0xFFD8)return null;let o=2;
@@ -3941,9 +3943,9 @@ function renderAtlas(el,bar){const S=atlasData(),L=Object.values(S),Y=today().sl
       .sort((a,b)=>b[0]-a[0]||String(a[1]).localeCompare(String(b[1]),'bg')).map(x=>x[2]).join('')+'</div>':
     '<div class="note2" style="max-width:none">Пипни квадрат, за да видиш видовете в него и най-силния код за гнездене тази година.</div>';
   el.innerHTML=bar+'<div class="athead">'+(here?(atHere?'Ти си в квадрат <b>'+esc(here.id)+'</b>':'Последното ти място е в квадрат <b>'+esc(here.id)+'</b>'):'')+
-    '<span class="note2" style="max-width:none">квадрати 10×10 км (UTM – MGRS), както в Атласа на птиците в България</span></div>'+
-    (L.length?svg:'<div class="empty">Още няма записи с координати.</div>')+det+
-    '<div class="atleg"><i class="s1"></i>1–4 <i class="s2"></i>5–14 <i class="s3"></i>15–29 <i class="s4"></i>30–49 <i class="s5"></i>50+ вида</div>';
+    '<span class="note2" style="max-width:none">квадрати 10×10 км (UTM - MGRS), както в Атласа на птиците в България</span></div>'+
+    (L.length?svg:'<div class="empty">Още няма наблюдения с координати.</div>')+det+
+    '<div class="atleg"><i class="s1"></i>1-4 <i class="s2"></i>5-14 <i class="s3"></i>15-29 <i class="s4"></i>30-49 <i class="s5"></i>50+ вида</div>';
   // мрежата започва около квадрата, в който си (или избрания)
   setTimeout(()=>{for(const c of el.querySelectorAll('.atsc')){const t=c.querySelector('.atq.sel')||c.querySelector('.atq.here');if(!t)continue;const r=t.getBBox();
     c.scrollLeft=Math.max(0,r.x+r.width/2-c.clientWidth/2);c.scrollTop=Math.max(0,r.y+r.height/2-c.clientHeight/2);}},0);}
@@ -3966,7 +3968,7 @@ function trkStart(){if(!SESS||trkW!==null||!navigator.geolocation)return;
   trkLockOn();}
 function trkStop(){if(trkW!==null){try{navigator.geolocation.clearWatch(trkW);}catch(e){}trkW=null;}if(trkLock){try{trkLock.release();}catch(e){}trkLock=null;}}
 function trkToggle(){if(!SESS)return;SESS.trkOn=!SESS.trkOn;
-  if(SESS.trkOn&&!lsGet('bird-journal-trackinfo',false)){lsSet('bird-journal-trackinfo',true);alert('Пътят се записва, докато Перá е отворено на екрана — екранът остава включен и батерията се харчи повече. Можеш да го спреш по всяко време оттук.');}
+  if(SESS.trkOn&&!lsGet('bird-journal-trackinfo',false)){lsSet('bird-journal-trackinfo',true);alert('Пътят се записва, докато Перá е отворено на екрана - екранът остава включен и батерията се харчи повече. Можеш да го спреш по всяко време оттук.');}
   saveSess();if(SESS.trkOn)trkStart();else trkStop();sessUI();}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&SESS&&SESS.trkOn){trkLockOn();if(trkW===null)trkStart();}});
 function trkNow(){const t=SESS&&SESS.trkOn&&SESS.trk;if(!t||!t.length)return null;const q=t[t.length-1];
@@ -3994,7 +3996,7 @@ function ckSaved(id){let ch=0;for(const k of Object.keys(CKB.m||{}))if(CKB.m[k]=
 const KCK='bird-journal-checklist';let CKL=lsGet(KCK,[])||[],ckWatch=null,ckPos=null,ckAcc=null,ckUndo=[],ckHeard=false,ckLong=false;
 function ckSave(){lsSet(KCK,CKL);}
 function ckAddName(v){v=(v||'').trim();if(!v)return '';const e=listFind('bg',v)||listFind('la',v)||listFind('en',v);
-  if(!e)return '„'+v+'“ го няма в списъка с видове — запиши го през формата.';
+  if(!e)return '„'+v+'“ го няма в списъка с видове - запиши го през формата.';
   if(CKL.some(x=>nrm(x.la||x.bg)===nrm(e.la||e.bg)))return 'Вече е в списъка.';
   CKL.push({bg:e.bg,la:e.la,en:e.en,fam:e.fam||''});ckSave();return '';}
 function ckSuggest(){const here=ckPos||myGeo(),have=new Set(CKL.map(x=>nrm(x.la||x.bg))),m=new Map(),mo=today().slice(5,7),t0=dayNum(today());
@@ -4027,15 +4029,15 @@ function ckDraw(){const L=document.getElementById('ck-list');if(!L)return;
   document.getElementById('ck-mode').textContent=ckHeard?'докосване = чух':'докосване = видях';
   document.getElementById('ck-gps').textContent=SESS?(ckPos?'GPS'+(ckAcc!=null?' ±'+Math.round(ckAcc)+' м':''):'търси GPS…'):'';
   const sg=ckSuggest();
-  document.getElementById('ck-sug').innerHTML=sg.length?'<div class="note2" style="max-width:none">Предложения — докосни, за да добавиш:</div><div class="cksug">'+
+  document.getElementById('ck-sug').innerHTML=sg.length?'<div class="note2" style="max-width:none">Предложения - докосни, за да добавиш:</div><div class="cksug">'+
     sg.map(c=>'<button type="button" class="chip" data-cksug="'+esc(c.bg)+'">+ '+esc(c.bg)+'</button>').join('')+'</div>':'';
   L.innerHTML=(SESS?'':'<div class="note2" style="max-width:none">Започни излет („Излет“), за да броиш. Списъкът остава и за следващия път.</div>')+
     (CKL.length?CKL.map((sp,i)=>{const rs=ckRecs(sp),n=rs.reduce((a,o)=>a+(cntNum(o.count)||1),0),ob=SESS?ckOpenB(sp):null;
       return '<div class="ckr'+(n?' on':'')+'"><button type="button" class="ckn" data-cktap="'+i+'"'+(SESS?'':' disabled')+'><b>'+esc(sp.bg)+'</b>'+
-        (ob?'<small>сега '+(cntNum(ob.count)||1)+(ckHeard?' чути':'')+' — задръж за описание</small>':rs.length?'<small>'+rs.length+(rs.length===1?' запис':' записа')+'</small>':'')+'</button><span class="ckc">'+(SESS?n:'')+'</span>'+
+        (ob?'<small>сега '+(cntNum(ob.count)||1)+(ckHeard?' чути':'')+' - задръж за описание</small>':rs.length?'<small>'+rs.length+(rs.length===1?' наблюдение':' наблюдения')+'</small>':'')+'</button><span class="ckc">'+(SESS?n:'')+'</span>'+
         (SESS?'<button type="button" class="ckb" data-ckminus="'+i+'" aria-label="едно по-малко">−</button>':'')+
-        '<button type="button" class="ckb ckx" data-ckdel="'+i+'" aria-label="махни от списъка">×</button></div>';}).join(''):
-     '<div class="note2" style="max-width:none">Списъкът е празен. Добави птиците, които очакваш — по име или от предложенията.</div>');}
+        '<button type="button" class="ckb ckx" data-ckdel="'+i+'" aria-label="премахни от списъка">×</button></div>';}).join(''):
+     '<div class="note2" style="max-width:none">Списъкът е празен. Добави птиците, които очакваш - по име или от предложенията.</div>');}
 function ckOpen(){document.getElementById('ck-msg').textContent='';ckDraw();document.getElementById('ckDlg').showModal();
   // и преди излета — предложенията са за мястото, където си
   if(navigator.geolocation&&ckWatch==null)try{ckWatch=navigator.geolocation.watchPosition(p=>{ckPos=p.coords.latitude.toFixed(5)+','+p.coords.longitude.toFixed(5);ckAcc=p.coords.accuracy;ckDraw();},
@@ -4072,25 +4074,25 @@ const tipSeen=id=>!!(TIPS&&(TIPS.all||TIPS[id]));
 function tipDone(id){TIPS=TIPS||{};TIPS[id]=1;lsSet(KTIP,TIPS);}
 function tipHTML(id,txt){return tipSeen(id)?'':'<div class="tip" data-tipbox="'+id+'"><span>'+txt+'</span><button type="button" class="btn" data-tip="'+id+'">Разбрах</button></div>';}
 const TIPTXT={
-  form:'Започни да пишеш името — латинското, английското и групата се попълват сами. Сивите текстове в полетата са само примери.',
-  unsure:'Несигурните записи се пазят, но не се броят. Колебаеш се между два вида? Добави другия в „Може да е и“.',
-  outing:'Излизаш за птици? Натисни „Излет“ — записите се събират заедно, а накрая отбелязваш дали си записал всички видове. Пълните списъци са най-ценни за науката.',
-  sess:'Докосни зелената лента, за да видиш записите от излета. За бързо броене — иконката „Списък“ до „Излет“.',
+  form:'Започни да пишеш името без значение българско, английско или латинско - останалите се попълват сами.',
+  unsure:'Несигурните наблюдения се пазят, но не се броят. Колебаеш се между два вида? Добави другия в „Може да е и“.',
+  outing:'Излизаш на излет, за да наблюдаваш птици? Натисни „Излет“ - наблюденията се събират заедно, а накрая отбелязваш дали си записал всички видове. Пълните списъци са най-ценни за науката.',
+  sess:'Докосни зелената лента, за да видиш наблюденията от излета. За бързо броене - иконката „Списък“ до „Излет“.',
   ck:'Добави птиците, които очакваш. На излет: докосване = +1, задържане = описание на преброените досега.',
-  map:'Отдолу са Местата ти. Място без име? Отвори го и му дай име — записите оттам ще се събират на едно място.',
-  phen:'Тук с времето ще видиш кога идват и си отиват птиците около теб — след няколко месеца става интересно.',
-  code:'Дай кода си на приятел — така той вижда дневника ти и може да те кани на излети. Добави и неговия код, за да виждаш неговия.'};
+  map:'Отдолу са Местата ти. Място без име? Отвори го и му дай име - наблюденията оттам ще се събират на едно място.',
+  phen:'Тук с времето ще видиш кога идват и си отиват птиците около теб - след няколко месеца става интересно.',
+  code:'Дай кода си на приятел - така той вижда дневника ти и може да те кани на излети. Добави и неговия код, за да виждаш неговия.'};
 const WLC=[
-  ()=>'<h2>Добре дошъл в Перá</h2><p>Записвай птиците, които виждаш и чуваш — бързо, на терен, дори без връзка.</p><p class="mut">Документирай излетите си. Следи птиците по време и локации. Сравнявай с приятели.</p>',
-  ()=>'<h2>Сложи го на началния екран</h2><p>Така работи без интернет, а GPS-ът — по-точно.</p><p>'+(standalone()?'✓ Вече е на началния ти екран.':
+  ()=>'<h2>Добре дошъл в Перá</h2><p>Записвай птиците, които виждаш и чуваш - бързо, на терен, дори без връзка.</p><p class="mut">Документирай излетите си. Следи птиците по време и локация. Сравнявай с приятели.</p>',
+  ()=>'<h2>Сложи го на началния екран</h2><p>Така работи без интернет, а GPS-ът - по-точно.</p><p>'+(standalone()?'✓ Вече е на началния ти екран.':
      instEvt?'<button type="button" class="btn pri" data-inst>Инсталирай</button>':
      isIOS?'В Safari: <b>Сподели</b> (квадратчето със стрелка) → <b>Add to Home Screen</b>.':'В Chrome: менюто <b>⋮</b> горе вдясно → <b>Добавяне към началния екран</b>.')+'</p>',
-  ()=>'<h2>Профил — по желание, но си струва</h2><p>Без профил дневникът е само на този телефон. С профил:</p><ul><li>копие в облака — изгубиш ли телефона, записите остават;</li>'+
-     '<li>един акаунт на много устройства;</li><li>приятели — споделяте, коментирате, излизате заедно.</li></ul>'+
+  ()=>'<h2>Профил - по желание, но си струва</h2><p>Без профил дневникът е само на този телефон. С профил:</p><ul><li>копие в облака - изгубиш ли телефона, наблюденията остават;</li>'+
+     '<li>един акаунт на много устройства;</li><li>приятели - споделяте, коментирате, излизате заедно.</li></ul>'+
      '<p><b>Как:</b> кръгчето с птичката горе вдясно → име, имейл и парола → „Нов профил“ → потвърди от имейла.</p>'+
-     '<p class="mut">Приятелите, на които дадеш кода си, виждат всичките ти записи — и точните места.</p>'+
+     '<p class="mut">Приятелите, на които дадеш кода си, виждат всичките ти наблюдения - и точните места.</p>'+
      '<div class="fbtns"><button type="button" class="btn pri" data-wl="acct">Направи профил сега</button><button type="button" class="btn" data-wl="next">По-късно</button></div>',
-  ()=>'<h2>Първата ти птица</h2><p>Запиши която и да е птица — дори врабче от прозореца. Оттам нататък приложението ще те води.</p>'+
+  ()=>'<h2>Първата ти птица</h2><p>Запиши която и да е птица - дори врабче от прозореца. Оттам нататък приложението ще те води.</p>'+
      '<div class="fbtns"><button type="button" class="btn pri" data-wl="first">Запиши първата</button><button type="button" class="btn" data-wl="close">Разгледай сам</button></div>'];
 function wlDraw(){document.getElementById('wl-body').innerHTML=WLC[wlI]();
   document.getElementById('wl-dots').innerHTML=WLC.map((_,i)=>'<i class="'+(i===wlI?'on':'')+'"></i>').join('');
@@ -4106,10 +4108,10 @@ document.getElementById('wlDlg').addEventListener('click',e=>{const b=e.target.c
   if(a==='acct')document.getElementById('acct').click();
   if(a==='first')setTimeout(()=>{window.scrollTo(0,0);openForm(null);},80);});   // след като диалогът се е затворил (iPhone иначе „заключва“ полето)
 // празните раздели обясняват за какво са
-const EMPTYTXT={life:'Тук ще се събират видовете ти — всеки с коронка, която показва колко добре го познаваш.',
-  outs:'Тук ще са излетите ти. Преди разходка за птици натисни „Излет“ — записите ще се съберат заедно.',
-  map:'Тук ще видиш на карта къде си записвал птици, а отдолу — Местата си.',
-  phen:'Фенологията показва кога идват и си отиват видовете. Започни да записваш — след няколко месеца ще видиш картината.'};
+const EMPTYTXT={life:'Тук ще се събират видовете ти - всеки с коронка, която показва колко добре го познаваш.',
+  outs:'Тук ще са излетите ти. Преди разходка за птици натисни „Излет“ - наблюденията ще се съберат заедно.',
+  map:'Тук ще видиш на карта къде си записвал птици, а отдолу - Местата си.',
+  phen:'Фенологията показва кога идват и си отиват видовете. Започни да записваш - след няколко месеца ще видиш картината.'};
 // профилът: „Данни“ (износ и резервни копия, преместени отдолу) и „Как се ползва“
 let FOOTB=null;   // откача се при стартиране — след като всички бутони са получили действията си
 function acctExtras(el){const d=document.createElement('div');
@@ -4119,7 +4121,7 @@ function acctExtras(el){const d=document.createElement('div');
     fsec('myph','📷 Снимки · '+galItems(OBS).length,galHTML(OBS))+
     (ME?pcard('🔔','Известия на този телефон','<div id="pushSlot"><div class="note2" style="max-width:none">…</div></div>'):'')+
     pcard('💾','Данни и настройки','<div class="note2" style="max-width:none">Износ за таблица и eBird, резервно копие и тема.</div><div id="dataSlot"></div>'+
-      '<label class="qtog"><input type="checkbox" data-quiet'+(quiet()?' checked':'')+'><span>Тих режим — без изскачащи поздравления и конфети</span></label>'+
+      '<label class="qtog"><input type="checkbox" data-quiet'+(quiet()?' checked':'')+'><span>Тих режим - без изскачащи поздравления и конфети</span></label>'+
       '<div class="note2" id="refInfo" style="max-width:none;margin-top:10px"></div><div class="fbtns"><button type="button" class="btn" data-refclear>Изчисти примерните снимки</button></div>')+
     pcard('❓','Помощ','<details class="phow"><summary>Как се ползва</summary><div class="howto">'+Object.values(TIPTXT).map(t=>'<p>'+t+'</p>').join('')+'</div></details>'+
       '<div class="fbtns"><button type="button" class="btn" data-tipsreset>Покажи съветите отново</button><button type="button" class="btn" data-report>Съобщи за проблем</button></div>')+
@@ -4128,7 +4130,7 @@ function acctExtras(el){const d=document.createElement('div');
   el.appendChild(d);const sl=d.querySelector('#dataSlot');if(sl&&FOOTB)sl.appendChild(FOOTB);setTimeout(loadPhotos,0);if(ME)pushRender();   // и снимките в галерията
   const ri=d.querySelector('#refInfo'),mb=n=>(n/1e6).toFixed(1).replace('.',',')+' MB';
   (async()=>{let t='';try{const e=await navigator.storage.estimate();if(e&&e.usage!=null)t='Приложението заема '+mb(e.usage)+'. ';}catch(x){}
-    ri.textContent=t+'Примерните снимки (Уикипедия) — '+mb(refUsed())+'.';})();}
+    ri.textContent=t+'Примерните снимки (Уикипедия) - '+mb(refUsed())+'.';})();}
 // ---- резервни копия: дата в името, помни се кога е правено последното, „Изпрати копие" го праща извън телефона ----
 const KBK='bird-journal-lastbak';
 const ymd=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
@@ -4173,32 +4175,32 @@ const BDEF=[
   BD('early','Ранобудник','field','сутрини с птица преди изгрева',[5,25,100],R=>new Set(R.filter(OLDB.early.hit).map(o=>o.date)).size,OLDB.early.icon),
   BD('night','Нощна смяна','field','видове сови, записани в тъмното',[1,3,6],R=>new Set(R.filter(OLDB.night.hit).map(key)).size,OLDB.night.icon),
   BD('outings','На терен','field','излети',[20,100,400],()=>outings().length),
-  BD('records','Неуморен','field','записи (по един за вид и ден)',[200,500,1000],R=>new Set(R.map(bUniq)).size),
+  BD('records','Неуморен','field','наблюдения (по едно за вид и ден)',[200,500,1000],R=>new Set(R.map(bUniq)).size),
   BD('patch','Моят участък','field','дни на едно място (до ~500 м)',[30,150,450],R=>maxSize(bySet(R,o=>cellOf(o,.5),o=>o.date))),
   BD('places','Изследо\u00adвател','field','различни места (на ~1 км едно от друго)',[50,250,750],R=>new Set(R.map(o=>cellOf(o,1)).filter(Boolean)).size),
-  BD('steady','Постоянство','field','дни със записи за 365 поредни дни (най-добрият ти период)',[100,200,300],R=>bestWindow(R.map(o=>o.date),365)),
+  BD('steady','Постоянство','field','дни с наблюдения за 365 поредни дни (най-добрият ти период)',[100,200,300],R=>bestWindow(R.map(o=>o.date),365)),
   BD('bigout','Богат излет','field','видове на един излет',[25,45,70],R=>maxSize(bySet(R,o=>o.sess||'',key))),
   BD('bigday','Голям ден','field','видове за един ден',[30,60,100],R=>maxSize(bySet(R,o=>o.date,key))),
   BD('species','Ловец на видове','list','видове в дневника',[100,200,300],R=>new Set(R.map(key).filter(Boolean)).size),
   BD('seasons','Четири сезона','seas','видове във всеки от четирите сезона',[8,40,100],R=>Object.values(bySet(R,key,o=>SEAS4(+o.date.slice(5,7)))).filter(x=>x.size===4).length,OLDB.seasons.icon),
   BD('year12','Цяла година','seas','видове във всеки от 12-те месеца',[5,15,30],R=>Object.values(bySet(R,key,o=>o.date.slice(5,7))).filter(x=>x.size===12).length),
-  BD('winter','Зимни гости','seas','видове през една зима (дек.–фев.)',[25,50,75],R=>maxSize(bySet(R.filter(o=>{const m=+o.date.slice(5,7);return m===12||m<=2;}),o=>+o.date.slice(0,4)-(+o.date.slice(5,7)===12?0:1),key))),
+  BD('winter','Зимни гости','seas','видове през една зима (дек.-фев.)',[25,50,75],R=>maxSize(bySet(R.filter(o=>{const m=+o.date.slice(5,7);return m===12||m<=2;}),o=>+o.date.slice(0,4)-(+o.date.slice(5,7)===12?0:1),key))),
   BD('loyal','Верен спътник','seas','дни с един и същ вид',[30,100,365],R=>maxSize(bySet(R,key,o=>o.date))),
   BD('photo','Фотограф','sci','видове с твоя снимка',[50,100,200],R=>new Set(R.filter(o=>o.photo).map(key)).size,OLDB.photo.icon),
   BD('complete','Пълен списък','sci','излети с „да, всички“',[5,25,100],()=>outings().filter(x=>x.complete===true).length),
-  BD('etho','Етолог','sci','записи с поведение или код за гнездене',[125,625,2500],R=>new Set(R.filter(o=>(o.beh&&o.beh.length)||o.bc).map(bUniq)).size),
+  BD('etho','Етолог','sci','наблюдения със записано поведение или код за гнездене',[125,625,2500],R=>new Set(R.filter(o=>(o.beh&&o.beh.length)||o.bc).map(bUniq)).size),
     BD('atlas','Атласист','sci','видове с вероятно или потвърдено гнездене (B или C)',[10,25,50],R=>new Set(R.filter(o=>(+o.bc||0)>=3).map(key)).size),
     BD('ear','По слух','sci','видове, само чути (никога видени)',[5,15,30],R=>{const L={};for(const o of R){const k=key(o);if(k)L[k]=Math.max(L[k]||0,lvl(o));}return Object.values(L).filter(v=>v===1).length;}),
-    BD('counter','Броячът','sci','записи с разбивка по пол и възраст',[25,100,300],R=>R.filter(o=>o.as&&Object.keys(o.as).length).length),
-    BD('squares','Квадрати','field','квадрати 10×10 км с записи',[5,15,40],R=>new Set(R.map(o=>{const q=sqOf(o.geo);return q?q.id:'';}).filter(Boolean)).size),
+    BD('counter','Броячът','sci','наблюдения с разбивка по пол и възраст',[25,100,300],R=>R.filter(o=>o.as&&Object.keys(o.as).length).length),
+    BD('squares','Квадрати','field','квадрати 10×10 км с наблюдения',[5,15,40],R=>new Set(R.map(o=>{const q=sqOf(o.geo);return q?q.id:'';}).filter(Boolean)).size),
     BD('path','Пътят','field','км, извървени със „📍 път“',[10,50,200],R=>Math.floor(outings().reduce((a,x)=>a+(+x.dist||0),0))),
     BD('rare','Рядкости','list','редки (случайни) видове',[5,12,25],R=>new Set(R.filter(o=>isRareSp(o)).map(key)).size),
     BD('idhelp','Определител','soc','твои определения, приети от приятели',[1,5,20],R=>ME&&FR?(FR.fol||[]).reduce((a,f)=>a+((f.data&&f.data.obs)||[]).filter(o=>o.askOk&&o.askOk.by===ME.id).length,0):0),
     Object.assign(BD('mission','Мисията изпълнена','list','постигнати цели (остават и след махане на целта)',[3,10,25],R=>tgReachedN()),{own:true}),
-  BD('notes','Летописец','sci','записи с бележка (поне 20 знака)',[25,125,500],R=>new Set(R.filter(o=>(o.note||'').trim().length>=20).map(bUniq)).size),
-  BD('flock','Голямо ято','sci','птици в един запис',[200,1000,10000],R=>Math.max(0,...R.map(o=>cntNum(o.count)))),
+  BD('notes','Летописец','sci','наблюдения с бележка (поне 20 знака)',[25,125,500],R=>new Set(R.filter(o=>(o.note||'').trim().length>=20).map(bUniq)).size),
+  BD('flock','Голямо ято','sci','птици в едно наблюдение',[200,1000,10000],R=>Math.max(0,...R.map(o=>cntNum(o.count)))),
   BD('together','Заедно','soc','излети заедно с приятел',[10,35,100],()=>sharedOutings()),
-  BD('bravo','Браво!','soc','„Браво“ — дадени и получени',[25,125,500],()=>ME?SOC.filter(s=>s.kind==='bravo'&&(s.author===ME.id)!==(s.owner===ME.id)).length:0),
+  BD('bravo','Браво!','soc','„Браво“ - дадени и получени',[25,125,500],()=>ME?SOC.filter(s=>s.kind==='bravo'&&(s.author===ME.id)!==(s.owner===ME.id)).length:0),
   BD('talk','Събеседник','soc','твои коментари към излети на приятели',[10,50,200],()=>ME?SOC.filter(s=>s.kind==='comment'&&s.author===ME.id&&s.owner!==ME.id).length:0),
   // семействата (2026-11-03.2): общият брой е по-малкото от местните видове по „Полеви определител…“ (Иван) и в Перá
   ...FAMB.map(([f,n])=>n>=7?BD('f:'+f,f,'fam','видове от групата (местни: '+n+')',[Math.round(.3*n),Math.round(.5*n),Math.round(.9*n)],R=>new Set(R.filter(o=>grp(o)===f).map(key)).size)
@@ -4211,26 +4213,26 @@ const fmtN=n=>Number(n).toLocaleString('bg-BG');
 const KBDG='bird-journal-tiers';let BDG=lsGet(KBDG,{})||{};
 function saveBdg(){lsSet(KBDG,BDG);queueSync();}
 function yayTier(d,t){return {cls:'badge',cf:12+t*6,ms:6000,html:'<div class="yaypic bdi2 t'+t+'">'+(d.icon||BICON[d.sec])+'</div><div class="yaytx"><div class="yayt">Нова значка!</div>'+
-  '<div class="yaynm">'+esc(d.name)+' — '+tierName(d,t).toLowerCase()+'</div><div class="yaym">'+esc(d.how)+': '+fmtN(d.g[t-1])+'</div></div>'};}
+  '<div class="yaynm">'+esc(d.name)+' - '+tierName(d,t).toLowerCase()+'</div><div class="yaym">'+esc(d.how)+': '+fmtN(d.g[t-1])+'</div></div>'};}
 const tierName=(d,t)=>d.g.length===1?'спечелена':TIER[t-1];
 function bdCard(d,s,nw){const one=d.g.length===1,t=s.t,next=t<d.g.length?d.g[t]:null,prev=t?d.g[t-1]:0,pct=next?Math.max(0,Math.min(100,Math.round(100*(s.v-prev)/(next-prev)))):100,
     isNew=!!nw&&[1,2,3].some(i=>i<=t&&nw.has(d.id+':'+i));
     const ring=one&&t?3:t;
     return '<div class="bd2 t'+ring+(isNew?' new':'')+'" data-bid="'+esc(d.id)+'"><span class="bdi2 t'+ring+'">'+(d.icon||BICON[d.sec])+'</span><div class="bdx"><b>'+esc(d.name)+(isNew?'<span class="newtag">ново</span>':'')+'</b>'+
       '<small class="bdt">'+(t?tierName(d,t):'още няма')+'</small><div class="bdp"><i style="width:'+pct+'%"></i></div>'+
-      '<small class="bdn">'+fmtN(s.v)+(next?' / '+fmtN(next)+(one?'':' до '+TIER[t].toLowerCase()):(one?' — спечелена':' — най-високото ниво'))+'</small><small class="bdh">'+esc(d.how)+'</small></div></div>';}
+      '<small class="bdn">'+fmtN(s.v)+(next?' / '+fmtN(next)+(one?'':' до '+TIER[t].toLowerCase()):(one?' - спечелена':' - най-високото ниво'))+'</small><small class="bdh">'+esc(d.how)+'</small></div></div>';}
 
 function lastBak(){try{return +(localStorage.getItem(KBK)||0)||0;}catch(e){return 0;}}
 function markBak(){try{localStorage.setItem(KBK,String(Date.now()));}catch(e){}bakUI();}
 function bakUI(){const t=lastBak(), days=t?Math.floor((Date.now()-t)/864e5):0;
   const due=t?(days>=30&&OBS.some(o=>+o.id>t)):OBS.length>=10;   // напомня само ако има нови записи след копието
   document.getElementById('bakNag').classList.toggle('on',!!due);
-  if(due)document.getElementById('bakNagTxt').textContent=t?'Последното резервно копие е отпреди '+dni(days)+'.':'Още нямаш резервно копие на тези '+OBS.length+' записа.';
+  if(due)document.getElementById('bakNagTxt').textContent=t?'Последното резервно копие е отпреди '+dni(days)+'.':'Още нямаш резервно копие на тези '+OBS.length+' наблюдения.';
   document.getElementById('bakInfo').textContent=t?'Последно копие: '+human(ymd(t))+'.':(OBS.length?'Още нямаш резервно копие.':'');}
 const canShareFiles=(()=>{try{return !!(navigator.share&&navigator.canShare&&navigator.canShare({files:[new File(['{}'],'t.txt',{type:'text/plain'})]}));}catch(e){return false;}})();
 async function shareBak(){const d=bakData();let f=new File([d],bakName()+'.json',{type:'application/json'});
   try{if(!navigator.canShare({files:[f]}))f=new File([d],bakName()+'.txt',{type:'text/plain'});}catch(e){}   // Chrome на Android не праща .json; .txt минава и „Възстанови" го приема
-  try{await navigator.share({files:[f],title:'Перá — резервно копие'});markBak();}
+  try{await navigator.share({files:[f],title:'Перá - резервно копие'});markBak();}
   catch(e){if(e&&e.name!=='AbortError')alert('Не стана. Ползвай „Резервно копие" и прехвърли файла ръчно.');}}
 document.getElementById('bak').onclick=()=>{offer(bakName()+'.json',bakData(),'application/json');markBak();};
 document.getElementById('shr').onclick=shareBak;
@@ -4239,7 +4241,7 @@ if(canShareFiles)document.getElementById('shr').style.display='';
 document.getElementById('impb').onclick=()=>document.getElementById('impf').click();
 document.getElementById('impf').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
   r.onload=()=>{try{const d=JSON.parse(r.result);const a=Array.isArray(d)?d:d.obs;if(!Array.isArray(a))throw 0;
-    if(confirm('Да заменя ли сегашните '+OBS.length+' записа с '+a.length+' от файла?')){
+    if(confirm('Да заменя ли сегашните '+OBS.length+' наблюдения с '+a.length+' от файла?')){
       OBS=a; if(d&&Array.isArray(d.beh)&&d.beh.length){BEH=d.beh;saveBeh();}
       OUTS=d&&Array.isArray(d.outs)?d.outs:[];saveOuts();
       DEL=d&&d.del&&d.del.obs?d.del:{obs:{},outs:{}};try{localStorage.setItem(KDEL,JSON.stringify(DEL));}catch(x){}
@@ -4302,15 +4304,15 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-16.1';
+const VER='2026-11-17.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 let instEvt=null;
 function instHTML(){if(!web||standalone())return '';
-  if(instEvt)return '<button type="button" class="btn" data-inst>Инсталирай като приложение</button> — работи и без интернет.';
-  if(isIOS)return 'За да работи без интернет и Safari да не изтрие записите: <b>Сподели → Добави към началния екран</b>, после го отваряй само оттам.';
+  if(instEvt)return '<button type="button" class="btn" data-inst>Инсталирай като приложение</button> - работи и без интернет.';
+  if(isIOS)return 'За да работи без интернет и Safari да не изтрие наблюденията: <b>Сподели → Добави към началния екран</b>, после го отваряй само оттам.';
   return '';}
 function instUI(){document.getElementById('inst').innerHTML=instHTML();}
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEvt=e;instUI();if(!OBS.length)render();});
@@ -4339,14 +4341,14 @@ function sbClient(){
     s.onerror=()=>{sbP=null;s.remove();no(new Error('offline'));};document.head.appendChild(s);}));}
 function errMsg(e){const m=String(e&&(e.message||e.error_description||e.msg)||e);
   if(/Invalid login/i.test(m))return 'Грешен имейл или парола.';
-  if(/not confirmed/i.test(m))return 'Адресът още не е потвърден — отвори писмото от Supabase.';
-  if(/already registered|already been registered/i.test(m))return 'Има профил с този имейл — влез с него.';
+  if(/not confirmed/i.test(m))return 'Адресът още не е потвърден - отвори писмото от Supabase.';
+  if(/already registered|already been registered/i.test(m))return 'Има профил с този имейл - влез с него.';
   if(/at least 6|Password should/i.test(m))return 'Паролата трябва да е поне 6 знака.';
   if(/signups? not allowed|signup_disabled/i.test(m))return 'Засега не се приемат нови профили.';   // нови профили изключени в Supabase
   if(/offline|Failed to fetch|NetworkError|Load failed|fetch/i.test(m))return 'Няма връзка със сървъра (или проектът в Supabase е заспал).';
   return m;}
-function footNote(){document.getElementById('priv').textContent=ME?'Записите ти са на този телефон и в профила ти; виждат ги само хората, на които си дал кода си.':
-  'Записите се пазят в този браузър, на това устройство. Никой друг не ги вижда.';}
+function footNote(){document.getElementById('priv').textContent=ME?'Наблюденията ти са на този телефон и в профила ти; виждат ги само хората, на които си дал кода си.':
+  'Наблюденията се пазят в този браузър, на това устройство. Никой друг не ги вижда.';}
 function paintStat(){const e=document.getElementById('sbStat');if(e)e.textContent=sbStat;}
 async function sbStart(){if(!sbOn()||sbBusy)return;sbBusy=true;sbTried=true;
   try{const sb=await sbClient();const {data}=await sb.auth.getSession();ME=data.session?data.session.user:null;if(ME&&RECLINK&&!PWREC)pwRecovery(data.session);if(ME)await afterSignIn();}
@@ -4386,12 +4388,12 @@ function mergeIn(d){const had=new Set(OBS.map(o=>String(o.id))),dd=d.del||{};
 async function syncNow(){
   if(!SB||!ME||syncing)return;
   const linked=lsGet(KL,null);
-  if(linked&&linked!==ME.id){sbStat='Дневникът на този телефон е свързан с друг профил — не го качвам.';paintStat();return;}
+  if(linked&&linked!==ME.id){sbStat='Дневникът на този телефон е свързан с друг профил - не го качвам.';paintStat();return;}
   if(!linked){lsSet(KL,ME.id);lsSet(KU,[]);lsSet(KSEEN,null);lsSet(KHASH,null);}
   syncing=true;lastSync=Date.now();sbStat='синхронизира…';paintStat();
   try{let got=0,pulled=0;
     for(let i=0;;i++){
-      if(i>=4)throw new Error('Друго устройство пише в същия момент — ще опитам пак след малко.');
+      if(i>=4)throw new Error('Друго устройство пише в същия момент - ще опитам пак след малко.');
       const m=await SB.from('journals').select('updated_at').eq('user_id',ME.id).maybeSingle();if(m.error)throw m.error;
       let base=m.data&&m.data.updated_at;
       if(base&&base!==lsGet(KSEEN,null)){   // друго устройство е писало: теглим и сливаме
@@ -4413,7 +4415,7 @@ async function syncNow(){
     const pd=lsGet(KPD,[]);   // снимки, махнати или сменени тук
     if(pd.length){const r=await SB.storage.from('photos').remove(pd.map(x=>ME.id+'/'+x+'.jpg'));if(!r.error){lsSet(KPD,[]);lsSet(KU,[...up].filter(x=>!pd.includes(x)));}}
     if(pulled)render();
-    sbStat='синхронизирано в '+nowTime()+(got?' · '+got+(got===1?' нов запис':' нови записа')+' от другото устройство':'');}
+    sbStat='синхронизирано в '+nowTime()+(got?' · '+got+(got===1?' ново наблюдение':' нови наблюдения')+' от другото устройство':'');}
   catch(e){sbStat=errMsg(e);}
   syncing=false;paintStat();
   if(Date.now()-lastFr>60*1000)loadFriends();}   // поканите, новите записи и реакциите идват с дневниците на приятелите
@@ -4451,8 +4453,10 @@ function fdItems(){const items=[];
   for(const p of fdPeople()){const obs=p.obs.filter(shareable),byId={},bySess={},loose={};for(const o of p.outs||[])byId[o.id]=o;
     for(const r of obs){if(r.sess)(bySess[r.sess]=bySess[r.sess]||[]).push(r);else (loose[r.date]=loose[r.date]||[]).push(r);}
     for(const [sid,rs] of Object.entries(bySess)){const o=byId[sid]||{};items.push({p,kind:'o',key:'o:'+sid,sid,o,rs,date:o.date||rs[0].date,t:o.end||maxT(rs)});}
-    for(const [d,rs] of Object.entries(loose))items.push({p,kind:'d',key:'d:'+d,o:{},rs,date:d,t:maxT(rs)});}
+    for(const [d,rs] of Object.entries(loose))items.push({p,kind:'d',key:'d:'+d,o:{},rs,date:d,t:maxT(rs)});
+    if(!p.me)for(const r of obs)if(r.ask&&!r.askOk&&r.date>=askLim())items.push({p,kind:'q',key:'q:'+r.id,q:r,o:{},rs:[r],date:r.date,t:r.time||''});}   // въпрос „какво е това?“ — обикновена публикация на мястото си във времето
   return items.sort((a,b)=>(b.date+(b.t||'')).localeCompare(a.date+(a.t||'')));}
+const askLim=()=>ymd(Date.now()-60*864e5);   // въпроси от последните 60 дни
 const nameOf=u=>ME&&u===ME.id?(MYNAME||'Ти'):(((FR&&[...(FR.fol||[]),...(FR.fans||[])])||[]).find(f=>f.id===u)||{}).name||SOCN[u]||'приятел';
 const byDT=(a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''))||(a.id-b.id);
 // Акценти за човека: кой запис е първи за вида му, за годината, кой е спечелил значка, кой е 100-ният вид
@@ -4461,7 +4465,7 @@ function fdMarks(p){if(p._m)return p._m;const kk=ufKeyer(p.obs),R=p.obs.filter(o
     if(!first[k]){first[k]=o.id;if(++n===100)sto=o.id;}
     if(!year[k+'|'+y])year[k+'|'+y]=o.id;
   }
-  for(const [k,v] of Object.entries(p.bdg||{})){const i=k.lastIndexOf(':'),d=BDEF.find(x=>x.id===k.slice(0,i));if(d&&v&&v.r!=null)(badge[v.r]=badge[v.r]||[]).push(d.name+' — '+TIER[+k.slice(i+1)-1].toLowerCase());}
+  for(const [k,v] of Object.entries(p.bdg||{})){const i=k.lastIndexOf(':'),d=BDEF.find(x=>x.id===k.slice(0,i));if(d&&v&&v.r!=null)(badge[v.r]=badge[v.r]||[]).push(d.name+' - '+TIER[+k.slice(i+1)-1].toLowerCase());}
   return p._m={kk,first:new Set(Object.values(first)),year:new Set(Object.values(year)),badge,sto};}
 function fdHighlights(it){const m=fdMarks(it.p),rs=it.rs.filter(r=>!r.u),nw=rs.filter(r=>m.first.has(r.id)),yr=rs.filter(r=>!m.first.has(r.id)&&m.year.has(r.id)),
     bd=rs.flatMap(r=>m.badge[r.id]||[]),who=it.p.me?'':' за '+it.p.name,h=[];
@@ -4485,7 +4489,7 @@ function fdSocial(it){if(!ME)return '';const k=it.p.id+'|'+it.key,rows=SOC.filte
     '<button type="button" class="sb" data-cm="'+esc(k)+'">Коментари'+(cm.length?' · '+cm.length:'')+'</button>'+
       (!it.p.me&&afterMine(it.p.id,it.key).length&&typeof feedVisit!=='undefined'&&feedVisit&&feedVisit.has(fdKey(it))?'<span class="nreply">нов отговор</span>':'');
   if(!it.p.me&&it.kind==='o'){const linked=OUTS.some(o=>o.orig&&o.orig.u===it.p.id&&o.orig.o===it.sid),asked=th.find(s=>s.author===ME.id);
-    h+=linked?'':asked?'<span class="sbn">„Бях там“ — чака '+esc(it.p.name)+'</span>':'<button type="button" class="sb" data-there="'+esc(k)+'">Бях там</button>';}
+    h+=linked?'':asked?'<span class="sbn">„Бях там“ - чака '+esc(it.p.name)+'</span>':'<button type="button" class="sb" data-there="'+esc(k)+'">Бях там</button>';}
   h+='</div>';
   if(br.length)h+='<div class="sbn">Браво от '+esc(br.map(s=>nameOf(s.author)).join(', '))+'</div>';
   if(it.p.me)for(const s of th)h+='<div class="sreq"><span><b>'+esc(nameOf(s.author))+'</b> иска да се присъедини към този излет</span>'+
@@ -4508,24 +4512,24 @@ function fdRec(p,r){const F=fdMarks(p);
       (r.h?'<span class="tag h">чух</span>':'')+(r.s?'<span class="tag s">видях</span>':'')+(r.p?'<span class="tag p">снимах</span>':'')+(r.beh||[]).map(b=>'<span class="tag b">'+esc(b)+'</span>').join('')+'</div></div>';}
 function fdCard(it,isNew){const p=it.p,m=fdMarks(p),k=p.id+'|'+it.key,sure=it.rs.filter(r=>!r.u),sp=[...new Map(sure.map(r=>[m.kk(r),r.bg||r.en||r.la])).values()],
     pts=[...new Set(it.rs.filter(r=>r.geo).map(r=>r.geo))],ph=[...it.rs].filter(r=>r.photo).sort(byDT),
-    tm=it.kind==='o'&&it.o.start&&it.o.end?it.o.start+'–'+it.o.end:(minT(it.rs)&&maxT(it.rs)&&minT(it.rs)!==maxT(it.rs)?minT(it.rs)+'–'+maxT(it.rs):maxT(it.rs)),
+    tm=it.kind==='o'&&it.o.start&&it.o.end?it.o.start+'-'+it.o.end:(minT(it.rs)&&maxT(it.rs)&&minT(it.rs)!==maxT(it.rs)?minT(it.rs)+'-'+maxT(it.rs):maxT(it.rs)),
     pl=it.o.place||(it.rs.find(r=>r.place)||{}).place||'',open=openFeed===k;FEEDPTS[k]=pts;
   return '<div class="fc'+(p.me?' me':'')+(isNew?' new':'')+'" data-fc="'+esc(k)+'"><div class="fch"><span class="av">'+esc((p.me?(MYNAME||'Т'):p.name||'?').slice(0,1).toUpperCase())+'</span>'+
       '<div class="fchn"><b'+(p.me?'':' data-fr="'+esc(p.id)+'" class="fwho"')+'>'+esc(p.me?'Ти':p.name)+(isNew?'<span class="newtag">ново</span>':'')+'</b><small>'+(it.kind==='o'?'излет · ':'')+human(it.date)+(tm?' · '+esc(tm):'')+(pl?' · '+esc(pl):'')+
       (it.o.with?' · с '+esc(it.o.with):'')+'</small></div></div>'+
-    '<div class="fcb">'+(pts.length?'<div class="oumap" data-fmap="'+esc(k)+'"></div>':'')+'<div class="fct"><div class="fcn">'+sp.length+(sp.length===1?' вид':' вида')+' · '+it.rs.length+(it.rs.length===1?' запис':' записа')+'</div>'+
+    '<div class="fcb">'+(pts.length?'<div class="oumap" data-fmap="'+esc(k)+'"></div>':'')+'<div class="fct"><div class="fcn">'+sp.length+(sp.length===1?' вид':' вида')+' · '+it.rs.length+(it.rs.length===1?' наблюдение':' наблюдения')+'</div>'+
       '<div class="fhl">'+fdHighlights(it)+'</div></div></div>'+
     '<div class="sl">'+sp.map(n=>'<span>'+esc(n)+'</span>').join('')+'</div>'+
     (ph.length?'<div class="ouph">'+ph.map(r=>p.me?'<div class="th" data-th="'+r.photo+'" title="'+esc(r.bg||r.la||'')+'"></div>':'<div class="th" data-fph="'+esc(p.id+'/'+r.photo)+'" title="'+esc(r.bg||r.la||'')+'"></div>').join('')+'</div>':'')+
     fdCompare(it)+fdSocial(it)+
-    (open?'<div class="fcr">'+[...it.rs].sort((a,b)=>byDT(b,a)).map(r=>fdRec(p,r)).join('')+'</div>':'<div class="fmore">докосни за записите</div>')+'</div>';}
+    (open?'<div class="fcr">'+[...it.rs].sort((a,b)=>byDT(b,a)).map(r=>fdRec(p,r)).join('')+'</div>':'<div class="fmore">докосни за наблюденията</div>')+'</div>';}
 function renderFeed(el){let all=fdItems();
   if(feedVisit===null)feedVisit=new Set(all.filter(isNewItem).map(fdKey));   // редът не се мени, докато гледаш
   all=[...all.filter(it=>feedVisit.has(fdKey(it))),...all.filter(it=>!feedVisit.has(fdKey(it)))];
   if(FDF!=='all')all=all.filter(it=>FDF==='me'?!!it.p.me:!it.p.me);   // „Мои“ / „На приятели“
   const its=all.slice(0,FEEDN);
-  el.innerHTML=inviteBanner()+askSection()+(ME?fdfHTML():'')+(its.length?its.map(it=>fdCard(it,feedVisit.has(fdKey(it)))).join('')+(all.length>FEEDN?'<div class="fbtns"><button type="button" class="btn" data-feedmore>Покажи още</button></div>':''):
-    '<div class="empty">Тук ще се появяват излетите и записите на приятелите ти — и твоите. Добави приятел от кръгчето горе вдясно.</div>');
+  el.innerHTML=inviteBanner()+(ME?fdfHTML():'')+(its.length?its.map(it=>(it.kind==='q'?fdQCard:fdCard)(it,feedVisit.has(fdKey(it)))).join('')+(all.length>FEEDN?'<div class="fbtns"><button type="button" class="btn" data-feedmore>Покажи още</button></div>':''):
+    '<div class="empty">Тук ще се появяват излетите и наблюденията на приятелите ти - и твоите. Добави приятел от кръгчето горе вдясно.</div>');
   for(const d of el.querySelectorAll('[data-fmap]'))staticMap(d,(FEEDPTS[d.dataset.fmap]||[]).map(g=>g.split(',').map(Number)));
   loadThumbs();loadPhotos();loadFriendPhotos();}
 // ---- социалната таблица ----
@@ -4542,35 +4546,32 @@ async function socDel(id){if(!SB||!ME)return;const r=await SB.from('social').del
 const PROP=/^🔎 ([^\n(]+?)(?: \(([^)\n]+)\))?(?:\n([\s\S]*))?$/;
 function qProps(owner,id){return SOC.filter(s=>s.kind==='comment'&&s.owner===owner&&s.item==='q:'+id).map(s=>{const m=PROP.exec(s.body||'');return m?{s,bg:m[1].trim(),la:(m[2]||'').trim(),cm:(m[3]||'').trim()}:null;}).filter(Boolean);}
 const qN=(owner,id)=>owner?qProps(owner,id).length:0;
-function openAsks(){if(!ME||!FR)return [];const lim=ymd(Date.now()-60*864e5),out=[];
-  for(const f of FR.fol||[])for(const o of ((f.data&&f.data.obs)||[]))if(o.ask&&!o.askOk&&o.date>=lim)out.push({f,o});
-  return out.sort((a,b)=>(b.o.ask||0)-(a.o.ask||0));}
 function propSummary(owner,id){const P=qProps(owner,id);if(!P.length)return '<div class="note2" style="max-width:none">Още няма предложения.</div>';
   const g={};for(const x of P){const k=nrm(x.la||x.bg);(g[k]=g[k]||{bg:x.bg,la:x.la,who:[]}).who.push(nameOf(x.s.author));}
   return '<div class="qsum">'+Object.values(g).sort((a,b)=>b.who.length-a.who.length).map(x=>'<span class="qchip"><b>'+esc(x.bg)+'</b>'+(x.who.length>1?' ×'+x.who.length:'')+' <small>'+x.who.map(esc).join(', ')+'</small></span>').join('')+'</div>';}
-function askSection(){const A=openAsks();if(!A.length)return '';
-  return '<h3 class="bdsec">🔎 Помогни с определянето</h3>'+A.map(({f,o})=>{const mine=qProps(f.id,o.id).some(x=>x.s.author===ME.id);
-    return '<div class="askc">'+(o.photo?'<div class="ph" data-fph="'+esc(f.id+'/'+o.photo)+'"></div>':'')+'<div class="askx"><b>'+esc(f.name)+' пита: какво е това?</b>'+
-      '<small>'+esc(human(o.date))+(o.time?' · '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+' · '+esc(howTxt(o))+'</small>'+
+function fdQCard(it,isNew){const p=it.p,o=it.q,mine=qProps(p.id,o.id).some(x=>x.s.author===ME.id);   // въпрос на приятел като публикация в потока
+  return '<div class="fc fq'+(isNew?' new':'')+'" data-fc="'+esc(fdKey(it))+'"><div class="fch"><span class="av">'+esc((p.name||'?').slice(0,1).toUpperCase())+'</span>'+
+      '<div class="fchn"><b data-fr="'+esc(p.id)+'" class="fwho">'+esc(p.name)+(isNew?'<span class="newtag">ново</span>':'')+'</b><small>🔎 пита: какво е това? · '+human(o.date)+(o.time?' · '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+'</small></div></div>'+
+    '<div class="askc">'+(o.photo?'<div class="ph" data-fph="'+esc(p.id+'/'+o.photo)+'"></div>':'')+'<div class="askx">'+(howTxt(o)?'<small>'+esc(howTxt(o))+'</small>':'')+
       (o.bg&&o.bg!=='Непозната птица'?'<div>Мисли, че може да е <b>'+esc(o.bg)+'</b>'+(o.alt&&o.alt.length?' или '+o.alt.map(esc).join(' или '):'')+'</div>':'')+
-      (o.note?'<div class="asknote">'+esc(o.note)+'</div>':'')+propSummary(f.id,o.id)+
-      '<button type="button" class="btn'+(mine?'':' pri')+'" data-qprop="'+esc(f.id+'|'+o.id)+'">'+(mine?'Предложи друг вид':'Предложи вид')+'</button></div></div>';}).join('');}
+      (o.note?'<div class="asknote">'+esc(o.note)+'</div>':'')+propSummary(p.id,o.id)+
+      '<button type="button" class="btn'+(mine?'':' pri')+'" data-qprop="'+esc(p.id+'|'+o.id)+'">'+(mine?'Предложи друг вид':'Предложи вид')+'</button></div></div></div>';}
 const howTxt=o=>[o.h?'чут':'',o.s?'видян':'',o.p?'сниман':''].filter(Boolean).join(', ');
 let qAt=null;
 function openId(owner,id){qAt={owner,id};const o=(((FR&&FR.fol)||[]).find(f=>f.id===owner)||{data:{obs:[]}}).data.obs.find(o=>String(o.id)===String(id))||{};
   document.getElementById('id-t').textContent='Какво е това? ('+esc(nameOf(owner))+', '+human(o.date||today())+')';
   document.getElementById('id-bg').value='';document.getElementById('id-cm').value='';document.getElementById('id-la').textContent='';document.getElementById('idDlg').showModal();setTimeout(()=>document.getElementById('id-bg').focus(),50);}
 function idLook(){const v=document.getElementById('id-bg').value.trim(),c=v?listFind('bg',v)||listFind('la',v)||listFind('en',v):null;
-  document.getElementById('id-la').textContent=c?[c.la,c.en].filter(Boolean).join(' · '):(v?'Няма го в списъка — ще се изпрати както е написано.':'');return c;}
+  document.getElementById('id-la').textContent=c?[c.la,c.en].filter(Boolean).join(' · '):(v?'Няма го в списъка - ще се изпрати както е написано.':'');return c;}
 async function idSend(){if(!qAt)return;const v=document.getElementById('id-bg').value.trim();if(!v){document.getElementById('id-bg').focus();return;}
   const c=idLook(),cm=document.getElementById('id-cm').value.trim();
   const body='🔎 '+(c?c.bg:v)+((c&&c.la)?' ('+c.la+')':'')+(cm?'\n'+cm:'');
   document.getElementById('idDlg').close();await socAdd(qAt.owner,'q:'+qAt.id,'comment',body.slice(0,1000));qAt=null;}
 let qOwn=null;
 function openQ(id){const o=OBS.find(o=>o.id===id);if(!o)return;qOwn=id;const P=qProps(ME&&ME.id,id);
-  document.getElementById('q-t').textContent='Какво е това? — '+human(o.date)+(o.place?', '+o.place:'');
+  document.getElementById('q-t').textContent='Какво е това? - '+human(o.date)+(o.place?', '+o.place:'');
   document.getElementById('q-list').innerHTML=P.length?P.map((x,i)=>'<div class="qrow"><div><b>'+esc(x.bg)+'</b>'+(x.la?' <i class="la">'+esc(x.la)+'</i>':'')+
-    '<small> — '+esc(nameOf(x.s.author))+', '+esc(relDay(String(x.s.created_at).slice(0,10)))+'</small>'+(x.cm?'<div class="asknote">'+esc(x.cm)+'</div>':'')+'</div>'+
+    '<small> - '+esc(nameOf(x.s.author))+', '+esc(relDay(String(x.s.created_at).slice(0,10)))+'</small>'+(x.cm?'<div class="asknote">'+esc(x.cm)+'</div>':'')+'</div>'+
     '<button type="button" class="btn pri" data-qok="'+i+'">Приеми</button></div>').join(''):'<div class="note2" style="max-width:none">Още няма предложения. Приятелите ти виждат въпроса горе в „Приятели“.</div>';
   document.getElementById('qDlg').showModal();}
 function qAccept(i){const o=OBS.find(o=>o.id===qOwn),x=qProps(ME&&ME.id,qOwn)[i];if(!o||!x)return;
@@ -4579,7 +4580,7 @@ function qAccept(i){const o=OBS.find(o=>o.id===qOwn),x=qProps(ME&&ME.id,qOwn)[i]
   save();document.getElementById('qDlg').close();qOwn=null;render();}
 function qClose(){const o=OBS.find(o=>o.id===qOwn);if(o){delete o.ask;o.upd=Date.now();save();}document.getElementById('qDlg').close();qOwn=null;render();}
 const fdSplit=k=>{const i=k.indexOf('|');return [k.slice(0,i),k.slice(i+1)];};
-const pendingSocial=()=>ME?SOC.filter(s=>s.kind==='there'&&s.owner===ME.id).length+invites().length+openAsks().filter(({f,o})=>!qProps(f.id,o.id).some(x=>x.s.author===ME.id)).length:0;
+const pendingSocial=()=>ME?SOC.filter(s=>s.kind==='there'&&s.owner===ME.id).length+invites().length:0;   // въпросите — като всяка публикация: нови, докато не ги видиш
 // ---- „ново“: оранжева точка на Приятели и Значки, докато не ги отвориш ----
 // Приятели: нов запис на приятел (нова карта или нова птица в стара) или „Браво“/коментар от друг на твой излет или ден.
 // При отваряне новото е най-отгоре с „ново“; щом излезеш от раздела, се помни като видяно и застава на мястото си.
@@ -4592,6 +4593,7 @@ function fdSig(it){if(it.p.me){const o=SOC.filter(x=>x.owner===it.p.id&&x.item==
      return a.length?g+'|c'+a.length+':'+a.map(x=>x.created_at).sort().pop():g;}}
 const isNewItem=it=>{const g=fdSig(it);return !!g&&!!FSEEN&&FSEEN[fdKey(it)]!==g;};
 function seenSeed(){if(FSEEN===null&&ME&&FR){FSEEN={};for(const it of fdItems())FSEEN[fdKey(it)]=fdSig(it);lsSet(KFSEEN,FSEEN);}   // първия път всичко е видяно
+  if(FSEEN&&!FSEEN['#q']&&ME&&FR){for(const it of fdItems())if(it.kind==='q')FSEEN[fdKey(it)]=fdSig(it);FSEEN['#q']=1;lsSet(KFSEEN,FSEEN);}   // въпросите отпреди 2026-11-17 не изскачат отново като нови
   // „#2“ бележи новия вид значки; обобщителната карта е само за вече ползвалите приложението (имат и сгънати дни)
   if(BSEEN===null||!BSEEN.includes('#2')){const had=BSEEN!==null||(OBS.length>0&&localStorage.getItem('bird-journal-days')!==null),keys=earnedKeys();
     BSEEN=['#2',...keys];lsSet(KBSEEN,BSEEN);
@@ -4625,7 +4627,7 @@ const pav=n=>'<span class="pav" style="--fh:'+nameHue(n||'?')+'">'+esc(initials(
 // паролата: нова след линка за възстановяване (PWREC) или смяна от профила
 let PWREC=false,pwMsg='';
 // без собствен изпращач на имейли Supabase праща само до екипа на проекта — затова засега: „пиши на Иван“
-let SMTP_ON=false;const PWHELP='Пиши на Иван — той ще ти даде временна парола, после я смениш в профила (Профил → Парола).';const RECLINK=/(^|[#&?])type=recovery(&|$)/.test(location.hash+'&'+location.search);
+let SMTP_ON=false;const PWHELP='Пиши на Иван - той ще ти даде временна парола, после я смениш в профила (Профил → Парола).';const RECLINK=/(^|[#&?])type=recovery(&|$)/.test(location.hash+'&'+location.search);
 const pwForm=()=>'<div class="pwf"><input id="pw-new" type="password" autocomplete="new-password" placeholder="нова парола (поне 6 знака)">'+
   '<input id="pw-new2" type="password" autocomplete="new-password" placeholder="още веднъж"><div class="fbtns"><button type="button" class="btn pri" data-sb="pwset">Запази паролата</button></div>'+
   (pwMsg?'<div class="msg">'+esc(pwMsg)+'</div>':'')+'</div>';
@@ -4649,10 +4651,10 @@ function renderAcct(el){
       '<div class="fbtns"><button type="button" class="btn pri" data-sb="in">Вход</button><button type="button" class="btn" data-sb="up">Нов профил</button></div>'+
       '<button type="button" class="linkbtn" data-sb="forgot">Забравена парола?</button></div>';return;}
   const F=FR||{fol:[],fans:[]},R=SURE(),lv=Object.values(tiersNow()).reduce((a,x)=>a+x.t,0),nm=MYNAME||(ME.email||'').split('@')[0];
-  el.innerHTML=acctHead+(PWREC?pcard('🔒','Нова парола','<div class="note2" style="max-width:none">Влезе с линка от писмото. Избери нова парола — после влизаш с нея и на другите си устройства.</div>'+pwForm(),'','fr pwrec'):'')+
+  el.innerHTML=acctHead+(PWREC?pcard('🔒','Нова парола','<div class="note2" style="max-width:none">Влезе с линка от писмото. Избери нова парола - после влизаш с нея и на другите си устройства.</div>'+pwForm(),'','fr pwrec'):'')+
     '<div class="fhero phero" style="--fh:'+nameHue(nm)+'"><div class="fav">'+esc(initials(nm))+'</div><div class="fhn"><h2>'+esc(nm)+'</h2>'+
       '<div class="fhs">'+esc(ME.email||'')+'</div><div class="fhs psync"><i></i><span id="sbStat">'+esc(sbStat)+'</span></div></div></div>'+
-    '<div class="ptiles"><div><b>'+fmtN(spCount(R))+'</b><span>вида</span></div><div><b>'+fmtN(R.length)+'</b><span>записа</span></div>'+
+    '<div class="ptiles"><div><b>'+fmtN(spCount(R))+'</b><span>вида</span></div><div><b>'+fmtN(R.length)+'</b><span>наблюдения</span></div>'+
       '<div><b>'+fmtN(outings().length)+'</b><span>излета</span></div><div><b>'+fmtN(lv)+'</b><span>нива значки</span></div></div>'+
     inviteBanner()+tipHTML('code',TIPTXT.code)+
     pcard('👥','Приятели',friendRows(F)+
@@ -4662,7 +4664,7 @@ function renderAcct(el){
       '<div class="note2" style="max-width:none">С него приятел вижда дневника и снимките ти, без да може да ги променя. Дай го само на хора, на които вярваш.</div>'+
       '<div class="fbtns"><button type="button" class="btn" data-sb="copy">Копирай</button>'+(navigator.share?'<button type="button" class="btn" data-sb="send">Изпрати</button>':'')+
         '<button type="button" class="btn" data-sb="newcode">Нов код</button></div>'+
-      '<h4 class="psub">Виждат твоя дневник</h4>'+(F.fans.length?F.fans.map(f=>'<div class="ar prow">'+pav(f.name)+'<div class="pt"><b>'+esc(f.name)+'</b></div><span><button type="button" class="btn sm" data-unfan="'+esc(f.id)+'">махни</button></span></div>').join('')
+      '<h4 class="psub">Виждат твоя дневник</h4>'+(F.fans.length?F.fans.map(f=>'<div class="ar prow">'+pav(f.name)+'<div class="pt"><b>'+esc(f.name)+'</b></div><span><button type="button" class="btn sm" data-unfan="'+esc(f.id)+'">премахни</button></span></div>').join('')
         :'<div class="note2" style="max-width:none">Никой засега.</div>'),'','fr');}
 function ufKeyer(list){   // вид = записи с поне едно общо име (бг, en, лат.) — както в Моите видове, но за всеки списък
   const P=new Map(),f=x=>{while(P.get(x)!==x){P.set(x,P.get(P.get(x)));x=P.get(x);}return x;};
@@ -4672,8 +4674,8 @@ function ufKeyer(list){   // вид = записи с поне едно общо
   return o=>{const t=tk(o);return t.length?f(t[0]):'';};}
 const spCount=list=>{const kk=ufKeyer(list);return new Set(list.map(kk).filter(Boolean)).size;};
 function friendRows(F){return F.fol.length?F.fol.map(f=>{const d=f.data||{},ob=(d.obs||[]).filter(o=>!o.u);
-    return '<div class="ar tap prow" data-fr="'+esc(f.id)+'">'+pav(f.name)+'<div class="pt"><b>'+esc(f.name)+'</b><small>'+(f.data?spCount(ob)+' вида · '+ob.length+' записа · обновен '+
-      (f.updated_at?human(ymd(Date.parse(f.updated_at)))+' '+new Date(f.updated_at).toTimeString().slice(0,5):'—'):'още не е качил дневник')+'</small></div><span>›</span></div>';}).join('')
+    return '<div class="ar tap prow" data-fr="'+esc(f.id)+'">'+pav(f.name)+'<div class="pt"><b>'+esc(f.name)+'</b><small>'+(f.data?spCount(ob)+' вида · '+ob.length+' наблюдения · обновен '+
+      (f.updated_at?human(ymd(Date.parse(f.updated_at)))+' '+new Date(f.updated_at).toTimeString().slice(0,5):'-'):'още не е качил дневник')+'</small></div><span>›</span></div>';}).join('')
   :'<div class="note2" style="max-width:none">Още никого. Поискай код от приятел и го въведи долу.</div>';}
 function compareJ(a,b){   // общи видове между два дневника
   const all=[...a,...b],kk=ufKeyer(all),nm={},A=new Set(),B=new Set(),Y=today().slice(0,4),AY=new Set(),BY=new Set();
@@ -4716,13 +4718,13 @@ function renderFriend(el,id){
       (C.onlyA.length?'<h3 style="font-size:15px">Само при теб</h3><div class="chips">'+C.onlyA.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>':'')||'<div class="note2">Имате едни и същи видове.</div>')+
     fsec('sp','🐦 Видовете на '+nm+' · '+Object.keys(sp).length,Object.values(sp).sort((x,y)=>String(x.nm).localeCompare(String(y.nm),'bg')).map(r=>
       '<div class="ar"><div><b style="color:'+['var(--mut)','var(--h)','var(--s)','var(--p)'][r.L]+'">'+spLink(r.o,esc(r.nm))+'</b><small>пръв път '+human(r.first)+'</small></div><span>'+(d=>d+' '+(d===1?'ден':'дни'))((dz[r.k]||new Set()).size)+'</span></div>').join(''))+
-    fsec('rec','🕒 Последни записи','<div class="ftl">'+recent.map(o=>'<div class="ftr l'+lvl(o)+'"><i></i><div><b>'+spLink(o)+'</b><small>'+human(o.date)+(o.time?' · '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+
+    fsec('rec','🕒 Последни наблюдения','<div class="ftl">'+recent.map(o=>'<div class="ftr l'+lvl(o)+'"><i></i><div><b>'+spLink(o)+'</b><small>'+human(o.date)+(o.time?' · '+esc(o.time):'')+(o.place?' · '+esc(o.place):'')+
       (o.note?' · '+esc(o.note):'')+'</small>'+(o.photo?'<div class="ph" data-fph="'+esc(id+'/'+o.photo)+'"></div>':'')+'</div></div>').join('')+'</div>')+
     fsec('ph','📷 Снимки на '+nm+' · '+galItems(f.data.obs||[]).length,galHTML(f.data.obs||[],id))+
     fsec('tg','🎯 Цели на '+nm+' · '+tg.length,tg.map(x=>x.html).join('')||'<div class="note2">Още няма цели.</div>')+
     fsec('bd','🏅 Значки на '+nm+' · '+BB.length+(gold?' · '+gold+(gold===1?' златна':' златни'):''),BB.length?'<div class="fbd">'+BB.map(x=>
-      '<div class="fbm" title="'+esc(x.d.name+' — '+tierName(x.d,x.his)+'; ти: '+(x.me?tierName(x.d,x.me):'още нямаш'))+'"><div class="bdi2 t'+x.his+'">'+(x.d.icon||BICON[x.d.sec])+'</div><b>'+esc(x.d.name)+'</b>'+
-      '<span>'+tierName(x.d,x.his).toLowerCase()+'</span><small>ти: '+(x.me?tierName(x.d,x.me).toLowerCase():'—')+'</small></div>').join('')+'</div>':'<div class="note2">Още няма значки.</div>');
+      '<div class="fbm" title="'+esc(x.d.name+' - '+tierName(x.d,x.his)+'; ти: '+(x.me?tierName(x.d,x.me):'още нямаш'))+'"><div class="bdi2 t'+x.his+'">'+(x.d.icon||BICON[x.d.sec])+'</div><b>'+esc(x.d.name)+'</b>'+
+      '<span>'+tierName(x.d,x.his).toLowerCase()+'</span><small>ти: '+(x.me?tierName(x.d,x.me).toLowerCase():'-')+'</small></div>').join('')+'</div>':'<div class="note2">Още няма значки.</div>');
   loadFriendPhotos();setTimeout(loadRefs,0);}   // (снимките в сгънатите части се зареждат при отваряне)
 async function loadFriendPhotos(){   // снимките на приятели се пазят и в телефона, за да се виждат и без мрежа
   // в сгънатите части снимките чакат да се отворят
@@ -4757,7 +4759,7 @@ document.addEventListener('click',async e=>{
   if(uf){if(confirm('Да не вижда повече дневника ти?')){await SB.from('viewers').delete().eq('owner',ME.id).eq('viewer',uf.dataset.unfan);await loadFriends();}return;}
   const a=e.target.closest('[data-sb]');if(!a)return;const act=a.dataset.sb,v=id=>(document.getElementById(id)||{}).value||'';
   try{
-    if(act==='in'||act==='up'){sbMsg='';const mail=v('sb-mail').trim(),pw=v('sb-pw');if(!mail||!pw){sbMsg='Впиши имейл и парола.';return render();}
+    if(act==='in'||act==='up'){sbMsg='';const mail=v('sb-mail').trim(),pw=v('sb-pw');if(!mail||!pw){sbMsg='Запиши имейл и парола.';return render();}
       a.disabled=true;const sb=await sbClient();
       if(act==='up'){const {data,error}=await sb.auth.signUp({email:mail,password:pw,options:{data:{name:v('sb-name').trim()},emailRedirectTo:SB_SITE}});if(error)throw error;
         if(!data.session){sbMsg='Готово. Отвори писмото от Supabase, потвърди адреса и после натисни „Вход“.';return render();}ME=data.user;}
@@ -4765,12 +4767,12 @@ document.addEventListener('click',async e=>{
       sbStat='';sbForm.pw='';render();await afterSignIn();return render();}
     if(act==='forgot'&&!SMTP_ON){sbMsg=PWHELP;return render();}
     if(act==='forgot'){const mail=v('sb-mail').trim();sbForm.mail=mail;
-      if(!mail){sbMsg='Впиши имейла си горе и натисни отново „Забравена парола?“.';return render();}
+      if(!mail){sbMsg='Запиши имейла си горе и натисни отново „Забравена парола?“.';return render();}
       a.disabled=true;const sb=await sbClient();const {error}=await sb.auth.resetPasswordForEmail(mail,{redirectTo:SB_SITE});if(error)throw error;
-      sbMsg='Изпратих писмо до '+mail+'. Отвори линка в него — Перá ще те пусне и ще поиска нова парола.';return render();}
+      sbMsg='Изпратих писмо до '+mail+'. Отвори линка в него - Перá ще те пусне и ще поиска нова парола.';return render();}
     if(act==='pwset'){const p1=v('pw-new'),p2=v('pw-new2');
       if(p1.length<6){pwMsg='Паролата трябва да е поне 6 знака.';return render();}
-      if(p1!==p2){pwMsg='Двете не съвпадат — напиши я още веднъж.';return render();}
+      if(p1!==p2){pwMsg='Двете не съвпадат - напиши я още веднъж.';return render();}
       a.disabled=true;const {error}=await SB.auth.updateUser({password:p1});if(error){pwMsg=errMsg(error);return render();}
       PWREC=false;pwMsg='Паролата е сменена. Използвай новата при следващ вход.';return render();}
     if(act==='out'){await pushForget();await SB.auth.signOut();ME=null;FR=null;lsSet(KF,null);sbMsg='';sbForm.pw='';footNote();return render();}

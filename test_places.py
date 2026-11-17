@@ -29,7 +29,7 @@ try:
   check('P0b two points a metre apart are one place (not two), keyed by its first record', pts[0], ['c:4',True])
   check('P0c the fold is remembered', pg.evaluate("localStorage.getItem('bird-journal-plun')"), 'true')
   ren('n:Копринка','Язовир Копринка',ok=False)
-  check('P1 the confirmation says how many records change; cancelling changes nothing', (asked[-1],names()[0]), ('„Язовир Копринка“ ще стане мястото на 2 записа.','Копринка'))
+  check('P1 the confirmation says how many records change; cancelling changes nothing', (asked[-1],names()[0]), ('„Язовир Копринка“ ще стане мястото на 2 наблюдения.','Копринка'))
   pg.click('.plh[data-pl="n:Копринка"]');ren('n:Копринка','Язовир Копринка')
   rec=pg.evaluate("OBS.filter(o=>o.id<=2).map(o=>[o.place,o.upd>1])")
   check('P2 renaming a place renames all its records, the unsure one too, and marks them changed for syncing', rec, [['Язовир Копринка',True],['Язовир Копринка',True]])

@@ -29,7 +29,7 @@ try:
   check('C5 tapping again nearby adds to the same record', pg.evaluate("OBS.filter(o=>o.sess===SESS.id&&o.bg==='Кос').map(o=>o.count)"), ['2'])
   ctx.set_geolocation({'latitude':42.625,'longitude':25.39});pg.wait_for_function("ckPos==='42.62500,25.39000'",timeout=5000);pg.click('[data-cktap="0"]');pg.wait_for_timeout(150)
   check('C6 more than 300 m further on, it is a new record at the new point', pg.evaluate("OBS.filter(o=>o.sess===SESS.id&&o.bg==='Кос').map(o=>[o.count,o.geo]).sort()"), [['1','42.62500,25.39000'],['2','42.62000,25.39000']])
-  check('C7 the row shows the total for the outing and the open batch a long press will open', (pg.inner_text('.ckr .ckc'),pg.inner_text('.ckr .ckn small')), ('3','сега 1 — задръж за описание'))
+  check('C7 the row shows the total for the outing and the open batch a long press will open', (pg.inner_text('.ckr .ckc'),pg.inner_text('.ckr .ckn small')), ('3','сега 1 - задръж за описание'))
   pg.click('[data-ckminus="0"]');pg.wait_for_timeout(100);c1=pg.inner_text('.ckr .ckc');pg.click('#ck-undo');pg.wait_for_timeout(100)
   check('C8 „−“ takes one back, „отмени последното“ undoes it', (c1,pg.inner_text('.ckr .ckc')), ('2','3'))
   pg.click('#ck-mode');pg.click('[data-cktap="1"]');pg.wait_for_timeout(150)

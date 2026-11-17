@@ -18,7 +18,7 @@ try:
   pg.click('#acct');pg.wait_for_timeout(150)
   check('E1 a „Към eBird“ button in the profile\'s „Данни“, next to Експорт CSV', (pg.evaluate("document.getElementById('ebird').previousElementSibling.id"),pg.evaluate("!!document.getElementById('ebird').closest('#dataSlot')")), ('exp',True))
   pg.evaluate("window.__f=[];offer=(n,c)=>__f.push([n,c]);0");pg.click('#acct');pg.click('#ebird');pg.wait_for_timeout(150)
-  check('E2 the dialog says how many rows and lists, that unsure records stay out, and how to import', ('несигурен запис не влиза' in pg.inner_text('#eb-txt'),'eBird Record Format (Extended)' in pg.inner_text('#eb-txt')), (True,True))
+  check('E2 the dialog says how many rows and lists, that unsure records stay out, and how to import', ('несигурно наблюдение не влиза' in pg.inner_text('#eb-txt'),'eBird Record Format (Extended)' in pg.inner_text('#eb-txt')), (True,True))
   pg.click('#eb-ok');pg.wait_for_timeout(300)
   f=pg.evaluate("__f");name,csv=f[0];rows=[l.split(',') for l in csv.strip().split('\n')]
   check('E3 one file „ebird.csv“, no header row, 19 columns in every row', (name,all(len(r)==19 for r in rows),rows[0][0]!='Common Name'), ('ebird.csv',True,True))

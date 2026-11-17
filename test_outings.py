@@ -32,7 +32,7 @@ try:
   card=pg.locator('.o',has_text='Белоглав лешояд')
   check('C3 Дневник shows it with a ? tag and no нов вид', (card.locator('.tag.u').count(),card.locator('.tag.nw').count()), (1,0))
   pg.click('.tab[data-v="life"]')
-  check('C4 life list leaves it out but names it below', (pg.locator('.sp').count(),'Само с несигурни записи (не се броят): Белоглав лешояд' in pg.inner_text('#view')), (1,True))
+  check('C4 life list leaves it out but names it below', (pg.locator('.sp').count(),'Само с несигурни наблюдения (не се броят): Белоглав лешояд' in pg.inner_text('#view')), (1,True))
   pg.click('.tab[data-v="map"]'); check('C5 places count only sure records', pg.locator('.pl').count(), 1)
   pg.click('.tab[data-v="phen"]'); check('C6 first dates ignore it', 'Белоглав' in pg.inner_text('#view'), False)
   pg.click('.tab[data-v="log"]')
@@ -66,7 +66,7 @@ try:
   pg.click('.tab[data-v="outs"]')
   cards=pg.eval_on_selector_all('.ou',"els=>els.map(e=>[e.querySelector('.nm').textContent,e.querySelector('.meta').textContent,e.querySelector('.tag').textContent])")
   check('O6 Излети lists newest first with time, duration, species and completeness',
-        (cards[1],pg.inner_text('.outsum').split(' · ')[0]), (['18 октомври 2026','06:15–08:00 · 1 ч 45 мин · 2 вида','частичен списък'],'2 излета'))
+        (cards[1],pg.inner_text('.outsum').split(' · ')[0]), (['18 октомври 2026','06:15-08:00 · 1 ч 45 мин · 2 вида','частичен списък'],'2 излета'))
   pg.locator('.ou').nth(1).click()
   check('O7 tapping a card shows its species, its records with „промени“, and „+ птица“ / „промени излета“',
     (pg.locator('.ou .sl span').count(),pg.locator('.ou .orr').count(),pg.is_visible('.ou [data-oadd]'),pg.is_visible('.ou [data-oedit]')), (2,2,True,True))
@@ -86,7 +86,7 @@ try:
   check('O12 a forgotten outing you decline is saved, ending at its last record', (o['start'],o['end'],o['complete'],pg.evaluate("SESS")), ('07:05','08:00',None,None))
   pg=page([R(id=21,date='2026-09-01',time='07:00',bg='Сврака',sess='s1'),R(id=22,date='2026-09-01',time='08:10',bg='Кос',sess='s1')])
   pg.click('.tab[data-v="outs"]')
-  check('O13 records from before this version still show as an outing', (pg.locator('.ou').count(),pg.inner_text('.ou .tag')), (1,'пълнотата не е отбелязана'))
+  check('O13 records from before this version still show as an outing', (pg.locator('.ou').count(),pg.inner_text('.ou .tag')), (1,'цялостта не е отбелязана'))
   tf='/home/claude/v4.json'; open(tf,'w',encoding='utf-8').write(json.dumps({'v':4,'obs':[R(id=31,date='2026-05-01',bg='Пчелояд',sess='s5')],'beh':['пее']},ensure_ascii=False))
   pg.set_input_files('#impf',tf); pg.wait_for_timeout(300)
   check('O14 an old v4 backup still restores', (pg.evaluate("OBS.length"),pg.evaluate("OUTS.length"),pg.locator('.ou').count()), (1,0,1))

@@ -24,7 +24,7 @@ try:
   pg.click('#filters [data-f="q"]');pg.wait_for_timeout(300)
   got=names()
   check('D2 it shows the „?“ records, „sp.“ and the unanswered question — not the sure one, not the answered one', sorted(x.split(' ·')[0].replace(' ?','').strip() for x in got), ['Горска зидарка','Сива чапла','чайка sp.'])
-  check('D3 ...with a line saying how many of each', pg.inner_text('.dbtnote'), '3 несигурни записа: 2 с „?“ · 1 само до група („sp.“) · 1 чака отговор от приятели. Докосни запис, за да го определиш.')
+  check('D3 ...with a line saying how many of each', pg.inner_text('.dbtnote'), '3 несигурни наблюдения: 2 с „?“ · 1 само до група („sp.“) · 1 чака отговор от приятели. Докосни наблюдение, за да го определиш.')
   check('D4 the chip shows its label while pressed', (pg.get_attribute('#filters [data-f="q"]','aria-pressed'),pg.is_visible('#filters [data-f="q"] .lbl')), ('true',True))
   pg.click('.tab[data-v="life"]');pg.wait_for_timeout(300)
   check('D5 „по видове“ lists the doubtful records by name (alternatives shown), with how many', pg.evaluate("[...document.querySelectorAll('.dbtrow')].map(r=>[r.querySelector('span').textContent,r.querySelector('small').textContent])"),
@@ -32,7 +32,7 @@ try:
   pg.click('.tab[data-v="log"]');pg.click('#filters [data-f="all"]');pg.wait_for_timeout(300)
   check('D6 back to „Всички“: all five records again', (len(names()),len(allN)), (5,5))
   pg.evaluate("OBS.forEach(o=>{o.u=0;o.ask=0;});OBS=OBS.filter(o=>!isSp(o));render()");pg.click('#filters [data-f="q"]');pg.wait_for_timeout(300)
-  check('D7 with nothing doubtful, it says so plainly', pg.inner_text('.empty'), 'Няма несигурни записи — всичко е определено.')
+  check('D7 with nothing doubtful, it says so plainly', pg.inner_text('.empty'), 'Няма несигурни наблюдения - всичко е определено.')
   check('D8 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

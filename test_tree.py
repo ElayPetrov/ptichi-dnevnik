@@ -66,7 +66,7 @@ try:
   pg.fill('#tr-q','Сврака');pg.dispatch_event('#tr-q','change');pg.wait_for_timeout(1600)
   check('T15 search: a species flies into view and its chapter opens', (pg.evaluate("document.getElementById('treeDlg').open"),pg.inner_text('#tdTitle')), (True,'Сврака'))
   pg.click('#treeDlg [data-tdclose]');WIKI_DOWN[0]=True;pg.evaluate("WPM.clear();localStorage.removeItem('bird-journal-wp');tdOpen('sp','Parus major')");pg.wait_for_timeout(900)
-  check('T16 if Wikipedia doesn’t answer, it says so', pg.inner_text('#tdwp'), 'Уикипедия не отговаря — опитай пак след малко.')
+  check('T16 if Wikipedia doesn’t answer, it says so', pg.inner_text('#tdwp'), 'Уикипедия не отговаря - опитай пак след малко.')
   check('T17 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

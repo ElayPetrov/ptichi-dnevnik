@@ -25,7 +25,7 @@ try:
     (pg.inner_text('.fr .msg').startswith('Пиши на Иван'),[c for c in pg.evaluate("CALLS") if c[0]=='reset']), (True,[]))
   pg.fill('#sb-mail','');pg.evaluate("SMTP_ON=true;sbMsg='';render()");pg.wait_for_timeout(150)   # the e-mail path, as it will work once there's a sender
   pg.click('[data-sb="forgot"]');pg.wait_for_timeout(200)
-  check('W2 without an e-mail it asks for one, and sends nothing', ('Впиши имейла си' in pg.inner_text('.fr .msg'),[c for c in pg.evaluate("CALLS") if c[0]=='reset']), (True,[]))
+  check('W2 without an e-mail it asks for one, and sends nothing', ('Запиши имейла си' in pg.inner_text('.fr .msg'),[c for c in pg.evaluate("CALLS") if c[0]=='reset']), (True,[]))
   pg.fill('#sb-mail','ivan@example.bg');pg.click('[data-sb="forgot"]');pg.wait_for_timeout(300)
   check('W3 with the e-mail: Supabase sends the recovery letter, whose link leads back to Перá', ([c for c in pg.evaluate("CALLS") if c[0]=='reset'][0][1:],pg.evaluate("SB_SITE")==[c for c in pg.evaluate("CALLS") if c[0]=='reset'][0][2]), (['ivan@example.bg',pg.evaluate("SB_SITE")],True))
   check('W4 ...and says so', pg.inner_text('.fr .msg').startswith('Изпратих писмо до ivan@example.bg.'), True)
@@ -34,7 +34,7 @@ try:
   pg.fill('#pw-new','abc');pg.fill('#pw-new2','abc');pg.click('[data-sb="pwset"]');pg.wait_for_timeout(150)
   m1=pg.inner_text('.pwrec .msg');pg.fill('#pw-new','птица123');pg.fill('#pw-new2','птица124');pg.click('[data-sb="pwset"]');pg.wait_for_timeout(150)
   m2=pg.inner_text('.pwrec .msg')
-  check('W6 too short, or the two not matching: it says what’s wrong and changes nothing', (m1,m2,[c for c in pg.evaluate("CALLS") if c[0]=='update']), ('Паролата трябва да е поне 6 знака.','Двете не съвпадат — напиши я още веднъж.',[]))
+  check('W6 too short, or the two not matching: it says what’s wrong and changes nothing', (m1,m2,[c for c in pg.evaluate("CALLS") if c[0]=='update']), ('Паролата трябва да е поне 6 знака.','Двете не съвпадат - напиши я още веднъж.',[]))
   pg.fill('#pw-new','птица123');pg.fill('#pw-new2','птица123');pg.click('[data-sb="pwset"]');pg.wait_for_timeout(300)
   check('W7 a good one is saved; the card goes; the profile says it’s changed', ([c for c in pg.evaluate("CALLS") if c[0]=='update'],pg.locator('.pwrec').count(),'Паролата е сменена' in pg.inner_text('#view')), ([['update','птица123']],0,True))
   pg.evaluate("pwMsg='';render()");pg.wait_for_timeout(200)

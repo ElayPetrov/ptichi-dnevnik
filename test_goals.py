@@ -16,7 +16,7 @@ try:
   pg.add_init_script("if(!localStorage.getItem('bird-journal-v3'))localStorage.setItem('bird-journal-v3',%s)"%json.dumps(json.dumps(mine,ensure_ascii=False)))
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400)
   tabs=pg.evaluate("[...document.querySelectorAll('.tab')].map(t=>t.textContent)");rows=pg.evaluate("new Set([...document.querySelectorAll('.tab')].map(t=>Math.round(t.getBoundingClientRect().top))).size")
-  check('G1 Цели is the eighth tab, where Места was: two full rows of four', (tabs,rows), (['Дневник','Приятели','Моите видове','Излети','Карта','Цели','Фенология','Значки'],2))
+  check('G1 Цели is the eighth tab, where Места was: two full rows of four', (tabs,rows), (['Дневник','Приятели','Видове','Излети','Карта','Цели','Фенология','Значки'],2))
   pg.evaluate("ME={id:'me',email:'i@t.bg'};MYNAME='Иван';FR={fol:[{id:'u2',name:'Петър',data:%s}],fans:[]};SPXC=null;fillLists();"%json.dumps(fr,ensure_ascii=False))
   pg.click('.tab[data-v="goals"]');pg.wait_for_timeout(200)
   check('G2 empty to begin with: only what you add appears', (pg.locator('.tgc').count(),pg.locator('.empty').count()), (0,1))
