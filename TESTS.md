@@ -1,6 +1,6 @@
 # Птичи дневник - tests
 
-1033 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
+1053 automated checks plus a sunrise cross-check, written for a Claude sandbox (Ubuntu, Python 3, Node).
 
 ## Run
 
@@ -97,6 +97,7 @@ and imitation sign-in and file storage that enforce the same storage policies.
 | test_tree.py | 17 | „🌳 Дървото“ (third sub-tab of Видове): a leaf for each of the 413 species, your sure species lit (not „?“ ones); order names in Bulgarian from Wikipedia, Latin where there's none; species names only when zoomed in; a species chapter — three names, its path from the top, your records, the Bulgarian Wikipedia article first (sources dropped), credited with links to the article and CC BY-SA, the English one folded under „По-подробно на английски“ (references dropped); a family chapter with its species, how many you've seen and ✓; back; „Покажи на дървото“; search; Wikipedia down → says so; no page errors |
 | test_samehere.py | 12 | „+ същия вид на ново място“ under every record: a copy saved at once — same names, group, чух/видях — today, now, at the phone's position (or the outing path's fresh point, joining the outing); count, note, photo, behaviour and снимах stay behind; named after a saved place within 2 km; a notice with „↶ Отмени“, which removes only the copy; an unsure record stays unsure with its alternatives; without a position nothing is saved and it says why |
 | test_tally.py | 9 | counting on the go in the open outing's list: −1 / +1 / +10 / +100 under each record; the taps add up in place; marked as changed and saved; the form doesn't open and the list stays open; „около 20“ stays „около“; never below zero; Дневник catches up when you stop tapping; survives a reload; no page errors |
+| test_nwild.py | 20 | „не е дива (няма да се брои)“ for released, domestic, escaped or collection birds: the tick after „не съм сигурен“ and its rows, explained once (also to people who already use the app); a bird missing from the list joins the group's list as usual; no „нов вид“; dashed card with the tag in Дневник; counts nowhere - lists, days, atlas, tree, year, Цели; Видове names species you have only like this, a species page says how many don't count; CSV column „Не е дива“; eBird leaves them out and says so; editing keeps or removes it; „+ същия вид на ново място“ keeps it; a friend's not-wild bird is tagged in the feed and not counted for him; it travels with backup and sync; the ask hint no longer says questions sit on top |
 | tap_test.py | 4 | Запиши never misses a tap after a blur-time layout change |
 | sun_check.py | 7 dates | sunrise formula against the astral library for Kazanlak |
 

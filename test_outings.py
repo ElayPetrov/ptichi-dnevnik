@@ -43,7 +43,7 @@ try:
   save(pg,'Червен ангел',None,unsure=True)
   with pg.expect_download() as dl: pg.click('#acct');pg.click('#exp')
   csv=open(dl.value.path(),encoding='utf-8-sig').read().splitlines()
-  check('C9 CSV has the new columns and marks the unsure record', (csv[0].endswith('Несигурен,Излет,Пълен списък'),[l for l in csv if 'Червен ангел' in l][0].split(',')[-3]), (True,'"да"'))
+  check('C9 CSV has the new columns and marks the unsure record', (csv[0].endswith('Несигурен,Не е дива,Излет,Пълен списък'),[l for l in csv if 'Червен ангел' in l][0].split(',')[-4]), (True,'"да"'))
   check('C10 no page errors', pg.errs, [])
   # ---------- outings ----------
   pg=page([])
