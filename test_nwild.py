@@ -1,5 +1,6 @@
 # „не е дива (няма да се брои)“ (2026-11-21.1): a released, domestic, escaped or collection bird. The observation is kept and
 # shown with a tag, but counts nowhere - lists, „нов вид“, Цели, atlas, tree, year, friends - and doesn't go to eBird.
+# In Видове → Моите such a species gets its own card below the counted ones (2026-11-23.1).
 # A bird missing from the list is added as a new species the usual way.
 import json,subprocess,sys,time,datetime
 from playwright.sync_api import sync_playwright
@@ -39,9 +40,25 @@ try:
         pg.evaluate("[SURE().map(o=>o.id).sort(),Object.keys(speciesMap()).length,Object.keys(spDays()).length,Object.values(atlasData()).map(s=>Object.keys(s.sp).length),trMine().size,Object.keys(yearData(new Date().getFullYear()).sp).length]"),
         [[1,2],2,2,[2],2,2])
   pg.click('.tab[data-v="life"]');pg.wait_for_timeout(300)
-  check('N7 Видове: „Моите · 2“, and the not-wild-only species named under the list', (pg.evaluate("document.querySelector('[data-lifeall=\"0\"]').textContent"),
-        pg.evaluate("[...document.querySelectorAll('#view .note2')].map(x=>x.textContent).find(t=>t.startsWith('Само с „не е дива“'))")),
-        ('Моите · 2','Само с „не е дива“ (не се броят): Сива гъска · Черен лебед'))
+  # an unsure-only species, for the order at the bottom (taken out again below)
+  pg.evaluate("OBS.push({id:90,date:'%s',time:'09:00',place:'Язовир Копринка',count:'',bg:'Голям корморан',la:'Phalacrocorax carbo',en:'Great Cormorant',fam:'',note:'',u:1,h:0,s:1,p:0,beh:[],geo:null,photo:null});render()"%T);pg.wait_for_timeout(200)
+  check('N7 Видове: still „Моите · 2“; the counted birds first, then the not-wild-only ones as cards - dashed, with the tag, no rank', (pg.evaluate("document.querySelector('[data-lifeall=\"0\"]').textContent"),
+        pg.evaluate("[...document.querySelectorAll('#view .sp')].map(c=>[c.querySelector('.nm').textContent,c.classList.contains('nwc'),!!c.querySelector('.rkm'),[...c.querySelectorAll('.tag')].map(t=>t.textContent).join(),c.querySelector('.cnt').textContent])")),
+        ('Моите · 2',[['Зеленоглава патица',False,True,'','1 ден1 наблюдение1 птица'],['Кос',False,True,'','1 ден1 наблюдение1 птица'],
+                      ['Сива гъска',True,False,'не е дива','1 ден1 наблюдение12 птици'],['Черен лебед',True,False,'не е дива','1 ден1 наблюдение4 птици']]))
+  check('N7b ...under „Само с „не е дива““, and the unsure-only species stay one line of text at the very bottom',
+        pg.evaluate("[...document.querySelectorAll('#view .sp,#view h3.nwsec,#view .note2')].map(e=>e.matches('.sp')?(e.classList.contains('nwc')?'nw':'sp'):(e.matches('h3')?'H ':'T ')+e.textContent)"),
+        ['sp','sp','H Само с „не е дива“ не се броят','nw','nw','T Само с несигурни наблюдения (не се броят): Голям корморан'])
+  pg.evaluate("OBS.splice(OBS.findIndex(o=>o.id===90),1);render()");pg.wait_for_timeout(200)
+  pg.click('#view .sp.nwc .nm >> nth=0');pg.wait_for_timeout(300)
+  nwpage=(pg.inner_text('#view .spd .big'),pg.inner_text('#view .spd .note2'),pg.inner_text('[data-spback]'))
+  pg.click('[data-spback]');pg.wait_for_timeout(300)
+  check('N7c tapping a not-wild card opens the bird\'s page, which says it doesn\'t count; „← Видове“ comes back to the list',
+        (nwpage,pg.locator('#view .sp').count()),
+        (('Сива гъска','Още нямаш сигурни наблюдения на този вид. Имаш 1 наблюдение с „не е дива“ - то не се брои.','← Видове'),4))
+  pg.fill('#q','лебед');pg.wait_for_timeout(300)
+  check('N7d search finds a not-wild card too', pg.evaluate("[...document.querySelectorAll('#view .sp')].map(c=>c.querySelector('.nm').textContent+(c.classList.contains('nwc')?' (nw)':''))"), ['Черен лебед (nw)'])
+  pg.fill('#q','');pg.wait_for_timeout(300)
   pg.evaluate("spSel=key(OBS.find(o=>o.id===2));render()");pg.wait_for_timeout(200)
   check('N8 a species with both: the page counts the wild one and says the other doesn\'t count', pg.evaluate("[...document.querySelectorAll('.spd h4')].map(h=>h.textContent).find(t=>t.includes('наблюдени'))"), '1 наблюдение · 1 с „не е дива“ не се брои')
   pg.evaluate("spSel=null");pg.evaluate("renderUnseen(document.getElementById('view'),{bg:'Сива гъска',la:'Anser anser',en:'Greylag Goose'})")

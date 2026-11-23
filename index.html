@@ -297,7 +297,7 @@ textarea{resize:vertical;min-height:54px}
 .tag.h{background:var(--hb);color:var(--h)} .tag.s{background:var(--sb);color:var(--s)}
 .tag.p{background:var(--pb);color:var(--p)} .tag.nw{background:var(--accent);color:#fff}
 .tag.b{background:var(--bg2);color:var(--mut)}
-.tag.u,.tag.nwl{background:transparent;color:var(--mut);border:1px dashed var(--line2)} .o.uns,.o.nwc{border-style:dashed}
+.tag.u,.tag.nwl{background:transparent;color:var(--mut);border:1px dashed var(--line2)} .o.uns,.o.nwc,.sp.nwc{border-style:dashed}
 .ph{margin-top:9px}.ph img{max-width:100%;max-height:230px;border-radius:10px;border:1px solid var(--line);cursor:zoom-in}
 .x{position:absolute;top:10px;right:11px;display:flex;gap:3px}
 .x button{border:none;background:none;color:var(--mut);cursor:pointer;font-size:12px;padding:3px 5px;font:inherit}
@@ -1195,8 +1195,8 @@ const human=d=>{const p=d.split('-');return (+p[2])+' '+MN[+p[1]-1]+' '+p[0];};
 const uniq=a=>[...new Set(a.filter(Boolean))].sort((x,y)=>String(x).localeCompare(String(y),'bg'));
 function firsts(){const m={};for(const o of SURE().sort((a,b)=>a.date===b.date?a.id-b.id:a.date.localeCompare(b.date))){
   const k=key(o);if(k&&!(k in m))m[k]=o.id;}return m;}
-function speciesMap(){const m={};
-  for(const o of SURE().sort((a,b)=>a.date===b.date?a.id-b.id:a.date.localeCompare(b.date))){const k=key(o);if(!k)continue;
+function speciesMap(L){const m={};   // L: други наблюдения вместо сигурните (картичките „не е дива“ във Видове)
+  for(const o of (L?[...L]:SURE()).sort((a,b)=>a.date===b.date?a.id-b.id:a.date.localeCompare(b.date))){const k=key(o);if(!k)continue;
   if(!m[k])m[k]={k,bg:'',en:'',la:'',fam:'',n:0,b:0,L:0,first:o.date,last:o.date,months:{},photo:null,pdate:'',nm:{}};
   // птиците: сборът на бройките (запис без брой е една птица)
   const r=m[k];r.n++;r.b+=cntNum(o.count)||1;r.L=Math.max(r.L,lvl(o));
@@ -1458,7 +1458,7 @@ function outBlock(id,grp,F){const live=!!(SESS&&SESS.id===id),x=live?null:outing
     '</div><div class="ogb">'+grp.map(o=>recHTML(o,F)).join('')+'</div></div>';}
 // ---- колко добре познаваш вида: пръстен около птицата по дните с нея (не по записите — десет за един ден са един ден) ----
 const RANKS=[[10,'Познат'],[50,'Приятел'],[150,'Познавач']];
-function spDays(){const m={};for(const o of SURE()){const k=key(o);if(k)(m[k]=m[k]||new Set()).add(o.date);}return m;}
+function spDays(L){const m={};for(const o of (L||SURE())){const k=key(o);if(k)(m[k]=m[k]||new Set()).add(o.date);}return m;}
 const rankOf=n=>RANKS.filter(r=>n>=r[0]).length;
 // коронка в ъгъла на птицата — бронзова, сребърна или златна (вместо пръстена)
 const crownHTML=(t,cls)=>t?'<span class="crown rk'+t+(cls?' '+cls:'')+'" title="'+RANKS[t-1][1]+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 17.6h17.6l-1.5-9.2-4.6 3.8L12 4.6l-2.7 7.6-4.6-3.8z" fill="currentColor" stroke="var(--card)" stroke-width="1.3" stroke-linejoin="round"/><rect x="3.2" y="18.6" width="17.6" height="2.6" rx="1.1" fill="currentColor" stroke="var(--card)" stroke-width="1.1"/></svg></span>':'';
@@ -1482,6 +1482,17 @@ function renderAllSpecies(el){const ql=q.trim().toLowerCase(),mine=new Set();
       const op=!!ql||!!(lsGet(KALF,{})||{})[g];
       return '<button type="button" class="bdsec bdfold" data-alf="'+esc(g)+'" aria-expanded="'+op+'"><span>'+esc(g)+'</span><small>'+n+' / '+L.length+'</small><i>'+(op?'▾':'▸')+'</i></button><div class="allsp"'+(op?'':' style="display:none"')+'>'+L.map(e=>row(e[0],e[1],e[2],e[6])).join('')+'</div>';}).join('')||'<div class="empty">Нищо не съвпада.</div>')+
     (X.length?'<h3 class="bdsec">Добавени от групата <small>'+X.length+'</small></h3><div class="allsp">'+X.map(x=>row(x.bg,x.la,x.en,0)).join('')+'</div>':'');}
+// картичка на вид във „Видове → Моите“; nw - вид само с „не е дива“: пунктир, етикет вместо коронка и ранг, отваря страницата като за невидян вид
+function spCardH(r,D,rk,nw){const dd=(D[r.k]||new Set()).size;
+  return '<div class="sp l'+r.L+(nw?' nwc':'')+'" data-k="'+esc(r.k)+'"'+(nw?' data-nw="1" data-bg="'+esc(r.bg||'')+'" data-la="'+esc(r.la||'')+'" data-en="'+esc(r.en||'')+'" data-fam="'+esc(r.fam||'')+'"':'')+' style="cursor:pointer">'+
+    '<div class="thw">'+(r.photo?'<div class="th rk'+rk+'" data-th="'+r.photo+'"></div>':'<div class="th none rk'+rk+'">'+silFor(r.fam)+'</div>')+crownHTML(rk)+'</div>'+
+    '<div style="flex:1;min-width:0">'+
+    '<div class="nm">'+esc(r.bg||r.en||r.la)+'</div>'+
+    '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':''].filter(Boolean).join(' · ')+'</div>'+
+    (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
+    '<div class="meta">пръв път '+human(r.first)+(r.n>1?' · последно '+human(r.last):'')+'</div>'+
+    (nw?'<div class="meta"><span class="tag nwl">не е дива</span></div>':'<div class="meta rkm">'+rankLine(dd)+'</div>')+idLinks(r)+'</div>'+
+    '<div class="cnt">'+dd+' '+(dd===1?'ден':'дни')+'<small>'+r.n+(r.n===1?' наблюдение':' наблюдения')+'</small><small>'+r.b+(r.b===1?' птица':' птици')+'</small></div></div>';}
 function renderLife(el){
   if(spSel)return renderSpecies(el,spSel);
   if(LIFEALL===2)return renderTree(el);
@@ -1493,31 +1504,29 @@ function renderLife(el){
     el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+(L.length?'<div class="note2" style="max-width:none;margin:10px 0">Несигурните наблюдения на птица - не се броят, докато не ги определиш (в Дневника).</div><div class="dbtlist">'+
       L.map(([nm,c])=>'<div class="dbtrow"><span>'+esc(nm)+'</span><small>'+c+'</small></div>').join('')+'</div>':'<div class="empty">'+(ql?'Нищо не съвпада.':'Няма несигурни наблюдения - всичко е определено.')+'</div>');
     return;}
-  if(ql)arr=arr.filter(r=>((r.bg||'')+' '+(r.en||'')+' '+(r.la||'')).toLowerCase().includes(ql));
-  if(filt==='h')arr=arr.filter(r=>r.L===1);
-  if(filt==='s')arr=arr.filter(r=>r.L>=2);
-  if(filt==='p')arr=arr.filter(r=>r.L===3);
-  if(filt==='ylist'){const y=String(new Date().getFullYear());
-    const seen=new Set(SURE().filter(o=>o.date.slice(0,4)===y).map(key));
-    arr=arr.filter(r=>seen.has(r.k));}
+  // филтрите важат и за картичките „не е дива“ (L - наблюденията, от които са направени картичките)
+  const fl=(A,L)=>{if(ql)A=A.filter(r=>((r.bg||'')+' '+(r.en||'')+' '+(r.la||'')).toLowerCase().includes(ql));
+    if(filt==='h')A=A.filter(r=>r.L===1);
+    if(filt==='s')A=A.filter(r=>r.L>=2);
+    if(filt==='p')A=A.filter(r=>r.L===3);
+    if(filt==='ylist'){const y=String(new Date().getFullYear());
+      const seen=new Set(L.filter(o=>o.date.slice(0,4)===y).map(key));
+      A=A.filter(r=>seen.has(r.k));}
+    return A;};
+  arr=fl(arr,SURE());
   spSortArr(arr,spDays());
   const sm=new Set(Object.keys(speciesMap())), un=new Map();
-  const nwm=new Map();for(const o of OBS)if(o.nwild&&!o.u&&key(o)&&!sm.has(key(o))&&(!ql||(o.bg+' '+o.en+' '+o.la).toLowerCase().includes(ql)))nwm.set(key(o),o.bg||o.en||o.la);
+  // видове само с „не е дива“: своя картичка под останалите - с пунктир, без коронка, не се броят (2026-11-23)
+  const NWL=OBS.filter(o=>o.nwild&&!o.u&&!isSp(o)&&key(o)&&!sm.has(key(o))),ND=spDays(NWL),nwa=fl(Object.values(speciesMap(NWL)),NWL);
+  spSortArr(nwa,ND);
   for(const o of OBS)if(o.u&&key(o)&&!sm.has(key(o))&&(!ql||(o.bg+' '+o.en+' '+o.la).toLowerCase().includes(ql)))un.set(key(o),(o.bg||o.en||o.la)+(o.alt&&o.alt.length?' / '+o.alt.join(' / '):''));
-  const unH=(un.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с несигурни наблюдения (не се броят): '+[...un.values()].map(esc).join(' · ')+'</div>':'')+(nwm.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с „не е дива“ (не се броят): '+[...nwm.values()].map(esc).join(' · ')+'</div>':'');
-  if(!arr.length){el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+(unH||'<div class="empty">Нищо не съвпада.</div>');return;}
+  const unH=un.size?'<div class="note2" style="margin-top:12px;max-width:none">Само с несигурни наблюдения (не се броят): '+[...un.values()].map(esc).join(' · ')+'</div>':'';
+  if(!arr.length&&!nwa.length){el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+(unH||'<div class="empty">Нищо не съвпада.</div>');return;}
   const D=spDays(),rk=r=>rankOf((D[r.k]||new Set()).size);
   el.innerHTML=lifeTabs(Object.keys(speciesMap()).length)+'<div class="spsort">Подреди: <select id="spSort">'+SPSORT.map(([k,l])=>'<option value="'+k+'"'+(SPS===k?' selected':'')+'>'+l+'</option>').join('')+'</select></div>'+
-    (ql||filt!=='all'?'':'<div class="splegend">Коронката до птицата показва колко добре познаваш вида: <span class="rkt rk1">Познат</span> 10 дни с него, <span class="rkt rk2">Приятел</span> 50, <span class="rkt rk3">Познавач</span> 150.</div>')+
-    arr.map((r,i)=>(SPS==='grp'&&(i===0||(arr[i-1].fam||'')!==(r.fam||''))?'<h3 class="bdsec">'+esc(r.fam||'Без група')+'</h3>':'')+'<div class="sp l'+r.L+'" data-k="'+esc(r.k)+'" style="cursor:pointer">'+
-    '<div class="thw">'+(r.photo?'<div class="th rk'+rk(r)+'" data-th="'+r.photo+'"></div>':'<div class="th none rk'+rk(r)+'">'+silFor(r.fam)+'</div>')+crownHTML(rk(r))+'</div>'+
-    '<div style="flex:1;min-width:0">'+
-    '<div class="nm">'+esc(r.bg||r.en||r.la)+'</div>'+
-    '<div class="meta">'+[r.en?esc(r.en):'',r.la?'<span class="la">'+esc(r.la)+'</span>':''].filter(Boolean).join(' · ')+'</div>'+
-    (r.alt.length?'<div class="meta">също: '+r.alt.map(esc).join(' · ')+'</div>':'')+
-    '<div class="meta">пръв път '+human(r.first)+(r.n>1?' · последно '+human(r.last):'')+'</div>'+
-    '<div class="meta rkm">'+rankLine((D[r.k]||new Set()).size)+'</div>'+idLinks(r)+'</div>'+
-    (dd=>'<div class="cnt">'+dd+' '+(dd===1?'ден':'дни')+'<small>'+r.n+(r.n===1?' наблюдение':' наблюдения')+'</small><small>'+r.b+(r.b===1?' птица':' птици')+'</small></div></div>')((D[r.k]||new Set()).size)).join('')+unH;   // дни — като коронките и подреждането
+    (ql||filt!=='all'||!arr.length?'':'<div class="splegend">Коронката до птицата показва колко добре познаваш вида: <span class="rkt rk1">Познат</span> 10 дни с него, <span class="rkt rk2">Приятел</span> 50, <span class="rkt rk3">Познавач</span> 150.</div>')+
+    arr.map((r,i)=>(SPS==='grp'&&(i===0||(arr[i-1].fam||'')!==(r.fam||''))?'<h3 class="bdsec">'+esc(r.fam||'Без група')+'</h3>':'')+spCardH(r,D,rk(r),false)).join('')+
+    (nwa.length?'<h3 class="bdsec nwsec">Само с „не е дива“ <small>'+(nwa.length===1?'не се брои':'не се броят')+'</small></h3>'+nwa.map(r=>spCardH(r,ND,0,true)).join(''):'')+unH;   // дни — като коронките и подреждането
   loadThumbs();}
 // ---- страница на вида ----
 function renderSpecies(el,k){
@@ -3357,7 +3366,8 @@ document.addEventListener('click',e=>{
       render();backY.go=b.y;backTo('go');return;}
     render();backTo('sp');return;}
   const spc=e.target.closest('.sp[data-k]');
-  if(spc&&!e.target.closest('.th img')&&!e.target.closest('a')){backY.sp=window.scrollY;spBack=null;spInfo=null;spSel=spc.dataset.k;render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
+  if(spc&&!e.target.closest('.th img')&&!e.target.closest('a')){backY.sp=window.scrollY;spBack=null;const d=spc.dataset;
+    if(d.nw){spSel='~';spInfo={bg:d.bg,la:d.la,en:d.en,fam:d.fam};}else{spInfo=null;spSel=d.k;}render();window.scrollTo({top:document.getElementById('view').offsetTop-90});return;}
   const ffb=e.target.closest('[data-ffold]');if(ffb){const k=ffb.dataset.ffold,b=ffb.nextElementSibling,op=b.style.display==='none';
     b.style.display=op?'':'none';ffb.setAttribute('aria-expanded',String(op));ffb.querySelector('i').textContent=op?'▾':'▸';FFOLD[k]=op;lsSet(KFF,FFOLD);if(op){loadFriendPhotos();loadPhotos();}return;}
   const nnb=e.target.closest('[data-nn]');if(nnb){openNames([nnb.dataset.nn]);return;}
@@ -4312,7 +4322,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-21.1';
+const VER='2026-11-23.1';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
