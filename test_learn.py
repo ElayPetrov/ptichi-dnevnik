@@ -46,11 +46,14 @@ try:
         (pg.evaluate("[...document.querySelectorAll('.lifetabs button')].map(b=>b.textContent.replace(/ · \\d+/,''))"),pg.evaluate("new Set([...document.querySelectorAll('.lifetabs button')].map(b=>b.offsetTop)).size")),
         (['Моите','Всички','🌳 Дървото','🎓 Уроци'],1))
   pg.click('[data-lifeall="3"]');pg.wait_for_timeout(300)
-  check('L2 the path: chapter 1 „Какво е птица“, four lessons - the first open, the rest locked; chapters 2-10 listed as coming; 0 points, no „Упражнявай“ yet; no search or filters',
-        (pg.inner_text('.lunit:not(.soon) h3'),pg.evaluate("[...document.querySelectorAll('.lnode')].map(n=>[n.querySelector('.lname').textContent,n.className.replace('lnode','').trim(),n.disabled])"),
-         pg.evaluate("document.querySelector('.lunit.soon p').innerText.split('\\n').length"),pg.inner_text('.lrnhead').split('\n')[0],pg.locator('[data-lprac]').count(),
+  check('L2 the path: four chapters, the first open with its first lesson, the rest locked; the coming ones listed by name, the guide chapter first; 0 points, no „Упражнявай“ yet; no search or filters',
+        (pg.evaluate("[...document.querySelectorAll('.lunit:not(.soon)')].map(u=>u.querySelector('h3').textContent+(u.classList.contains('locked')?' (locked)':''))"),
+         pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u1\"] .lnode')].map(n=>[n.querySelector('.lname').textContent,n.className.replace('lnode','').trim(),n.disabled])"),
+         pg.evaluate("document.querySelector('.lunit.soon p').innerText.split('\\n')"),pg.inner_text('.lrnhead').split('\n')[0],pg.locator('[data-lprac]').count(),
          pg.is_visible('#q'),pg.is_visible('#filters')),
-        ('Какво е птица',[['Перата','cur',False],['Клюн, кости, яйца','lock',True],['Тялото на птицата','lock',True],['Птиците са динозаври','lock',True]],9,'0 точки',0,False,False))
+        (['Какво е птица','Пера и цветове (locked)','Клюнове и храна (locked)','Крака и полет (locked)'],
+         [['Перата','cur',False],['Клюн, кости, яйца','lock',True],['Тялото на птицата','lock',True],['Птиците са динозаври','lock',True]],
+         ['Думите на определителя','Гласове','Гнездене','Миграция','Как разпознаваме','Групите птици'],'0 точки',0,False,False))
   # the player
   pg.click('[data-lstart="u1a"]');pg.wait_for_timeout(200)
   check('L3 a lesson opens full-screen: empty progress bar, an info card with a picture and „Продължи“',
@@ -87,7 +90,7 @@ try:
         ['+10 точки','🔥 1 ден подред','78% верни'])
   pg.click('[data-lclose]');pg.wait_for_timeout(200)
   check('L12 back on the path: „Перата“ ✓, the next lesson open; 10 points; „Упражнявай“ appears',
-        (pg.evaluate("[...document.querySelectorAll('.lnode')].map(n=>n.className.replace('lnode','').trim())"),pg.inner_text('.lrnhead').split('\n')[0],pg.locator('[data-lprac]').count(),pg.evaluate("document.getElementById('lrnDlg').open")),
+        (pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u1\"] .lnode')].map(n=>n.className.replace('lnode','').trim())"),pg.inner_text('.lrnhead').split('\n')[0],pg.locator('[data-lprac]').count(),pg.evaluate("document.getElementById('lrnDlg').open")),
         (['done','cur','lock','lock'],'10 точки',1,False))
   pg.click('[data-lstart="u1b"]');finish(pg)
   check('L13 a lesson without mistakes: +15 points', pg.inner_text('.lend .lstats span:first-child').replace('\n',' '), '+15 точки')
@@ -118,7 +121,7 @@ try:
   pg.click('[data-lclose]')
   # stored on the device
   pg.reload();pg.wait_for_timeout(400);pg.click('.tab[data-v="life"]');pg.click('[data-lifeall="3"]');pg.wait_for_timeout(200)
-  check('L22 kept after reopening the app', (pg.evaluate("[...document.querySelectorAll('.lnode')].map(n=>n.className.replace('lnode','').trim())"),pg.inner_text('.lrnhead').split('\n')[0]),
+  check('L22 kept after reopening the app', (pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u1\"] .lnode')].map(n=>n.className.replace('lnode','').trim())"),pg.inner_text('.lrnhead').split('\n')[0]),
         (['done','done','cur','lock'],'30 точки'))
   # streak
   pg.evaluate("LRN.days=['%s','%s','%s'];render()"%(D(3),D(2),D(1)))
@@ -134,7 +137,7 @@ try:
         m,[{'u1a':{'n':2,'p':1,'t':'2026-11-22'},'u1b':{'n':1,'p':0,'t':'2026-11-22'}},{'u1a2':{'s':3,'w':2,'t':'2026-11-22'}},['2026-11-20','2026-11-22'],1,True,0])
   check('L25 the backup carries the progress', json.loads(pg.evaluate("bakData()")).get('lrn',{}).get('d',{}).get('u1b',{}).get('p'), 1)
   pg.evaluate("mergeIn({obs:OBS,lrn:{d:{u1c:{n:1,p:0,t:'%s'}},days:['%s']}});render()"%(TS,TS))
-  check('L26 progress from the other device (sync) is merged in: „Тялото на птицата“ ✓ appears', pg.evaluate("[...document.querySelectorAll('.lnode')].map(n=>n.className.replace('lnode','').trim())"), ['done','done','done','cur'])
+  check('L26 progress from the other device (sync) is merged in: „Тялото на птицата“ ✓ appears', pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u1\"] .lnode')].map(n=>n.className.replace('lnode','').trim())"), ['done','done','done','cur'])
   # the content itself
   bad=pg.evaluate("""(()=>{const e=[],ids=new Set(),dash=/[—–]/,word=/(^|[^А-Яа-я])[Вв]пиш|[Пп]ълнот/;
     for(const u of COURSE.units)for(const l of u.ls)for(const x of l.ex){if(ids.has(x.id))e.push('dup '+x.id);ids.add(x.id);
@@ -142,13 +145,27 @@ try:
       if(x.k==='ch'&&!(x.o.length>=2))e.push('opts '+x.id);if(x.k==='pic'&&x.o.some(o=>!LPIC[o.p]))e.push('pic '+x.id);
       if(x.k==='tap'&&!LPARTS[x.a])e.push('part '+x.id);if(x.k==='info'&&x.pic&&x.pic!=='diagram'&&!LPIC[x.pic])e.push('infopic '+x.id);}
     return [e,ids.size];})()""")
-  check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],36])
+  check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],124])
+  # chapter 2 opens after chapter 1; pictures of beaks; a chapter put in later doesn't lock what you've started
+  pg.click('[data-lstart="u1d"]');finish(pg);pg.click('[data-lclose]');pg.wait_for_timeout(150)
+  check('L31 finishing chapter 1 opens „Пера и цветове“ with its first lesson', (pg.evaluate("document.querySelector('[data-lunit=\"u3\"]').classList.contains('locked')"),
+        pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u3\"] .lnode')].map(n=>n.className.replace('lnode','').trim())")), (False,['cur','lock','lock','lock']))
+  pg.evaluate("for(const l of ['u3a','u3b','u3c','u3d'])LRN.d[l]={n:1,p:0,t:'%s'};render()"%TS);pg.click('[data-lstart="u4a"]');pg.wait_for_timeout(150)
+  info=(pg.locator('#lrBody .linfo .lpic').count(),pg.inner_text('#lrBody h3'));pg.click('[data-lnext]');pg.wait_for_timeout(100)
+  check('L32 „Клюнове и храна“: a card with a drawn beak, then three beaks to choose from', (info,cur(pg)['k'],pg.locator('#lrBody .lpics .lopt svg').count(),
+        sorted(pg.evaluate("[...document.querySelectorAll('#lrBody .lpics .lopt')].map(b=>b.textContent)"))), ((1,'Клюнът е инструмент'),'pic',3,['Къс и дебел','С кука','Тънък и остър']))
+  pg.click('[data-lclose]');pg.wait_for_timeout(100)
+  pg.evaluate("COURSE.units.splice(1,0,{id:'ux',t:'Нова глава',d:'',ls:[{id:'uxa',t:'Нов урок',ex:[{id:'uxa1',k:'info',t:'a',x:'b'}]}]});render()")
+  lock=pg.evaluate("Object.fromEntries([...document.querySelectorAll('.lunit[data-lunit]')].map(u=>[u.dataset.lunit,u.classList.contains('locked')]))")
+  pg.evaluate("COURSE.units.splice(1,1);render()")
+  check('L33 a chapter put in later before the others: it opens after chapter 1, and a chapter you have started stays open', lock,
+        {'u1':False,'ux':False,'u3':False,'u4':False,'u5':True})
   check('L28 no page errors', pg.errs, [])
   # an empty journal: the lessons are still there
   e=page([])
   e.click('.tab[data-v="life"]');e.wait_for_timeout(200)
   btn=e.locator('#view [data-lifeall="3"]').count();e.click('#view [data-lifeall="3"]');e.wait_for_timeout(200)
-  check('L29 with an empty journal, Видове offers „🎓 Уроци за птиците“, and the lessons open', (btn,e.locator('.lnode').count(),e.errs), (1,4,[]))
+  check('L29 with an empty journal, Видове offers „🎓 Уроци за птиците“, and the lessons open', (btn,e.locator('[data-lunit="u1"] .lnode').count(),e.errs), (1,4,[]))
   # two devices on one account
   st=Stack('/home/claude/supabase-setup.sql')
   def dev():
