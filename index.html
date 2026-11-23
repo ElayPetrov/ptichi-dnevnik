@@ -746,6 +746,109 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
 .inst{flex:1 0 100%;margin-top:4px;font-size:13px;color:var(--mut);line-height:1.6}
 .inst:empty{display:none}
 @media(max-width:600px){.g2,.g4{grid-template-columns:1fr}.st b{font-size:21px}}
+/*LEARN-CSS-START*/
+/* ---- Уроци (2026-11-23) ---- */
+.lrnhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:2px 0 14px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+.lrnhead div{font-size:14px;color:var(--mut);white-space:nowrap}
+.lrnhead b{font-size:20px;color:var(--ink);font-family:Georgia,serif}
+.lrnhead .btn{margin-left:auto}
+.lunit{margin:0 0 18px}
+.luhead{background:var(--s);color:#fff;border-radius:var(--r);padding:12px 16px}
+.luhead small{opacity:.85;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.luhead h3{margin:2px 0 4px;font-size:20px}
+.luhead p{margin:0;font-size:14px;opacity:.92;line-height:1.4}
+.lunit.locked .luhead{background:var(--line2)}
+.lunit.soon .luhead{background:none;color:var(--mut);border:1px dashed var(--line2)}
+.lunit.soon .luhead p{line-height:1.7}
+.lpath{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 0 4px}
+.lnode{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;font:inherit;color:var(--ink);cursor:pointer;transform:translateX(var(--off,0))}
+.lnode .lcirc{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-size:24px;font-weight:700;
+  background:var(--sb);color:var(--s);border:3px solid var(--s);box-shadow:0 5px 0 var(--s)}
+.lnode.done .lcirc{background:var(--s);color:#fff}
+.lnode.cur .lcirc{background:var(--h);border-color:var(--h);color:#fff;box-shadow:0 5px 0 color-mix(in srgb,var(--h) 70%,#000)}
+.lnode.lock{cursor:default}
+.lnode.lock .lcirc{background:var(--bg2);color:var(--mut);border-color:var(--line2);box-shadow:0 5px 0 var(--line2)}
+.lnode .lname{font-size:13px;font-weight:600;max-width:150px;text-align:center}
+.lnode.lock .lname{color:var(--mut);font-weight:400}
+.lnode:not(.lock):active .lcirc{transform:translateY(4px);box-shadow:0 1px 0 var(--s)}
+/* плейърът */
+.lrndlg{width:min(560px,100vw);height:min(780px,100dvh);max-width:100vw;max-height:100dvh}
+@media (max-width:600px){.lrndlg{width:100vw;height:100dvh;border-radius:0}}
+.lrtop{display:flex;align-items:center;gap:12px;padding:12px 14px 6px}
+.lrtop button{border:none;background:none;font-size:26px;line-height:1;color:var(--mut);cursor:pointer;padding:0 4px}
+.lrbar{flex:1;height:12px;border-radius:999px;background:var(--bg2);overflow:hidden}
+.lrbar i{display:block;height:100%;width:0;background:var(--s);border-radius:999px;transition:width .35s ease}
+#lrBody{flex:1;overflow:auto;padding:10px 18px 16px}
+#lrFoot{padding:12px 18px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+#lrFoot:empty{display:none}
+#lrFoot.ok{background:var(--sb);border-top-color:var(--s)}
+#lrFoot.bad{background:color-mix(in srgb,var(--accent) 14%,var(--card));border-top-color:var(--accent)}
+#lrFoot .lfb{margin:0 0 10px;font-size:15px;line-height:1.45}
+#lrFoot .lfb b{display:block;font-size:18px;margin-bottom:2px}
+#lrFoot.ok .lfb b{color:var(--s)}
+#lrFoot.bad .lfb b{color:var(--accent)}
+.btn.lgo{width:100%;padding:13px;font-size:16px;font-weight:700;border-radius:12px;background:var(--s);border-color:var(--s);color:#fff}
+#lrFoot.bad .btn.lgo{background:var(--accent);border-color:var(--accent)}
+.lgo:disabled{opacity:.45}
+.lkind{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin:4px 0 6px}
+.lq{font-size:20px;font-weight:700;margin:0 0 16px;line-height:1.3}
+.lopts{display:flex;flex-direction:column;gap:10px}
+.lopt{display:block;width:100%;text-align:left;padding:13px 14px;border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;
+  background:var(--card);color:var(--ink);font:inherit;font-size:16px;cursor:pointer}
+.lopt[aria-pressed="true"]{border-color:var(--p);background:var(--pb)}
+.lopt.ok{border-color:var(--s);background:var(--sb)}
+.lopt.bad{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
+.lopts.tf{flex-direction:row}
+.lopts.tf .lopt{text-align:center;font-weight:700}
+.lpics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.lpics .lopt{text-align:center;padding:10px 6px}
+.lpic{width:100%;max-width:96px;height:auto;fill:var(--s);color:var(--s);display:block;margin:0 auto 6px}
+.linfo{text-align:center}
+.linfo .lpic{max-width:120px;margin:10px auto 14px}
+.linfo h3{font-size:22px;margin:6px 0 10px}
+.linfo p{font-size:17px;line-height:1.55;margin:0 auto;max-width:440px;text-align:left}
+.lpairs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lpairs .lcol{display:flex;flex-direction:column;gap:10px}
+.lpairs .lopt{text-align:center;font-size:15px;padding:12px 8px;min-height:54px}
+.lpairs .lopt.gone{opacity:.35;border-color:var(--s);background:var(--sb);cursor:default}
+.lpairs .lopt.shake{animation:lshake .35s}
+@keyframes lshake{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+/* птицата с частите */
+.lbird{width:100%;max-width:460px;display:block;margin:0 auto;--bb:#f3e6c4;--bk:#b9bc92;--bw:#8a9668;--bt:#5f7048;--bs:#b07d18;--bl:#c0ad83}
+[data-theme="dark"] .lbird{--bb:#5a4c29;--bk:#7d8a62;--bw:#5f6e45;--bt:#4a5934;--bs:#d19a3a;--bl:#2a2d20}
+.lbird .lperch{fill:none;stroke:var(--hill3);stroke-width:5;stroke-linecap:round}
+.lbird .lbody{fill:var(--bb);stroke:var(--bl);stroke-width:1.5}
+.lbird .lp{stroke:var(--bl);stroke-width:1.5;cursor:pointer;transition:fill .2s}
+.lbird .lp-back,.lbird .lp-head{fill:var(--bk)}
+.lbird .lp-wing{fill:var(--bw)}
+.lbird .lp-tail{fill:var(--bt)}
+.lbird .lp-breast{fill:var(--bs)}
+.lbird .lp-beak{fill:#2b2920}
+[data-theme="dark"] .lbird .lp-beak{fill:#e8dcc0}
+.lbird .lp-legs{fill:none;stroke:var(--mut);stroke-width:3.4;stroke-linecap:round}
+.lbird .leye{fill:#201d16;stroke:#f3ead2;stroke-width:1;pointer-events:none}
+.lbird .lp.sel{stroke:var(--p);stroke-width:4}
+.lbird .lp-legs.sel{stroke:var(--p)}
+.lbird .lp.ok{fill:var(--s);stroke:var(--s)}
+.lbird .lp-legs.ok{fill:none;stroke:var(--s)}
+.lbird .lp.bad{fill:var(--accent);stroke:var(--accent)}
+.lbird .lp-legs.bad{fill:none;stroke:var(--accent)}
+.lbird.lab .lp{cursor:default}
+.lbird text{font-size:13px;fill:var(--ink);font-weight:600}
+.lbird .lln path{stroke:var(--mut);stroke-width:1;fill:none}
+.lend{text-align:center;padding:30px 0 10px}
+.lend .lpic{max-width:110px;margin:0 auto 4px}
+.lend .lbig{font-size:26px;font-weight:800;color:var(--s);margin:10px 0 18px}
+.lend .lstats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.lend .lstats span{border:2px solid var(--line);border-radius:12px;padding:10px 14px;min-width:84px;font-size:13px;color:var(--mut)}
+.lend .lstats b{display:block;font-size:22px;color:var(--ink);font-family:Georgia,serif}
+/* подразделите на Видове - четири бутона на един ред и на тесен телефон */
+.lifetabs button{flex:1 1 auto;min-width:0;white-space:nowrap;padding:7px 5px;font-size:13.5px}
+@media (max-width:380px){.lifetabs button{font-size:12.5px;padding:7px 3px}}
+/* тъмната тема: светлото зелено иска тъмен текст */
+[data-theme="dark"] .luhead,[data-theme="dark"] .lnode.done .lcirc,[data-theme="dark"] .btn.lgo{color:#14160e}
+[data-theme="dark"] #lrFoot.bad .btn.lgo{color:#fff}
+/*LEARN-CSS-END*/
 </style>
 </head>
 <body>
@@ -1024,6 +1127,7 @@ dialog img{max-width:94vw;max-height:92vh;border-radius:12px;display:block}
     <button type="button" class="btn" id="pickCancel">Отказ</button>
     <button type="button" class="btn pri" id="pickOk" disabled>Готово</button></div>
 </dialog>
+<dialog id="lrnDlg" class="pickdlg lrndlg" aria-label="Урок"><div class="lrtop"><button type="button" data-lclose aria-label="Затвори">×</button><div class="lrbar"><i></i></div></div><div id="lrBody"></div><div id="lrFoot"></div></dialog>
 <dialog id="whatDlg" class="pickdlg iddlg" aria-label="Какво видях?"><div class="idhead"><span>🔍 Какво видях?</span><button type="button" data-idclose aria-label="Затвори">×</button></div><div id="idBody"></div></dialog>
 <dialog id="treeDlg" class="pickdlg iddlg" aria-label="Глава от дървото"><div class="idhead"><button type="button" class="tdback" data-tdback aria-label="Назад">‹</button><span id="tdTitle"></span><button type="button" data-tdclose aria-label="Затвори">×</button></div><div id="tdBody"></div></dialog>
 <div id="snack" class="snack" role="status" hidden></div>
@@ -1238,8 +1342,8 @@ function render(){
   {const c=view+'|'+(spSel||'')+'|'+(spInfo?spInfo.bg+spInfo.la:'')+'|'+(fsel||'');if(c!==xcCtx){xcStop();xcCtx=c;}}   // звукът спира, щом смениш раздела или птицата
   const el=document.getElementById('view');
   document.querySelector('.stats').style.display=OBS.length?'':'none';   // нулите не казват нищо, преди да има записи
-  document.getElementById('filters').style.display=OBS.length&&(view==='log'||(view==='life'&&!spSel))?'':'none';
-  document.getElementById('q').parentElement.style.display=!OBS.length||(view==='friends'&&!fsel)||view==='acct'||view==='badges'||view==='goals'?'none':'';   // търсенето не важи за лентата и профила
+  document.getElementById('filters').style.display=OBS.length&&(view==='log'||(view==='life'&&!spSel&&LIFEALL!==3))?'':'none';
+  document.getElementById('q').parentElement.style.display=!OBS.length||(view==='friends'&&!fsel)||view==='acct'||view==='badges'||view==='goals'||(view==='life'&&LIFEALL===3&&!spSel)?'none':'';   // търсенето не важи за лентата и профила
   if(view!=='friends'&&feedVisit)seenCommit();   // излезе ли от лентата — видяното се помни
   if(view!=='badges')badgeVisit=null;
   if(view!=='goals')tgVisit=null;
@@ -1249,8 +1353,9 @@ function render(){
   if(view==='badges')return renderBadges(el);
   if(view==='goals'){renderGoals(el);goalsEbird(el);return;}       // и целите — работят и с празен дневник     // и значките — новият човек вижда какво може да спечели
   if(view==='map'&&mapMode==='gbif')return renderMap(el);   // „Изследвай“ показва находките в GBIF — работи и с празен дневник
+  if(view==='life'&&LIFEALL===3&&!spSel)return renderLearn(el);   // уроците не искат наблюдения - може да започнеш и с тях
   if(!OBS.length){const ih=instHTML();el.innerHTML=(view==='log'?inviteBanner():'')+(view==='map'?'<div class="mapbar"><button class="chip" data-mm="real" aria-pressed="true">Истинска карта</button><button class="chip" data-mm="grid">Атлас</button><button class="chip" data-mm="gbif">Изследвай</button></div>':'')+'<div class="empty"><div class="emptybird">'+BIRDGLYPH+'</div>'+
-    (EMPTYTXT[view]?EMPTYTXT[view]+'<div class="fbtns" style="justify-content:center;margin-top:12px"><button type="button" class="btn" data-first>Запиши първата птица</button></div>':
+    (EMPTYTXT[view]?EMPTYTXT[view]+'<div class="fbtns" style="justify-content:center;margin-top:12px"><button type="button" class="btn" data-first>Запиши първата птица</button>'+(view==='life'?'<button type="button" class="btn" data-lifeall="3">🎓 Уроци за птиците</button>':'')+'</div>':
      'Още няма наблюдения.<br>Натисни <b>+ Ново наблюдение</b> и запиши първата птица.')+
     (ih?'<div class="inst" style="margin-top:20px">'+ih+'</div>':'')+'</div>';return;}
   if(view==='log')return renderLog(el);
@@ -1471,7 +1576,8 @@ function renderLifeRefs(){setTimeout(()=>{loadRefs();loadXC();},0);}
 let LIFEALL=0;const KALF='bird-journal-allfold';
 function lifeTabs(n){return '<div class="lifetabs seg"><button type="button" data-lifeall="0" aria-pressed="'+(LIFEALL===0)+'">Моите · '+n+'</button>'+
   '<button type="button" data-lifeall="1" aria-pressed="'+(LIFEALL===1)+'">Всички · '+SPL.length+'</button>'+
-  '<button type="button" data-lifeall="2" aria-pressed="'+(LIFEALL===2)+'">🌳 Дървото</button></div>';}
+  '<button type="button" data-lifeall="2" aria-pressed="'+(LIFEALL===2)+'">🌳 Дървото</button>'+
+  '<button type="button" data-lifeall="3" aria-pressed="'+(LIFEALL===3)+'">🎓 Уроци</button></div>';}
 function renderAllSpecies(el){const ql=q.trim().toLowerCase(),mine=new Set();
   for(const o of SURE()){const c=listFind('la',o.la)||listFind('bg',o.bg)||listFind('en',o.en);if(c)mine.add(nrm(c.la));}
   const by={};for(const e of SPL){if(ql&&!(e[0]+' '+e[1]+' '+e[2]+' '+altsOf(e).join(' ')).toLowerCase().includes(ql))continue;(by[FAMS[e[3]]]=by[FAMS[e[3]]]||[]).push(e);}
@@ -4126,6 +4232,160 @@ document.getElementById('wlDlg').addEventListener('click',e=>{const b=e.target.c
   if(a==='acct')document.getElementById('acct').click();
   if(a==='first')setTimeout(()=>{window.scrollTo(0,0);openForm(null);},80);});   // след като диалогът се е затворил (iPhone иначе „заключва“ полето)
 // празните раздели обясняват за какво са
+/*LEARN-START*/
+// ---- уроците: съдържанието е в tools/learn/course.json, картинките в pics.js, плейърът в learn.js (сглобява ги build.py) ----
+const COURSE={"units": [{"id": "u1", "t": "Какво е птица", "d": "Перата, клюнът, яйцата - и защо птиците всъщност са динозаври.", "ls": [{"id": "u1a", "t": "Перата", "ex": [{"id": "u1a1", "k": "info", "t": "Само птиците имат пера", "pic": "feather", "x": "Много животни летят, снасят яйца или имат клюн. Но пера днес имат само птиците. Затова перото е най-сигурният знак, че пред теб е птица."}, {"id": "u1a2", "k": "tf", "q": "Прилепът е птица, защото лети.", "a": false, "e": "Прилепът е бозайник: има козина вместо пера и кърми малките си. Летенето не прави едно животно птица."}, {"id": "u1a3", "k": "tf", "q": "Щраусът е птица, макар че не лети.", "a": true, "e": "Щраусът има пера и снася яйца - значи е птица. Не всички птици летят."}, {"id": "u1a4", "k": "pic", "q": "Кое от тези животни има пера?", "o": [{"p": "bird", "l": "Птица"}, {"p": "bat", "l": "Прилеп"}, {"p": "butterfly", "l": "Пеперуда"}], "e": "Пера има само птицата. Прилепът има козина, а крилата на пеперудата са покрити с мънички люспици."}, {"id": "u1a5", "k": "ch", "q": "От какво са направени перата?", "o": ["От кератин", "От кост", "От хрущял"], "e": "Перата са от кератин - същия белтък, от който са косата и ноктите ни, а отвън и клюнът на птицата."}, {"id": "u1a6", "k": "info", "t": "За какво са перата", "x": "Перата носят птицата във въздуха, пазят я топла и суха и я правят забележима - или невидима. Под външните пера има пух, който топли като пухено яке."}, {"id": "u1a7", "k": "pr", "q": "Свържи перата със задачата им", "p": [["Пух", "Топлина"], ["Махови пера", "Полет"], ["Кормилни пера", "Завиване и спиране"], ["Ярките пера на мъжкия", "Ухажване"]], "e": "Маховите пера са по крилата, а кормилните - на опашката."}, {"id": "u1a8", "k": "ch", "q": "Как се казва смяната на старите пера с нови?", "o": ["Линеене", "Мътене", "Гнездене"], "e": "Перата се износват, затова птиците ги сменят - повечето веднъж или два пъти в годината. Мътенето е топленето на яйцата."}, {"id": "u1a9", "k": "ch", "q": "Колко пера има приблизително един лебед?", "o": ["Около 25 000", "Около 2500", "Около 250"], "e": "Около 25 000 - и около четири пети от тях са по главата и дългата шия. Малка пойна птица има около 2000."}]}, {"id": "u1b", "t": "Клюн, кости, яйца", "ex": [{"id": "u1b1", "k": "info", "t": "Клюн вместо зъби", "x": "Птиците нямат зъби. Клюнът е кост, покрита с кератин, а формата му издава с какво се храни птицата - на клюновете ще посветим цяла глава."}, {"id": "u1b2", "k": "tf", "q": "Някои птици имат зъби.", "a": false, "e": "Нито една днешна птица няма зъби. Нирците имат назъбен клюн, с който държат хлъзгавата риба, но назъбванията са по ръба на клюна, а не истински зъби."}, {"id": "u1b3", "k": "info", "t": "Леки кости", "x": "Много от костите на птиците са кухи, с тънки подпорки отвътре. Така са едновременно леки и здрави. Някои дори са свързани с въздушните торбички, които помагат при дишането."}, {"id": "u1b4", "k": "ch", "q": "Защо костите на птиците са кухи?", "o": ["За да са леки, но здрави", "За да се чупят лесно при опасност", "За да събират мазнини за зимата"], "e": "Кухата кост с подпорки е лека и здрава - по същата причина рамката на велосипеда е от тръби, а не от плътни пръти."}, {"id": "u1b5", "k": "tf", "q": "Всички птици снасят яйца.", "a": true, "e": "Нито една птица не ражда живи малки. Черупката на яйцето е от калциев карбонат - същото вещество като във варовика."}, {"id": "u1b6", "k": "ch", "q": "Каква е обичайната телесна температура на птиците?", "o": ["40-42 °C", "36-37 °C", "30-32 °C"], "e": "Птиците са топлокръвни и по-топли от нас - около 40-42 °C. Високата температура поддържа бързия им обмен на веществата."}, {"id": "u1b7", "k": "pr", "q": "Свържи белега с това, което означава", "p": [["Пера", "Има ги само птиците"], ["Клюн", "Без зъби"], ["Кухи кости", "Лекота"], ["Топлокръвни", "Около 41 °C"]], "e": ""}, {"id": "u1b8", "k": "tf", "q": "Пингвините, щраусите и колибритата са птици.", "a": true, "e": "Колкото и различни да са, всички имат пера и клюн и снасят яйца."}, {"id": "u1b9", "k": "ch", "q": "Кое от тези НЕ важи за всички птици?", "o": ["Могат да летят", "Имат пера", "Снасят яйца", "Имат клюн"], "e": "Щраусите, пингвините и някои островни птици не летят. Пера, клюн и яйца обаче имат всички."}]}, {"id": "u1c", "t": "Тялото на птицата", "ex": [{"id": "u1c1", "k": "info", "t": "Основните части", "pic": "diagram", "x": "Клюн, глава, гърди, гръб, крило, опашка, крака. С тези думи описват птиците и определителите - а скоро и ти."}, {"id": "u1c2", "k": "tap", "q": "Докосни клюна", "a": "beak", "e": "Клюнът е отпред на главата - с него птицата яде, чисти перата си и строи гнездото."}, {"id": "u1c3", "k": "tap", "q": "Докосни опашката", "a": "tail", "e": "Опашката е от кормилните пера - с тях птицата завива и спира във въздуха."}, {"id": "u1c4", "k": "tap", "q": "Докосни крилото", "a": "wing", "e": "Когато птицата седи, крилото е сгънато покрай тялото."}, {"id": "u1c5", "k": "tap", "q": "Докосни гърдите", "a": "breast", "e": "Гърдите са отпред, под главата. При много видове там са най-ярките цветове - като оранжевите гърди на червеногушката."}, {"id": "u1c6", "k": "tap", "q": "Докосни гърба", "a": "back", "e": "Гърбът е отгоре, между главата и опашката."}, {"id": "u1c7", "k": "ch", "q": "Колко пръста имат повечето птици?", "o": ["4", "3", "5"], "e": "Повечето птици имат 4 пръста - обикновено 3 напред и 1 назад, удобно за хващане на клонче. Щраусът има само 2."}, {"id": "u1c8", "k": "tf", "q": "Ставата, която прилича на обърнато назад коляно, всъщност е петата.", "a": true, "e": "Птиците ходят на пръсти и това, което изглежда като коляно, е петата им. Истинското коляно е скрито под перата, близо до тялото."}, {"id": "u1c9", "k": "tap", "q": "Докосни краката", "a": "legs", "e": "Краката на повечето птици са покрити с люспи - наследство от динозаврите."}]}, {"id": "u1d", "t": "Птиците са динозаври", "ex": [{"id": "u1d1", "k": "info", "t": "Живите динозаври", "x": "Птиците произлизат от малки двукраки динозаври - тероподи, роднини на велоцираптора. Преди 66 милиона години, когато огромен астероид слага край на динозаврите, оцеляват само някои птици. Техни потомци са всички днешни видове."}, {"id": "u1d2", "k": "ch", "q": "Кои са най-близките живи роднини на птиците?", "o": ["Крокодилите", "Гущерите", "Прилепите", "Костенурките"], "e": "Птиците и крокодилите са единствените оцелели архозаври - групата, към която са принадлежали и динозаврите."}, {"id": "u1d3", "k": "tf", "q": "Археоптериксът е имал и пера, и зъби.", "a": true, "e": "Археоптериксът е живял преди около 150 милиона години в днешна Германия. Имал е пера и крила като птица, но и зъби, нокти по крилата и дълга костна опашка като динозавър."}, {"id": "u1d4", "k": "tf", "q": "Всички динозаври са изчезнали.", "a": false, "e": "Птиците са динозаври, така че динозаврите още са тук. Врабчето е по-близък роднина на тиранозавъра, отколкото е гущерът."}, {"id": "u1d5", "k": "ch", "q": "Около колко вида птици живеят днес по света?", "o": ["Около 11 000", "Около 1000", "Около 100 000"], "e": "Около 11 000 вида. В България са установени над 400, а Перá познава 413 от тях."}, {"id": "u1d6", "k": "pr", "q": "Свържи птицата с рекорда ѝ", "p": [["Пчелно колибри", "Най-малката в света"], ["Щраус", "Най-голямата в света"], ["Жълтоглаво кралче", "Най-малката в Европа"], ["Къдроглав пеликан", "Размах на крилете около 3 м"]], "e": "Пчелното колибри тежи около 2 г, а щраусът - над 100 кг. Жълтоглавото кралче (около 5 г) живее и в нашите иглолистни гори, а къдроглавият пеликан гнезди в Сребърна."}, {"id": "u1d7", "k": "ch", "q": "Какво общо имат врабчето и тиранозавърът?", "o": ["И двамата са тероподи", "И двамата са хищници", "Нищо - не са роднини"], "e": "Тероподите са двукраките, предимно хищни динозаври. От тях произлизат птиците - включително врабчето, което се храни главно със семена."}, {"id": "u1d8", "k": "pr", "q": "Свържи понятията", "p": [["Тероподи", "Двукраки динозаври"], ["Архозаври", "Крокодили и птици"], ["Археоптерикс", "Пера и зъби"], ["Преди 66 млн. години", "Изчезват динозаврите"]], "e": ""}, {"id": "u1d9", "k": "info", "t": "Главата е завършена!", "x": "Вече знаеш какво прави една птица птица: пера, клюн без зъби, леки кости, яйца и топла кръв - и че е динозавър. Следва тялото на птицата отблизо."}]}]}], "soon": ["Тялото отблизо", "Пера и цветове", "Клюнове и храна", "Крака и полет", "Гласове", "Гнездене", "Миграция", "Как разпознаваме", "Групите птици"]};
+// Картинките на уроците: прости силуети в стила на Перá (viewBox 100×100) и птица с части за докосване.
+const LPIC={
+  feather:'<svg class="lpic" viewBox="0 0 100 100" aria-hidden="true"><path d="M78,10 C52,14 30,36 26,62 C25,70 27,76 30,80 C38,76 46,70 52,62 C64,46 72,30 78,10 Z"/>'+
+    '<path d="M78,10 C62,34 46,56 31,79" fill="none" stroke="var(--card)" stroke-width="2.4" stroke-linecap="round"/><path d="M31,79 L19,95" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>'+
+    '<path d="M60,30 L50,32 M54,42 L42,44 M47,54 L35,57 M66,26 L71,36 M58,40 L64,50 M50,52 L55,63" fill="none" stroke="var(--card)" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  bird:'<svg class="lpic" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="47" cy="58" rx="20" ry="13.5" transform="rotate(-28 47 58)"/><circle cx="63" cy="40" r="10"/><polygon points="71,37 82,40 71,43"/><polygon points="34,66 15,80 20,84 38,71"/><polygon points="47,68 50,68 49,82 46,82"/><polygon points="53,66 56,66 56,82 53,82"/><rect x="14" y="82" width="72" height="4" rx="2"/></svg>',
+  bat:'<svg class="lpic" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="54" rx="7" ry="13"/><circle cx="50" cy="38" r="6.5"/><polygon points="45,35 44,26 49,33"/><polygon points="55,35 56,26 51,33"/>'+
+    '<path d="M45,48 C34,38 18,36 6,44 C12,47 14,52 14,57 C19,54 24,55 27,59 C30,55 35,55 38,59 C40,55 43,54 45,56 Z"/>'+
+    '<path d="M55,48 C66,38 82,36 94,44 C88,47 86,52 86,57 C81,54 76,55 73,59 C70,55 65,55 62,59 C60,55 57,54 55,56 Z"/></svg>',
+  butterfly:'<svg class="lpic" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="54" rx="3.2" ry="20"/>'+
+    '<path d="M48,46 C38,26 18,22 14,34 C11,44 26,54 47,52 Z"/><path d="M52,46 C62,26 82,22 86,34 C89,44 74,54 53,52 Z"/>'+
+    '<path d="M48,56 C34,58 24,66 28,76 C32,84 44,76 48,62 Z"/><path d="M52,56 C66,58 76,66 72,76 C68,84 56,76 52,62 Z"/>'+
+    '<path d="M49,35 C46,26 42,22 38,20 M51,35 C54,26 58,22 62,20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'
+};
+// Птицата за „Докосни…“: всяка част е отделна фигура с data-lpart. Части без значение (тялото, клонът) не се броят.
+const LPARTS={beak:'клюна',head:'главата',breast:'гърдите',back:'гърба',wing:'крилото',tail:'опашката',legs:'краката'};
+const LPARTN={beak:'Клюн',head:'Глава',breast:'Гърди',back:'Гръб',wing:'Крило',tail:'Опашка',legs:'Крака'};
+function lrnBird(labels){
+  const P=(k,el)=>el.replace('<path ','<path data-lpart="'+k+'" class="lp lp-'+k+'" ').replace('<circle ','<circle data-lpart="'+k+'" class="lp lp-'+k+'" ').replace('<polygon ','<polygon data-lpart="'+k+'" class="lp lp-'+k+'" ');
+  const lab=labels?[['Клюн',214,52,'start'],['Глава',156,22,'middle'],['Гърди',204,118,'start'],['Гръб',96,46,'middle'],['Крило',100,138,'middle'],['Опашка',34,98,'middle'],['Крака',152,162,'start']]
+    .map(([t,x,y,a])=>'<text x="'+x+'" y="'+y+'" text-anchor="'+a+'">'+t+'</text>').join(''):'';
+  const ln=labels?'<g class="lln"><path d="M204,64 L214,56 M162,40 L158,27 M176,104 L202,114 M108,64 L98,51 M110,112 L102,128 M136,146 L150,154 M40,120 L34,103"/></g>':'';
+  return '<svg class="lbird'+(labels?' lab':'')+'" viewBox="0 0 250 172" role="img" aria-label="Птица - части на тялото">'+
+    '<path class="lperch" d="M10,152 Q120,140 240,146"/>'+
+    P('legs','<path d="M122,124 L120,141 M120,141 L111,143 M120,141 L127,144 M136,122 L139,140 M139,140 L131,142 M139,140 L146,143" fill="none"/>')+
+    P('tail','<polygon points="76,99 30,112 12,121 19,128 14,134 26,137 88,114"/>')+
+    '<ellipse class="lbody" cx="122" cy="96" rx="52" ry="31" transform="rotate(-16 122 96)"/>'+
+    P('back','<path d="M74,98 Q96,66 150,62 Q160,64 162,72 Q124,72 92,104 Z"/>')+
+    P('breast','<path d="M156,74 Q182,88 172,112 Q160,128 130,128 Q156,110 156,74 Z"/>')+
+    P('wing','<path d="M90,100 Q112,76 150,84 Q142,104 108,116 Q86,120 62,118 Q76,110 90,100 Z"/>')+
+    P('head','<circle cx="170" cy="60" r="21"/>')+
+    '<circle class="leye" cx="177" cy="55" r="3.2"/>'+
+    P('beak','<polygon points="187,56 212,63 187,69"/>')+ln+lab+'</svg>';}
+// ---- Уроци: общи знания за птиците, стъпка по стъпка като в Duolingo (2026-11-23) ----
+// Глави → уроци → упражнения. Сгрешеното се връща в края на урока, докато стане вярно; няма „животи“, които да се губят.
+// Напредъкът (LRN) се пази на устройството, синхронизира се с профила (поле lrn - сливане без загуби) и влиза в резервното копие.
+// Текстовете са в COURSE (идват от tools/learn/course.json); първият отговор в списъка е верният - на екрана се разбъркват.
+const KLRN='bird-journal-learn';
+function lrnNorm(v){v=v&&typeof v==='object'?v:{};
+  return {v:1,d:v.d&&typeof v.d==='object'?v.d:{},x:v.x&&typeof v.x==='object'?v.x:{},days:Array.isArray(v.days)?v.days.filter(x=>typeof x==='string'):[],pr:+v.pr||0};}
+let LRN=lrnNorm(lsGet(KLRN,null));
+const lrnSave=sync=>{lsSet(KLRN,LRN);if(sync)queueSync();};
+// две копия на напредъка (две устройства) се сливат без загуби: най-много пъти, най-късна дата, всички дни
+function lrnMerge(a,b){const r=lrnNorm(JSON.parse(JSON.stringify(lrnNorm(a)))),o=lrnNorm(b);let ch=0;
+  const mx=(m,v,ks)=>{const n={};for(const k of ks)n[k]=Math.max(+m[k]||0,+v[k]||0);n.t=(m.t||'')>(v.t||'')?m.t||'':v.t||'';return n;};
+  for(const [box,ks] of [['d',['n','p']],['x',['s','w']]])
+    for(const [k,v] of Object.entries(o[box])){if(!v||typeof v!=='object')continue;const m=r[box][k];
+      if(!m){r[box][k]=v;ch++;continue;}const n=mx(m,v,ks);if(JSON.stringify(n)!==JSON.stringify(m)){r[box][k]=n;ch++;}}
+  const ds=[...new Set([...r.days,...o.days])].sort().slice(-400);if(ds.length!==r.days.length){r.days=ds;ch++;}
+  if(o.pr>r.pr){r.pr=o.pr;ch++;}
+  return {v:r,ch};}
+const lrnXP=()=>Object.values(LRN.d).reduce((s,v)=>s+(+v.n||0)*10+(+v.p||0)*5,0)+LRN.pr*5;
+function lrnStreak(){const S=new Set(LRN.days),d=new Date();if(!S.has(ymd(d)))d.setDate(d.getDate()-1);let n=0;
+  while(S.has(ymd(d))){n++;d.setDate(d.getDate()-1);}return n;}
+const lrnDays=n=>n===1?'ден подред':'дни подред';
+const lrnDone=id=>!!(LRN.d[id]&&LRN.d[id].n);
+const lrnUnitOpen=u=>{const k=COURSE.units.indexOf(u);return k===0||COURSE.units[k-1].ls.every(l=>lrnDone(l.id));};
+const lrnOpen=(u,i)=>lrnUnitOpen(u)&&(i===0||lrnDone(u.ls[i-1].id));
+const lrnFind=id=>{for(const u of COURSE.units){const l=u.ls.find(x=>x.id===id);if(l)return l;}return null;};
+const LOFF=[0,-48,0,48];   // пътечката криволичи като в Duolingo
+function renderLearn(el){const xp=lrnXP(),st=lrnStreak(),any=Object.keys(LRN.d).length;
+  let h=lifeTabs(Object.keys(speciesMap()).length)+
+    '<div class="lrnhead"><div><b>'+xp+'</b> точки</div><div>🔥 <b>'+st+'</b> '+lrnDays(st)+'</div>'+
+    (any?'<button type="button" class="btn sm" data-lprac>Упражнявай</button>':'')+'</div>';
+  COURSE.units.forEach((u,k)=>{const dn=u.ls.filter(l=>lrnDone(l.id)).length,uo=lrnUnitOpen(u);
+    h+='<section class="lunit'+(uo?'':' locked')+'" data-lunit="'+u.id+'"><div class="luhead"><small>Глава '+(k+1)+' · '+dn+' от '+u.ls.length+'</small><h3>'+esc(u.t)+'</h3><p>'+esc(u.d)+'</p></div><div class="lpath">';
+    u.ls.forEach((l,i)=>{const done=lrnDone(l.id),open=lrnOpen(u,i),cur=open&&!done;
+      h+='<button type="button" class="lnode'+(done?' done':cur?' cur':open?'':' lock')+'" style="--off:'+LOFF[i%LOFF.length]+'px" data-lstart="'+l.id+'"'+(open?'':' disabled')+'>'+
+        '<span class="lcirc">'+(done?'✓':cur?'★':(i+1))+'</span><span class="lname">'+esc(l.t)+'</span></button>';});
+    h+='</div></section>';});
+  if(COURSE.soon&&COURSE.soon.length)h+='<section class="lunit soon"><div class="luhead"><small>Следват</small><p>'+
+    COURSE.soon.map((t,i)=>'Глава '+(COURSE.units.length+i+1)+' · '+esc(t)).join('<br>')+'</p></div></section>';
+  el.innerHTML=h;}
+// ---- плейърът ----
+let LP=null;
+const lrnShuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function lrnDue(x){const s=LRN.x[x.id];if(!s)return 6;   // упражнение: първо сгрешаваното и отдавна невиждано
+  const days=s.t?(Date.parse(today())-Date.parse(s.t))/864e5:30;return (+s.w||0)*2+days/2+Math.random();}
+function lrnStart(id){let L,q;
+  if(id==='prac'){const pool=[];for(const u of COURSE.units)for(const l of u.ls)if(lrnDone(l.id))for(const x of l.ex)if(x.k!=='info')pool.push(x);
+    if(!pool.length)return;q=lrnShuf(pool.sort((a,b)=>lrnDue(b)-lrnDue(a)).slice(0,8));L={id:'prac',t:'Упражнение'};}
+  else{L=lrnFind(id);if(!L)return;q=L.ex.slice();}
+  LP={L,q,i:0,done:0,wrong:0,scored:q.filter(x=>x.k!=='info').length,sel:null,ph:'ask',ord:null,pr:null};
+  const d=document.getElementById('lrnDlg');if(!d.open)d.showModal();lrnDraw();}
+function lrnClose(){const d=document.getElementById('lrnDlg');if(d.open)d.close();LP=null;if(view==='life'&&LIFEALL===3&&!spSel)render();}
+const lrnFoot=(cls,h)=>{const f=document.getElementById('lrFoot');f.className=cls||'';f.innerHTML=h;};
+function lrnDraw(){const B=document.getElementById('lrBody'),bar=document.querySelector('#lrnDlg .lrbar i');
+  const left=LP.q.length-LP.i;bar.style.width=Math.round(100*LP.done/Math.max(1,LP.done+left))+'%';
+  const x=LP.q[LP.i];if(!x)return lrnEnd();
+  LP.sel=null;LP.ph='ask';B.scrollTop=0;
+  if(x.k==='info'){B.innerHTML='<div class="linfo">'+(x.pic==='diagram'?lrnBird(true):x.pic&&LPIC[x.pic]?LPIC[x.pic]:'')+'<h3>'+esc(x.t)+'</h3><p>'+esc(x.x)+'</p></div>';
+    lrnFoot('','<button type="button" class="btn pri lgo" data-lnext>Продължи</button>');return;}
+  let h='<div class="lkind">'+({ch:'Избери верния отговор',tf:'Вярно или невярно?',pic:'Избери картинката',pr:'Свържи двойките',tap:'Покажи на птицата'})[x.k]+'</div><div class="lq">'+esc(x.q)+'</div>';
+  if(x.k==='ch'){LP.ord=lrnShuf(x.o.map((t,i)=>i));h+='<div class="lopts">'+LP.ord.map(i=>'<button type="button" class="lopt" data-lopt="'+i+'" aria-pressed="false">'+esc(x.o[i])+'</button>').join('')+'</div>';}
+  if(x.k==='tf')h+='<div class="lopts tf"><button type="button" class="lopt" data-lopt="1" aria-pressed="false">Вярно</button><button type="button" class="lopt" data-lopt="0" aria-pressed="false">Невярно</button></div>';
+  if(x.k==='pic'){LP.ord=lrnShuf(x.o.map((t,i)=>i));h+='<div class="lpics">'+LP.ord.map(i=>'<button type="button" class="lopt" data-lopt="'+i+'" aria-pressed="false">'+(LPIC[x.o[i].p]||'')+esc(x.o[i].l)+'</button>').join('')+'</div>';}
+  if(x.k==='tap')h+=lrnBird(false);
+  if(x.k==='pr'){LP.pr={L:lrnShuf(x.p.map((p,i)=>i)),R:lrnShuf(x.p.map((p,i)=>i)),a:null,b:null,got:new Set(),miss:0};
+    h+='<div class="lpairs"><div class="lcol">'+LP.pr.L.map(i=>'<button type="button" class="lopt" data-lpl="'+i+'">'+esc(x.p[i][0])+'</button>').join('')+'</div>'+
+      '<div class="lcol">'+LP.pr.R.map(i=>'<button type="button" class="lopt" data-lpr="'+i+'">'+esc(x.p[i][1])+'</button>').join('')+'</div></div>';}
+  B.innerHTML=h;
+  lrnFoot('',x.k==='pr'?'':'<button type="button" class="btn pri lgo" data-lcheck disabled>Провери</button>');}
+function lrnPick(v){if(!LP||LP.ph!=='ask')return;const x=LP.q[LP.i],B=document.getElementById('lrBody');LP.sel=v;
+  if(x.k==='tap')for(const p of B.querySelectorAll('.lp'))p.classList.toggle('sel',p.dataset.lpart===v);
+  else for(const b of B.querySelectorAll('[data-lopt]'))b.setAttribute('aria-pressed',b.dataset.lopt===String(v));
+  const c=document.querySelector('[data-lcheck]');if(c)c.disabled=false;}
+const lrnRight=x=>x.k==='ch'?x.o[0]:x.k==='pic'?x.o[0].l:x.k==='tf'?(x.a?'Вярно':'Невярно'):x.k==='tap'?LPARTN[x.a]:'';
+function lrnCheck(){if(!LP||LP.ph!=='ask'||LP.sel==null)return;const x=LP.q[LP.i],B=document.getElementById('lrBody');
+  const ok=x.k==='tf'?(LP.sel==='1')===!!x.a:x.k==='tap'?LP.sel===x.a:LP.sel==='0';
+  if(x.k==='tap'){for(const p of B.querySelectorAll('.lp')){p.classList.remove('sel');if(p.dataset.lpart===x.a)p.classList.add('ok');else if(p.dataset.lpart===LP.sel)p.classList.add('bad');}}
+  else for(const b of B.querySelectorAll('[data-lopt]')){const right=x.k==='tf'?(b.dataset.lopt==='1')===!!x.a:b.dataset.lopt==='0';
+    if(right)b.classList.add('ok');else if(b.dataset.lopt===LP.sel)b.classList.add('bad');}
+  lrnFb(x,ok);}
+function lrnFb(x,ok){LP.ph='fb';const s=LRN.x[x.id]||{s:0,w:0,t:''};s.s=(+s.s||0)+1;if(!ok)s.w=(+s.w||0)+1;s.t=today();LRN.x[x.id]=s;lrnSave(false);
+  if(ok)LP.done++;else{LP.wrong++;LP.q.push(x);}   // сгрешеното идва пак в края
+  const pr=x.k==='pr';
+  lrnFoot(ok?'ok':'bad','<div class="lfb"><b>'+(ok?(pr&&LP.pr.miss?'Готово!':'Точно така!'):'Не съвсем.')+'</b>'+
+    (!ok&&!pr?'Верният отговор: '+esc(lrnRight(x))+(x.e?'<br>':''):'')+(x.e?esc(x.e):'')+'</div><button type="button" class="btn pri lgo" data-lnext>Продължи</button>');}
+function lrnPair(side,i){if(!LP||LP.ph!=='ask')return;const x=LP.q[LP.i],P=LP.pr,B=document.getElementById('lrBody');
+  if(P.got.has(i))return;
+  P[side]=i;for(const b of B.querySelectorAll('[data-lp'+(side==='a'?'l':'r')+']'))b.setAttribute('aria-pressed',b.dataset['lp'+(side==='a'?'l':'r')]===String(i));
+  if(P.a==null||P.b==null)return;
+  const bl=B.querySelector('[data-lpl="'+P.a+'"]'),br=B.querySelector('[data-lpr="'+P.b+'"]');
+  if(P.a===P.b){P.got.add(P.a);for(const b of [bl,br]){b.classList.add('gone');b.setAttribute('aria-pressed','false');b.disabled=true;}}
+  else{P.miss++;for(const b of [bl,br]){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');b.setAttribute('aria-pressed','false');}}
+  P.a=P.b=null;
+  if(P.got.size===x.p.length){const s=LRN.x[x.id]||{s:0,w:0,t:''};s.s=(+s.s||0)+1;if(P.miss)s.w=(+s.w||0)+1;s.t=today();LRN.x[x.id]=s;lrnSave(false);
+    LP.ph='fb';LP.done++;if(P.miss)LP.wrong++;   // двойките не се връщат - грешката само се помни за упражненията
+    lrnFoot('ok','<div class="lfb"><b>'+(P.miss?'Готово!':'Точно така!')+'</b>'+(x.e?esc(x.e):'')+'</div><button type="button" class="btn pri lgo" data-lnext>Продължи</button>');}}
+function lrnNext(){if(!LP)return;const x=LP.q[LP.i];if(x&&x.k==='info'&&LP.ph==='ask')LP.done++;LP.i++;lrnDraw();}
+function lrnEnd(){const prac=LP.L.id==='prac',perfect=LP.wrong===0,gain=prac?5:10+(perfect?5:0);
+  if(prac)LRN.pr++;else{const v=LRN.d[LP.L.id]||{n:0,p:0,t:''};v.n=(+v.n||0)+1;if(perfect)v.p=(+v.p||0)+1;v.t=today();LRN.d[LP.L.id]=v;}
+  const t=today();if(!LRN.days.includes(t)){LRN.days.push(t);LRN.days=LRN.days.sort().slice(-400);}
+  lrnSave(true);const st=lrnStreak(),acc=Math.round(100*LP.scored/Math.max(1,LP.scored+LP.wrong));
+  document.querySelector('#lrnDlg .lrbar i').style.width='100%';
+  document.getElementById('lrBody').innerHTML='<div class="lend">'+LPIC.bird+'<div class="lbig">'+(perfect?'Без нито една грешка!':prac?'Упражнението е готово!':'Урокът е завършен!')+'</div>'+
+    '<div class="lstats"><span><b>+'+gain+'</b>точки</span><span><b>🔥 '+st+'</b>'+lrnDays(st)+'</span><span><b>'+acc+'%</b>верни</span></div></div>';
+  lrnFoot('','<button type="button" class="btn pri lgo" data-lclose>Продължи</button>');LP.ph='end';}
+document.addEventListener('click',e=>{const t=e.target;
+  const st=t.closest('[data-lstart]');if(st&&!st.disabled){lrnStart(st.dataset.lstart);return;}
+  if(t.closest('[data-lprac]')){lrnStart('prac');return;}
+  if(!t.closest('#lrnDlg'))return;
+  if(t.closest('[data-lclose]')){lrnClose();return;}
+  if(t.closest('[data-lnext]')){lrnNext();return;}
+  if(t.closest('[data-lcheck]')){lrnCheck();return;}
+  const o=t.closest('[data-lopt]');if(o){lrnPick(o.dataset.lopt);return;}
+  const pp=t.closest('[data-lpart]');if(pp&&!pp.closest('.lab')){lrnPick(pp.dataset.lpart);return;}
+  const pl=t.closest('[data-lpl]');if(pl){lrnPair('a',+pl.dataset.lpl);return;}
+  const pq=t.closest('[data-lpr]');if(pq){lrnPair('b',+pq.dataset.lpr);return;}});
+document.getElementById('lrnDlg').addEventListener('cancel',e=>{e.preventDefault();lrnClose();});
+/*LEARN-END*/
 const EMPTYTXT={life:'Тук ще се събират видовете ти - всеки с коронка, която показва колко добре го познаваш.',
   outs:'Тук ще са излетите ти. Преди разходка за птици натисни „Излет“ - наблюденията ще се съберат заедно.',
   map:'Тук ще видиш на карта къде си записвал птици, а отдолу - Местата си.',
@@ -4152,7 +4412,7 @@ function acctExtras(el){const d=document.createElement('div');
 // ---- резервни копия: дата в името, помни се кога е правено последното, „Изпрати копие" го праща извън телефона ----
 const KBK='bird-journal-lastbak';
 const ymd=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
-const bakData=()=>JSON.stringify({v:6,obs:OBS,beh:BEH,outs:OUTS,del:DEL,tg:TG,spx:SPXO,bdg:BDG,ans:ANS}), bakName=()=>'ptichi-dnevnik-'+today();
+const bakData=()=>JSON.stringify({v:6,obs:OBS,beh:BEH,outs:OUTS,del:DEL,tg:TG,spx:SPXO,bdg:BDG,ans:ANS,lrn:LRN}), bakName=()=>'ptichi-dnevnik-'+today();
 // ---- Значки в три нива: бронз — начало, сребро — усилие, злато — майсторство ----
 // Броят се само сигурните записи. „Записи“ се броят честно: един за вид, място и ден (десет записа на едно врабче
 // за час са един). Места: ~1 км клетки (една разходка не става двайсет места); участък: ~500 м.
@@ -4267,6 +4527,7 @@ document.getElementById('impf').onchange=e=>{const f=e.target.files[0];if(!f)ret
       if(d&&Array.isArray(d.spx)){SPXO=d.spx;lsSet(KTGX,SPXO);SPXC=null;}
       if(d&&d.bdg&&typeof d.bdg==='object'){for(const [k,v] of Object.entries(d.bdg))if(!BDG[k])BDG[k]=v;lsSet(KBDG,BDG);}
       if(d&&d.ans&&typeof d.ans==='object'&&typeof ANS==='object'){Object.assign(ANS,d.ans);try{saveAns&&saveAns();}catch(x){}}
+      if(d&&d.lrn){LRN=lrnMerge(LRN,d.lrn).v;lsSet(KLRN,LRN);}   // уроците: старо копие не изтрива по-новия напредък
       save();fillLists();render();}}
     catch(x){alert('Файлът не е валидно резервно копие.');}};
   r.readAsText(f);e.target.value='';};
@@ -4322,7 +4583,7 @@ syncBar();applySeason();try{matchMedia('(prefers-color-scheme: dark)').addEventL
 
 // ---- като приложение: офлайн копие (sw.js), бутон/подсказка за инсталиране, трайно хранилище ----
 // От локален файл нищо от това не се включва — там страницата е на телефона по начало.
-const VER='2026-11-23.1';
+const VER='2026-11-23.2';
 document.getElementById('ver').textContent='версия '+VER;
 const web=/^https?:$/.test(location.protocol);
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -4397,6 +4658,7 @@ function mergeIn(d){const had=new Set(OBS.map(o=>String(o.id))),dd=d.del||{};
   {let nt=0;for(const [k,v] of Object.entries(d.tg||{}))if(v&&(!TG[k]||(v.t||0)>(TG[k].t||0))){TG[k]=v;nt++;}if(nt)lsSet(KTG,TG);
    let nx=0;for(const x of d.spx||[])if(x&&x.la&&!SPXO.some(y=>nrm(y.la)===nrm(x.la))){SPXO.push(x);nx++;}if(nx){lsSet(KTGX,SPXO);SPXC=null;fillLists();}}
   let na=0;for(const [k,v] of Object.entries(d.ans||{}))if(!ANS[k]||(v&&v.t>ANS[k].t)){ANS[k]=v;na++;}if(na){lsSet(KANS,ANS);render();}
+  {const m=lrnMerge(LRN,d.lrn);if(m.ch){LRN=m.v;lsSet(KLRN,LRN);if(view==='life'&&LIFEALL===3&&!spSel)render();}}   // уроците от другото устройство
   const ch=a.ch+b.ch+(bh.length-BEH.length);DEL={obs:a.del,outs:b.del};
   try{localStorage.setItem(KDEL,JSON.stringify(DEL));}catch(e){}
   if(ch){OBS=a.list;OUTS=b.list;BEH=bh;SPK=null;
@@ -4417,7 +4679,7 @@ async function syncNow(){
       if(base&&base!==lsGet(KSEEN,null)){   // друго устройство е писало: теглим и сливаме
         const r=await SB.from('journals').select('data,updated_at').eq('user_id',ME.id).single();if(r.error)throw r.error;
         base=r.data.updated_at;got+=mergeIn(r.data.data||{});lsSet(KSEEN,base);}
-      const payload={v:6,obs:OBS,beh:BEH,outs:OUTS,del:DEL,ans:ANS,bdg:BDG,tg:TG,spx:SPXO},js=JSON.stringify(payload);let hh=0;for(let j=0;j<js.length;j++)hh=(hh*31+js.charCodeAt(j))|0;const h=js.length+':'+hh;
+      const payload={v:6,obs:OBS,beh:BEH,outs:OUTS,del:DEL,ans:ANS,bdg:BDG,tg:TG,spx:SPXO,lrn:LRN},js=JSON.stringify(payload);let hh=0;for(let j=0;j<js.length;j++)hh=(hh*31+js.charCodeAt(j))|0;const h=js.length+':'+hh;
       if(base&&h===lsGet(KHASH,null))break;   // нищо ново за качване
       const r=base?await SB.from('journals').update({data:payload}).eq('user_id',ME.id).eq('updated_at',base).select('updated_at')
                   :await SB.from('journals').insert({user_id:ME.id,data:payload}).select('updated_at');
