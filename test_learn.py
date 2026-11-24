@@ -60,9 +60,9 @@ try:
          pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u1\"] .lnode')].map(n=>[n.querySelector('.lname').textContent,n.className.replace('lnode','').trim(),n.disabled])"),
          pg.evaluate("document.querySelector('.lunit.soon p').innerText.split('\\n')"),pg.inner_text('.lrnhead').split('\n')[0],pg.locator('[data-lprac]').count(),
          pg.is_visible('#q'),pg.is_visible('#filters')),
-        (['Какво е птица','Части на тялото на птица (locked)'],
+        (['Какво е птица','Части на тялото на птица (locked)','Думите на определителя (locked)'],
          [['Перата','cur',False],['Клюн, кости, яйца','lock',True],['Тялото на птицата','lock',True],['Птиците са динозаври','lock',True]],
-         ['Думите на определителя','Как разпознаваме','Гласове','Групите птици'],'0 точки',0,False,False))
+         ['Как разпознаваме','Гласове','Групите птици'],'0 точки',0,False,False))
   # the player
   pg.click('[data-lstart="u1a"]');pg.wait_for_timeout(200)
   check('L3 a lesson opens full-screen: empty progress bar, an info card with a picture and „Продължи“',
@@ -154,7 +154,7 @@ try:
       if(x.k==='ch'&&!(x.o.length>=2))e.push('opts '+x.id);if(x.k==='pic'&&x.o.some(o=>!LPIC[o.p]))e.push('pic '+x.id);
       if(x.k==='tap'&&!LPARTS[x.a])e.push('part '+x.id);if(x.k==='info'&&x.pic&&x.pic!=='diagram'&&!LPIC[x.pic])e.push('infopic '+x.id);}
     return [e,ids.size];})()""")
-  check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],225])
+  check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],352])
   # chapter 2 opens after chapter 1; pictures of beaks; a chapter put in later doesn't lock what you've started
   pg.click('[data-lstart="u1d"]');finish(pg);pg.click('[data-lclose]');pg.wait_for_timeout(150)
   check('L31 finishing the shared start opens both branches: „Части на тялото на птица“ with its first lesson, and „Пера и цветове“ on the other side',
@@ -171,7 +171,7 @@ try:
   shown=pg.evaluate("[...document.querySelectorAll('.lunit[data-lunit]')].map(u=>u.dataset.lunit)")
   pg.evaluate("COURSE.units.splice(2,1);render()")
   check('L33 a chapter put in later at the head of a branch: it opens after the shared start, a chapter you have started stays open, the next one waits in its own branch only',
-        (lock,shown),({'u1':False,'u2':False,'ux':False,'u3':False,'u4':False,'u5':True},['u1','ux','u3','u4','u5']))
+        (lock,shown),({'u1':False,'u2':False,'u6':True,'ux':False,'u3':False,'u4':False,'u5':True},['u1','ux','u3','u4','u5']))
   pg.click('[data-lbr="opr"]');pg.wait_for_timeout(100)
   # ---- chapter 2: the body parts in the guide's words (2026-11-23.4) ----
   L=lambda u:pg.evaluate("[...document.querySelectorAll('[data-lunit=\"%s\"] .lnode')].map(n=>n.className.replace('lnode','').trim())"%u)
@@ -269,14 +269,14 @@ try:
               pg.evaluate("document.querySelector('.lunit.soon p').innerText.split('\\n')"),pg.inner_text('.lbrd'))
   check('L50 the fork: „Оттук пътечката се разделя на две“, both branches with their progress; „Определяне“ chosen shows only its chapter and what comes next in it',
         (pg.inner_text('.lforkq'),)+BRS(),
-        ('Оттук пътечката се разделя на две. Можеш да вървиш и по двете.',[['🔎Определяне8 от 8 урока','true'],['🌿Животът на птиците4 от 12 урока','false']],
-         ['Начало · 4 от 4 | Какво е птица','Глава 1 · 8 от 8 | Части на тялото на птица'],['Думите на определителя','Как разпознаваме','Гласове','Групите птици'],
+        ('Оттук пътечката се разделя на две. Можеш да вървиш и по двете.',[['🔎Определяне8 от 19 урока','true'],['🌿Животът на птиците4 от 12 урока','false']],
+         ['Начало · 4 от 4 | Какво е птица','Глава 1 · 8 от 8 | Части на тялото на птица','Глава 2 · 0 от 11 | Думите на определителя'],['Как разпознаваме','Гласове','Групите птици'],
          'Да разпознаеш птицата и да я назовеш с думите на определителя.'))
   pg.click('[data-lbr="jiv"]');pg.wait_for_timeout(100);a=BRS()
   pg.reload();pg.wait_for_timeout(500);pg.click('.tab[data-v="life"]');pg.click('[data-lifeall="3"]');pg.wait_for_timeout(200)
   check('L51 „Животът на птиците“: its three chapters numbered on their own and its coming chapters; still chosen after reopening the app',
         (a,pg.evaluate("[...document.querySelectorAll('[data-lbr]')].map(b=>b.getAttribute('aria-pressed'))")),
-        (([['🔎Определяне8 от 8 урока','false'],['🌿Животът на птиците4 от 12 урока','true']],
+        (([['🔎Определяне8 от 19 урока','false'],['🌿Животът на птиците4 от 12 урока','true']],
           ['Начало · 4 от 4 | Какво е птица','Глава 1 · 4 от 4 | Пера и цветове','Глава 2 · 0 от 4 | Клюнове и храна','Глава 3 · 0 от 4 | Крака и полет'],
           ['Гнездене','Миграция','Как пеят птиците'],'Как и защо - перата, храната, полетът, гнездата и пътуванията.'),['false','true']))
   check('L52 inside a branch the chapters go in order: „Крака и полет“ waits for „Клюнове и храна“, whatever is done on the other side',
@@ -284,6 +284,49 @@ try:
         [['u1',False],['u3',False],['u4',False],['u5',True]])
   pg.evaluate("lrnStart('u2b')");pg.wait_for_timeout(80);pg.click('[data-lclose]');pg.wait_for_timeout(120)
   check('L53 starting a lesson brings you back to its side of the fork', pg.evaluate("[...document.querySelectorAll('[data-lbr]')].map(b=>b.getAttribute('aria-pressed'))"), ['true','false'])
+  # ---- „Думите на определителя“: chapter 2 of „Определяне“, the guide's own words (2026-11-24.2) ----
+  pg.evaluate("render()");pg.wait_for_timeout(100)
+  check('L54 with „Части на тялото на птица“ done, „Думите на определителя“ opens as chapter 2 of „Определяне“ - eleven lessons, the first one ready',
+        (pg.evaluate("[...document.querySelectorAll('.lunit:not(.soon)')].map(u=>u.querySelector('small').textContent+' | '+u.querySelector('h3').textContent+(u.classList.contains('locked')?' (locked)':''))"),L('u6')),
+        (['Начало · 4 от 4 | Какво е птица','Глава 1 · 8 от 8 | Части на тялото на птица','Глава 2 · 0 от 11 | Думите на определителя'],['cur']+['lock']*10))
+  pg.evaluate("lrnStart('u6c');LP.i=1;lrnDraw()");pg.wait_for_timeout(60)
+  SW="[...document.querySelectorAll('#lrBody .lgsw')].map(r=>[r.querySelector('svg [clip-path]')?'ивици':getComputedStyle(r.querySelector('svg path')).fill,r.textContent])"
+  check('L55 the map colours as in the guide\'s legend: orange - breeding range left in winter, purple - all year, yellow - on migration, light blue - winter range, yellow stripes - main migration direction',
+        pg.evaluate(SW),[['rgb(226, 123, 54)','Гнездови ареал, напускан през зимата.'],['rgb(141, 121, 198)','Среща се целогодишно, включително през гнездовия период.'],
+         ['rgb(239, 196, 98)','Район, където видът се среща при миграция.'],['rgb(185, 224, 238)','Зимен ареал.'],['ивици','Главно миграционно направление (не обезателно точното прелетно трасе).']])
+  pg.evaluate("LP.i=2;lrnDraw()");pg.wait_for_timeout(60)
+  q=(cur(pg)['k'],pg.inner_text('#lrBody .lq'),sorted(pg.evaluate("[...document.querySelectorAll('#lrBody .lpics .lopt')].map(b=>[b.textContent,b.getAttribute('aria-label')])")))
+  pg.click('[data-lopt="1"]');pg.click('[data-lcheck]');pg.wait_for_timeout(60)
+  check('L56 „Кой цвят е „Зимен ареал“?“: three colours, no words (named for screen readers); a wrong one: „Верният отговор е в зелено.“ and the light blue one is green',
+        q+(pg.inner_text('#lrFoot .lfb'),pg.evaluate("getComputedStyle(document.querySelector('#lrBody .lopt.ok svg path')).fill")),
+        ('pic','Кой цвят е „Зимен ареал“?',[['','лилаво'],['','оранжево'],['','светлосиньо']],'Не съвсем.\nВерният отговор е в зелено.','rgb(185, 224, 238)'))
+  pg.evaluate("LP.i=3;lrnDraw()");pg.wait_for_timeout(60)
+  a=(cur(pg)['k'],pg.evaluate("getComputedStyle(document.querySelector('#lrBody .lqpic svg path')).fill"),sorted(pg.evaluate("[...document.querySelectorAll('#lrBody [data-lopt]')].map(b=>b.textContent)")))
+  pg.click('[data-lopt="0"]');pg.click('[data-lcheck]');pg.wait_for_timeout(60);a+=(pg.inner_text('#lrFoot .lfb b'),)
+  pg.evaluate("LP.i=9;lrnDraw()");pg.wait_for_timeout(60)
+  b2=(cur(pg)['k'],pg.inner_text('#lrBody .lq'),pg.evaluate("getComputedStyle(document.querySelector('#lrBody .lqpic svg path')).fill"))
+  pg.click('[data-lopt="1"]');pg.click('[data-lcheck]');pg.wait_for_timeout(60)
+  check('L57 a colour shown above the question: orange - „Гнездови ареал, напускан през зимата.“ is right; purple said to be „Зимен ареал“ - „Вярно“ is wrong, and the guide\'s words for purple are shown',
+        (a,b2,pg.inner_text('#lrFoot .lfb')),
+        (('ch','rgb(226, 123, 54)',['Гнездови ареал, напускан през зимата.','Зимен ареал.','Среща се целогодишно, включително през гнездовия период.'],'Точно така!'),
+         ('tf','Този цвят е „Зимен ареал“.','rgb(141, 121, 198)'),'Не съвсем.\nВерният отговор: Невярно\nВ определителя: Среща се целогодишно, включително през гнездовия период.'))
+  pg.evaluate("lrnClose();lrnStart('u6a');LP.i=8;lrnDraw()");pg.wait_for_timeout(60)
+  check('L58 the guide\'s list reads like a dictionary - each entry on its own line, the sign in bold - and big numbers never break („1 000 000“ stays whole)',
+        (pg.evaluate("[...document.querySelectorAll('#lrBody .lguide .lgl')].map(l=>(l.querySelector('b')||{}).textContent||'')"),
+         pg.evaluate("document.querySelector('#lrBody .lguide').textContent.includes('>1\\u00a0000\\u00a0000 дв.')")),
+        (['','1','2','3','4','5'],True))
+  pg.evaluate("lrnClose()");wide=[]
+  for l in 'abcdefghijk':
+    pg.evaluate("lrnStart('u6%s')"%l);pg.wait_for_timeout(50)
+    while cur(pg):
+      if pg.evaluate("(()=>{const b=document.getElementById('lrBody');return b.scrollWidth>b.clientWidth+1})()"):wide.append(cur(pg)['id'])
+      answer(pg)
+    pg.click('[data-lclose]');pg.wait_for_timeout(50)
+  check('L59 the whole chapter plays through on a 360 px phone - cards, colours, pairs, orders - nothing wider than the screen; „Всичко заедно“ ends it',
+        (L('u6'),wide,pg.errs),(['done']*11,[],[]))
+  dk.evaluate("lrnStart('u6c');LP.i=1;lrnDraw()");dk.wait_for_timeout(80)
+  check('L60 dark: the map colours a little softer, in the same order', ([r[0] for r in dk.evaluate(SW)],dk.errs),
+        (['rgb(220, 122, 60)','rgb(154, 136, 216)','rgb(230, 189, 94)','rgb(159, 210, 228)','ивици'],[]))
   check('L28 no page errors', pg.errs, [])
   # an empty journal: the lessons are still there
   e=page([])
