@@ -55,14 +55,14 @@ try:
         (pg.evaluate("[...document.querySelectorAll('.lifetabs button')].map(b=>b.textContent.replace(/ · \\d+/,''))"),pg.evaluate("new Set([...document.querySelectorAll('.lifetabs button')].map(b=>b.offsetTop)).size")),
         (['Моите','Всички','🌳 Дървото','🎓 Уроци'],1))
   pg.click('[data-lifeall="3"]');pg.wait_for_timeout(300)
-  check('L2 the path: five chapters, the first open with its first lesson, the rest locked; the coming ones listed by name, the guide chapter first; 0 points, no „Упражнявай“ yet; no search or filters',
+  check('L2 the path: the shared start open with its first lesson, then the fork with „Определяне“ chosen (its chapter locked) and its coming chapters by name; 0 points, no „Упражнявай“ yet; no search or filters',
         (pg.evaluate("[...document.querySelectorAll('.lunit:not(.soon)')].map(u=>u.querySelector('h3').textContent+(u.classList.contains('locked')?' (locked)':''))"),
          pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u1\"] .lnode')].map(n=>[n.querySelector('.lname').textContent,n.className.replace('lnode','').trim(),n.disabled])"),
          pg.evaluate("document.querySelector('.lunit.soon p').innerText.split('\\n')"),pg.inner_text('.lrnhead').split('\n')[0],pg.locator('[data-lprac]').count(),
          pg.is_visible('#q'),pg.is_visible('#filters')),
-        (['Какво е птица','Части на тялото на птица (locked)','Пера и цветове (locked)','Клюнове и храна (locked)','Крака и полет (locked)'],
+        (['Какво е птица','Части на тялото на птица (locked)'],
          [['Перата','cur',False],['Клюн, кости, яйца','lock',True],['Тялото на птицата','lock',True],['Птиците са динозаври','lock',True]],
-         ['Думите на определителя','Гласове','Гнездене','Миграция','Как разпознаваме','Групите птици'],'0 точки',0,False,False))
+         ['Думите на определителя','Как разпознаваме','Гласове','Групите птици'],'0 точки',0,False,False))
   # the player
   pg.click('[data-lstart="u1a"]');pg.wait_for_timeout(200)
   check('L3 a lesson opens full-screen: empty progress bar, an info card with a picture and „Продължи“',
@@ -157,20 +157,22 @@ try:
   check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],225])
   # chapter 2 opens after chapter 1; pictures of beaks; a chapter put in later doesn't lock what you've started
   pg.click('[data-lstart="u1d"]');finish(pg);pg.click('[data-lclose]');pg.wait_for_timeout(150)
-  check('L31 finishing chapter 1 opens „Части на тялото на птица“ with its first lesson; „Пера и цветове“ waits for it',
+  check('L31 finishing the shared start opens both branches: „Части на тялото на птица“ with its first lesson, and „Пера и цветове“ on the other side',
         (pg.evaluate("document.querySelector('[data-lunit=\"u2\"]').classList.contains('locked')"),
          pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u2\"] .lnode')].map(n=>n.className.replace('lnode','').trim())"),
-         pg.evaluate("document.querySelector('[data-lunit=\"u3\"]').classList.contains('locked')")), (False,['cur']+['lock']*7,True))
-  pg.evaluate("for(const l of ['u3a','u3b','u3c','u3d'])LRN.d[l]={n:1,p:0,t:'%s'};render()"%TS);pg.click('[data-lstart="u4a"]');pg.wait_for_timeout(150)
+         pg.evaluate("!lrnUnitOpen(COURSE.units.find(u=>u.id==='u3'))")), (False,['cur']+['lock']*7,False))
+  pg.evaluate("for(const l of ['u3a','u3b','u3c','u3d'])LRN.d[l]={n:1,p:0,t:'%s'};render()"%TS);pg.click('[data-lbr="jiv"]');pg.wait_for_timeout(100);pg.click('[data-lstart="u4a"]');pg.wait_for_timeout(150)
   info=(pg.locator('#lrBody .linfo .lpic').count(),pg.inner_text('#lrBody h3'));pg.click('[data-lnext]');pg.wait_for_timeout(100)
   check('L32 „Клюнове и храна“: a card with a drawn beak, then three beaks to choose from', (info,cur(pg)['k'],pg.locator('#lrBody .lpics .lopt svg').count(),
         sorted(pg.evaluate("[...document.querySelectorAll('#lrBody .lpics .lopt')].map(b=>b.textContent)"))), ((1,'Клюнът е инструмент'),'pic',3,['Къс и дебел','С кука','Тънък и остър']))
   pg.click('[data-lclose]');pg.wait_for_timeout(100)
-  pg.evaluate("COURSE.units.splice(1,0,{id:'ux',t:'Нова глава',d:'',ls:[{id:'uxa',t:'Нов урок',ex:[{id:'uxa1',k:'info',t:'a',x:'b'}]}]});render()")
-  lock=pg.evaluate("Object.fromEntries([...document.querySelectorAll('.lunit[data-lunit]')].map(u=>[u.dataset.lunit,u.classList.contains('locked')]))")
-  pg.evaluate("COURSE.units.splice(1,1);render()")
-  check('L33 a chapter put in later before the others: it opens after chapter 1, and a chapter you have started stays open', lock,
-        {'u1':False,'ux':False,'u2':True,'u3':False,'u4':False,'u5':True})
+  pg.evaluate("COURSE.units.splice(2,0,{id:'ux',br:'jiv',t:'Нова глава',d:'',ls:[{id:'uxa',t:'Нов урок',ex:[{id:'uxa1',k:'info',t:'a',x:'b'}]}]});render()")
+  lock=pg.evaluate("Object.fromEntries(COURSE.units.map(u=>[u.id,!lrnUnitOpen(u)]))")
+  shown=pg.evaluate("[...document.querySelectorAll('.lunit[data-lunit]')].map(u=>u.dataset.lunit)")
+  pg.evaluate("COURSE.units.splice(2,1);render()")
+  check('L33 a chapter put in later at the head of a branch: it opens after the shared start, a chapter you have started stays open, the next one waits in its own branch only',
+        (lock,shown),({'u1':False,'u2':False,'ux':False,'u3':False,'u4':False,'u5':True},['u1','ux','u3','u4','u5']))
+  pg.click('[data-lbr="opr"]');pg.wait_for_timeout(100)
   # ---- chapter 2: the body parts in the guide's words (2026-11-23.4) ----
   L=lambda u:pg.evaluate("[...document.querySelectorAll('[data-lunit=\"%s\"] .lnode')].map(n=>n.className.replace('lnode','').trim())"%u)
   TXT=lambda sel:pg.evaluate("s=>document.querySelector(s).textContent",sel)
@@ -251,7 +253,7 @@ try:
   keep=pg.evaluate("JSON.stringify(LRN.d)");pg.evaluate("LRN.d=Object.fromEntries(Object.entries(LRN.d).filter(([k])=>k.startsWith('u2')));lrnStart('prac')");pg.wait_for_timeout(60)
   q=pg.evaluate("LP.q.map(x=>x.k)");finish(pg)
   check('L48 practice from the chapter: no explore or info cards, the new kinds work there too', (len(q),'dx' in q or 'info' in q,pg.inner_text('.lend .lstats span:first-child').replace('\n',' ')), (8,False,'+5 точки'))
-  pg.click('[data-lclose]');pg.evaluate("LRN.d=JSON.parse(%s);render()"%json.dumps(keep))
+  pg.click('[data-lclose]');pg.evaluate("LRN.d=JSON.parse(%s);lrnSave(false);render()"%json.dumps(keep))
   dk=page(OBS,dark=True);dk.click('.tab[data-v="life"]');dk.click('[data-lifeall="3"]');dk.wait_for_timeout(200);dk.evaluate("lrnStart('u2a')");dk.wait_for_timeout(100)
   css=lambda d,sel,prop:d.evaluate("([s,p])=>getComputedStyle(document.querySelector(s))[p]",[sel,prop])
   pg.evaluate("lrnStart('u2a')");pg.wait_for_timeout(100)
@@ -259,6 +261,29 @@ try:
         (css(dk,'.luhead','color'),css(dk,'#lrBody .tp-korem path','fill'),css(pg,'#lrBody .tp-korem path','fill'),dk.errs),
         ('rgb(20, 22, 14)','rgb(214, 205, 182)','rgb(246, 239, 220)',[]))
   pg.evaluate("lrnClose()")
+  pg.click('[data-lclose]') if pg.evaluate("document.getElementById('lrnDlg').open") else None
+  # ---- the fork: a shared start, then „Определяне“ and „Животът на птиците“ (2026-11-24.1) ----
+  pg.evaluate("render()");pg.wait_for_timeout(100)
+  BRS=lambda:(pg.evaluate("[...document.querySelectorAll('[data-lbr]')].map(b=>[b.textContent,b.getAttribute('aria-pressed')])"),
+              pg.evaluate("[...document.querySelectorAll('.lunit:not(.soon)')].map(u=>u.querySelector('small').textContent+' | '+u.querySelector('h3').textContent)"),
+              pg.evaluate("document.querySelector('.lunit.soon p').innerText.split('\\n')"),pg.inner_text('.lbrd'))
+  check('L50 the fork: „Оттук пътечката се разделя на две“, both branches with their progress; „Определяне“ chosen shows only its chapter and what comes next in it',
+        (pg.inner_text('.lforkq'),)+BRS(),
+        ('Оттук пътечката се разделя на две. Можеш да вървиш и по двете.',[['🔎Определяне8 от 8 урока','true'],['🌿Животът на птиците4 от 12 урока','false']],
+         ['Начало · 4 от 4 | Какво е птица','Глава 1 · 8 от 8 | Части на тялото на птица'],['Думите на определителя','Как разпознаваме','Гласове','Групите птици'],
+         'Да разпознаеш птицата и да я назовеш с думите на определителя.'))
+  pg.click('[data-lbr="jiv"]');pg.wait_for_timeout(100);a=BRS()
+  pg.reload();pg.wait_for_timeout(500);pg.click('.tab[data-v="life"]');pg.click('[data-lifeall="3"]');pg.wait_for_timeout(200)
+  check('L51 „Животът на птиците“: its three chapters numbered on their own and its coming chapters; still chosen after reopening the app',
+        (a,pg.evaluate("[...document.querySelectorAll('[data-lbr]')].map(b=>b.getAttribute('aria-pressed'))")),
+        (([['🔎Определяне8 от 8 урока','false'],['🌿Животът на птиците4 от 12 урока','true']],
+          ['Начало · 4 от 4 | Какво е птица','Глава 1 · 4 от 4 | Пера и цветове','Глава 2 · 0 от 4 | Клюнове и храна','Глава 3 · 0 от 4 | Крака и полет'],
+          ['Гнездене','Миграция','Как пеят птиците'],'Как и защо - перата, храната, полетът, гнездата и пътуванията.'),['false','true']))
+  check('L52 inside a branch the chapters go in order: „Крака и полет“ waits for „Клюнове и храна“, whatever is done on the other side',
+        pg.evaluate("[...document.querySelectorAll('.lunit[data-lunit]')].map(u=>[u.dataset.lunit,u.classList.contains('locked')])"),
+        [['u1',False],['u3',False],['u4',False],['u5',True]])
+  pg.evaluate("lrnStart('u2b')");pg.wait_for_timeout(80);pg.click('[data-lclose]');pg.wait_for_timeout(120)
+  check('L53 starting a lesson brings you back to its side of the fork', pg.evaluate("[...document.querySelectorAll('[data-lbr]')].map(b=>b.getAttribute('aria-pressed'))"), ['true','false'])
   check('L28 no page errors', pg.errs, [])
   # an empty journal: the lessons are still there
   e=page([])
