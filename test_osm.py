@@ -4,6 +4,7 @@
 # EEA, GBIF and the helper are stand-ins here.
 # 2026-11-27.8: an ArcGIS error that comes with HTTP 200 counts as a failure; a copy of the areas next to the app (natura-bg.json)
 # is used first when there is one; the areas and the hot spots load side by side, and a line under the map says what is still loading.
+# 2026-11-27.9: that copy now exists - the ministry's 120 bird zones (MOEW, natura2000.egov.bg), with Bulgarian names and their big holes.
 import json,subprocess,sys,time,io,math,urllib.parse,datetime,random
 from playwright.sync_api import sync_playwright
 from PIL import Image
@@ -148,6 +149,22 @@ try:
   z=pg.evaluate("document.getElementById('exmap')._places.LZ.getLayers().map(l=>l.getTooltip().getContent())")
   check('Q19 a copy of the areas next to the app (natura-bg.json) is used first: only the areas in view, and the EEA is not asked', (z,len(EEAQ)-n0), (['Rila (copy)'],0))
   NAT[0]='404'
+  # ---- 2026-11-27.9: the real copy - the ministry's 120 bird zones (natura2000.egov.bg), simplified to ~80 m ----
+  R=json.load(open('natura-bg.json',encoding='utf-8'));fs=R['features']
+  inBG=all(22.3<=x<=28.7 and 41.2<=y<=44.25 for f in fs for P in f['geometry']['coordinates'] for ring in P for x,y in ring)
+  check('Q20 natura-bg.json: the 120 bird zones of Bulgaria, each with its code and Bulgarian name, all inside Bulgaria, small enough to load on a phone',
+        (len(fs),len({f['properties']['SITECODE'] for f in fs}),all(f['properties']['SITECODE'].startswith('BG') for f in fs),all(any('а'<=ch<='я' for ch in f['properties']['SITENAME'].lower()) for f in fs),inBG,len(open('natura-bg.json','rb').read())<800_000),
+        (120,120,True,True,True,True))
+  ctx.unroute('**/natura-bg.json',natl);n0=len(EEAQ)
+  pg.evaluate("(async()=>{for(const k of await caches.keys()){const c=await caches.open(k);for(const r of await c.keys())if(r.url.endsWith('/natura-bg.json'))await c.delete(r);}})()")   # the stand-in copy kept by the offline cache
+  pg.evaluate("NATL=undefined;SPAC.clear()")
+  pg.evaluate("document.getElementById('exmap')._lmap.setView([42.535,27.47],10)");pg.wait_for_timeout(2500)
+  z=pg.evaluate("document.getElementById('exmap')._places.LZ.getLayers().map(l=>l.getTooltip().getContent())")
+  st=next(f for f in fs if f['properties']['SITENAME']=='Студенец');sx=[c for P in st['geometry']['coordinates'] for c in P[0]]
+  pg.evaluate("document.getElementById('exmap')._lmap.setView([%f,%f],10)"%(sum(c[1] for c in sx)/len(sx),sum(c[0] for c in sx)/len(sx)));pg.wait_for_timeout(2000)
+  hole=pg.evaluate("(()=>{const l=document.getElementById('exmap')._places.LZ.getLayers().find(l=>l.getTooltip().getContent()==='Студенец');const g=l&&l.getLatLngs();return !!g&&Array.isArray(g[0][0])&&g[0].length>1;})()")
+  check('Q21 the app draws the zones from that copy, in Bulgarian, without asking the EEA - „Атанасовско езеро“ by Burgas; „Студенец“ with the hole the ministry left out of it',
+        ('Атанасовско езеро' in z,len(EEAQ)-n0,hole),(True,0,True))
   check('Q14 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

@@ -13,7 +13,7 @@ Everything sits in this one folder, and GitHub Pages publishes it as it is from 
 - The database: `setup.sql` sets up sharing and sync. Safe to re-run in the Supabase SQL editor.
 - The species list: built into `index.html` (`SPL`). 268 species from BSPB's Определител (Bulgarian and Latin names), with the Latin name checked against Wikipedia's „List of birds of Bulgaria“ (IOC 9.2), which also gives the English name and the family. It suggests names, fills empty fields, and links names that belong to one species when counting; it never changes a record. `species.csv` is the same list as a spreadsheet, with BSPB's older Latin names where they differ.
 - The lessons: „🎓 Уроци“ in Видове. Their texts are in `index.html` (`COURSE`), written for Перá and checked against a field guide. After a shared start the path splits in two: „Определяне“ (general words for describing a bird, how to identify one and how to watch birds in the field - quoted word for word from two books, „Полеви определител на птиците на Европа, Северна Африка и Близкия изток“ and „Птиците в България“, each quote under its book's name; own drawings - `LTOPO`; nothing that only one book uses, such as its status signs or map colours) and „Животът на птиците“ (own texts with lessons quoted from „Птиците в България“ in „Клюнове и храна“ and „Крака и полет“, plus „Гнездене“, „Миграция“ and „Опазване“ quoted from the same book).
-- The tests: `prepare.sh`, `setup.sh`, `run_all.sh`, `sbstack.py`, `sun.js`, `sun_check.py`, `tap_test.py`, the `test_*.py` files and two test photos. 1136 automated checks and a sunrise check, built to run in a Claude sandbox; see `TESTS.md`.
+- The tests: `prepare.sh`, `setup.sh`, `run_all.sh`, `sbstack.py`, `sun.js`, `sun_check.py`, `tap_test.py`, the `test_*.py` files and two test photos. 1138 automated checks and a sunrise check, built to run in a Claude sandbox; see `TESTS.md`.
 
 The Supabase key in `index.html` is the publishable key, meant to sit in a browser. What each person can read or change is enforced by the database rules in `setup.sql`.
 
@@ -37,7 +37,7 @@ The „▶ песен“ / „▶ обаждане“ buttons ask a small Supaba
 
 Backups: a weekly GitHub Actions job in a separate private repository copies the database (`roles.sql`, `schema.sql`, `data.sql`); `test_restore.py` rehearses the restore.
 
-Natura 2000 bird areas (Карта → Изследвай → място): from a copy next to the app, `natura-bg.json`, when there is one (a GeoJSON of the Bulgarian SPAs from the EEA - it works offline and does not depend on the EEA server); otherwise straight from the EEA map service, and if that fails through the `osm` helper.
+Natura 2000 bird areas (Карта → Изследвай → място): from `natura-bg.json` next to the app - the 120 bird zones (SPA) from the Ministry of Environment and Water's Natura 2000 information system (natura2000.egov.bg, „Граници на защитени зони“, bird-zone layer of 09.2024), with Bulgarian names; outer outlines plus holes over 0.5 km², simplified to about 80 m (590 KB, about 170 KB as sent). It works offline once opened and does not depend on the EEA server. If the file is missing, the app asks the EEA map service, and if that fails, the `osm` helper. To refresh it, download the ministry's archive again and convert the „Ptici“ layer the same way.
 
 Map tiles: Esri (satellite, topo, labels and roads over satellite) and OpenStreetMap (streets, no key; light use under the OSM tile policy — revisit before the public launch).
 
