@@ -39,7 +39,7 @@ try:
   first=pg.evaluate("document.querySelector('.mapbar .chip').dataset.mm")
   pg.click('[data-mm="real"]');pg.wait_for_function("document.querySelector('[data-tk]')",timeout=6000)
   rows=pg.evaluate("(()=>{const a=document.querySelector('[data-mm=\"real\"]').getBoundingClientRect(),t=document.querySelector('[data-tk]').getBoundingClientRect();return t.top>=a.bottom;})()")
-  check('L8 Карта: „Истинска карта“ first, its map styles on a row beneath it', (first,rows), ('real',True))
+  check('L8 Карта: „Моята карта“ first, its map styles on a row beneath it', (first,rows), ('real',True))
   pg.wait_for_function("window.__map&&document.querySelectorAll('#lmap path.leaflet-interactive').length>0",timeout=8000);pg.wait_for_timeout(300)
   i=pg.evaluate("window.__C.findIndex(c=>c.name==='Копринка')");pg.evaluate(f"showCluster({i})")   # the point's panel, now from the real map
   pg.wait_for_function("document.querySelectorAll('#mp .phstrip .th img').length===11",timeout=6000)

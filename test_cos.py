@@ -38,7 +38,7 @@ try:
   pg.click('[data-f="all"]');pg.click('.tab[data-v="map"]');pg.wait_for_timeout(400)
   if pg.evaluate("mapMode")!='real':pg.click('[data-mm="real"]');pg.wait_for_timeout(300)
   sz=pg.evaluate("(()=>{const s=getComputedStyle(document.querySelector('.tilesub .sub')),m=document.querySelector('[data-mm=real]').getBoundingClientRect(),b=document.querySelector('.tilesub .sub').getBoundingClientRect();return [parseFloat(s.fontSize),b.height<m.height*0.75]})()")
-  check('C7 the map’s style buttons are small (11.5 px text, well under the height of „Истинска карта“)', sz, [11.5,True])
+  check('C7 the map’s style buttons are small (11.5 px text, well under the height of „Моята карта“)', sz, [11.5,True])
   pg.evaluate("ME={id:'me',email:'ivan@example.bg'};MYNAME='Иван Петров';MYCODE='AB12CD34EF56';FR={fol:[{id:'u2',name:'Петър Георгиев',data:{obs:[],outs:[]},updated_at:'2026-11-03T08:00:00Z'}],fans:[{id:'u4',name:'Георги'}]}")
   pg.click('#acct');pg.wait_for_timeout(500)
   check('C8 the profile opens with a header card: initials, name, e-mail, and four numbers', (pg.inner_text('.phero .fav'),pg.inner_text('.phero h2'),'ivan@example.bg' in pg.inner_text('.phero'),pg.evaluate("[...document.querySelectorAll('.ptiles span')].map(s=>s.textContent)")),

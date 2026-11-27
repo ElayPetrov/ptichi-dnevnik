@@ -2,6 +2,8 @@
 # sent as several parts); orange: „hot spots“ where GBIF finds are dense (≥12 within 400 m, named after their most
 # frequent locality, from zoom 11); tap an outline for its birds; EEA straight, else through the helper; failures logged.
 # EEA, GBIF and the helper are stand-ins here.
+# 2026-11-27.8: an ArcGIS error that comes with HTTP 200 counts as a failure; a copy of the areas next to the app (natura-bg.json)
+# is used first when there is one; the areas and the hot spots load side by side, and a line under the map says what is still loading.
 import json,subprocess,sys,time,io,math,urllib.parse,datetime,random
 from playwright.sync_api import sync_playwright
 from PIL import Image
@@ -20,15 +22,25 @@ EEAF={'type':'FeatureCollection','features':[
   {'type':'Feature','properties':{'SITECODE':'GR1110001','SITENAME':'Elsewhere'},'geometry':{'type':'Polygon','coordinates':[sq(42.55,25.30,42.57,25.32)]}}]}
 PTS=[{'decimalLatitude':H0[0]+random.uniform(-.0012,.0012),'decimalLongitude':H0[1]+random.uniform(-.0015,.0015),'locality':'Atanasovsko Lake--Saltpans' if i<30 else 'Атанасовско езеро'} for i in range(40)]
 PTS+=[{'decimalLatitude':42.55+i*.02,'decimalLongitude':25.20+i*.03,'locality':'Някъде'} for i in range(8)]
-CALLS=[];EEAQ=[];PROXYQ=[];EEA_MODE=['ok'];PROXY_MODE=['ok'];ONLYTOWN=[False]
+CALLS=[];EEAQ=[];PROXYQ=[];EEA_MODE=['ok'];PROXY_MODE=['ok'];ONLYTOWN=[False];HELD=[];NAT=['404']
+AERR=json.dumps({'error':{'code':500,'message':'Unable to complete operation.','details':[]}})   # how ArcGIS reports a failure: HTTP 200
 def eea(route):
   EEAQ.append(route.request.url)
   if EEA_MODE[0]=='fail': return route.abort()   # e.g. the browser refusing it
+  if EEA_MODE[0]=='err200': return route.fulfill(body=AERR,content_type='application/json')
+  if EEA_MODE[0]=='hold': return HELD.append(route)   # answered later - a slow server
   route.fulfill(body=json.dumps(EEAF),content_type='application/json')
 def proxy(route):
   PROXYQ.append(route.request.url)
   if PROXY_MODE[0]=='fail': return route.fulfill(status=502,body='{"error":"eea"}')
+  if PROXY_MODE[0]=='err200': return route.fulfill(body=AERR,content_type='application/json')
   route.fulfill(body=json.dumps(EEAF),content_type='application/json')
+NATF={'type':'FeatureCollection','features':[
+  {'type':'Feature','properties':{'SITECODE':'BG0002070','SITENAME':'Rila (copy)'},'geometry':{'type':'Polygon','coordinates':[sq(42.60,25.39,42.64,25.43)]}},
+  {'type':'Feature','properties':{'SITECODE':'BG0002999','SITENAME':'Far away (copy)'},'geometry':{'type':'Polygon','coordinates':[sq(43.80,27.80,43.85,27.90)]}}]}
+def natl(route):   # the copy next to the app - none by default
+  if NAT[0]=='404': return route.fulfill(status=404,body='not found')
+  route.fulfill(body=json.dumps(NATF),content_type='application/json')
 def gbif(route):
   u=urllib.parse.unquote(route.request.url);CALLS.append(u)
   if '/v2/map/' in u: return route.fulfill(body=png((230,120,40),40),content_type='image/png')
@@ -68,7 +80,7 @@ srv=subprocess.Popen([sys.executable,'-m','http.server',str(port)],stdout=subpro
 try:
  with sync_playwright() as p:
   b=p.chromium.launch();ctx=b.new_context(viewport={'width':390,'height':844})
-  ctx.route('https://bio.discomap.eea.europa.eu/**',eea);ctx.route('https://szyituwdlbwpqkfuklxq.supabase.co/functions/v1/osm**',proxy);ctx.route('https://api.gbif.org/**',gbif)
+  ctx.route('https://bio.discomap.eea.europa.eu/**',eea);ctx.route('**/natura-bg.json',natl);ctx.route('https://szyituwdlbwpqkfuklxq.supabase.co/functions/v1/osm**',proxy);ctx.route('https://api.gbif.org/**',gbif)
   ctx.route('https://cdnjs.cloudflare.com/ajax/libs/leaflet/**',lambda r:r.fulfill(path='/home/claude/sb/leaflet/'+('leaflet.css' if r.request.url.endswith('.css') else 'leaflet.js'),content_type='text/css' if r.request.url.endswith('.css') else 'application/javascript'))
   for pat in ['https://server.arcgisonline.com/**','https://*.basemaps.cartocdn.com/**','https://*.tile.openstreetmap.org/**']:ctx.route(pat,lambda r:r.fulfill(body=G,content_type='image/png'))
   pg=ctx.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
@@ -112,6 +124,30 @@ try:
   sh=pg.evaluate("""(()=>{const c=[];for(let i=0;i<=40;i++){const a=Math.PI*(0.15+1.7*i/40);c.push([42.62+0.02*Math.sin(a),25.40+0.03*Math.cos(a)]);}
     for(let i=40;i>=0;i--){const a=Math.PI*(0.15+1.7*i/40);c.push([42.62+0.018*Math.sin(a),25.40+0.027*Math.cos(a)]);}c.push(c[0]);return gbShape(c,300).map(x=>[x[1],x[0]]);})()""")
   check('Q13 a C-shaped outline with a narrow gap: widening would cross itself — it falls back to a safe one', selfcross([tuple(x) for x in sh]), False)
+  # ---- 2026-11-27.8 ----
+  EEA_MODE[0]='err200';PROXY_MODE[0]='ok';PROXYQ.clear();pg.evaluate("SPAC.clear();errSeen.clear()");pg.evaluate("document.getElementById('exmap')._lmap.setView([42.622,25.402],10)");pg.wait_for_timeout(2500)
+  check('Q15 an ArcGIS error that comes with HTTP 200 counts as a failure: the helper is asked and the areas come from it',
+        (len(PROXYQ)>0,len(pg.evaluate("document.getElementById('exmap')._places.LZ.getLayers()"))),(True,2))
+  PROXY_MODE[0]='err200';pg.evaluate("SPAC.clear()");pg.evaluate("document.getElementById('exmap')._lmap.setView([42.623,25.403],10)");pg.wait_for_timeout(2500)
+  log=pg.evaluate("[...errSeen].find(k=>k.startsWith('Натура 2000 не отговаря - '))||''")
+  check('Q16 ...and when the helper also answers with an error, the map says the areas did not load, and the log keeps the error',
+        (pg.inner_text('#exhint').startswith('Зоните по Натура 2000 не се заредиха'),'eea: грешка 500 Unable to complete operation.' in log,'eea (Supabase): грешка 500' in log,pg.inner_text('#exload')),(True,True,True,''))
+  EEA_MODE[0]='hold';PROXY_MODE[0]='ok';HELD.clear();pg.evaluate("SPAC.clear();HSC.clear();const P=document.getElementById('exmap')._places;P.LZ.clearLayers();P.LH.clearLayers()")
+  pg.evaluate("document.getElementById('exmap')._lmap.setView([42.624,25.404],10)");pg.wait_for_timeout(2500)
+  a=(pg.inner_text('#exload'),pg.evaluate("getComputedStyle(document.getElementById('exload')).display"),len(pg.evaluate("document.getElementById('exmap')._places.LZ.getLayers()")),
+     len(pg.evaluate("document.getElementById('exmap')._places.LH.getLayers()"))>0)
+  EEA_MODE[0]='ok'
+  for r in HELD:r.fulfill(body=json.dumps(EEAF),content_type='application/json')
+  pg.wait_for_timeout(1200)
+  check('Q17 a slow EEA does not hold the hot spots back: they are drawn first, and the line under the map says the areas are still loading; when they come it disappears',
+        (a,pg.inner_text('#exload'),pg.evaluate("getComputedStyle(document.getElementById('exload')).display"),len(pg.evaluate("document.getElementById('exmap')._places.LZ.getLayers()"))),
+        (('Зареждам зоните по Натура 2000…','flex',0,True),'','none',2))
+  pr=pg.evaluate("(async()=>{HSC.clear();const c=[];await hotspots(document.getElementById('exmap')._lmap.getBounds(),212,(d,n)=>c.push(d+'/'+n));return c;})()")
+  check('Q18 the hot spots report how far they are („N от M“ in the line under the map)', (pr[0].startswith('0/'),pr[-1].split('/')[0]==pr[-1].split('/')[1],len(pr)>=2), (True,True,True))
+  NAT[0]='ok';n0=len(EEAQ);pg.evaluate("NATL=undefined;SPAC.clear()");pg.evaluate("document.getElementById('exmap')._lmap.setView([42.625,25.405],10)");pg.wait_for_timeout(2000)
+  z=pg.evaluate("document.getElementById('exmap')._places.LZ.getLayers().map(l=>l.getTooltip().getContent())")
+  check('Q19 a copy of the areas next to the app (natura-bg.json) is used first: only the areas in view, and the EEA is not asked', (z,len(EEAQ)-n0), (['Rila (copy)'],0))
+  NAT[0]='404'
   check('Q14 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

@@ -154,7 +154,7 @@ try:
       if(x.k==='ch'&&!(x.o.length>=2))e.push('opts '+x.id);if(x.k==='pic'&&x.o.some(o=>!LPIC[o.p]))e.push('pic '+x.id);
       if(x.k==='tap'&&!LPARTS[x.a])e.push('part '+x.id);if(x.k==='info'&&x.pic&&x.pic!=='diagram'&&!LPIC[x.pic])e.push('infopic '+x.id);}
     return [e,ids.size];})()""")
-  check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],696])
+  check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],695])
   # chapter 2 opens after chapter 1; pictures of beaks; a chapter put in later doesn't lock what you've started
   pg.click('[data-lstart="u1d"]');finish(pg);pg.click('[data-lclose]');pg.wait_for_timeout(150)
   check('L31 finishing the shared start opens both branches: „Части на тялото на птица“ with its first lesson, and „Пера и цветове“ on the other side',
@@ -473,10 +473,10 @@ try:
   pg.evaluate("lrnStart('u12d');LP.i=6;lrnDraw()");pg.wait_for_timeout(60)
   r=pg.evaluate("[...document.querySelectorAll('#lrBody .lguide .lgl')].map(l=>l.textContent)")
   pg.evaluate("lrnClose()")
-  check('L75 with „Миграция“ done, „Опазване“ opens as chapter 6 of „Животът на птиците“ - six lessons that play through on a 360 px phone under „Птиците в България“; a bird in distress: whom to tell, quoted from the book',
+  check('L75 with „Миграция“ done, „Опазване“ opens as chapter 6 of „Животът на птиците“ - six lessons that play through on a 360 px phone under „Птиците в България“; a bird in distress: whom to tell, quoted from the book - no phone numbers or other contact details asked or shown (Ivan, 2026-11-27)',
         (a,L('u12'),w5,pg.errs,pg.evaluate("COURSE.units.find(x=>x.id==='u12').ls.flatMap(l=>l.ex).filter(x=>x.g||x.eg).every(x=>x.src==='b2')"),r),
         ((['Глава 5 · 7 от 7 | Миграция','Глава 6 · 0 от 6 | Опазване'],['cur']+['lock']*5),['done']*6,[],[],True,
-         ['Ако се натъкнете на бедстващи птици, следва да подадете сигнал на зелените телефони на Регионалните инспекции по околната среда и водите (РИОСВ) или до:','Спасителен център за диви животни в Стара Загора, тел. +359 884 264 305']))
+         ['Ако се натъкнете на бедстващи птици, следва да подадете сигнал на зелените телефони на Регионалните инспекции по околната среда и водите (РИОСВ) или до:','Спасителен център за диви животни в Стара Загора…']))
   pg.click('[data-lbr="opr"]');pg.wait_for_timeout(80)
   check('L28 no page errors', pg.errs, [])
   # an empty journal: the lessons are still there

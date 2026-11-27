@@ -36,7 +36,7 @@ try:
   pg.click('.tab[data-v="map"]');pg.wait_for_timeout(300)
   if pg.evaluate("mapMode")!='real':pg.click('[data-mm="real"]');pg.wait_for_timeout(300)
   geo=pg.evaluate("(()=>{const m=document.querySelector('[data-mm=real]').getBoundingClientRect(),s=[...document.querySelectorAll('.tilesub .sub')].map(b=>b.getBoundingClientRect());return [s.length,new Set(s.map(r=>Math.round(r.top))).size,s.every(r=>r.height<m.height),document.documentElement.scrollWidth>document.documentElement.clientWidth]})()")
-  check('X8 the map’s styles are small sub-tabs on one row, smaller than „Истинска карта“, without widening the page', geo, [5,1,True,False])
+  check('X8 the map’s styles are small sub-tabs on one row, smaller than „Моята карта“, without widening the page', geo, [5,1,True,False])
   check('X9 no page errors', errs, [])
   b.close()
 finally: srv.terminate()

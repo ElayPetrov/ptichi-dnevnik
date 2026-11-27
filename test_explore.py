@@ -48,7 +48,7 @@ try:
   pg.add_init_script("if(!sessionStorage.getItem('s')){localStorage.setItem('bird-journal-tips','{\"all\":1}');localStorage.setItem('bird-journal-quiet','true');sessionStorage.setItem('s','1')}")
   pg.goto(f'http://localhost:{port}/ptichi-dnevnik.html');pg.wait_for_timeout(400)
   pg.click('.tab[data-v="map"]');pg.wait_for_timeout(200)
-  check('E1 Карта offers „Изследвай“ even with no records of your own (the personal map stays first)', pg.evaluate("[...document.querySelectorAll('[data-mm]')].map(b=>b.textContent)"), ['Истинска карта','Атлас','Изследвай'])
+  check('E1 Карта offers „Изследвай“ even with no records of your own (the personal map stays first)', pg.evaluate("[...document.querySelectorAll('[data-mm]')].map(b=>b.textContent)"), ['Моята карта','Атлас','Изследвай'])
   pg.evaluate("OBS.push({id:7,date:'%s',time:'08:00',place:'Тюлбето',count:'',bg:'Кос',en:'',la:'',fam:'',note:'',h:0,s:1,p:0,beh:[],geo:'42.62000,25.40000',photo:null});save()"%T)
   pg.click('[data-mm="gbif"]');pg.wait_for_timeout(1500)
   check('E2 a map of where all birds have been found in Bulgaria, drawn above the map, near your latest record (zoomed in, so the dots show)',
@@ -81,7 +81,7 @@ try:
   pg.reload();pg.wait_for_timeout(400);pg.click('.tab[data-v="map"]');pg.wait_for_timeout(300)
   first=pg.evaluate("document.querySelector('[data-mm][aria-pressed=\"true\"]').textContent")
   pg.click('[data-mm="gbif"]');pg.wait_for_timeout(1200)
-  check('E9a after reopening, Карта starts on your personal map, as always', first, 'Истинска карта')
+  check('E9a after reopening, Карта starts on your personal map, as always', first, 'Моята карта')
   check('E9 „Изследвай“ remembers the square mode, its size and the species', (pg.evaluate("document.getElementById('ex-sp').value"),pg.evaluate("document.querySelector('[data-exm=sq]').getAttribute('aria-pressed')"),pg.evaluate("document.getElementById('ex-sz').value")), ('Сврака','true','2'))
   pg.click('[data-exclr]');pg.wait_for_timeout(300)
   pg.click('[data-exm="pt"]');pg.wait_for_timeout(1300);NOPOINTS[0]=True;tap(pg);pg.wait_for_timeout(1200)
