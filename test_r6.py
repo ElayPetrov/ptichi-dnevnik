@@ -73,7 +73,9 @@ try:
   check('R19 the story: opening, numbers, bird of the year … summary', [ks[0],ks[1],ks[2],ks[-1]], ['ПЕРÁ · 2026','ГОЛЕМИТЕ ЧИСЛА','ПТИЦАТА НА ГОДИНАТА ТИ','ТВОЯТА 2026 В ПЕРÁ'])
   D=pg.evaluate("(()=>{OBS=OBS.filter(o=>o.bg!=='Голям синигер');const D=yearData(2026);return [Object.keys(D.sp).length,D.days,D.outs.length,D.hrs,D.top.nm,D.lif.map(x=>x.o.bg),D.early.time,D.late.time,D.mate[0],D.bestDay[1].size]})()")
   check('R20 the numbers are right (species, days, outings, hours, bird of the year, new ones, earliest/latest, companion, best day)', D, [4,5,1,3,'Кос',['Селска лястовица','Сойка','Авлига'],'05:12','21:40','Петър',2])
-  pg.click('#yr-share');pg.wait_for_timeout(600)
+  pg.click('#yr-share')
+  try:pg.wait_for_function("document.getElementById('cardDlg').open",timeout=4000)   # drawing the card can take longer than 600 ms on a busy machine
+  except Exception:pass
   check('R21 „Сподели“ turns the card into an image to share', pg.evaluate("document.getElementById('cardDlg').open"), True)
   check('R22 no page errors', errs, [])
   b.close()

@@ -60,7 +60,7 @@ try:
          pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u1\"] .lnode')].map(n=>[n.querySelector('.lname').textContent,n.className.replace('lnode','').trim(),n.disabled])"),
          pg.evaluate("document.querySelector('.lunit.soon p').innerText.split('\\n')"),pg.inner_text('.lrnhead').split('\n')[0],pg.locator('[data-lprac]').count(),
          pg.is_visible('#q'),pg.is_visible('#filters')),
-        (['Какво е птица','Части на тялото на птица (locked)','Речникът на птичаря (locked)','Как разпознаваме (locked)'],
+        (['Какво е птица','Части на тялото на птица (locked)','Речникът на птичаря (locked)','Как разпознаваме (locked)','На терен (locked)','Бинокълът (locked)'],
          [['Перата','cur',False],['Клюн, кости, яйца','lock',True],['Тялото на птицата','lock',True],['Птиците са динозаври','lock',True]],
          ['Гласове','Групите птици'],'0 точки',0,False,False))
   # the player
@@ -154,13 +154,13 @@ try:
       if(x.k==='ch'&&!(x.o.length>=2))e.push('opts '+x.id);if(x.k==='pic'&&x.o.some(o=>!LPIC[o.p]))e.push('pic '+x.id);
       if(x.k==='tap'&&!LPARTS[x.a])e.push('part '+x.id);if(x.k==='info'&&x.pic&&x.pic!=='diagram'&&!LPIC[x.pic])e.push('infopic '+x.id);}
     return [e,ids.size];})()""")
-  check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],498])
+  check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],696])
   # chapter 2 opens after chapter 1; pictures of beaks; a chapter put in later doesn't lock what you've started
   pg.click('[data-lstart="u1d"]');finish(pg);pg.click('[data-lclose]');pg.wait_for_timeout(150)
   check('L31 finishing the shared start opens both branches: „Части на тялото на птица“ with its first lesson, and „Пера и цветове“ on the other side',
         (pg.evaluate("document.querySelector('[data-lunit=\"u2\"]').classList.contains('locked')"),
          pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u2\"] .lnode')].map(n=>n.className.replace('lnode','').trim())"),
-         pg.evaluate("!lrnUnitOpen(COURSE.units.find(u=>u.id==='u3'))")), (False,['cur']+['lock']*7,False))
+         pg.evaluate("!lrnUnitOpen(COURSE.units.find(u=>u.id==='u3'))")), (False,['cur']+['lock']*8,False))
   pg.evaluate("for(const l of ['u3a','u3b','u3c','u3d'])LRN.d[l]={n:1,p:0,t:'%s'};render()"%TS);pg.click('[data-lbr="jiv"]');pg.wait_for_timeout(100);pg.click('[data-lstart="u4a"]');pg.wait_for_timeout(150)
   info=(pg.locator('#lrBody .linfo .lpic').count(),pg.inner_text('#lrBody h3'));pg.click('[data-lnext]');pg.wait_for_timeout(100)
   check('L32 „Клюнове и храна“: a card with a drawn beak, then three beaks to choose from', (info,cur(pg)['k'],pg.locator('#lrBody .lpics .lopt svg').count(),
@@ -171,7 +171,7 @@ try:
   shown=pg.evaluate("[...document.querySelectorAll('.lunit[data-lunit]')].map(u=>u.dataset.lunit)")
   pg.evaluate("COURSE.units.splice(2,1);render()")
   check('L33 a chapter put in later at the head of a branch: it opens after the shared start, a chapter you have started stays open, the next one waits in its own branch only',
-        (lock,shown),({'u1':False,'u2':False,'u6':True,'u7':True,'ux':False,'u3':False,'u4':False,'u5':True,'u8':True,'u9':True},['u1','ux','u3','u4','u5','u8','u9']))
+        (lock,shown),({'u1':False,'u2':False,'u6':True,'u7':True,'u10':True,'u11':True,'ux':False,'u3':False,'u4':False,'u5':True,'u8':True,'u9':True,'u12':True},['u1','ux','u3','u4','u5','u8','u9','u12']))
   pg.click('[data-lbr="opr"]');pg.wait_for_timeout(100)
   # ---- chapter 2: the body parts in the guide's words (2026-11-23.4) ----
   L=lambda u:pg.evaluate("[...document.querySelectorAll('[data-lunit=\"%s\"] .lnode')].map(n=>n.className.replace('lnode','').trim())"%u)
@@ -207,7 +207,7 @@ try:
         ('dn','Как се казва синята част?',['til'],1,0,['теме','тил','ушни пера']))
   finish(pg)
   end=pg.inner_text('.lend .lstats span:first-child').replace('\n',' ');pg.click('[data-lclose]');pg.wait_for_timeout(150)
-  check('L40 „Главата“ done (+10, there was a slip): ✓ on the path and „Отгоре“ opens', (end,L('u2')), ('+10 точки',['done','cur']+['lock']*6))
+  check('L40 „Главата“ done (+10, there was a slip): ✓ on the path and „Отгоре“ opens', (end,L('u2')), ('+10 точки',['done','cur']+['lock']*7))
   pg.click('[data-lstart="u2b"]');pg.evaluate("LP.i=8;lrnDraw()");pg.wait_for_timeout(60)
   o0=(cur(pg)['k'],pg.locator('#lrBody [data-lord]').count(),pg.locator('[data-lcheck]').count())
   pg.click('[data-lord="0"]');pg.click('[data-lord="2"]');pg.wait_for_timeout(40)
@@ -241,13 +241,13 @@ try:
      if(!(['dt','dn','dx'].includes(x.k)||x.d))continue;if(!LTOPO[x.d==='E'?'A':x.d]){e.push('drawing '+x.id);continue;}
      const has=k=>!!lrnTopoItem(x.d,k)||(x.d==='C'&&/^p([2-9]|10)$/.test(k));
      if(x.k==='dt'&&!has(x.a))e.push('dt '+x.id);
-     if(x.k==='dn'&&(!has(x.h)||(lrnTopoItem(x.d,x.h)&&x.o[0]!==LTERM[x.h])||x.o.some(o=>!/^\\d+$/.test(o)&&!T.includes(o))))e.push('dn '+x.id);
+     if(x.k==='dn'&&(!has(x.h)||(x.src!=='b2'&&((lrnTopoItem(x.d,x.h)&&x.o[0]!==LTERM[x.h])||x.o.some(o=>!/^\\d+$/.test(o)&&!T.includes(o))))))e.push('dn '+x.id);
      if(x.k==='dx'&&x.l.some(k=>!has(k)))e.push('dx '+x.id);
      for(const h of [...(x.hl||[]),...(x.hl2||[])])if(!has(h))e.push('hl '+x.id);}
    return [e,T.length,COURSE.units[1].ls.length];})()""")
-  check('L46 the chapter uses only the guide\'s 48 terms; every lit or tapped part exists on its drawing; the first option is the guide\'s word for the lit part', bad, [[],48,8])
-  for l in ['u2b','u2c','u2d','u2e','u2f','u2g','u2h']:pg.evaluate("lrnStart('%s')"%l);pg.wait_for_timeout(60);finish(pg);pg.click('[data-lclose]');pg.wait_for_timeout(60)
-  check('L47 the whole chapter plays through - every tap at the guide\'s point, every name, order, pair and card', (L('u2'),pg.errs), (['done']*8,[]))
+  check('L46 the chapter uses only the guide\'s 48 terms (the second book\'s names are checked by the build); every lit or tapped part exists on its drawing; the first option is the guide\'s word for the lit part', bad, [[],48,9])
+  for l in ['u2b','u2c','u2d','u2e','u2f','u2g','u2i','u2h']:pg.evaluate("lrnStart('%s')"%l);pg.wait_for_timeout(60);finish(pg);pg.click('[data-lclose]');pg.wait_for_timeout(60)
+  check('L47 the whole chapter plays through - every tap at the guide\'s point, every name, order, pair and card', (L('u2'),pg.errs), (['done']*9,[]))
   keep=pg.evaluate("JSON.stringify(LRN.d)");pg.evaluate("LRN.d=Object.fromEntries(Object.entries(LRN.d).filter(([k])=>k.startsWith('u2')));lrnStart('prac')");pg.wait_for_timeout(60)
   q=pg.evaluate("LP.q.map(x=>x.k)");finish(pg)
   check('L48 practice from the chapter: no explore or info cards, the new kinds work there too', (len(q),'dx' in q or 'info' in q,pg.inner_text('.lend .lstats span:first-child').replace('\n',' ')), (8,False,'+5 точки'))
@@ -267,19 +267,19 @@ try:
               pg.evaluate("document.querySelector('.lunit.soon p').innerText.split('\\n')"),pg.inner_text('.lbrd'))
   check('L50 the fork: „Оттук пътечката се разделя на две“, both branches with their progress; „Определяне“ chosen shows only its chapter and what comes next in it',
         (pg.inner_text('.lforkq'),)+BRS(),
-        ('Оттук пътечката се разделя на две. Можеш да вървиш и по двете.',[['🔎Определяне8 от 25 урока','true'],['🌿Животът на птиците4 от 26 урока','false']],
-         ['Начало · 4 от 4 | Какво е птица','Глава 1 · 8 от 8 | Части на тялото на птица','Глава 2 · 0 от 8 | Речникът на птичаря','Глава 3 · 0 от 9 | Как разпознаваме'],['Гласове','Групите птици'],
+        ('Оттук пътечката се разделя на две. Можеш да вървиш и по двете.',[['🔎Определяне9 от 40 урока','true'],['🌿Животът на птиците4 от 38 урока','false']],
+         ['Начало · 4 от 4 | Какво е птица','Глава 1 · 9 от 9 | Части на тялото на птица','Глава 2 · 0 от 8 | Речникът на птичаря','Глава 3 · 0 от 10 | Как разпознаваме','Глава 4 · 0 от 10 | На терен','Глава 5 · 0 от 3 | Бинокълът'],['Гласове','Групите птици'],
          'Да разпознаеш птицата и да я опишеш с точните думи.'))
   pg.click('[data-lbr="jiv"]');pg.wait_for_timeout(100);a=BRS()
   pg.reload();pg.wait_for_timeout(500);pg.click('.tab[data-v="life"]');pg.click('[data-lifeall="3"]');pg.wait_for_timeout(200)
   check('L51 „Животът на птиците“: its three chapters numbered on their own and its coming chapters; still chosen after reopening the app',
         (a,pg.evaluate("[...document.querySelectorAll('[data-lbr]')].map(b=>b.getAttribute('aria-pressed'))")),
-        (([['🔎Определяне8 от 25 урока','false'],['🌿Животът на птиците4 от 26 урока','true']],
-          ['Начало · 4 от 4 | Какво е птица','Глава 1 · 4 от 4 | Пера и цветове','Глава 2 · 0 от 4 | Клюнове и храна','Глава 3 · 0 от 4 | Крака и полет','Глава 4 · 0 от 7 | Гнездене','Глава 5 · 0 от 7 | Миграция'],
+        (([['🔎Определяне9 от 40 урока','false'],['🌿Животът на птиците4 от 38 урока','true']],
+          ['Начало · 4 от 4 | Какво е птица','Глава 1 · 4 от 4 | Пера и цветове','Глава 2 · 0 от 6 | Клюнове и храна','Глава 3 · 0 от 8 | Крака и полет','Глава 4 · 0 от 7 | Гнездене','Глава 5 · 0 от 7 | Миграция','Глава 6 · 0 от 6 | Опазване'],
           ['Как пеят птиците'],'Как и защо - перата, храната, полетът, гнездата и пътуванията.'),['false','true']))
   check('L52 inside a branch the chapters go in order: „Крака и полет“ waits for „Клюнове и храна“, whatever is done on the other side',
         pg.evaluate("[...document.querySelectorAll('.lunit[data-lunit]')].map(u=>[u.dataset.lunit,u.classList.contains('locked')])"),
-        [['u1',False],['u3',False],['u4',False],['u5',True],['u8',True],['u9',True]])
+        [['u1',False],['u3',False],['u4',False],['u5',True],['u8',True],['u9',True],['u12',True]])
   pg.evaluate("lrnStart('u2b')");pg.wait_for_timeout(80);pg.click('[data-lclose]');pg.wait_for_timeout(120)
   check('L53 starting a lesson brings you back to its side of the fork', pg.evaluate("[...document.querySelectorAll('[data-lbr]')].map(b=>b.getAttribute('aria-pressed'))"), ['true','false'])
   # ---- „Речникът на птичаря“: chapter 2 of „Определяне“ - general words, quoted from the guide (2026-11-24.2, only general knowledge since 2026-11-27.1) ----
@@ -287,7 +287,7 @@ try:
   check('L54 with „Части на тялото на птица“ done, „Речникът на птичаря“ opens as chapter 2 of „Определяне“ - eight lessons, the first one ready',
         (pg.evaluate("[...document.querySelectorAll('.lunit:not(.soon)')].map(u=>u.querySelector('small').textContent+' | '+u.querySelector('h3').textContent+(u.classList.contains('locked')?' (locked)':''))"),L('u6'),
          pg.evaluate("COURSE.units.find(u=>u.id==='u6').ls.map(l=>l.t)")),
-        (['Начало · 4 от 4 | Какво е птица','Глава 1 · 8 от 8 | Части на тялото на птица','Глава 2 · 0 от 8 | Речникът на птичаря','Глава 3 · 0 от 9 | Как разпознаваме (locked)'],['cur']+['lock']*7,
+        (['Начало · 4 от 4 | Какво е птица','Глава 1 · 9 от 9 | Части на тялото на птица','Глава 2 · 0 от 8 | Речникът на птичаря','Глава 3 · 0 от 10 | Как разпознаваме (locked)','Глава 4 · 0 от 10 | На терен (locked)','Глава 5 · 0 от 3 | Бинокълът (locked)'],['cur']+['lock']*7,
          ['Вид и подвид','Размер, мъжки и женски','Възрастите','Оперенията','Окраска и поведение','Глава и тяло','Още за крилото','Всичко заедно']))
   # pictures next to quoted lines, pictures without words and a picture above a question - checked on a lesson made up for the test
   pg.evaluate("""COURSE.units.push({id:'uz',br:'opr',t:'Проба',d:'',ls:[{id:'uza',t:'Проба',ex:[
@@ -338,7 +338,7 @@ try:
   pg.evaluate("lrnStart('u7a')");pg.wait_for_timeout(60)
   a=(L('u7'),pg.evaluate("document.querySelector('#lrBody .lguide small').textContent"),pg.evaluate("document.querySelector('#lrBody .lguide small').title"))
   check('L61 with „Речникът на птичаря“ done, „Как разпознаваме“ (chapter 3) opens; its quote boxes name their book - „Птиците в България“',
-        a,(['cur']+['lock']*8,'Птиците в България','Птиците в България'))
+        a,(['cur']+['lock']*9,'Птиците в България','Птиците в България'))
   pg.evaluate("LP.i=6;lrnDraw()");pg.wait_for_timeout(60);pg.click('[data-lopt="1"]');pg.click('[data-lcheck]');pg.wait_for_timeout(60)
   check('L62 the quote after an answer sits in its own box under the book\'s name: „Мухоловките са „средно големи…““ - Вярно is wrong, and the book says what flycatchers are',
         (pg.inner_text('#lrFoot .lfb b'),pg.evaluate("document.querySelector('#lrFoot .lfq small').textContent"),
@@ -359,16 +359,16 @@ try:
       if pg.evaluate("(()=>{const b=document.getElementById('lrBody');return b.scrollWidth>b.clientWidth+1})()"):wide.append(cur(pg)['id'])
       answer(pg)
     pg.click('[data-lclose]');pg.wait_for_timeout(50)
-  check('L64 „Как разпознаваме“ plays through on a 360 px phone - nine lessons, nothing wider than the screen',(L('u7'),wide,pg.errs),(['done']*9,[],[]))
+  check('L64 „Как разпознаваме“ plays through on a 360 px phone - ten lessons, nothing wider than the screen',(L('u7'),wide,pg.errs),(['done']*10,[],[]))
   # ---- „Гнездене“: chapter 4 of „Животът на птиците“, from „Птиците в България“ (2026-11-27.3) ----
-  pg.evaluate("for(const l of ['u4a','u4b','u4c','u4d','u5a','u5b','u5c','u5d'])LRN.d[l]={n:1,p:0,t:'%s'};lrnSave(false);render()"%TS)
+  pg.evaluate("for(const l of ['u4a','u4b','u4e','u4c','u4f','u4d','u5a','u5g','u5b','u5c','u5e','u5f','u5h','u5d'])LRN.d[l]={n:1,p:0,t:'%s'};lrnSave(false);render()"%TS)
   pg.click('[data-lbr="jiv"]');pg.wait_for_timeout(100)
   a=(pg.evaluate("[...document.querySelectorAll('.lunit:not(.soon)')].map(u=>u.querySelector('small').textContent+' | '+u.querySelector('h3').textContent+(u.classList.contains('locked')?' (locked)':''))"),L('u8'))
   pg.evaluate("lrnStart('u8c');LP.i=2;lrnDraw()");pg.wait_for_timeout(60)
   o=(cur(pg)['k'],sorted(pg.evaluate("[...document.querySelectorAll('#lrBody [data-lord]')].map(b=>b.textContent)")))
   pg.evaluate("lrnClose()")
   check('L65 with „Крака и полет“ done, „Гнездене“ opens as chapter 4 of „Животът на птиците“ - seven lessons; nests to put in order from the simplest',
-        (a,o),((['Начало · 4 от 4 | Какво е птица','Глава 1 · 4 от 4 | Пера и цветове','Глава 2 · 4 от 4 | Клюнове и храна','Глава 3 · 4 от 4 | Крака и полет','Глава 4 · 0 от 7 | Гнездене','Глава 5 · 0 от 7 | Миграция (locked)'],['cur']+['lock']*6),
+        (a,o),((['Начало · 4 от 4 | Какво е птица','Глава 1 · 4 от 4 | Пера и цветове','Глава 2 · 6 от 6 | Клюнове и храна','Глава 3 · 8 от 8 | Крака и полет','Глава 4 · 0 от 7 | Гнездене','Глава 5 · 0 от 7 | Миграция (locked)','Глава 6 · 0 от 6 | Опазване (locked)'],['cur']+['lock']*6),
                ('ord',sorted(['гол субстрат','оформена земна ямка','сравнително плоска конструкция','дълбоки гнезда','сложните затворени гнезда']))))
   wide=[]
   for l in pg.evaluate("COURSE.units.find(u=>u.id==='u8').ls.map(l=>l.id)"):
@@ -388,6 +388,95 @@ try:
     pg.click('[data-lclose]');pg.wait_for_timeout(50)
   check('L67 with „Гнездене“ done, „Миграция“ (chapter 5) opens and plays through on a 360 px phone; only „Как пеят птиците“ is still to come in this branch',
         (L('u9'),w2,pg.errs,pg.evaluate("COURSE.soon.jiv")),(['done']*7,[],[],['Как пеят птиците']))
+  pg.click('[data-lbr="opr"]');pg.wait_for_timeout(80)
+  # ---- „Две имена“ and „Профилът в полет“ (2026-11-27.4) ----
+  pg.evaluate("lrnStart('u2i')");pg.wait_for_timeout(60)
+  a=(pg.evaluate("[...document.querySelectorAll('#lrBody .lguide small')].map(s=>s.textContent)"),ON('hl'))
+  pg.evaluate("LP.i=1;lrnDraw()");pg.wait_for_timeout(60)
+  q2=(cur(pg)['k'],sorted(pg.evaluate("[...document.querySelectorAll('#lrBody [data-lopt]')].map(x=>x.textContent)")),ON('hl'))
+  pg.click('[data-lopt="0"]');pg.click('[data-lcheck]');pg.wait_for_timeout(60);q2+=(pg.inner_text('#lrFoot .lfb b'),)
+  pg.evaluate("lrnClose()")
+  check('L68 „Две имена“: the same feathers quoted from both books in two boxes, each under its name; then their name in the second book is asked on the drawing',
+        (a,q2),((['Полеви определител','Птиците в България'],['ramenni']),('dn',['второстепенни махови пера (ВМП)','плещи','третостепенни махови пера (ТМП)'],['ramenni'],'Точно така!')))
+  pg.evaluate("lrnStart('u7j')");pg.wait_for_timeout(60)
+  a=pg.evaluate("[...document.querySelectorAll('#lrBody .lguide .lgl')].map(l=>[!!l.querySelector('svg.lprof'),l.textContent])")
+  pg.evaluate("LP.i=1;lrnDraw()");pg.wait_for_timeout(60)
+  q2=(cur(pg)['k'],sorted(pg.evaluate("[...document.querySelectorAll('#lrBody .lpics .lopt')].map(x=>x.getAttribute('aria-label'))")),pg.locator('#lrBody .lpics svg.lprof').count())
+  pg.evaluate("LP.i=2;lrnDraw()");pg.wait_for_timeout(60);q2+=(pg.locator('#lrBody .lqpic svg.lprof').count(),)
+  pg.evaluate("lrnClose()")
+  check('L69 „Профилът в полет“: the four profiles of a soaring raptor, each drawn next to the book\'s word; pick the profile by its name, or name the profile shown',
+        (a,q2),([[False,'Типове профили на хищна птица в полет'],[True,'V-образен'],[True,'водоравен'],[True,'увиснал'],[True,'начупен']],('pic',['V-образен','водоравен','увиснал'],3,1)))
+  # ---- храна и придвижване от „Птиците в България“ (2026-11-27.5) ----
+  w3=[]
+  for l in ['u4e','u4f','u5g','u5e','u5f','u5h']:
+    pg.evaluate("lrnStart('%s')"%l);pg.wait_for_timeout(50)
+    while cur(pg):
+      if pg.evaluate("(()=>{const b=document.getElementById('lrBody');return b.scrollWidth>b.clientWidth+1})()"):w3.append(cur(pg)['id'])
+      answer(pg)
+    pg.click('[data-lclose]');pg.wait_for_timeout(50)
+  check('L70 „Клюнове и храна“ and „Крака и полет“ each get lessons from „Птиците в България“, in their place among the others; all play through on a 360 px phone, every quote under that book',
+        (pg.evaluate("['u4','u5'].map(u=>COURSE.units.find(x=>x.id===u).ls.map(l=>l.t))"),L('u4'),L('u5'),w3,pg.errs,
+         pg.evaluate("['u4e','u4f','u5g','u5e','u5f','u5h'].flatMap(l=>COURSE.units.flatMap(u=>u.ls).find(x=>x.id===l).ex).filter(x=>x.g||x.eg).every(x=>x.src==='b2')")),
+        ([['Клюнът издава храната','Кой какво яде','Всеядни и специализирани','Как ловуват','Запаси и погадки','Храна за зимата'],
+          ['Краката разказват','По суша','Крилата','Как летят','Активен полет','Пасивен полет','Във вода','Плуване, гмуркане и тичане']],['done']*6,['done']*8,[],[],True))
+  pg.evaluate("lrnStart('u5e');LP.i=2;lrnDraw()");pg.wait_for_timeout(60)
+  a=(pg.evaluate("[...document.querySelectorAll('#lrBody .lguide small')].map(s=>s.textContent)"),pg.evaluate("[...document.querySelectorAll('#lrBody .lguide b')].map(b=>b.textContent)"))
+  pg.evaluate("LP.i=3;lrnDraw()");pg.wait_for_timeout(60);q3=(pg.locator('#lrBody .lpairs .lopt').count(),)
+  pg.click('[data-lpl="0"]');pg.click('[data-lpr="1"]')
+  for i in range(5):pg.click(f'[data-lpl="{i}"]');pg.click(f'[data-lpr="{i}"]')
+  q3+=(pg.inner_text('#lrFoot .lfb b'),)
+  pg.evaluate("lrnClose()")
+  check('L71 the book\'s five kinds of flapping flight - each name in bold before its explanation, in one box under „Птиците в България“; five pairs to match, and a wrong match is counted („Готово!“, not „Точно така!“); the misprinted „сакрофаги“ is not taught',
+        (a,q3,pg.evaluate("JSON.stringify(COURSE).includes('сакрофаги')")),
+        ((['Птиците в България'],['праволинеен','вълнообразен','гмуркащ','маневрен','трептящ']),(10,'Готово!'),False))
+  # ---- „На терен“ and „Бинокълът“: chapters 4 and 5 of „Определяне“, from „Птиците в България“ (2026-11-27.6) ----
+  pg.evaluate("render()");pg.wait_for_timeout(80)
+  if pg.evaluate("document.querySelector('[data-lbr=\"opr\"]').getAttribute('aria-pressed')")!='true':pg.click('[data-lbr="opr"]');pg.wait_for_timeout(80)
+  a=(pg.evaluate("[...document.querySelectorAll('.lunit:not(.soon)')].map(u=>u.querySelector('small').textContent+' | '+u.querySelector('h3').textContent+(u.classList.contains('locked')?' (locked)':''))").__getitem__(slice(3,None)),L('u10'),L('u11'))
+  w4=[]
+  for l in pg.evaluate("['u10','u11'].flatMap(u=>COURSE.units.find(x=>x.id===u).ls.map(l=>l.id))"):
+    pg.evaluate("lrnStart('%s')"%l);pg.wait_for_timeout(50)
+    while cur(pg):
+      if pg.evaluate("(()=>{const b=document.getElementById('lrBody');return b.scrollWidth>b.clientWidth+1})()"):w4.append(cur(pg)['id'])
+      answer(pg)
+    pg.click('[data-lclose]');pg.wait_for_timeout(50)
+  check('L72 with „Как разпознаваме“ done, „На терен“ opens as chapter 4 of „Определяне“ (ten lessons) and „Бинокълът“ waits as chapter 5; both play through on a 360 px phone, every quote under „Птиците в България“, nothing wider than the screen',
+        (a,L('u10'),L('u11'),w4,pg.errs,pg.evaluate("['u10','u11'].flatMap(u=>COURSE.units.find(x=>x.id===u).ls.flatMap(l=>l.ex)).filter(x=>x.g||x.eg).every(x=>x.src==='b2')")),
+        ((['Глава 3 · 10 от 10 | Как разпознаваме','Глава 4 · 0 от 10 | На терен','Глава 5 · 0 от 3 | Бинокълът (locked)'],['cur']+['lock']*9,['lock']*3),['done']*10,['done']*3,[],[],True))
+  pg.evaluate("lrnStart('u10d');LP.i=2;lrnDraw()");pg.wait_for_timeout(60)
+  a=(pg.locator('#lrBody .linfo > svg.lpic text').count(),pg.evaluate("document.querySelector('#lrBody .lguide small').textContent"))
+  pg.evaluate("LP.i=3;lrnDraw()");pg.wait_for_timeout(60)
+  q4=(cur(pg)['k'],sorted(pg.evaluate("[...document.querySelectorAll('#lrBody .lpics .lopt')].map(x=>x.getAttribute('aria-label'))")))
+  pg.click('[data-lopt="1"]');pg.click('[data-lcheck]');pg.wait_for_timeout(60);q4+=('Верният отговор е в зелено.' in pg.inner_text('#lrFoot'),)
+  pg.evaluate("lrnClose()")
+  check('L73 the clock method: a clock face drawn over the tree (12, 3, 6, 9); „на 3 часа“ picked among three clocks named for screen readers, and a wrong clock says „Верният отговор е в зелено.“',
+        (a,q4),((4,'Птиците в България'),('pic',['птицата вдясно, на 3 часа','птицата вляво, на 9 часа','птицата на върха, на 12 часа'],True)))
+  pg.evaluate("lrnStart('u11b');LP.i=1;lrnDraw()");pg.wait_for_timeout(40)
+  od=pg.evaluate("(()=>{const r=[];for(let k=0;k<40;k++){LP.i=1;lrnDraw();r.push([...document.querySelectorAll('#lrBody [data-lord]')].map(b=>b.dataset.lord).join(''));}return r;})()")
+  pg.evaluate("lrnClose();lrnStart('u10f');LP.i=0;lrnDraw()");pg.wait_for_timeout(60)
+  fw=pg.evaluate("Math.round(document.querySelector('#lrBody .linfo svg.lwide').getBoundingClientRect().width)")
+  pg.evaluate("lrnClose();lrnStart('u10h');LP.i=2;lrnDraw()");pg.wait_for_timeout(60)
+  sk=pg.evaluate("[...document.querySelectorAll('#lrBody .lguide .lgsw')].map(l=>[!!l.querySelector('svg.lsky'),l.textContent])")
+  pg.evaluate("lrnClose()")
+  check('L74 the lenses to put in order (C, FC, MC, FMC) never start already in order; the flock with its counting block is drawn wide; cloud cover 0, 5 and 10 each drawn next to the book\'s words',
+        ('0123' in od,len(set(od))>3,fw>250,sk),(False,True,True,[[True,'0 - безоблачно небе'],[True,'5 - небе, наполовина покрито с облаци'],[True,'10 - плътна облачност']]))
+  # ---- „Опазване“: chapter 6 of „Животът на птиците“, from „Птиците в България“ (2026-11-27.7) ----
+  pg.click('[data-lbr="jiv"]');pg.wait_for_timeout(80)
+  a=(pg.evaluate("[...document.querySelectorAll('.lunit:not(.soon)')].map(u=>u.querySelector('small').textContent+' | '+u.querySelector('h3').textContent+(u.classList.contains('locked')?' (locked)':''))").__getitem__(slice(-2,None)),L('u12'))
+  w5=[]
+  for l in pg.evaluate("COURSE.units.find(x=>x.id==='u12').ls.map(l=>l.id)"):
+    pg.evaluate("lrnStart('%s')"%l);pg.wait_for_timeout(50)
+    while cur(pg):
+      if pg.evaluate("(()=>{const b=document.getElementById('lrBody');return b.scrollWidth>b.clientWidth+1})()"):w5.append(cur(pg)['id'])
+      answer(pg)
+    pg.click('[data-lclose]');pg.wait_for_timeout(50)
+  pg.evaluate("lrnStart('u12d');LP.i=6;lrnDraw()");pg.wait_for_timeout(60)
+  r=pg.evaluate("[...document.querySelectorAll('#lrBody .lguide .lgl')].map(l=>l.textContent)")
+  pg.evaluate("lrnClose()")
+  check('L75 with „Миграция“ done, „Опазване“ opens as chapter 6 of „Животът на птиците“ - six lessons that play through on a 360 px phone under „Птиците в България“; a bird in distress: whom to tell, quoted from the book',
+        (a,L('u12'),w5,pg.errs,pg.evaluate("COURSE.units.find(x=>x.id==='u12').ls.flatMap(l=>l.ex).filter(x=>x.g||x.eg).every(x=>x.src==='b2')"),r),
+        ((['Глава 5 · 7 от 7 | Миграция','Глава 6 · 0 от 6 | Опазване'],['cur']+['lock']*5),['done']*6,[],[],True,
+         ['Ако се натъкнете на бедстващи птици, следва да подадете сигнал на зелените телефони на Регионалните инспекции по околната среда и водите (РИОСВ) или до:','Спасителен център за диви животни в Стара Загора, тел. +359 884 264 305']))
   pg.click('[data-lbr="opr"]');pg.wait_for_timeout(80)
   check('L28 no page errors', pg.errs, [])
   # an empty journal: the lessons are still there
