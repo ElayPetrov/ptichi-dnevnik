@@ -60,7 +60,7 @@ try:
          pg.evaluate("[...document.querySelectorAll('[data-lunit=\"u1\"] .lnode')].map(n=>[n.querySelector('.lname').textContent,n.className.replace('lnode','').trim(),n.disabled])"),
          pg.evaluate("document.querySelector('.lunit.soon p').innerText.split('\\n')"),pg.inner_text('.lrnhead').split('\n')[0],pg.locator('[data-lprac]').count(),
          pg.is_visible('#q'),pg.is_visible('#filters')),
-        (['Какво е птица','Части на тялото на птица (locked)','Думите на определителя (locked)'],
+        (['Какво е птица','Части на тялото на птица (locked)','Речникът на птичаря (locked)'],
          [['Перата','cur',False],['Клюн, кости, яйца','lock',True],['Тялото на птицата','lock',True],['Птиците са динозаври','lock',True]],
          ['Как разпознаваме','Гласове','Групите птици'],'0 точки',0,False,False))
   # the player
@@ -154,7 +154,7 @@ try:
       if(x.k==='ch'&&!(x.o.length>=2))e.push('opts '+x.id);if(x.k==='pic'&&x.o.some(o=>!LPIC[o.p]))e.push('pic '+x.id);
       if(x.k==='tap'&&!LPARTS[x.a])e.push('part '+x.id);if(x.k==='info'&&x.pic&&x.pic!=='diagram'&&!LPIC[x.pic])e.push('infopic '+x.id);}
     return [e,ids.size];})()""")
-  check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],352])
+  check('L27 the content holds together: unique ids, real pictures and parts, short dashes only, no „впиши“/„пълнота“', bad, [[],307])
   # chapter 2 opens after chapter 1; pictures of beaks; a chapter put in later doesn't lock what you've started
   pg.click('[data-lstart="u1d"]');finish(pg);pg.click('[data-lclose]');pg.wait_for_timeout(150)
   check('L31 finishing the shared start opens both branches: „Части на тялото на птица“ with its first lesson, and „Пера и цветове“ on the other side',
@@ -220,12 +220,10 @@ try:
   check('L42 a card with the guide\'s own words: marked „В определителя“, quoted word for word; the two parts compared in blue and orange',
         (pg.inner_text('#lrBody h3'),TXT('#lrBody .lguide small'),pg.evaluate("document.querySelector('#lrBody .lguide').textContent.includes('пищял - частта от крака над стъпалото (виж по-долу), разговорно наричана „бедро“.')"),ON('hl'),ON('hl2')),
         ('Пищял и стъпало','В определителя',True,['pishtal'],['stapalo']))
-  pg.evaluate("lrnClose();lrnStart('u2e');LP.i=5;lrnDraw()");pg.wait_for_timeout(60)
-  nums=pg.evaluate("[...document.querySelectorAll('#lrBody .tnum text')].map(t=>t.textContent).sort((a,b)=>a-b)")
-  pg.evaluate("LP.i=6;lrnDraw()");pg.wait_for_timeout(60)
-  check('L43 „Крило отгоре“: the card numbers the primaries 1-10 as the guide does; in the question the numbers are gone and one feather is blue',
-        (nums,pg.locator('#lrBody .tnum').count(),pg.evaluate("[...document.querySelectorAll('#lrBody path.hl')].map(p=>p.dataset.lf)"),pg.inner_text('#lrBody .lq')),
-        (['1','2','3','4','5','6','7','8','9','10'],0,['p2'],'Кой номер е синьото перо?'))
+  pg.evaluate("lrnClose()")
+  check('L43 „Крило отгоре“ keeps all the feathers but not the guide\'s own numbering of the primaries (other books count the other way): no numbers card, no „Кой номер е синьото перо?“',
+        pg.evaluate("[COURSE.units.flatMap(u=>u.ls.flatMap(l=>l.ex)).filter(x=>x.nums||(x.k==='dn'&&/^p\\d+$/.test(x.h))).length,lrnFind('u2e').ex.map(x=>x.k).join(' ')]"),
+        [0,'dx dt dt dn dn dn dn info tf tf'])
   pg.evaluate("lrnClose();lrnStart('u2g');LP.i=2;lrnDraw()");pg.wait_for_timeout(60)
   check('L44 „Белезите“: the warbler\'s eight marks are what you tap - the bird under them is not',
         sorted(pg.evaluate("[...document.querySelectorAll('#lrBody [data-lpart]')].map(e=>e.dataset.lpart)")),sorted(['vrah_ram','panel_vtori','iv_golemi','iv_sredni','petno_parvi','vrah_parv','petno_krast','yuzdichka']))
@@ -269,14 +267,14 @@ try:
               pg.evaluate("document.querySelector('.lunit.soon p').innerText.split('\\n')"),pg.inner_text('.lbrd'))
   check('L50 the fork: „Оттук пътечката се разделя на две“, both branches with their progress; „Определяне“ chosen shows only its chapter and what comes next in it',
         (pg.inner_text('.lforkq'),)+BRS(),
-        ('Оттук пътечката се разделя на две. Можеш да вървиш и по двете.',[['🔎Определяне8 от 19 урока','true'],['🌿Животът на птиците4 от 12 урока','false']],
-         ['Начало · 4 от 4 | Какво е птица','Глава 1 · 8 от 8 | Части на тялото на птица','Глава 2 · 0 от 11 | Думите на определителя'],['Как разпознаваме','Гласове','Групите птици'],
-         'Да разпознаеш птицата и да я назовеш с думите на определителя.'))
+        ('Оттук пътечката се разделя на две. Можеш да вървиш и по двете.',[['🔎Определяне8 от 16 урока','true'],['🌿Животът на птиците4 от 12 урока','false']],
+         ['Начало · 4 от 4 | Какво е птица','Глава 1 · 8 от 8 | Части на тялото на птица','Глава 2 · 0 от 8 | Речникът на птичаря'],['Как разпознаваме','Гласове','Групите птици'],
+         'Да разпознаеш птицата и да я опишеш с точните думи.'))
   pg.click('[data-lbr="jiv"]');pg.wait_for_timeout(100);a=BRS()
   pg.reload();pg.wait_for_timeout(500);pg.click('.tab[data-v="life"]');pg.click('[data-lifeall="3"]');pg.wait_for_timeout(200)
   check('L51 „Животът на птиците“: its three chapters numbered on their own and its coming chapters; still chosen after reopening the app',
         (a,pg.evaluate("[...document.querySelectorAll('[data-lbr]')].map(b=>b.getAttribute('aria-pressed'))")),
-        (([['🔎Определяне8 от 19 урока','false'],['🌿Животът на птиците4 от 12 урока','true']],
+        (([['🔎Определяне8 от 16 урока','false'],['🌿Животът на птиците4 от 12 урока','true']],
           ['Начало · 4 от 4 | Какво е птица','Глава 1 · 4 от 4 | Пера и цветове','Глава 2 · 0 от 4 | Клюнове и храна','Глава 3 · 0 от 4 | Крака и полет'],
           ['Гнездене','Миграция','Как пеят птиците'],'Как и защо - перата, храната, полетът, гнездата и пътуванията.'),['false','true']))
   check('L52 inside a branch the chapters go in order: „Крака и полет“ waits for „Клюнове и храна“, whatever is done on the other side',
@@ -284,49 +282,57 @@ try:
         [['u1',False],['u3',False],['u4',False],['u5',True]])
   pg.evaluate("lrnStart('u2b')");pg.wait_for_timeout(80);pg.click('[data-lclose]');pg.wait_for_timeout(120)
   check('L53 starting a lesson brings you back to its side of the fork', pg.evaluate("[...document.querySelectorAll('[data-lbr]')].map(b=>b.getAttribute('aria-pressed'))"), ['true','false'])
-  # ---- „Думите на определителя“: chapter 2 of „Определяне“, the guide's own words (2026-11-24.2) ----
+  # ---- „Речникът на птичаря“: chapter 2 of „Определяне“ - general words, quoted from the guide (2026-11-24.2, only general knowledge since 2026-11-27.1) ----
   pg.evaluate("render()");pg.wait_for_timeout(100)
-  check('L54 with „Части на тялото на птица“ done, „Думите на определителя“ opens as chapter 2 of „Определяне“ - eleven lessons, the first one ready',
-        (pg.evaluate("[...document.querySelectorAll('.lunit:not(.soon)')].map(u=>u.querySelector('small').textContent+' | '+u.querySelector('h3').textContent+(u.classList.contains('locked')?' (locked)':''))"),L('u6')),
-        (['Начало · 4 от 4 | Какво е птица','Глава 1 · 8 от 8 | Части на тялото на птица','Глава 2 · 0 от 11 | Думите на определителя'],['cur']+['lock']*10))
-  pg.evaluate("lrnStart('u6c');LP.i=1;lrnDraw()");pg.wait_for_timeout(60)
-  SW="[...document.querySelectorAll('#lrBody .lgsw')].map(r=>[r.querySelector('svg [clip-path]')?'ивици':getComputedStyle(r.querySelector('svg path')).fill,r.textContent])"
-  check('L55 the map colours as in the guide\'s legend: orange - breeding range left in winter, purple - all year, yellow - on migration, light blue - winter range, yellow stripes - main migration direction',
-        pg.evaluate(SW),[['rgb(226, 123, 54)','Гнездови ареал, напускан през зимата.'],['rgb(141, 121, 198)','Среща се целогодишно, включително през гнездовия период.'],
-         ['rgb(239, 196, 98)','Район, където видът се среща при миграция.'],['rgb(185, 224, 238)','Зимен ареал.'],['ивици','Главно миграционно направление (не обезателно точното прелетно трасе).']])
+  check('L54 with „Части на тялото на птица“ done, „Речникът на птичаря“ opens as chapter 2 of „Определяне“ - eight lessons, the first one ready',
+        (pg.evaluate("[...document.querySelectorAll('.lunit:not(.soon)')].map(u=>u.querySelector('small').textContent+' | '+u.querySelector('h3').textContent+(u.classList.contains('locked')?' (locked)':''))"),L('u6'),
+         pg.evaluate("COURSE.units.find(u=>u.id==='u6').ls.map(l=>l.t)")),
+        (['Начало · 4 от 4 | Какво е птица','Глава 1 · 8 от 8 | Части на тялото на птица','Глава 2 · 0 от 8 | Речникът на птичаря'],['cur']+['lock']*7,
+         ['Вид и подвид','Размер, мъжки и женски','Възрастите','Оперенията','Окраска и поведение','Глава и тяло','Още за крилото','Всичко заедно']))
+  # pictures next to quoted lines, pictures without words and a picture above a question - checked on a lesson made up for the test
+  pg.evaluate("""COURSE.units.push({id:'uz',br:'opr',t:'Проба',d:'',ls:[{id:'uza',t:'Проба',ex:[
+    {id:'uza1',k:'info',t:'Редове с картинки',x:'Проба:',g:[['feather','перо - първи ред'],'бухал - втори ред']},
+    {id:'uza2',k:'pic',q:'Кое е перото?',o:[{p:'feather',l:'',al:'перо'},{p:'bat',l:'',al:'прилеп'},{p:'butterfly',l:'',al:'пеперуда'}]},
+    {id:'uza3',k:'ch',q:'Какво е това?',pic:'feather',o:['Перо','Прилеп']},
+    {id:'uza4',k:'tf',q:'Това е прилеп.',pic:'feather',a:false,e:'Перо е.'}]}]});lrnStart('uza')""");pg.wait_for_timeout(60)
+  check('L55 a quoted line can carry a picture: picture and text side by side, each entry on its own line',
+        pg.evaluate("[...document.querySelectorAll('#lrBody .lguide .lgl')].map(l=>[l.classList.contains('lgsw'),!!l.querySelector('svg'),l.textContent])"),
+        [[True,True,'перо - първи ред'],[False,False,'бухал - втори ред']])
+  pg.evaluate("LP.i=1;lrnDraw()");pg.wait_for_timeout(60)
+  q=(cur(pg)['k'],sorted(pg.evaluate("[...document.querySelectorAll('#lrBody .lpics .lopt')].map(b=>[b.textContent,b.getAttribute('aria-label')])")))
+  pg.click('[data-lopt="1"]');pg.click('[data-lcheck]');pg.wait_for_timeout(60)
+  check('L56 pictures without words (named for screen readers); a wrong one: „Верният отговор е в зелено.“ and the right picture turns green',
+        q+(pg.inner_text('#lrFoot .lfb'),pg.evaluate("document.querySelector('#lrBody .lopt.ok').getAttribute('aria-label')")),
+        ('pic',[['','пеперуда'],['','перо'],['','прилеп']],'Не съвсем.\nВерният отговор е в зелено.','перо'))
   pg.evaluate("LP.i=2;lrnDraw()");pg.wait_for_timeout(60)
-  q=(cur(pg)['k'],pg.inner_text('#lrBody .lq'),sorted(pg.evaluate("[...document.querySelectorAll('#lrBody .lpics .lopt')].map(b=>[b.textContent,b.getAttribute('aria-label')])")))
-  pg.click('[data-lopt="1"]');pg.click('[data-lcheck]');pg.wait_for_timeout(60)
-  check('L56 „Кой цвят е „Зимен ареал“?“: three colours, no words (named for screen readers); a wrong one: „Верният отговор е в зелено.“ and the light blue one is green',
-        q+(pg.inner_text('#lrFoot .lfb'),pg.evaluate("getComputedStyle(document.querySelector('#lrBody .lopt.ok svg path')).fill")),
-        ('pic','Кой цвят е „Зимен ареал“?',[['','лилаво'],['','оранжево'],['','светлосиньо']],'Не съвсем.\nВерният отговор е в зелено.','rgb(185, 224, 238)'))
-  pg.evaluate("LP.i=3;lrnDraw()");pg.wait_for_timeout(60)
-  a=(cur(pg)['k'],pg.evaluate("getComputedStyle(document.querySelector('#lrBody .lqpic svg path')).fill"),sorted(pg.evaluate("[...document.querySelectorAll('#lrBody [data-lopt]')].map(b=>b.textContent)")))
+  a=(cur(pg)['k'],pg.locator('#lrBody .lqpic svg').count())
   pg.click('[data-lopt="0"]');pg.click('[data-lcheck]');pg.wait_for_timeout(60);a+=(pg.inner_text('#lrFoot .lfb b'),)
-  pg.evaluate("LP.i=9;lrnDraw()");pg.wait_for_timeout(60)
-  b2=(cur(pg)['k'],pg.inner_text('#lrBody .lq'),pg.evaluate("getComputedStyle(document.querySelector('#lrBody .lqpic svg path')).fill"))
+  pg.evaluate("LP.i=3;lrnDraw()");pg.wait_for_timeout(60)
+  b2=(cur(pg)['k'],pg.locator('#lrBody .lqpic svg').count())
   pg.click('[data-lopt="1"]');pg.click('[data-lcheck]');pg.wait_for_timeout(60)
-  check('L57 a colour shown above the question: orange - „Гнездови ареал, напускан през зимата.“ is right; purple said to be „Зимен ареал“ - „Вярно“ is wrong, and the guide\'s words for purple are shown',
-        (a,b2,pg.inner_text('#lrFoot .lfb')),
-        (('ch','rgb(226, 123, 54)',['Гнездови ареал, напускан през зимата.','Зимен ареал.','Среща се целогодишно, включително през гнездовия период.'],'Точно така!'),
-         ('tf','Този цвят е „Зимен ареал“.','rgb(141, 121, 198)'),'Не съвсем.\nВерният отговор: Невярно\nВ определителя: Среща се целогодишно, включително през гнездовия период.'))
-  pg.evaluate("lrnClose();lrnStart('u6a');LP.i=8;lrnDraw()");pg.wait_for_timeout(60)
-  check('L58 the guide\'s list reads like a dictionary - each entry on its own line, the sign in bold - and big numbers never break („1 000 000“ stays whole)',
-        (pg.evaluate("[...document.querySelectorAll('#lrBody .lguide .lgl')].map(l=>(l.querySelector('b')||{}).textContent||'')"),
-         pg.evaluate("document.querySelector('#lrBody .lguide').textContent.includes('>1\\u00a0000\\u00a0000 дв.')")),
-        (['','1','2','3','4','5'],True))
+  check('L57 a picture above a question - a choice and a true/false', (a,b2,pg.inner_text('#lrFoot .lfb')),
+        (('ch',1,'Точно така!'),('tf',1),'Не съвсем.\nВерният отговор: Невярно\nПеро е.'))
+  pg.evaluate("lrnClose();COURSE.units.pop();for(const k of Object.keys(LRN.x))if(k.startsWith('uza'))delete LRN.x[k];lrnSave(false);render()")
+  pg.evaluate("lrnStart('u6h');LP.i=0;lrnDraw()");pg.wait_for_timeout(60)
+  heads=pg.evaluate("[...document.querySelectorAll('#lrBody .lguide .lgl')].map(l=>(l.querySelector('b')||{}).textContent||'')")
+  pg.evaluate("lrnClose();lrnStart('u6g');LP.i=8;lrnDraw()");pg.wait_for_timeout(60)
+  check('L58 quoted lists read like a dictionary - each entry on its own line, the word before „ - “ in bold; lines quoted from the middle of an entry have no bold word',
+        (heads,pg.evaluate("[...document.querySelectorAll('#lrBody .lguide .lgl')].map(l=>(l.querySelector('b')||{}).textContent||'')")),
+        (['аберантен','албинизъм','леуцизъм','меланизъм'],['','']))
   pg.evaluate("lrnClose()");wide=[]
-  for l in 'abcdefghijk':
-    pg.evaluate("lrnStart('u6%s')"%l);pg.wait_for_timeout(50)
+  for l in pg.evaluate("COURSE.units.find(u=>u.id==='u6').ls.map(l=>l.id)"):
+    pg.evaluate("lrnStart('%s')"%l);pg.wait_for_timeout(50)
     while cur(pg):
       if pg.evaluate("(()=>{const b=document.getElementById('lrBody');return b.scrollWidth>b.clientWidth+1})()"):wide.append(cur(pg)['id'])
       answer(pg)
     pg.click('[data-lclose]');pg.wait_for_timeout(50)
-  check('L59 the whole chapter plays through on a 360 px phone - cards, colours, pairs, orders - nothing wider than the screen; „Всичко заедно“ ends it',
-        (L('u6'),wide,pg.errs),(['done']*11,[],[]))
-  dk.evaluate("lrnStart('u6c');LP.i=1;lrnDraw()");dk.wait_for_timeout(80)
-  check('L60 dark: the map colours a little softer, in the same order', ([r[0] for r in dk.evaluate(SW)],dk.errs),
-        (['rgb(220, 122, 60)','rgb(154, 136, 216)','rgb(230, 189, 94)','rgb(159, 210, 228)','ивици'],[]))
+  check('L59 the whole chapter plays through on a 360 px phone - cards, pairs, orders - nothing wider than the screen; „Всичко заедно“ ends it',
+        (L('u6'),wide,pg.errs),(['done']*8,[],[]))
+  bad=pg.evaluate("""(()=>{const B=new Set(['rB','mB','r+m B','r(m)B','W','P','V','ДТ','РК','МО','ЗО','ЛО','БО','ИО','ЕО','КГ','1во З','1во Л','2ро З','2ро Л','1ва КГ','2ра КГ','3та КГ','1ва Г','1ва Е','>','<','±']),out=[];
+    for(const u of COURSE.units)for(const l of u.ls)for(const x of l.ex){const a=[...(x.k==='pr'?x.p.flat():[]),...(['ch','ord','dn'].includes(x.k)?x.o:[]),...(x.k==='tf'&&x.q.includes(' - ')?[x.q.split(' - ')[0]]:[])];
+      if(a.some(t=>B.has(t))||String(x.pic||'').startsWith('map')||x.nums||(x.k==='dn'&&/^p\\d+$/.test(x.h)))out.push(x.id);}
+    return [out,Object.keys(LPIC).filter(k=>k.startsWith('map'))];})()""")
+  check('L60 only general knowledge: no answer is one of this guide\'s own signs or abbreviations (status, sizes, plumages), no map colours, no numbering of the primaries', bad, [[],[]])
   check('L28 no page errors', pg.errs, [])
   # an empty journal: the lessons are still there
   e=page([])
